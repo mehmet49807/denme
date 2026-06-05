@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Warm cream base theme; actual Compose colors live in ui/theme/Color.kt -->
+    <style name="Theme.GonulKoprusu" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#FBF6EF</item>
+        <item name="android:windowBackground">#FBF6EF</item>
+    </style>
+</resources>
