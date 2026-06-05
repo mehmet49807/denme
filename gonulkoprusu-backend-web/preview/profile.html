@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profilim · Gönül Köprüsü</title>
+    <link rel="stylesheet" href="../public/css/theme.css">
+    <style>
+        .gk-nav{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;background:var(--gk-card);border-bottom:1px solid var(--gk-beige);}
+        .gk-nav a{margin-left:18px;font-weight:600;}
+        .gk-container{max-width:620px;margin:0 auto;padding:32px;}
+    </style>
+</head>
+<body>
+<header class="gk-nav">
+    <a href="index.html" class="gk-logo"><span class="gk-mark"></span> Gönül Köprüsü</a>
+    <nav><a href="feed.html">Akış</a><a href="profile.html">Profilim</a></nav>
+</header>
+
+<div class="gk-container">
+    <div class="gk-card">
+        <div style="display:flex; gap:18px; align-items:center;">
+            <div class="gk-mark" style="width:84px;height:84px;border-radius:50%;"></div>
+            <div>
+                <h2 style="margin:0;">ayse <span class="gk-badge gk-badge--premium">Premium</span></h2>
+                <span class="gk-location-box">İzmir <span class="gk-sep">·</span> Karşıyaka</span>
+            </div>
+        </div>
+        <hr style="border:none; border-top:1px solid var(--gk-beige); margin:22px 0;">
+        <p style="color:var(--gk-text-muted); font-size:.85rem;">Kullanıcı adınız hariç tüm bilgileri güncelleyebilirsiniz. Aşağıdaki bilgiler <strong>yalnızca size ve yöneticilere</strong> görünür.</p>
+
+        <div class="gk-field"><label>Kullanıcı Adı (değiştirilemez)</label><input class="gk-input" value="ayse" readonly></div>
+        <div class="gk-row">
+            <div class="gk-field"><label>Ad (gizli)</label><input class="gk-input" value="Ayşe"></div>
+            <div class="gk-field"><label>Soyad (gizli)</label><input class="gk-input" value="Yılmaz"></div>
+        </div>
+        <div class="gk-field"><label>E-posta (gizli)</label><input class="gk-input" value="ayse@ornek.com"></div>
+        <div class="gk-field"><label>Telefon (gizli)</label><input class="gk-input" value="+90 5xx xxx xx xx"></div>
+        <div class="gk-row">
+            <div class="gk-field"><label>Şehir</label><input class="gk-input" value="İzmir"></div>
+            <div class="gk-field"><label>İlçe</label><input class="gk-input" value="Karşıyaka"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Yönetim · Gönül Köprüsü</title>
+    <link rel="stylesheet" href="../public/css/theme.css">
+    <style>
+        .admin-shell{display:flex;min-height:100vh;}
+        .admin-content{flex:1;padding:28px 32px;order:1;}
+        .admin-aside{order:2;width:260px;background:var(--gk-cream-2);border-left:1px solid var(--gk-beige);padding:24px 18px;}
+        .admin-aside .gk-logo{margin-bottom:26px;}
+        .admin-nav a{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:6px;border-radius:12px;color:var(--gk-text);font-weight:500;}
+        .admin-nav a.active{background:linear-gradient(135deg,var(--gk-rose),var(--gk-terracotta));color:#fff;}
+        .admin-nav .dot{width:8px;height:8px;border-radius:50%;background:var(--gk-lavender);}
+    </style>
+</head>
+<body>
+<div class="admin-shell">
+    <main class="admin-content">
+        <h1 style="margin:0 0 24px;">Genel Bakış</h1>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px;">
+            <div class="gk-card"><div style="color:var(--gk-text-soft);font-size:.85rem;">Toplam Kullanıcı</div><div style="font-size:2rem;font-weight:700;">1.248</div><div class="gk-location-box" style="margin-top:8px;">612 Erkek <span class="gk-sep">·</span> 636 Kadın</div></div>
+            <div class="gk-card"><div style="color:var(--gk-text-soft);font-size:.85rem;">Premium Üye</div><div style="font-size:2rem;font-weight:700;">184</div><span class="gk-badge gk-badge--premium">Yalnızca Erkek</span></div>
+            <div class="gk-card"><div style="color:var(--gk-text-soft);font-size:.85rem;">Bekleyen Şikayet</div><div style="font-size:2rem;font-weight:700;">7</div></div>
+            <div class="gk-card"><div style="color:var(--gk-text-soft);font-size:.85rem;">Toplam Mesaj</div><div style="font-size:2rem;font-weight:700;">9.530</div></div>
+            <div class="gk-card"><div style="color:var(--gk-text-soft);font-size:.85rem;">Aktif Premium Geliri</div><div style="font-size:2rem;font-weight:700;">61.700 TL</div></div>
+        </div>
+
+        <h2 style="margin-top:30px;">Premium Dağılımı</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:18px;">
+            <div class="gk-card"><div style="color:var(--gk-text-soft);font-size:.85rem;">Pro Paketi</div><div style="font-size:1.6rem;font-weight:700;">62</div><div class="gk-location-box" style="margin-top:8px;">Gelir <span class="gk-sep">·</span> 15.500 TL</div></div>
+            <div class="gk-card"><div style="color:var(--gk-text-soft);font-size:.85rem;">Gold Paketi</div><div style="font-size:1.6rem;font-weight:700;">71</div><div class="gk-location-box" style="margin-top:8px;">Gelir <span class="gk-sep">·</span> 21.300 TL</div></div>
+            <div class="gk-card"><div style="color:var(--gk-text-soft);font-size:.85rem;">Platinum Paketi</div><div style="font-size:1.6rem;font-weight:700;">51</div><div class="gk-location-box" style="margin-top:8px;">Gelir <span class="gk-sep">·</span> 25.500 TL</div></div>
+        </div>
+    </main>
+
+    <aside class="admin-aside">
+        <div class="gk-logo"><span class="gk-mark"></span> Gönül Köprüsü</div>
+        <nav class="admin-nav">
+            <a href="#" class="active"><span class="dot"></span> Genel Bakış</a>
+            <a href="#"><span class="dot"></span> Kullanıcı Yönetimi</a>
+            <a href="#"><span class="dot"></span> Mesaj Denetimi</a>
+            <a href="#"><span class="dot"></span> Şikayet Paneli</a>
+            <a href="#"><span class="dot"></span> Premium Takibi</a>
+            <a href="#"><span class="dot"></span> Duyuru Sistemi</a>
+        </nav>
+        <button class="gk-btn gk-btn--ghost" style="width:100%;margin-top:24px;">Çıkış Yap</button>
+    </aside>
+</div>
+</body>
+</html>
