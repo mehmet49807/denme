@@ -1,0 +1,124 @@
+/* =====================================================================
+   Gönül Köprüsü - Shared Theme
+   Palette rules: NO black, NO gold, NO pure white.
+   Soft, warm, rich light tones: cream, beige, warm pastels, subtle accents.
+   ===================================================================== */
+
+:root {
+    /* Surfaces */
+    --gk-cream:        #fbf6ef;   /* page background */
+    --gk-cream-2:      #f4ece1;   /* secondary surface */
+    --gk-card:         #fffdf9;   /* cards (warm off-white, not pure white) */
+    --gk-beige:        #e9ddcc;   /* borders / dividers */
+
+    /* Warm pastel accents */
+    --gk-rose:         #e3a9a1;   /* primary warm accent (dusty rose) */
+    --gk-rose-deep:    #cf8a82;
+    --gk-terracotta:   #d9a066;
+    --gk-sage:         #a7bfa3;   /* secondary accent (soft sage) */
+    --gk-lavender:     #b9acd1;   /* tertiary accent */
+
+    /* Text - warm dark brown instead of black */
+    --gk-text:         #5a4b3f;
+    --gk-text-soft:    #8a7a6b;
+    --gk-text-muted:   #a99a8b;
+
+    --gk-shadow:       0 8px 24px rgba(120, 95, 70, 0.12);
+    --gk-radius:       16px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', 'Helvetica Neue', system-ui, sans-serif;
+    background: var(--gk-cream);
+    color: var(--gk-text);
+    line-height: 1.55;
+}
+
+a { color: var(--gk-rose-deep); text-decoration: none; }
+a:hover { color: var(--gk-terracotta); }
+
+/* ----- Logo placeholder (vibrant, colorful, modern) ----- */
+.gk-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: var(--gk-text);
+}
+.gk-logo .gk-mark {
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--gk-rose) 0%, var(--gk-lavender) 50%, var(--gk-sage) 100%);
+    box-shadow: var(--gk-shadow);
+}
+
+/* ----- Buttons ----- */
+.gk-btn {
+    display: inline-block;
+    padding: 11px 22px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--gk-rose), var(--gk-terracotta));
+    color: var(--gk-card);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.gk-btn:hover { transform: translateY(-1px); box-shadow: var(--gk-shadow); color: #fff; }
+.gk-btn--ghost {
+    background: transparent;
+    border: 1.5px solid var(--gk-beige);
+    color: var(--gk-text);
+}
+.gk-btn--danger { background: linear-gradient(135deg, #d98b8b, #c97474); }
+
+/* ----- Cards ----- */
+.gk-card {
+    background: var(--gk-card);
+    border: 1px solid var(--gk-beige);
+    border-radius: var(--gk-radius);
+    box-shadow: var(--gk-shadow);
+    padding: 20px;
+}
+
+/* ----- City - District bounded box (side-by-side) ----- */
+.gk-location-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border: 1px solid var(--gk-beige);
+    border-radius: 10px;
+    background: var(--gk-cream-2);
+    font-size: .85rem;
+    color: var(--gk-text-soft);
+}
+.gk-location-box .gk-sep { color: var(--gk-rose-deep); font-weight: 700; }
+
+/* ----- Forms ----- */
+.gk-field { margin-bottom: 16px; }
+.gk-field label { display:block; font-size:.85rem; margin-bottom:6px; color: var(--gk-text-soft); }
+.gk-input, .gk-select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--gk-beige);
+    border-radius: 12px;
+    background: var(--gk-card);
+    color: var(--gk-text);
+    font-size: .95rem;
+}
+.gk-input:focus, .gk-select:focus { outline: none; border-color: var(--gk-rose); }
+.gk-row { display:flex; gap:14px; }
+.gk-row > * { flex: 1; }
+.gk-input[readonly] { background: var(--gk-cream-2); cursor: not-allowed; }
+
+/* ----- Badges ----- */
+.gk-badge { padding: 3px 10px; border-radius: 999px; font-size:.75rem; font-weight:600; }
+.gk-badge--premium { background: var(--gk-lavender); color: #fff; }
+.gk-badge--pending { background: var(--gk-terracotta); color: #fff; }
+.gk-badge--banned  { background: #d98b8b; color: #fff; }
+.gk-badge--active  { background: var(--gk-sage); color: #fff; }
