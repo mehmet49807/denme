@@ -100,6 +100,43 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Cache-Control' => 'no-store',
         ]);
     });
+    Route::get('/setup/diag-blog-sss', function () {
+        if (request('key') !== 'gk-cpanel-setup-2026') {
+            abort(403);
+        }
+
+        $checks = [
+            'routes' => [
+                'blog' => \Illuminate\Support\Facades\Route::has('blog'),
+                'sss' => \Illuminate\Support\Facades\Route::has('sss'),
+                'blog.show' => \Illuminate\Support\Facades\Route::has('blog.show'),
+            ],
+            'views' => [
+                'blog' => view()->exists('web.blog'),
+                'sss' => view()->exists('web.sss'),
+                'legal-nav' => view()->exists('partials.legal-nav'),
+            ],
+            'render' => [],
+        ];
+
+        $legalData = [
+            'lastUpdated' => '5 Haziran 2026',
+            'contactEmail' => 'destek@gonulkoprusu.com',
+            'faqItems' => [],
+            'posts' => [],
+        ];
+
+        foreach (['partials.legal-nav' => ['active' => 'sss'], 'web.sss' => $legalData, 'web.blog' => array_merge($legalData, ['posts' => []])] as $view => $data) {
+            try {
+                view($view, $data)->render();
+                $checks['render'][$view] = 'ok';
+            } catch (\Throwable $e) {
+                $checks['render'][$view] = $e->getMessage();
+            }
+        }
+
+        return response()->json($checks, 200, ['Cache-Control' => 'no-store']);
+    });
 }
 
 Route::get('/kvkk', [LegalPageController::class, 'kvkk'])->name('kvkk');
