@@ -23,12 +23,6 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
-$gkHttpHost = strtolower(preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? '')));
-if ($gkHttpHost === 'gonulkoprusu.com') {
-    header('Location: https://www.gonulkoprusu.com'.($_SERVER['REQUEST_URI'] ?? '/'), true, 301);
-    exit;
-}
-
 $requestHost = strtolower(preg_replace('/:\d+$/', '', (string) (request()->getHost() ?: ($_SERVER['HTTP_HOST'] ?? ''))));
 $publicHosts = ['gonulkoprusu.com', 'www.gonulkoprusu.com'];
 $adminHosts = ['admin.gonulkoprusu.com'];
