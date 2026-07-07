@@ -1,6 +1,7 @@
 @extends('layouts.content-page')
 
 @section('title', ($post['title'] ?? 'Blog') . ' — Gönül Köprüsü')
+@section('legal-active', 'blog')
 @section('page-eyebrow', 'Blog')
 @section('page-title', $post['title'] ?? 'Blog yazısı')
 @section('page-lead', $post['description'] ?? '')
@@ -26,12 +27,12 @@
     @endif
 
     <p class="city-seo-cta-wrap">
-        <a href="{{ route('blog') }}" class="btn btn-outline">Tüm blog yazıları</a>
+        <a href="{{ url('/blog') }}" class="btn btn-outline">Tüm blog yazıları</a>
         <a href="{{ route('register') }}" class="btn btn-primary">Ücretsiz Kayıt Ol</a>
     </p>
 @endsection
 
 @push('head')
     <meta name="description" content="{{ $post['description'] ?? ($post['title'] ?? 'Blog') }}">
-    <link rel="canonical" href="{{ route('blog.show', $slug) }}">
+    <link rel="canonical" href="{{ url('/blog/'.$slug) }}">
 @endpush
