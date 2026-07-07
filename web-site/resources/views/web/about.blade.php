@@ -77,3 +77,7 @@
     Web: <a href="https://gonulkoprusu.com">gonulkoprusu.com</a>
 </p>
 @endsection
+
+@push('ld-json')
+    @include('partials.json-ld', ['schema' => $jsonLd ?? []])
+@endpush

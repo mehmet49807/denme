@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Support\SeoHelper;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -39,7 +41,12 @@ class LegalPageController extends Controller
 
     public function about(): View
     {
-        return view('web.about', $this->legalData());
+        SeoHelper::setPage('about');
+        SeoHelper::set('canonical', url('/hakkimizda'));
+
+        return view('web.about', array_merge($this->legalData(), [
+            'jsonLd' => $this->breadcrumbSchema('Hakkımızda', url('/hakkimizda')),
+        ]));
     }
 
     public function kvkk(): View
@@ -50,10 +57,13 @@ class LegalPageController extends Controller
     public function blog(): View
     {
         $published = $this->publishedBlogFaq();
+        SeoHelper::setPage('blog');
+        SeoHelper::set('canonical', url('/blog'));
 
         return view('web.blog', array_merge($this->legalData(), [
             'posts' => $published['blog_posts'],
             'publishedAt' => $published['published_at'] ?? null,
+            'jsonLd' => $this->blogIndexSchema($published['blog_posts']),
         ]));
     }
 
@@ -73,20 +83,26 @@ class LegalPageController extends Controller
             abort(404);
         }
 
+        SeoHelper::setBlogPost($post, $slug);
+
         return view('web.blog-show', array_merge($this->legalData(), [
             'post' => $post,
             'slug' => $slug,
+            'jsonLd' => $this->blogPostSchema($post, $slug),
         ]));
     }
 
     public function sss(): View
     {
         $published = $this->publishedBlogFaq();
+        SeoHelper::setPage('sss');
+        SeoHelper::set('canonical', url('/sss'));
 
         return view('web.sss', array_merge($this->legalData(), [
             'faqItems' => $published['faq_items'],
             'posts' => $published['blog_posts'],
             'publishedAt' => $published['published_at'] ?? null,
+            'jsonLd' => $this->faqPageSchema($published['faq_items']),
         ]));
     }
 
@@ -143,5 +159,120 @@ class LegalPageController extends Controller
             File::ensureDirectoryExists(dirname($path));
             File::put($path, $json);
         }
+
+        Cache::forget('sitemap.xml.body');
+    }
+
+    /** @param array<int, array<string, mixed>> $posts */
+    private function blogIndexSchema(array $posts): array
+    {
+        $siteUrl = rtrim(config('app.url', 'https://www.gonulkoprusu.com'), '/');
+        $items = [];
+        foreach (array_slice($posts, 0, 20) as $post) {
+            $slug = (string) ($post['slug'] ?? '');
+            if ($slug === '') {
+                continue;
+            }
+            $items[] = [
+                '@type' => 'BlogPosting',
+                'headline' => (string) ($post['title'] ?? 'Blog'),
+                'description' => (string) ($post['description'] ?? ''),
+                'url' => $siteUrl.'/blog/'.$slug,
+            ];
+        }
+
+        return [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'Blog',
+                    'name' => 'Gönül Köprüsü Blog',
+                    'url' => $siteUrl.'/blog',
+                    'description' => 'Ciddi ilişki, güvenli tanışma ve evlilik odaklı rehber yazıları.',
+                    'blogPost' => $items,
+                ],
+                $this->breadcrumbSchema('Blog', $siteUrl.'/blog'),
+            ],
+        ];
+    }
+
+    /** @param array<string, mixed> $post */
+    private function blogPostSchema(array $post, string $slug): array
+    {
+        $siteUrl = rtrim(config('app.url', 'https://www.gonulkoprusu.com'), '/');
+        $url = $siteUrl.'/blog/'.$slug;
+
+        return [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'BlogPosting',
+                    'headline' => (string) ($post['title'] ?? 'Blog'),
+                    'description' => (string) ($post['description'] ?? ''),
+                    'url' => $url,
+                    'mainEntityOfPage' => $url,
+                    'author' => ['@type' => 'Organization', 'name' => 'Gönül Köprüsü'],
+                    'publisher' => [
+                        '@type' => 'Organization',
+                        'name' => 'Gönül Köprüsü',
+                        'url' => $siteUrl,
+                    ],
+                    'dateModified' => (string) ($post['updated_at'] ?? now()->toDateString()),
+                ],
+                $this->breadcrumbSchema((string) ($post['title'] ?? 'Blog'), $url, 'Blog', $siteUrl.'/blog'),
+            ],
+        ];
+    }
+
+    /** @param array<int, array<string, string>> $faqItems */
+    private function faqPageSchema(array $faqItems): array
+    {
+        $entities = [];
+        foreach ($faqItems as $item) {
+            $question = trim((string) ($item['question'] ?? ''));
+            $answer = trim((string) ($item['answer'] ?? ''));
+            if ($question === '' || $answer === '') {
+                continue;
+            }
+            $entities[] = [
+                '@type' => 'Question',
+                'name' => $question,
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => $answer,
+                ],
+            ];
+        }
+
+        $graph = [$this->breadcrumbSchema('Sıkça Sorulan Sorular', url('/sss'))];
+        if ($entities !== []) {
+            $graph[] = [
+                '@type' => 'FAQPage',
+                'mainEntity' => $entities,
+            ];
+        }
+
+        return [
+            '@context' => 'https://schema.org',
+            '@graph' => $graph,
+        ];
+    }
+
+    private function breadcrumbSchema(string $name, string $url, ?string $parentName = null, ?string $parentUrl = null): array
+    {
+        $items = [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Ana Sayfa', 'item' => url('/')],
+        ];
+        if ($parentName && $parentUrl) {
+            $items[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $parentName, 'item' => $parentUrl];
+            $items[] = ['@type' => 'ListItem', 'position' => 3, 'name' => $name, 'item' => $url];
+        } else {
+            $items[] = ['@type' => 'ListItem', 'position' => 2, 'name' => $name, 'item' => $url];
+        }
+
+        return [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => $items,
+        ];
     }
 }

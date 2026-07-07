@@ -32,7 +32,6 @@
     </p>
 @endsection
 
-@push('head')
-    <meta name="description" content="{{ $post['description'] ?? ($post['title'] ?? 'Blog') }}">
-    <link rel="canonical" href="{{ url('/blog/'.$slug) }}">
+@push('ld-json')
+    @include('partials.json-ld', ['schema' => $jsonLd ?? []])
 @endpush

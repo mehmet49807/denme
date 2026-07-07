@@ -40,8 +40,10 @@ class SitemapController extends Controller
         $staticPages = [
             ['loc' => '/',                      'priority' => '1.0', 'changefreq' => 'daily'],
             ['loc' => '/hakkimizda',            'priority' => '0.8', 'changefreq' => 'monthly'],
+            ['loc' => '/blog',                  'priority' => '0.85', 'changefreq' => 'weekly'],
+            ['loc' => '/sss',                   'priority' => '0.85', 'changefreq' => 'weekly'],
+            ['loc' => '/destek',                'priority' => '0.6', 'changefreq' => 'monthly'],
             ['loc' => '/register',              'priority' => '0.9', 'changefreq' => 'monthly'],
-            ['loc' => '/login',                 'priority' => '0.7', 'changefreq' => 'monthly'],
             ['loc' => '/gizlilik-politikasi',   'priority' => '0.5', 'changefreq' => 'yearly'],
             ['loc' => '/kvkk',                  'priority' => '0.5', 'changefreq' => 'yearly'],
             ['loc' => '/kullanim-kosullari',     'priority' => '0.5', 'changefreq' => 'yearly'],
@@ -56,6 +58,19 @@ class SitemapController extends Controller
                 'lastmod'    => now()->toDateString(),
                 'changefreq' => $page['changefreq'],
                 'priority'   => $page['priority'],
+            ];
+        }
+
+        foreach ($this->publishedBlogPosts() as $post) {
+            $slug = (string) ($post['slug'] ?? '');
+            if ($slug === '') {
+                continue;
+            }
+            $urls[] = [
+                'loc'        => $baseUrl.'/blog/'.$slug,
+                'lastmod'    => (string) ($post['updated_at'] ?? now()->toDateString()),
+                'changefreq' => 'weekly',
+                'priority'   => '0.8',
             ];
         }
 
@@ -138,5 +153,25 @@ class SitemapController extends Controller
         $xml .= '</urlset>';
 
         return $xml;
+    }
+
+    /** @return array<int, array<string, mixed>> */
+    private function publishedBlogPosts(): array
+    {
+        foreach ([
+            storage_path('app/seo/openrouter-published-blog-faq.json'),
+            base_path('storage/app/seo/openrouter-published-blog-faq.json'),
+            base_path('../public_html/storage/app/seo/openrouter-published-blog-faq.json'),
+        ] as $path) {
+            if (! is_file($path)) {
+                continue;
+            }
+            $decoded = json_decode((string) file_get_contents($path), true);
+            if (is_array($decoded) && is_array($decoded['blog_posts'] ?? null)) {
+                return $decoded['blog_posts'];
+            }
+        }
+
+        return [];
     }
 }

@@ -81,7 +81,6 @@
 </p>
 @endsection
 
-@push('head')
-    <meta name="description" content="Gönül Köprüsü SSS — güvenli tanışma, ciddi ilişki, üyelik ve moderasyon hakkında sıkça sorulan sorular.">
-    <link rel="canonical" href="{{ url('/sss') }}">
+@push('ld-json')
+    @include('partials.json-ld', ['schema' => $jsonLd ?? []])
 @endpush

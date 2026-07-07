@@ -66,7 +66,6 @@
 </p>
 @endsection
 
-@push('head')
-    <meta name="description" content="Gönül Köprüsü blog — ciddi ilişki, güvenli tanışma ve evlilik odaklı Türkçe rehber yazıları.">
-    <link rel="canonical" href="{{ url('/blog') }}">
+@push('ld-json')
+    @include('partials.json-ld', ['schema' => $jsonLd ?? []])
 @endpush
