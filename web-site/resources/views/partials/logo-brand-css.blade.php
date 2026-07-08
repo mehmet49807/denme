@@ -9,9 +9,9 @@
 }
 .site-logo-brand-img {
     display: block;
-    height: 52px;
+    height: 50px;
     width: auto;
-    max-width: min(200px, 54vw);
+    max-width: min(240px, 58vw);
     object-fit: contain;
     filter: drop-shadow(0 6px 18px rgba(124, 58, 237, 0.14));
     transition: transform 0.18s ease, filter 0.18s ease;
@@ -21,23 +21,23 @@
     filter: drop-shadow(0 10px 22px rgba(236, 72, 153, 0.2));
 }
 .page-landing .site-header--landing .site-logo-brand-img {
-    height: 48px;
-    max-width: min(190px, 52vw);
+    height: 46px;
+    max-width: min(220px, 56vw);
 }
 @media (min-width: 900px) {
     .site-logo-brand-img {
-        height: 56px;
-        max-width: 220px;
+        height: 54px;
+        max-width: 260px;
     }
     .page-landing .site-header--landing .site-logo-brand-img {
-        height: 54px;
+        height: 52px;
     }
 }
 @media (max-width: 480px) {
     .site-logo-brand-img,
     .page-landing .site-header--landing .site-logo-brand-img {
-        height: 42px;
-        max-width: 46vw;
+        height: 40px;
+        max-width: 52vw;
     }
 }
 </style>
