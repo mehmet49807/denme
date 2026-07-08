@@ -37,7 +37,7 @@ class HomeController extends Controller
                         '@type' => 'Organization',
                         'name' => 'Gönül Köprüsü',
                         'url' => $siteUrl,
-                        'logo' => $siteUrl.'/images/og-default.jpg',
+                        'logo' => $siteUrl.'/images/gonul-koprusu-logo.png',
                         'sameAs' => [
                             'https://www.instagram.com/gonulkoprusucom',
                         ],

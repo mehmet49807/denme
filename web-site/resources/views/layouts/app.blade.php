@@ -12,6 +12,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', __('app.brand'))</title>
     @include('partials.seo-head')
+    @include('partials.logo-brand-css')
     @stack('head')
     <link rel="icon" href="{{ asset('images/favicon.png') }}?v={{ config('brand.logo_version') }}" sizes="32x32" type="image/png">
     <link rel="icon" href="{{ asset('images/favicon.svg') }}?v={{ config('brand.logo_version') }}" type="image/svg+xml">
