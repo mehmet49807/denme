@@ -5,9 +5,9 @@
 
     RewriteEngine On
 
-    # apex -> www (tum yollar; mobil uyumluluk icin)
-    RewriteCond %{HTTP_HOST} ^gonulkoprusu\.com$ [NC]
-    RewriteRule ^ https://www.gonulkoprusu.com%{REQUEST_URI} [L,R=301]
+    # www -> apex (ana domain gonulkoprusu.com)
+    RewriteCond %{HTTP_HOST} ^www\.gonulkoprusu\.com$ [NC]
+    RewriteRule ^ https://gonulkoprusu.com%{REQUEST_URI} [L,R=301]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

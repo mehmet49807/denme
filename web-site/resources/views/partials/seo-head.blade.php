@@ -2,7 +2,7 @@
     $settings = app(\App\Services\SiteSettingsService::class);
     $seo = \App\Support\SeoHelper::all();
     $brand = (string) $settings->get('site_name', config('app.name', 'Gönül Köprüsü'));
-    $siteUrl = rtrim((string) $settings->get('site_url', config('app.url', 'https://www.gonulkoprusu.com')), '/');
+    $siteUrl = rtrim((string) $settings->get('site_url', config('app.url', 'https://gonulkoprusu.com')), '/');
     $pageTitle = trim($__env->yieldContent('title'));
     $seoTitle = (string) ($seo['title'] ?? '');
     $fullTitle = $pageTitle !== '' && ! str_contains($pageTitle, $brand)

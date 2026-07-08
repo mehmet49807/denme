@@ -33,7 +33,7 @@ class SitemapController extends Controller
     private function buildSitemapXml(?\App\Services\SiteSettingsService $settings = null): string
     {
         $settings ??= app(\App\Services\SiteSettingsService::class);
-        $baseUrl = rtrim((string) $settings->get('site_url', 'https://www.gonulkoprusu.com'), '/');
+        $baseUrl = rtrim((string) $settings->get('site_url', 'https://gonulkoprusu.com'), '/');
         $urls = [];
 
         // ========== 1. Statik Sayfalar ==========

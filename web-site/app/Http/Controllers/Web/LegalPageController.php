@@ -166,7 +166,7 @@ class LegalPageController extends Controller
     /** @param array<int, array<string, mixed>> $posts */
     private function blogIndexSchema(array $posts): array
     {
-        $siteUrl = rtrim(config('app.url', 'https://www.gonulkoprusu.com'), '/');
+        $siteUrl = rtrim(config('app.url', 'https://gonulkoprusu.com'), '/');
         $items = [];
         foreach (array_slice($posts, 0, 20) as $post) {
             $slug = (string) ($post['slug'] ?? '');
@@ -199,7 +199,7 @@ class LegalPageController extends Controller
     /** @param array<string, mixed> $post */
     private function blogPostSchema(array $post, string $slug): array
     {
-        $siteUrl = rtrim(config('app.url', 'https://www.gonulkoprusu.com'), '/');
+        $siteUrl = rtrim(config('app.url', 'https://gonulkoprusu.com'), '/');
         $url = $siteUrl.'/blog/'.$slug;
 
         return [

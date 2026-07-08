@@ -12,10 +12,10 @@ class HomeController extends Controller
     {
         SeoHelper::setPage('home');
         SeoHelper::set('pageType', 'home');
-        SeoHelper::set('canonical', 'https://www.gonulkoprusu.com/');
-        SeoHelper::set('ogImage', 'https://www.gonulkoprusu.com/images/og-default.jpg');
+        SeoHelper::set('canonical', 'https://gonulkoprusu.com/');
+        SeoHelper::set('ogImage', 'https://gonulkoprusu.com/images/og-default.jpg');
 
-        $siteUrl = 'https://www.gonulkoprusu.com';
+        $siteUrl = 'https://gonulkoprusu.com';
 
         return view('web.home', [
             'jsonLd' => [

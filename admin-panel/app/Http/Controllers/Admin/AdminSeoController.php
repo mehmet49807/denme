@@ -16,7 +16,7 @@ class AdminSeoController extends Controller
     public function index(SiteSettingsService $settings): View
     {
         $values = $settings->all();
-        $frontendUrl = rtrim(config('app.frontend_url', 'https://www.gonulkoprusu.com'), '/');
+        $frontendUrl = rtrim(config('app.frontend_url', 'https://gonulkoprusu.com'), '/');
 
         return view('admin.seo', [
             'settings' => $values,

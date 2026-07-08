@@ -342,7 +342,7 @@ PROMPT;
             }
         }
 
-        $frontendUrl = rtrim((string) config('app.frontend_url', 'https://www.gonulkoprusu.com'), '/');
+        $frontendUrl = rtrim((string) config('app.frontend_url', 'https://gonulkoprusu.com'), '/');
         $syncKey = (string) config('services.seo.sync_key', env('SEO_SYNC_KEY', 'gk-seo-sync-2026'));
 
         try {
