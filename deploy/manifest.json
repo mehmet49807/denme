@@ -1,0 +1,38 @@
+{
+  "repository": "https://github.com/mehmet49807/denme",
+  "branch": "master",
+  "web": {
+    "ftp": {
+      "host": "ftp.gonulkoprusu.com"
+    },
+    "mappings": [
+      { "local": "web-site/app", "remote": "app" },
+      { "local": "web-site/routes", "remote": "routes" },
+      { "local": "web-site/resources", "remote": "resources" },
+      { "local": "web-site/public/images", "remote": "images" },
+      { "local": "web-site/public/.htaccess", "remote": ".htaccess", "file": true }
+    ],
+    "post_deploy": [
+      "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}"
+    ]
+  },
+  "admin": {
+    "ftp": {
+      "host": "ftp.gonulkoprusu.com"
+    },
+    "mappings": [
+      { "local": "admin-panel/app", "remote": "app" },
+      { "local": "admin-panel/routes", "remote": "routes" },
+      { "local": "admin-panel/config", "remote": "config" },
+      { "local": "admin-panel/resources", "remote": "resources" },
+      { "local": "web-site/public/images/logo-mark.png", "remote": "images/logo-mark.png", "file": true },
+      { "local": "web-site/public/images/logo-admin.png", "remote": "images/logo-admin.png", "file": true },
+      { "local": "web-site/public/images/favicon.png", "remote": "images/favicon.png", "file": true },
+      { "local": "scripts/deploy/assets/admin.css", "remote": "css/admin.css", "file": true },
+      { "local": "scripts/deploy/assets/admin-login-lumiere.css", "remote": "css/admin-login-lumiere.css", "file": true }
+    ],
+    "post_deploy": [
+      "https://admin.gonulkoprusu.com/setup/cpanel?key={SETUP_KEY}"
+    ]
+  }
+}

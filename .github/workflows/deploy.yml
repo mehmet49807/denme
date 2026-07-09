@@ -1,0 +1,76 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Deploy hedefi
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - web
+          - admin
+
+concurrency:
+  group: deploy-gonulkoprusu
+  cancel-in-progress: false
+
+jobs:
+  check-secrets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Gerekli secret'lar tanımlı mı?
+        env:
+          FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
+          FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
+          FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
+          FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
+        run: |
+          missing=0
+          for name in FTP_WEB_USER FTP_WEB_PASSWORD FTP_ADMIN_USER FTP_ADMIN_PASSWORD; do
+            eval "val=\$$name"
+            if [ -z "$val" ]; then
+              echo "::error::Eksik GitHub Secret: $name"
+              echo "Kurulum: cp .env.deploy.example .env.deploy && bash scripts/setup/github-deploy-setup.sh"
+              missing=1
+            fi
+          done
+          exit $missing
+
+  deploy-web:
+    needs: check-secrets
+    if: github.event_name == 'push' || github.event.inputs.target == 'all' || github.event.inputs.target == 'web'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy web via FTP
+        env:
+          FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
+          FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
+          SETUP_CACHE_KEY: ${{ secrets.SETUP_CACHE_KEY }}
+        run: python3 scripts/deploy/ftp_sync.py web
+
+  deploy-admin:
+    needs: check-secrets
+    if: github.event_name == 'push' || github.event.inputs.target == 'all' || github.event.inputs.target == 'admin'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy admin via FTP
+        env:
+          FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
+          FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
+          SETUP_CACHE_KEY: ${{ secrets.SETUP_CACHE_KEY }}
+        run: python3 scripts/deploy/ftp_sync.py admin
