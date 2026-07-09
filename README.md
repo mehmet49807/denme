@@ -24,6 +24,17 @@ Bu depo (`mehmet49807/denme`) **gonulkoprusu.com** web sitesi ve **admin.gonulko
 
 Manuel tetikleme: GitHub → Actions → Deploy to cPanel → Run workflow (web / admin / all).
 
+### Copilot / tek komut kurulum
+
+```bash
+cp .env.deploy.example .env.deploy
+# .env.deploy içine FTP şifrelerini yazın
+bash scripts/setup/github-deploy-all.sh
+```
+
+Bu script GitHub Secrets kaydeder, deploy PR'ını `master`'a merge eder ve ilk workflow'u izler.
+Ayrıntılar: `.github/copilot-instructions.md`
+
 ### Gerekli GitHub Secrets
 
 Repository → Settings → Secrets and variables → Actions:
