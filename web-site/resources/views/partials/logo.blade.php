@@ -1,5 +1,5 @@
 @php
-    $logoVersion = (string) config('brand.logo_version', 'brand-v14');
+    $logoVersion = (string) config('brand.logo_version', 'brand-v15');
 @endphp
 <a href="{{ route('home') }}" class="site-logo site-logo--brand" aria-label="Gönül Köprüsü — Ana Sayfa">
     <img
