@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AdminContentController;
 use App\Http\Controllers\Admin\AdminEmailController;
 use App\Http\Controllers\Admin\AdminReferralController;
 use App\Http\Controllers\Admin\AdminSupportController;
+use App\Http\Controllers\Admin\AdminGithubController;
 use App\Http\Controllers\Admin\AdminPanelController;
 use App\Http\Controllers\Admin\AdminRaporController;
 use App\Http\Controllers\Admin\AdminSeoController;
@@ -68,6 +69,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/seo/clear-sitemap', [AdminSeoController::class, 'clearSitemapCache'])->name('admin.seo.clear-sitemap');
     Route::get('/seo/openrouter-refresh', [AdminSeoController::class, 'openRouterHelp'])->name('admin.seo.openrouter-help');
     Route::post('/seo/openrouter-refresh', [AdminSeoController::class, 'refreshOpenRouter'])->name('admin.seo.openrouter-refresh');
+    Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');
     Route::get('/profile', [AdminProfileController::class, 'show'])->name('admin.profile');
     Route::put('/profile', [AdminProfileController::class, 'update'])->name('admin.profile.update');
     Route::post('/profile/photo', [AdminProfileController::class, 'updatePhoto'])->name('admin.profile.photo');

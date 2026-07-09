@@ -1,0 +1,33 @@
+{
+  "repository": "https://github.com/mehmet49807/denme",
+  "branch": "master",
+  "web": {
+    "ftp": {
+      "host": "ftp.gonulkoprusu.com"
+    },
+    "mappings": [
+      { "local": "web-site/app", "remote": "app" },
+      { "local": "web-site/routes", "remote": "routes" },
+      { "local": "web-site/resources", "remote": "resources" },
+      { "local": "web-site/public/images", "remote": "images" },
+      { "local": "web-site/public/.htaccess", "remote": ".htaccess", "file": true }
+    ],
+    "post_deploy": [
+      "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}"
+    ]
+  },
+  "admin": {
+    "ftp": {
+      "host": "ftp.gonulkoprusu.com"
+    },
+    "mappings": [
+      { "local": "admin-panel/app", "remote": "app" },
+      { "local": "admin-panel/routes", "remote": "routes" },
+      { "local": "admin-panel/config", "remote": "config" },
+      { "local": "admin-panel/resources", "remote": "resources" }
+    ],
+    "post_deploy": [
+      "https://admin.gonulkoprusu.com/setup/cpanel?key={SETUP_KEY}"
+    ]
+  }
+}

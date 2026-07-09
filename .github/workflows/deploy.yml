@@ -1,0 +1,52 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Deploy hedefi
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - web
+          - admin
+
+concurrency:
+  group: deploy-gonulkoprusu
+  cancel-in-progress: false
+
+jobs:
+  deploy-web:
+    if: github.event_name == 'push' || github.event.inputs.target == 'all' || github.event.inputs.target == 'web'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy web via FTP
+        env:
+          FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
+          FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
+          SETUP_CACHE_KEY: ${{ secrets.SETUP_CACHE_KEY }}
+        run: python3 scripts/deploy/ftp_sync.py web
+
+  deploy-admin:
+    if: github.event_name == 'push' || github.event.inputs.target == 'all' || github.event.inputs.target == 'admin'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy admin via FTP
+        env:
+          FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
+          FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
+          SETUP_CACHE_KEY: ${{ secrets.SETUP_CACHE_KEY }}
+        run: python3 scripts/deploy/ftp_sync.py admin
