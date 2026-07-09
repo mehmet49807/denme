@@ -57,6 +57,7 @@ jobs:
           python3 scripts/deploy/generate-web-admin-github-patch.py
           python3 scripts/deploy/generate-web-admin-nav-patch.py
           python3 scripts/deploy/generate-web-admin-fix-layout-patch.py
+          python3 scripts/deploy/generate-web-admin-nav-partial-patch.py
 
       - name: Deploy web via FTP
         env:

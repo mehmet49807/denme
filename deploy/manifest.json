@@ -13,7 +13,8 @@
       { "local": "web-site/public/.htaccess", "remote": ".htaccess", "file": true },
       { "local": "patch-web-admin-github.php", "remote": "patch-web-admin-github.php", "file": true },
       { "local": "patch-web-admin-nav.php", "remote": "patch-web-admin-nav.php", "file": true },
-      { "local": "patch-web-admin-fix-layout.php", "remote": "patch-web-admin-fix-layout.php", "file": true }
+      { "local": "patch-web-admin-fix-layout.php", "remote": "patch-web-admin-fix-layout.php", "file": true },
+      { "local": "patch-web-admin-nav-partial.php", "remote": "patch-web-admin-nav-partial.php", "file": true }
     ],
     "post_deploy": [
       "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}",
