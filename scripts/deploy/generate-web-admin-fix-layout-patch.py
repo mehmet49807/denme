@@ -30,8 +30,12 @@ $include = "@include('partials.admin-nav-github-link')";
 $mode = (string) ($_GET['mode'] ?? 'fix');
 
 if ($mode === 'dump') {
-    $pos = strpos($layout, "admin.ai");
-    echo substr($layout, max(0, $pos - 400), 1600);
+    $needle = (string) ($_GET['q'] ?? 'admin-sidebar-nav');
+    $pos = strpos($layout, $needle);
+    if ($pos === false) {
+        $pos = strpos($layout, "route('admin.ai')");
+    }
+    echo substr($layout, max(0, $pos - 200), 4000);
     exit;
 }
 
@@ -63,6 +67,10 @@ if ($newLayout === $layout) {
 
 @shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan view:clear 2>/dev/null');
 @shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan route:clear 2>/dev/null');
+$compile = @shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan view:cache 2>&1');
+if (is_string($compile) && $compile !== '') {
+    echo trim($compile)."\n";
+}
 echo "OK\n";
 """
 

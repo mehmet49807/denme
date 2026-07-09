@@ -164,6 +164,15 @@ if (is_file($layoutFile)) {
         }
     }
 
+    if (! str_contains($newLayout, "'admin.github'")) {
+        $newLayout = str_replace(
+            "'admin.ai' => 'ai',",
+            "'admin.ai' => 'ai',\n        'admin.github' => 'seo',",
+            $newLayout
+        );
+        echo "patched layout: admin.github theme\n";
+    }
+
     if ($newLayout !== $layout) {
         file_put_contents($layoutFile, $newLayout);
         echo "patched layouts/admin.blade.php\n";
@@ -172,6 +181,10 @@ if (is_file($layoutFile)) {
 
 @shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan route:clear 2>/dev/null');
 @shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan view:clear 2>/dev/null');
+$compile = @shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan view:cache 2>&1');
+if (is_string($compile) && trim($compile) !== '') {
+    echo trim($compile)."\n";
+}
 echo "OK\n";
 """
 
