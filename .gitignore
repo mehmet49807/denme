@@ -53,3 +53,4 @@ home.blade.php
 /contact.php
 /blank.gif
 /LICENSE.md
+scripts/deploy/__pycache__/

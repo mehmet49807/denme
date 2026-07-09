@@ -24,7 +24,10 @@
       { "local": "admin-panel/app", "remote": "app" },
       { "local": "admin-panel/routes", "remote": "routes" },
       { "local": "admin-panel/config", "remote": "config" },
-      { "local": "admin-panel/resources", "remote": "resources" }
+      { "local": "admin-panel/resources", "remote": "resources" },
+      { "local": "web-site/public/images/logo-mark.png", "remote": "images/logo-mark.png", "file": true },
+      { "local": "web-site/public/images/logo-admin.png", "remote": "images/logo-admin.png", "file": true },
+      { "local": "web-site/public/images/favicon.png", "remote": "images/favicon.png", "file": true }
     ],
     "post_deploy": [
       "https://admin.gonulkoprusu.com/setup/cpanel?key={SETUP_KEY}"
