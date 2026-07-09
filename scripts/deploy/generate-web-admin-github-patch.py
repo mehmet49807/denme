@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate patch-web-admin-github.php — deploy GitHub menu to live admin."""
+"""Generate patch-web-admin-github.php — deploy GitHub menu + controls to live admin."""
 
 from __future__ import annotations
 
@@ -13,11 +13,14 @@ OUT = ROOT / "patch-web-admin-github.php"
 files = {
     "app/Http/Controllers/Admin/AdminGithubController.php": ROOT
     / "admin-panel/app/Http/Controllers/Admin/AdminGithubController.php",
+    "app/Services/DeployGithubService.php": ROOT
+    / "admin-panel/app/Services/DeployGithubService.php",
     "config/deploy.php": ROOT / "admin-panel/config/deploy.php",
     "resources/views/admin/github.blade.php": ROOT
     / "admin-panel/resources/views/admin/github.blade.php",
     "resources/views/partials/admin-nav-github-link.blade.php": ROOT
     / "admin-panel/resources/views/partials/admin-nav-github-link.blade.php",
+    "routes/admin_subdomain.php": ROOT / "admin-panel/routes/admin_subdomain.php",
 }
 
 payload = {
@@ -69,10 +72,16 @@ if (is_file($routeFile)) {
     if (! str_contains($newRoutes, "->name('admin.github')")) {
         $newRoutes = preg_replace(
             "/Route::get\('\/seo',/",
-            "Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');\n    Route::get('/seo',",
+            "Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');\n    Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');\n    Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->name('admin.github.clear-cache');\n    Route::get('/seo',",
             $newRoutes,
             1
         ) ?? $newRoutes;
+    } elseif (! str_contains($newRoutes, "->name('admin.github.check')")) {
+        $newRoutes = str_replace(
+            "->name('admin.github');",
+            "->name('admin.github');\n    Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');\n    Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->name('admin.github.clear-cache');",
+            $newRoutes
+        );
     }
     if ($newRoutes !== $routes) {
         file_put_contents($routeFile, $newRoutes);

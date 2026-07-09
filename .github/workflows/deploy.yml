@@ -57,6 +57,7 @@ jobs:
           FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
           FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
           SETUP_CACHE_KEY: ${{ secrets.SETUP_CACHE_KEY }}
+          GITHUB_SHA: ${{ github.sha }}
         run: python3 scripts/deploy/ftp_sync.py web
 
   deploy-admin:
@@ -73,4 +74,5 @@ jobs:
           FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
           FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
           SETUP_CACHE_KEY: ${{ secrets.SETUP_CACHE_KEY }}
+          GITHUB_SHA: ${{ github.sha }}
         run: python3 scripts/deploy/ftp_sync.py admin

@@ -96,11 +96,14 @@ def deploy_target(target: str, manifest: dict) -> None:
     ftp.quit()
 
     setup_key = os.environ.get("SETUP_CACHE_KEY", "")
+    github_sha = os.environ.get("GITHUB_SHA", "")
     for url_template in cfg.get("post_deploy", []):
         if not setup_key:
             print(f"SKIP post-deploy (SETUP_CACHE_KEY missing): {url_template}")
             continue
-        url = url_template.replace("{SETUP_KEY}", setup_key)
+        url = (
+            url_template.replace("{SETUP_KEY}", setup_key).replace("{GITHUB_SHA}", github_sha)
+        )
         try:
             with urllib.request.urlopen(url, timeout=30) as response:  # noqa: S310
                 body = response.read(200).decode("utf-8", errors="replace")

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminGithubController;
 use Illuminate\Support\Facades\Route;
 
 if (is_file(app_path('Http/Controllers/Admin/AdminAuthController.php'))) {
@@ -9,6 +10,10 @@ if (is_file(app_path('Http/Controllers/Admin/AdminAuthController.php'))) {
 if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
     Route::get('/setup/cpanel', [\App\Http\Controllers\Web\SetupController::class, 'cpanel']);
     Route::get('/setup/messages', [\App\Http\Controllers\Web\SetupController::class, 'messagesSchema']);
+}
+
+if (is_file(app_path('Http/Controllers/Admin/AdminGithubController.php'))) {
+    Route::get('/setup/deploy-notify', [AdminGithubController::class, 'deployNotify']);
 }
 
 Route::redirect('/adminlogin', '/login', 301);

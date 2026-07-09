@@ -70,6 +70,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/seo/openrouter-refresh', [AdminSeoController::class, 'openRouterHelp'])->name('admin.seo.openrouter-help');
     Route::post('/seo/openrouter-refresh', [AdminSeoController::class, 'refreshOpenRouter'])->name('admin.seo.openrouter-refresh');
     Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');
+    Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');
+    Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->name('admin.github.clear-cache');
     Route::get('/profile', [AdminProfileController::class, 'show'])->name('admin.profile');
     Route::put('/profile', [AdminProfileController::class, 'update'])->name('admin.profile.update');
     Route::post('/profile/photo', [AdminProfileController::class, 'updatePhoto'])->name('admin.profile.photo');

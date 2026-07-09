@@ -13,7 +13,8 @@
       { "local": "web-site/public/.htaccess", "remote": ".htaccess", "file": true }
     ],
     "post_deploy": [
-      "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}"
+      "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}",
+      "https://admin.gonulkoprusu.com/setup/deploy-notify?key={SETUP_KEY}&target=web&commit={GITHUB_SHA}"
     ]
   },
   "admin": {
@@ -32,7 +33,8 @@
       { "local": "scripts/deploy/assets/admin-login-lumiere.css", "remote": "css/admin-login-lumiere.css", "file": true }
     ],
     "post_deploy": [
-      "https://admin.gonulkoprusu.com/setup/cpanel?key={SETUP_KEY}"
+      "https://admin.gonulkoprusu.com/setup/cpanel?key={SETUP_KEY}",
+      "https://admin.gonulkoprusu.com/setup/deploy-notify?key={SETUP_KEY}&target=admin&commit={GITHUB_SHA}"
     ]
   }
 }
