@@ -19,6 +19,9 @@ if (! is_dir($adminRoot)) {
 }
 $rel = (string) ($_GET['file'] ?? 'routes/adminlogin.php');
 $path = $adminRoot.'/'.ltrim($rel, '/');
+if (str_contains($rel, '..')) {
+    exit("bad path\n");
+}
 if (! is_file($path)) {
     exit("missing $rel\n");
 }
