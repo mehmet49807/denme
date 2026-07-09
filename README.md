@@ -62,17 +62,9 @@ python3 scripts/deploy/ftp_sync.py admin
 
 ## Admin panel — GitHub menüsü
 
-Deploy sonrası admin panelde `/github` sayfası açılır. Yan menüye link eklemek için canlı `layouts/admin.blade.php` içine:
-
-```blade
-@include('partials.admin-nav-github-link')
-```
-
-veya doğrudan:
-
-```blade
-<a href="{{ route('admin.github') }}">GitHub Deploy</a>
-```
+Deploy sonrası yan menüde **GitHub Deploy** bağlantısı ve `/github` sayfası kullanılabilir.
+Canlıda eksikse: `python3 scripts/deploy/generate-web-admin-github-patch.py` ardından
+`patch-web-logo-left.php` ve `patch-web-admin-github.php` patch'lerini çalıştırın.
 
 ## Dal stratejisi
 

@@ -18,6 +18,7 @@ web_files = {
     "images/logo-mark.png": ROOT / "web-site/public/images/logo-mark.png",
     "images/logo-admin.png": ROOT / "web-site/public/images/logo-admin.png",
     "patch-web-admin-views.php": ROOT / "patch-web-admin-views.php",
+    "patch-web-admin-github.php": ROOT / "patch-web-admin-github.php",
 }
 
 payload = {
