@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate patch-web-admin-github.php — deploy GitHub menu + controls to live admin."""
+"""Generate patch-web-admin-nav.php — remove AI Raporları, reposition GitHub menu."""
 
 from __future__ import annotations
 
@@ -8,20 +8,16 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "patch-web-admin-github.php"
+OUT = ROOT / "patch-web-admin-nav.php"
 
 files = {
-    "app/Http/Controllers/Admin/AdminGithubController.php": ROOT
-    / "admin-panel/app/Http/Controllers/Admin/AdminGithubController.php",
-    "app/Services/DeployGithubService.php": ROOT
-    / "admin-panel/app/Services/DeployGithubService.php",
-    "config/deploy.php": ROOT / "admin-panel/config/deploy.php",
-    "routes/adminlogin.php": ROOT / "admin-panel/routes/adminlogin.php",
     "resources/views/admin/github.blade.php": ROOT
     / "admin-panel/resources/views/admin/github.blade.php",
     "resources/views/partials/admin-nav-github-link.blade.php": ROOT
     / "admin-panel/resources/views/partials/admin-nav-github-link.blade.php",
-    "routes/admin_subdomain.php": ROOT / "admin-panel/routes/admin_subdomain.php",
+    "routes/adminlogin.php": ROOT / "admin-panel/routes/adminlogin.php",
+    "app/Http/Controllers/Admin/AdminGithubController.php": ROOT
+    / "admin-panel/app/Http/Controllers/Admin/AdminGithubController.php",
 }
 
 payload = {
@@ -46,17 +42,17 @@ if (! is_dir($adminRoot)) {
     exit("admin root missing\n");
 }
 
+echo "admin_root=$adminRoot\n";
+
 $files = json_decode(<<<'JSON'
 FILES_JSON
 JSON, true);
-
-echo "admin_root=$adminRoot\n";
 
 foreach ($files as $rel => $b64) {
     $path = $adminRoot.'/'.$rel;
     @mkdir(dirname($path), 0755, true);
     file_put_contents($path, base64_decode($b64));
-    echo $rel.' '.filesize($path)."\n";
+    echo "write $rel\n";
 }
 
 $delete = [
@@ -66,6 +62,9 @@ $delete = [
     'app/Services/RaporService.php',
     'app/Services/AiRaporService.php',
     'resources/views/admin/rapor.blade.php',
+    'resources/views/admin/rapor/index.blade.php',
+    'resources/views/admin/rapor/show.blade.php',
+    'resources/views/admin/rapor/generate.blade.php',
 ];
 foreach ($delete as $rel) {
     $path = $adminRoot.'/'.$rel;
@@ -87,55 +86,7 @@ if (is_dir($raporDir)) {
         }
     }
     @rmdir($raporDir);
-}
-
-$routeFile = $adminRoot.'/routes/adminlogin.php';
-if (is_file($routeFile)) {
-    $routes = file_get_contents($routeFile);
-    $newRoutes = $routes;
-    if (! str_contains($newRoutes, 'AdminGithubController')) {
-        $newRoutes = str_replace(
-            'use App\Http\Controllers\Admin\AdminPanelController;',
-            "use App\Http\Controllers\Admin\AdminPanelController;\nuse App\Http\Controllers\Admin\AdminGithubController;",
-            $newRoutes
-        );
-    }
-    if (! str_contains($newRoutes, "->name('admin.github')")) {
-        $newRoutes = preg_replace(
-            "/Route::post\('\/ai\/users\/\{user\}\/scan'.*?\n/",
-            "$0    Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');\n    Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');\n    Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->name('admin.github.clear-cache');\n",
-            $newRoutes,
-            1
-        ) ?? $newRoutes;
-    } elseif (! str_contains($newRoutes, "->name('admin.github.check')")) {
-        $newRoutes = str_replace(
-            "->name('admin.github');",
-            "->name('admin.github');\n    Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');\n    Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->name('admin.github.clear-cache');",
-            $newRoutes
-        );
-    }
-
-    $newRoutes = preg_replace(
-        "/Route::get\('\/rapor'.*?\n/",
-        '',
-        $newRoutes
-    ) ?? $newRoutes;
-    $newRoutes = preg_replace(
-        "/Route::post\('\/rapor\/generate'.*?\n/",
-        '',
-        $newRoutes
-    ) ?? $newRoutes;
-    $newRoutes = preg_replace(
-        "/Route::get\('\/rapor\/\{rapor\}'.*?\n/",
-        '',
-        $newRoutes
-    ) ?? $newRoutes;
-    $newRoutes = str_replace("use App\\Http\\Controllers\\Admin\\AdminRaporController;\n", '', $newRoutes);
-
-    if ($newRoutes !== $routes) {
-        file_put_contents($routeFile, $newRoutes);
-        echo "patched routes/adminlogin.php\n";
-    }
+    echo "rmdir resources/views/admin/rapor\n";
 }
 
 $layoutFile = $adminRoot.'/resources/views/layouts/admin.blade.php';
@@ -144,9 +95,22 @@ if (is_file($layoutFile)) {
     $newLayout = $layout;
     $include = "@include('partials.admin-nav-github-link')";
 
-    $newLayout = preg_replace('/<a[^>]*admin\.rapor[^>]*>.*?<\/a>\s*/s', '', $newLayout) ?? $newLayout;
-    $newLayout = preg_replace('/<a[^>]*\/rapor[^>]*>.*?<\/a>\s*/s', '', $newLayout) ?? $newLayout;
-    $newLayout = preg_replace('/<a[^>]*>[^<]*AI Rapor[^<]*<\/a>\s*/s', '', $newLayout) ?? $newLayout;
+    $newLayout = preg_replace(
+        '/<a[^>]*admin\.rapor[^>]*>.*?<\/a>\s*/s',
+        '',
+        $newLayout
+    ) ?? $newLayout;
+    $newLayout = preg_replace(
+        '/<a[^>]*\/rapor[^>]*>.*?<\/a>\s*/s',
+        '',
+        $newLayout
+    ) ?? $newLayout;
+    $newLayout = preg_replace(
+        '/<a[^>]*>[^<]*AI Rapor[^<]*<\/a>\s*/s',
+        '',
+        $newLayout
+    ) ?? $newLayout;
+
     $newLayout = str_replace($include, '', $newLayout);
     $newLayout = str_replace('@include("partials.admin-nav-github-link")', '', $newLayout);
 
@@ -160,7 +124,22 @@ if (is_file($layoutFile)) {
         );
         if ($count > 0 && is_string($replaced)) {
             $newLayout = $replaced;
+            echo "patched layout: github after AI Denetim\n";
+        } elseif (! str_contains($newLayout, 'admin-nav-github-link')) {
+            $replaced = preg_replace(
+                '/(\s*)<\/nav>(\s*<div class="admin-sidebar-footer">)/',
+                "$1    ".$include."\n$1</nav>$2",
+                $newLayout,
+                1,
+                $count
+            );
+            if ($count > 0 && is_string($replaced)) {
+                $newLayout = $replaced;
+                echo "patched layout: github before nav end\n";
+            }
         }
+    } else {
+        echo "layout: github already after AI Denetim\n";
     }
 
     if ($newLayout !== $layout) {

@@ -52,6 +52,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate deploy patch scripts
+        run: |
+          python3 scripts/deploy/generate-web-admin-github-patch.py
+          python3 scripts/deploy/generate-web-admin-nav-patch.py
+
       - name: Deploy web via FTP
         env:
           FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}

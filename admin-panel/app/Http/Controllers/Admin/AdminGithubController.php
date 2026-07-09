@@ -18,14 +18,18 @@ class AdminGithubController extends Controller
         return view('admin.github', $this->pageData($deploy));
     }
 
-    public function check(DeployGithubService $deploy): JsonResponse
+    public function check(Request $request, DeployGithubService $deploy): JsonResponse|RedirectResponse
     {
-        $data = $this->pageData($deploy);
+        if ($request->expectsJson()) {
+            $data = $this->pageData($deploy);
 
-        return response()->json([
-            'health' => $data['health'],
-            'workflow' => $data['workflow'],
-        ]);
+            return response()->json([
+                'health' => $data['health'],
+                'workflow' => $data['workflow'],
+            ]);
+        }
+
+        return redirect()->route('admin.github')->with('success', 'Durum yenilendi.');
     }
 
     public function clearCache(Request $request, DeployGithubService $deploy): RedirectResponse
