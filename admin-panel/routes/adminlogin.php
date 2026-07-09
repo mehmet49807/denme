@@ -46,6 +46,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/ai/publish-blog-faq', [AdminAiController::class, 'publishBlogFaq'])->name('admin.ai.publish-blog-faq');
     Route::put('/ai/flags/{flag}', [AdminAiController::class, 'updateFlag'])->name('admin.ai.flags.update');
     Route::post('/ai/users/{user}/scan', [AdminAiController::class, 'scanProfile'])->name('admin.ai.users.scan');
+    Route::get('/rapor', fn () => redirect()->route('admin.dashboard'))->name('admin.rapor');
+    Route::get('/rapor/{rapor}', fn () => redirect()->route('admin.dashboard'))->name('admin.rapor.show');
     Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');
     Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');
     Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->name('admin.github.clear-cache');

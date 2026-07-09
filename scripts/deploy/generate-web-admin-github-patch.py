@@ -144,22 +144,23 @@ if (is_file($layoutFile)) {
     $newLayout = $layout;
     $include = "@include('partials.admin-nav-github-link')";
 
-    $newLayout = preg_replace('/<a[^>]*admin\.rapor[^>]*>.*?<\/a>\s*/s', '', $newLayout) ?? $newLayout;
-    $newLayout = preg_replace('/<a[^>]*\/rapor[^>]*>.*?<\/a>\s*/s', '', $newLayout) ?? $newLayout;
-    $newLayout = preg_replace('/<a[^>]*>[^<]*AI Rapor[^<]*<\/a>\s*/s', '', $newLayout) ?? $newLayout;
+    $newLayout = preg_replace('/<a[^>]*admin\.rapor[^>]*>[\s\S]*?<\/a>\s*/', '', $newLayout) ?? $newLayout;
+    $newLayout = preg_replace('/<a[^>]*\/rapor[^>]*>[\s\S]*?<\/a>\s*/', '', $newLayout) ?? $newLayout;
+    $newLayout = preg_replace('/<a[^>]*>[^<]*AI Rapor[^<]*<\/a>\s*/', '', $newLayout) ?? $newLayout;
+    $newLayout = preg_replace('/^.*admin\.rapor.*$\n?/m', '', $newLayout) ?? $newLayout;
+    $newLayout = str_replace("route('admin.rapor')", "route('admin.ai')", $newLayout);
+    $newLayout = str_replace('route("admin.rapor")', 'route("admin.ai")', $newLayout);
     $newLayout = str_replace($include, '', $newLayout);
     $newLayout = str_replace('@include("partials.admin-nav-github-link")', '', $newLayout);
 
-    if (! preg_match("/route\('admin\.ai'\).*?admin-nav-github-link/s", $newLayout)) {
-        $replaced = preg_replace(
-            "/(<a[^>]*route\('admin\.ai'\)[^>]*>.*?<\/a>)/s",
-            "$1\n            ".$include,
-            $newLayout,
-            1,
-            $count
-        );
-        if ($count > 0 && is_string($replaced)) {
-            $newLayout = $replaced;
+    $aiMarker = "route('admin.ai')";
+    $pos = strpos($newLayout, $aiMarker);
+    if ($pos !== false && ! str_contains(substr($newLayout, $pos, 800), 'admin-nav-github-link')) {
+        $close = strpos($newLayout, '</a>', $pos);
+        if ($close !== false) {
+            $insertAt = $close + 4;
+            $newLayout = substr($newLayout, 0, $insertAt)."\n            ".$include.substr($newLayout, $insertAt);
+            echo "patched layout: github after AI Denetim\n";
         }
     }
 
