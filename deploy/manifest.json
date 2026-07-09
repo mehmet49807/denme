@@ -14,7 +14,9 @@
       { "local": "patch-web-admin-github.php", "remote": "patch-web-admin-github.php", "file": true },
       { "local": "patch-web-admin-nav.php", "remote": "patch-web-admin-nav.php", "file": true },
       { "local": "patch-web-admin-fix-layout.php", "remote": "patch-web-admin-fix-layout.php", "file": true },
-      { "local": "patch-web-admin-nav-partial.php", "remote": "patch-web-admin-nav-partial.php", "file": true }
+      { "local": "patch-web-admin-nav-partial.php", "remote": "patch-web-admin-nav-partial.php", "file": true },
+      { "local": "patch-web-admin-read-file.php", "remote": "patch-web-admin-read-file.php", "file": true },
+      { "local": "patch-web-admin-restore-routes.php", "remote": "patch-web-admin-restore-routes.php", "file": true }
     ],
     "post_deploy": [
       "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}",
@@ -27,7 +29,6 @@
     },
     "mappings": [
       { "local": "admin-panel/app", "remote": "app" },
-      { "local": "admin-panel/routes", "remote": "routes" },
       { "local": "admin-panel/config", "remote": "config" },
       { "local": "admin-panel/resources", "remote": "resources" },
       { "local": "web-site/public/images/logo-mark.png", "remote": "images/logo-mark.png", "file": true },

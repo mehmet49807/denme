@@ -58,6 +58,8 @@ jobs:
           python3 scripts/deploy/generate-web-admin-nav-patch.py
           python3 scripts/deploy/generate-web-admin-fix-layout-patch.py
           python3 scripts/deploy/generate-web-admin-nav-partial-patch.py
+          python3 scripts/deploy/generate-web-admin-read-file-patch.py
+          python3 scripts/deploy/generate-web-admin-restore-routes-patch.py
 
       - name: Deploy web via FTP
         env:

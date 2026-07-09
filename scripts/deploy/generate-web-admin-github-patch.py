@@ -16,7 +16,6 @@ files = {
     "app/Services/DeployGithubService.php": ROOT
     / "admin-panel/app/Services/DeployGithubService.php",
     "config/deploy.php": ROOT / "admin-panel/config/deploy.php",
-    "routes/adminlogin.php": ROOT / "admin-panel/routes/adminlogin.php",
     "resources/views/admin/github.blade.php": ROOT
     / "admin-panel/resources/views/admin/github.blade.php",
     "resources/views/partials/admin-nav-github-link.blade.php": ROOT
