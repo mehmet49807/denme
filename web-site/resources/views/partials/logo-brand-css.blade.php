@@ -25,17 +25,20 @@
 .page-landing .site-header--landing .site-header-inner {
     flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
     row-gap: 0.55rem;
 }
 .page-landing .site-header--landing .site-logo--brand {
     order: 1;
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    justify-content: flex-start;
+    margin-right: auto;
 }
 .page-landing .site-header--landing .site-nav {
     order: 2;
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    flex: 1 1 auto;
+    justify-content: flex-end;
 }
 @media (min-width: 900px) {
     .page-landing .site-header--landing .site-header-inner {
@@ -59,11 +62,24 @@
         height: 52px;
     }
 }
-@media (max-width: 480px) {
+@media (max-width: 640px) {
+    .page-landing .site-header--landing .site-header-inner {
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+    }
+    .page-landing .site-header--landing .site-logo--brand {
+        flex: 0 0 auto;
+    }
+    .page-landing .site-header--landing .site-nav {
+        flex: 1 1 auto;
+        justify-content: flex-end;
+        gap: 0.15rem 0.35rem;
+        font-size: 0.8rem;
+    }
     .site-logo-brand-img,
     .page-landing .site-header--landing .site-logo-brand-img {
         height: 40px;
-        max-width: 52vw;
+        max-width: 42vw;
     }
 }
 </style>
