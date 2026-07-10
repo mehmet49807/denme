@@ -1,14 +1,14 @@
-/* Gönderi / Hikaye — premium segmented toolbar */
+/* Gönderi / Hikaye — renkli segmented toolbar */
 .feed-toolbar--premium {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.3rem;
+    gap: 0.45rem;
     margin-bottom: 0.75rem;
-    padding: 0.28rem;
-    border-radius: 14px;
-    background: rgba(15, 23, 42, 0.035);
-    border: 1px solid rgba(15, 23, 42, 0.07);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .feed-toolbar--premium:has(.feed-create-btn:only-child) {
@@ -20,82 +20,81 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    min-height: 2.7rem;
-    padding: 0.62rem 0.85rem;
+    min-height: 2.75rem;
+    padding: 0.65rem 0.9rem;
     font-family: inherit;
     font-size: 0.84rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.01em;
     line-height: 1.2;
-    border-radius: 11px;
+    border-radius: 13px;
     border: 1px solid transparent;
     cursor: pointer;
     text-decoration: none;
-    background: transparent;
-    box-shadow: none;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
     transform: none;
     transition:
-        background-color 0.16s ease,
-        border-color 0.16s ease,
-        color 0.16s ease,
-        box-shadow 0.16s ease;
+        filter 0.16s ease,
+        box-shadow 0.16s ease,
+        border-color 0.16s ease;
 }
 
 .feed-toolbar--premium .feed-create-btn:hover,
 .feed-toolbar--premium .feed-create-btn:focus-visible {
     transform: none;
-    filter: none;
+    filter: brightness(1.05);
 }
 
 .feed-toolbar--premium .feed-create-btn:active {
     transform: scale(0.985);
+    filter: brightness(0.98);
 }
 
 .feed-toolbar--premium .feed-create-btn--post {
-    color: #6d28d9;
+    background: var(--gradient-post, linear-gradient(135deg, #7c3aed 0%, #db2777 52%, #ff6b8a 100%));
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.34);
 }
 
 .feed-toolbar--premium .feed-create-btn--post:hover,
 .feed-toolbar--premium .feed-create-btn--post:focus-visible {
-    color: #5b21b6;
-    background: rgba(124, 58, 237, 0.09);
-    border-color: rgba(124, 58, 237, 0.14);
-    box-shadow: 0 1px 0 rgba(124, 58, 237, 0.06);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
 }
 
 .feed-toolbar--premium .feed-create-btn--story {
-    color: #c2410c;
+    background: var(--gradient-story, linear-gradient(135deg, #ff6b8a 0%, #ff9f43 48%, #fbbf24 100%));
+    box-shadow: 0 4px 16px rgba(255, 107, 138, 0.34);
 }
 
 .feed-toolbar--premium .feed-create-btn--story:hover,
 .feed-toolbar--premium .feed-create-btn--story:focus-visible {
-    color: #9a3412;
-    background: rgba(234, 88, 12, 0.09);
-    border-color: rgba(234, 88, 12, 0.14);
-    box-shadow: 0 1px 0 rgba(234, 88, 12, 0.06);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(255, 159, 67, 0.38);
 }
 
 .feed-toolbar--premium .feed-create-btn--premium {
-    color: #a16207;
+    background: var(--gradient-sunset, linear-gradient(135deg, #7c3aed 0%, #db2777 32%, #ff6b8a 62%, #fbbf24 100%));
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
 }
 
 .feed-toolbar--premium .feed-create-btn--premium:hover,
 .feed-toolbar--premium .feed-create-btn--premium:focus-visible {
-    color: #854d0e;
-    background: rgba(202, 138, 4, 0.1);
-    border-color: rgba(202, 138, 4, 0.16);
-    box-shadow: 0 1px 0 rgba(202, 138, 4, 0.06);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.34);
 }
 
 .feed-toolbar--premium .feed-create-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.55rem;
-    height: 1.55rem;
-    border-radius: 8px;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 999px;
     flex-shrink: 0;
-    box-shadow: none;
+    background: rgba(255, 255, 255, 0.22);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .feed-toolbar--premium .feed-create-icon .theme-icon {
@@ -105,53 +104,30 @@
 }
 
 .feed-toolbar--premium .feed-create-icon .theme-icon svg {
-    width: 0.92rem;
-    height: 0.92rem;
+    width: 0.94rem;
+    height: 0.94rem;
 }
 
-.feed-toolbar--premium .feed-create-icon--post {
-    background: rgba(124, 58, 237, 0.12);
-    color: #7c3aed;
-}
-
-.feed-toolbar--premium .feed-create-btn--post:hover .feed-create-icon--post,
-.feed-toolbar--premium .feed-create-btn--post:focus-visible .feed-create-icon--post {
-    background: rgba(124, 58, 237, 0.18);
-}
-
-.feed-toolbar--premium .feed-create-icon--story {
-    background: rgba(234, 88, 12, 0.12);
-    color: #ea580c;
-}
-
-.feed-toolbar--premium .feed-create-btn--story:hover .feed-create-icon--story,
-.feed-toolbar--premium .feed-create-btn--story:focus-visible .feed-create-icon--story {
-    background: rgba(234, 88, 12, 0.18);
-}
-
+.feed-toolbar--premium .feed-create-icon--post,
+.feed-toolbar--premium .feed-create-icon--story,
 .feed-toolbar--premium .feed-create-icon--premium {
-    background: rgba(202, 138, 4, 0.14);
-    color: #ca8a04;
-}
-
-.feed-toolbar--premium .feed-create-btn--premium:hover .feed-create-icon--premium,
-.feed-toolbar--premium .feed-create-btn--premium:focus-visible .feed-create-icon--premium {
-    background: rgba(202, 138, 4, 0.2);
+    background: rgba(255, 255, 255, 0.22);
+    color: #fff;
 }
 
 .feed-toolbar--premium .feed-create-label {
     white-space: nowrap;
+    color: #fff;
 }
 
 .feed-toolbar--premium.feed-toolbar--compact {
     margin-bottom: 0;
-    gap: 0.25rem;
-    padding: 0.24rem;
+    gap: 0.4rem;
 }
 
 .feed-toolbar--premium.feed-toolbar--compact .feed-create-btn {
-    min-height: 2.55rem;
-    padding: 0.55rem 0.7rem;
+    min-height: 2.58rem;
+    padding: 0.58rem 0.75rem;
     font-size: 0.8rem;
 }
 
@@ -204,7 +180,7 @@
     }
 
     .feed-toolbar--premium .feed-create-icon {
-        width: 1.42rem;
-        height: 1.42rem;
+        width: 1.45rem;
+        height: 1.45rem;
     }
 }
