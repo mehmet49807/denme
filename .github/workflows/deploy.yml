@@ -72,6 +72,7 @@ jobs:
           python3 scripts/deploy/generate-web-admin-restore-routes-patch.py
           python3 scripts/deploy/generate-web-google-profile-patch.py
           python3 scripts/deploy/generate-web-mobile-nav-patch.py
+          python3 scripts/deploy/generate-web-login-feed-patch.py
 
       - name: Hazırla delta sync listesi
         id: sync
