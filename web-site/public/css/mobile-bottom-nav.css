@@ -1,10 +1,11 @@
-/* Smart animate mobile bottom navigation — referans: ortada yüzen FAB + çentikli bar */
+/* Smart animate mobile bottom navigation — aktif sekme yüzen daireyi takip eder */
 
 :root {
     --smart-nav-page-bg: #f6f3ff;
     --smart-nav-bar-bg: rgba(255, 255, 255, 0.98);
     --smart-nav-accent: #7c3aed;
     --smart-nav-accent-soft: rgba(124, 58, 237, 0.14);
+    --smart-nav-notch-left: 50%;
 }
 
 @media (max-width: 767px) {
@@ -33,12 +34,12 @@
         -webkit-backdrop-filter: blur(18px);
     }
 
-    /* Profil FAB çentiği — 5 öğede 2. sıra (~%30) */
+    /* Çentik — aktif sekmeyi JS ile takip eder */
     body.app-shell-body .app-sidebar::before {
         content: "";
         position: absolute;
         top: -1.45rem;
-        left: 30%;
+        left: var(--smart-nav-notch-left, 50%);
         transform: translateX(-50%);
         width: 5.4rem;
         height: 5.4rem;
@@ -46,6 +47,7 @@
         background: var(--smart-nav-page-bg);
         z-index: 0;
         pointer-events: none;
+        transition: left 0.38s cubic-bezier(0.34, 1.45, 0.64, 1);
     }
 
     body.app-shell-body .app-sidebar-nav--smart {
@@ -56,7 +58,7 @@
     body.app-shell-body .app-sidebar-nav-notch {
         position: absolute;
         top: -0.35rem;
-        left: 30%;
+        left: var(--smart-nav-notch-left, 50%);
         transform: translateX(-50%);
         width: 4.6rem;
         height: 0.55rem;
@@ -64,6 +66,7 @@
         background: linear-gradient(180deg, transparent, rgba(124, 58, 237, 0.06));
         pointer-events: none;
         z-index: 1;
+        transition: left 0.38s cubic-bezier(0.34, 1.45, 0.64, 1);
     }
 
     body.app-shell-body .app-sidebar-nav--smart ul {
@@ -80,6 +83,14 @@
         min-width: 2.85rem;
         max-width: 4.5rem;
         margin-bottom: 0;
+        display: flex;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    body.app-shell-body .app-sidebar-nav--smart li:has(> a.active) {
+        z-index: 3;
     }
 
     body.app-shell-body .app-sidebar-nav--smart li.sidebar-nav-item--extra {
@@ -87,8 +98,9 @@
         max-width: 3.25rem;
     }
 
-    body.app-shell-body .app-sidebar-nav--smart a,
-    body.app-shell-body .app-sidebar-nav--smart button {
+    /* Pasif öğeler */
+    body.app-shell-body .app-sidebar-nav--smart a:not(.active),
+    body.app-shell-body .app-sidebar-nav--smart button:not(.active) {
         position: relative;
         flex-direction: column;
         align-items: center;
@@ -109,47 +121,81 @@
             background 0.2s ease;
     }
 
-    body.app-shell-body .app-sidebar-nav--smart a:hover {
+    body.app-shell-body .app-sidebar-nav--smart a:not(.active):hover {
         color: var(--smart-nav-accent);
         background: var(--smart-nav-accent-soft);
     }
 
-    body.app-shell-body .app-sidebar-nav--smart a:active {
+    body.app-shell-body .app-sidebar-nav--smart a:not(.active):active {
         transform: scale(0.9);
     }
 
-    body.app-shell-body .app-sidebar-nav--smart a.active {
-        color: var(--smart-nav-accent);
-        background: transparent;
-        box-shadow: none;
-    }
-
-    body.app-shell-body .app-sidebar-nav--smart a.active::before {
-        content: "";
-        position: absolute;
-        top: auto;
-        bottom: 0.12rem;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 0.38rem;
-        height: 0.38rem;
-        border-radius: 50%;
-        background: var(--gradient-sunset, linear-gradient(135deg, #7c3aed, #ec4899));
-        box-shadow: 0 0 10px rgba(124, 58, 237, 0.45);
-        animation: smartNavDotPulse 1.6s ease-in-out infinite;
-    }
-
-    body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-icon {
+    body.app-shell-body .app-sidebar-nav--smart a:not(.active) .sidebar-nav-icon {
         width: 1.4rem;
         height: 1.4rem;
         color: currentColor;
         opacity: 1;
-        transition: transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+
+    /* Aktif öğe — yüzen daire (Profil stili, tüm sekmelerde) */
+    body.app-shell-body .app-sidebar-nav--smart a.active {
+        position: relative;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 3.9rem;
+        height: 3.9rem;
+        min-height: 3.9rem;
+        margin: -2rem auto 0;
+        padding: 0;
+        gap: 0;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        background: linear-gradient(135deg, #6d28d9, #db2777);
+        color: #fff;
+        font-size: 0.56rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        box-shadow:
+            0 14px 36px rgba(124, 58, 237, 0.45),
+            0 0 0 4px rgba(124, 58, 237, 0.14);
+        animation: smartNavFabFloat 3s ease-in-out infinite;
+        transition:
+            left 0.38s cubic-bezier(0.34, 1.45, 0.64, 1),
+            transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
+            box-shadow 0.25s ease;
+    }
+
+    body.app-shell-body .app-sidebar-nav--smart a.active:hover {
+        color: #fff;
+        transform: translateY(-2px) scale(1.04);
+    }
+
+    body.app-shell-body .app-sidebar-nav--smart a.active:active {
+        transform: scale(0.94);
+        animation: none;
     }
 
     body.app-shell-body .app-sidebar-nav--smart a.active .sidebar-nav-icon {
+        width: 1.65rem;
+        height: 1.65rem;
+        color: #fff;
+        transform: none;
+        animation: none;
+    }
+
+    body.app-shell-body .app-sidebar-nav--smart a.active .sidebar-nav-label {
+        position: absolute;
+        bottom: -1.15rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+        max-width: 4.5rem;
         color: var(--smart-nav-accent);
-        transform: translateY(-2px) scale(1.08);
+        font-size: 0.56rem;
+        font-weight: 800;
+        line-height: 1.1;
     }
 
     body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-label {
@@ -165,78 +211,13 @@
         height: 1rem;
         font-size: 0.52rem;
         border: 2px solid #fff;
+        z-index: 2;
         animation: smartNavBadgePop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
     }
 
-    /* Ortadaki yüzen Profil FAB */
-    body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-item--center {
-        flex: 0 0 auto;
-        min-width: 4.5rem;
-        max-width: 4.5rem;
-        z-index: 3;
-    }
-
-    body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-fab {
-        width: 3.9rem;
-        height: 3.9rem;
-        min-height: 3.9rem;
-        margin: -2rem auto 0;
-        padding: 0;
-        gap: 0;
-        border-radius: 50%;
-        border: 3px solid #fff;
-        background: var(--gradient-sunset, linear-gradient(135deg, #7c3aed, #f59e0b));
-        color: #fff;
-        box-shadow:
-            0 12px 32px rgba(124, 58, 237, 0.38),
-            0 4px 10px rgba(15, 23, 42, 0.12);
-        animation: smartNavFabFloat 3s ease-in-out infinite;
-    }
-
-    body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-fab:hover {
-        color: #fff;
-        background: var(--gradient-sunset, linear-gradient(135deg, #7c3aed, #f59e0b));
-        transform: translateY(-2px) scale(1.04);
-    }
-
-    body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-fab:active {
-        transform: scale(0.94);
-        animation: none;
-    }
-
-    body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-fab.active {
-        background: linear-gradient(135deg, #6d28d9, #db2777);
-        box-shadow:
-            0 14px 36px rgba(124, 58, 237, 0.45),
-            0 0 0 4px rgba(124, 58, 237, 0.14);
-    }
-
-    body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-fab.active::before {
-        display: none;
-    }
-
-    body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-fab .sidebar-nav-icon {
-        width: 1.65rem;
-        height: 1.65rem;
-        color: #fff;
-        transform: none;
-        animation: none;
-    }
-
-    body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-fab .sidebar-nav-label {
-        position: absolute;
-        bottom: -1.15rem;
-        left: 50%;
-        transform: translateX(-50%);
-        width: max-content;
-        max-width: 4.5rem;
-        color: var(--smart-nav-accent);
-        font-size: 0.56rem;
-        text-transform: uppercase;
-    }
-
-    body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-fab.active .sidebar-nav-label {
-        font-weight: 800;
+    body.app-shell-body .app-sidebar-nav--smart a.active .sidebar-nav-badge {
+        top: 0.15rem;
+        right: 0.2rem;
     }
 }
 
@@ -246,17 +227,6 @@
     }
     50% {
         transform: translateY(-4px);
-    }
-}
-
-@keyframes smartNavDotPulse {
-    0%, 100% {
-        transform: translateX(-50%) scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: translateX(-50%) scale(1.2);
-        opacity: 0.75;
     }
 }
 
@@ -273,8 +243,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-fab,
-    body.app-shell-body .app-sidebar-nav--smart a.active::before,
+    body.app-shell-body .app-sidebar::before,
+    body.app-shell-body .app-sidebar-nav-notch {
+        transition: none !important;
+    }
+
+    body.app-shell-body .app-sidebar-nav--smart a.active,
     body.app-shell-body .app-sidebar-nav--smart .sidebar-nav-badge {
         animation: none !important;
     }

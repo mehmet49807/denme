@@ -13,6 +13,7 @@ OUT = ROOT / "patch-web-mobile-nav.php"
 files = {
     "css/mobile-bottom-nav.css": ROOT / "web-site/public/css/mobile-bottom-nav.css",
     "css/nav-icon-animations.css": ROOT / "web-site/public/css/nav-icon-animations.css",
+    "js/mobile-bottom-nav.js": ROOT / "web-site/public/js/mobile-bottom-nav.js",
     "resources/views/partials/app-sidebar.blade.php": ROOT
     / "web-site/resources/views/partials/app-sidebar.blade.php",
     "resources/views/partials/sidebar-icon.blade.php": ROOT
@@ -51,7 +52,7 @@ $layoutPath = $webRoot.'/resources/views/layouts/app.blade.php';
 if (is_file($layoutPath)) {
     $layout = file_get_contents($layoutPath);
     $newLayout = $layout;
-    $mobileLink = "<link rel=\"stylesheet\" href=\"{{ asset('css/mobile-bottom-nav.css') }}?v=mobile-bottom-nav-3\">";
+    $mobileLink = "<link rel=\"stylesheet\" href=\"{{ asset('css/mobile-bottom-nav.css') }}?v=mobile-bottom-nav-4\">";
     $navAnimLink = "<link rel=\"stylesheet\" href=\"{{ asset('css/nav-icon-animations.css') }}?v=nav-icon-animations-3\">";
 
     if (! str_contains($newLayout, 'mobile-bottom-nav.css')) {
@@ -67,7 +68,7 @@ if (is_file($layoutPath)) {
     } else {
         $newLayout = preg_replace(
             '/mobile-bottom-nav\.css\'\)\s*\}\}\?v=[^"\']+/',
-            "mobile-bottom-nav.css') }}?v=mobile-bottom-nav-3",
+            "mobile-bottom-nav.css') }}?v=mobile-bottom-nav-4",
             $newLayout
         ) ?? $newLayout;
         echo "bumped mobile-bottom-nav.css version\n";
@@ -85,6 +86,19 @@ if (is_file($layoutPath)) {
     if ($newLayout !== $layout) {
         file_put_contents($layoutPath, $newLayout);
         echo "patched layouts/app.blade.php\n";
+    }
+
+    $jsTag = "<script src=\"{{ asset('js/mobile-bottom-nav.js') }}?v=mobile-bottom-nav-1\"></script>";
+    if (! str_contains($newLayout, 'mobile-bottom-nav.js')) {
+        if (str_contains($newLayout, "asset('js/locations.js')")) {
+            $newLayout = str_replace(
+                "<script src=\"{{ asset('js/locations.js') }}?v=world-locations-1\"></script>",
+                "<script src=\"{{ asset('js/locations.js') }}?v=world-locations-1\"></script>\n        ".$jsTag,
+                $newLayout
+            );
+            file_put_contents($layoutPath, $newLayout);
+            echo "linked mobile-bottom-nav.js in app.blade.php\n";
+        }
     }
 }
 

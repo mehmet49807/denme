@@ -14,8 +14,8 @@
                 <span class="sidebar-nav-label">{{ __('app.nav.users') }}</span>
             </a>
         </li>
-        <li class="sidebar-nav-item--center">
-            <a href="{{ route('profile') }}" class="sidebar-nav-fab {{ $active === 'profile' ? 'active' : '' }}">
+        <li>
+            <a href="{{ route('profile') }}" class="{{ $active === 'profile' ? 'active' : '' }}">
                 @include('partials.sidebar-icon', ['icon' => 'profile'])
                 <span class="sidebar-nav-label">{{ __('app.nav.profile') }}</span>
             </a>
@@ -46,7 +46,7 @@
         </li>
         @if($sidebarUser->isAdmin() && \Illuminate\Support\Facades\Route::has('admin.dashboard'))
             <li class="sidebar-nav-item--extra">
-                <a href="{{ route('admin.dashboard') }}">
+                <a href="{{ route('admin.dashboard') }}" class="{{ $active === 'admin' ? 'active' : '' }}">
                     @include('partials.sidebar-icon', ['icon' => 'admin'])
                     <span class="sidebar-nav-label">{{ __('app.nav.admin') }}</span>
                 </a>
