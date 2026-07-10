@@ -39,7 +39,7 @@
     @endif
     @auth
     @if($appShell)
-    <link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-3">
+    <link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-4">
     @endif
     @php $realtimeEnabled = app(\App\Services\RealtimeBroadcastService::class)->isEnabled(); @endphp
     <meta name="badges-url" content="{{ route('notifications.badge-counts') }}">
@@ -102,8 +102,9 @@
                 @endguest
             </nav>
             @else
-            <div class="site-header-actions">
+            <div class="site-header-toolbar">
                 @auth
+                    @include('partials.header-premium-btn')
                     @include('partials.profile-settings-open-btn')
                 @endauth
                 @stack('header-actions')

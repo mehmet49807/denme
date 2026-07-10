@@ -1,13 +1,89 @@
-/* Profil ayarlar paneli — web + mobil */
+/* App header — Premium + Ayarlar (sol), Logo (sağ) */
 body.app-shell-body .site-header-inner {
+    flex-direction: row-reverse;
     justify-content: space-between;
+    align-items: center;
 }
 
-.site-header-actions {
+.site-header-toolbar {
     display: flex;
     align-items: center;
-    margin-left: auto;
+    gap: 0.45rem;
     flex-shrink: 0;
+}
+
+.header-premium-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    border: 2px solid color-mix(in srgb, #f59e0b 45%, var(--border));
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.16), rgba(255, 255, 255, 0.95));
+    color: #b45309;
+    font-family: inherit;
+    font-size: 0.84rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.12);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.header-premium-btn:hover {
+    border-color: #f59e0b;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.22);
+    color: #92400e;
+}
+
+.header-premium-btn--active {
+    border-color: transparent;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
+}
+
+.header-premium-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0;
+    animation: headerPremiumIconPulse 2.2s ease-in-out infinite;
+}
+
+.header-premium-btn-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.header-premium-btn--active .header-premium-btn-icon {
+    animation: headerPremiumIconSpin 3s linear infinite;
+    color: #fff;
+}
+
+@keyframes headerPremiumIconPulse {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 0 rgba(251, 191, 36, 0));
+    }
+    50% {
+        transform: scale(1.14) rotate(-8deg);
+        filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.65));
+    }
+}
+
+@keyframes headerPremiumIconSpin {
+    0% { transform: scale(1.05) rotate(0deg); }
+    100% { transform: scale(1.05) rotate(360deg); }
+}
+
+.header-premium-btn-label {
+    display: inline;
 }
 
 .profile-settings-open-btn {
@@ -266,16 +342,21 @@ body.profile-settings-open {
 }
 
 @media (max-width: 520px) {
+    .header-premium-btn,
     .profile-settings-open-btn {
-        min-width: 2.5rem;
-        justify-content: center;
+        min-height: 2.35rem;
         padding-left: 0.65rem;
         padding-right: 0.65rem;
     }
 
+    .header-premium-btn-label,
     .profile-settings-open-label {
         display: inline;
         font-size: 0.8rem;
+    }
+
+    .site-header-toolbar {
+        gap: 0.35rem;
     }
 
     .profile-settings-sheet-panel {
