@@ -1,13 +1,12 @@
 (function () {
-    var sheet = document.getElementById('profileSettingsSheet');
-    var openBtn = document.getElementById('profileSettingsOpen');
-    if (!sheet || !openBtn) {
+    var page = document.getElementById('profileSettingsPage');
+    if (!page) {
         return;
     }
 
     var titleEl = document.getElementById('profileSettingsTitle');
-    var backBtn = sheet.querySelector('[data-settings-back]');
-    var panels = sheet.querySelectorAll('[data-settings-panel]');
+    var backBtn = page.querySelector('[data-settings-back]');
+    var panels = page.querySelectorAll('[data-settings-panel]');
     var panelTitles = {
         menu: 'Ayarlar',
         edit: 'Profil Düzenle',
@@ -29,29 +28,21 @@
         if (backBtn) {
             backBtn.hidden = name === 'menu';
         }
+        if (name !== 'menu' && history.replaceState) {
+            var url = new URL(window.location.href);
+            url.searchParams.set('panel', name);
+            history.replaceState(null, '', url.toString());
+        } else if (name === 'menu' && history.replaceState) {
+            var cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.delete('panel');
+            history.replaceState(null, '', cleanUrl.toString());
+        }
     }
 
-    function openSheet(panel) {
-        sheet.hidden = false;
-        document.body.classList.add('profile-settings-open');
-        showPanel(panel || 'menu');
-        openBtn.setAttribute('aria-expanded', 'true');
-    }
-
-    function closeSheet() {
-        sheet.hidden = true;
-        document.body.classList.remove('profile-settings-open');
-        showPanel('menu');
-        openBtn.setAttribute('aria-expanded', 'false');
-        openBtn.focus();
-    }
-
-    openBtn.addEventListener('click', function () {
-        openSheet('menu');
-    });
-
-    sheet.querySelectorAll('[data-close-settings]').forEach(function (el) {
-        el.addEventListener('click', closeSheet);
+    page.querySelectorAll('[data-open-settings-panel]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            showPanel(btn.getAttribute('data-open-settings-panel'));
+        });
     });
 
     if (backBtn) {
@@ -60,26 +51,16 @@
         });
     }
 
-    sheet.querySelectorAll('[data-open-settings-panel]').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            showPanel(btn.getAttribute('data-open-settings-panel'));
-        });
-    });
-
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && !sheet.hidden) {
-            if (currentPanel !== 'menu') {
-                showPanel('menu');
-            } else {
-                closeSheet();
-            }
+        if (e.key === 'Escape' && currentPanel !== 'menu') {
+            showPanel('menu');
         }
     });
 
-    var initialPanel = sheet.getAttribute('data-initial-panel');
+    var initialPanel = page.getAttribute('data-initial-panel') || 'menu';
     if (initialPanel && initialPanel !== 'menu') {
-        openSheet(initialPanel);
-    } else if (document.querySelector('.profile-settings-sheet .form-error')) {
-        openSheet(initialPanel || 'edit');
+        showPanel(initialPanel);
+    } else if (page.querySelector('.form-error')) {
+        showPanel(initialPanel || 'edit');
     }
 })();

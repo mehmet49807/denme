@@ -73,6 +73,7 @@ jobs:
           python3 scripts/deploy/generate-web-google-profile-patch.py
           python3 scripts/deploy/generate-web-mobile-nav-patch.py
           python3 scripts/deploy/generate-web-login-feed-patch.py
+          python3 scripts/deploy/generate-web-settings-page-patch.py
 
       - name: Hazırla delta sync listesi
         id: sync

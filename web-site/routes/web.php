@@ -17,6 +17,7 @@ use App\Http\Controllers\Web\LiveSyncController;
 use App\Http\Controllers\Web\NotificationPageController;
 use App\Http\Controllers\Web\PremiumPageController;
 use App\Http\Controllers\Web\ProfilePageController;
+use App\Http\Controllers\Web\SettingsPageController;
 use App\Http\Controllers\Web\StoryPageController;
 use App\Http\Controllers\Web\UserProfilePageController;
 use Illuminate\Support\Facades\Artisan;
@@ -359,6 +360,7 @@ Route::middleware(['auth', 'locale'])->group(function () {
     Route::post('/stories', [StoryPageController::class, 'store'])->middleware('throttle:15,1,stories-store')->name('stories.store');
     Route::delete('/stories/{story}', [StoryPageController::class, 'destroy'])->name('stories.destroy');
     Route::get('/profile', [ProfilePageController::class, 'index'])->name('profile');
+    Route::get('/settings', [SettingsPageController::class, 'index'])->name('settings');
     Route::get('/davet', [ReferralPageController::class, 'index'])->name('referral');
     Route::put('/profile', [ProfilePageController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfilePageController::class, 'updatePassword'])->name('profile.password');

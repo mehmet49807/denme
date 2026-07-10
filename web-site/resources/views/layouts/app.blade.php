@@ -39,7 +39,7 @@
     @endif
     @auth
     @if($appShell)
-    <link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-6">
+    <link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-7">
     <link rel="stylesheet" href="{{ asset('css/nav-icon-animations.css') }}?v=nav-icon-animations-3">
     <link rel="stylesheet" href="{{ asset('css/mobile-bottom-nav.css') }}?v=mobile-bottom-nav-4">
     @endif
@@ -136,10 +136,6 @@
     <script src="{{ asset('js/live-sync.js') }}?v=live-sync-v3"></script>
     <script src="{{ asset('js/page-auto-refresh.js') }}?v=page-auto-refresh-v1"></script>
     @if($appShell)
-        @include('partials.profile-settings-sheet', ['user' => auth()->user()])
-        <script src="{{ asset('js/profile-settings.js') }}?v=profile-settings-2"></script>
-        <script src="{{ asset('js/hobbies-picker.js') }}?v=hobbies-1"></script>
-        <script src="{{ asset('js/locations.js') }}?v=world-locations-1"></script>
         <script src="{{ asset('js/mobile-bottom-nav.js') }}?v=mobile-bottom-nav-1"></script>
     @endif
     @stack('page-scripts')

@@ -1,10 +1,7 @@
-<button
-    type="button"
-    class="profile-settings-open-btn"
-    id="profileSettingsOpen"
-    aria-haspopup="dialog"
-    aria-controls="profileSettingsSheet"
-    aria-expanded="false"
+<a
+    href="{{ route('settings') }}"
+    class="profile-settings-open-btn{{ request()->routeIs('settings') ? ' profile-settings-open-btn--active' : '' }}"
+    aria-current="{{ request()->routeIs('settings') ? 'page' : 'false' }}"
 >
     <span class="profile-settings-open-btn-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -13,4 +10,4 @@
         </svg>
     </span>
     <span class="profile-settings-open-label">Ayarlar</span>
-</button>
+</a>

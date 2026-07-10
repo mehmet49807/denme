@@ -100,16 +100,72 @@ body.app-shell-body .site-header-inner {
     box-shadow: 0 4px 14px rgba(124, 58, 237, 0.08);
     transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     white-space: nowrap;
+    text-decoration: none;
 }
 
 .profile-settings-open-btn:hover {
     border-color: var(--violet);
     transform: translateY(-1px);
     box-shadow: 0 6px 18px rgba(124, 58, 237, 0.14);
+    color: var(--violet);
+    text-decoration: none;
+}
+
+.profile-settings-open-btn--active {
+    border-color: var(--violet);
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(236, 72, 153, 0.08));
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.14);
 }
 
 .profile-settings-open-label {
     display: inline;
+}
+
+.profile-settings-page {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 0 0 1.5rem;
+}
+
+.profile-settings-page-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.85rem;
+    padding: 0.65rem 0.15rem;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: color-mix(in srgb, var(--bg, #fff) 92%, transparent);
+    backdrop-filter: blur(8px);
+}
+
+.profile-settings-page-title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    text-align: center;
+}
+
+.profile-settings-page-back,
+.profile-settings-page-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(124, 58, 237, 0.08);
+    color: var(--violet);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.profile-settings-page-body {
+    padding: 0 0.15rem;
 }
 
 .profile-settings-sheet {
