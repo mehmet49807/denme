@@ -5,7 +5,8 @@
     $active = $active ?? '';
 @endphp
 
-<nav class="app-sidebar-nav" aria-label="{{ __('app.nav.menu') }}">
+<nav class="app-sidebar-nav app-sidebar-nav--smart" aria-label="{{ __('app.nav.menu') }}">
+    <div class="app-sidebar-nav-notch" aria-hidden="true"></div>
     <ul>
         <li>
             <a href="{{ route('feed') }}" class="{{ $active === 'feed' ? 'active' : '' }}">
@@ -19,8 +20,8 @@
                 <span class="sidebar-nav-label">{{ __('app.nav.users') }}</span>
             </a>
         </li>
-        <li>
-            <a href="{{ route('profile') }}" class="{{ $active === 'profile' ? 'active' : '' }}">
+        <li class="sidebar-nav-item--center">
+            <a href="{{ route('profile') }}" class="sidebar-nav-fab {{ $active === 'profile' ? 'active' : '' }}">
                 @include('partials.sidebar-icon', ['icon' => 'profile'])
                 <span class="sidebar-nav-label">{{ __('app.nav.profile') }}</span>
             </a>

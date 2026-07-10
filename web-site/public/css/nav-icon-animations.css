@@ -82,6 +82,12 @@
     }
 }
 
+@media (max-width: 767px) {
+    .app-sidebar-nav--smart .sidebar-nav-icon {
+        animation: none !important;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .profile-settings-open-btn-icon,
     .app-sidebar-nav .sidebar-nav-icon {

@@ -41,6 +41,7 @@
     @if($appShell)
     <link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-6">
     <link rel="stylesheet" href="{{ asset('css/nav-icon-animations.css') }}?v=nav-icon-animations-1">
+    <link rel="stylesheet" href="{{ asset('css/mobile-bottom-nav.css') }}?v=mobile-bottom-nav-1">
     @endif
     @php $realtimeEnabled = app(\App\Services\RealtimeBroadcastService::class)->isEnabled(); @endphp
     <meta name="badges-url" content="{{ route('notifications.badge-counts') }}">
