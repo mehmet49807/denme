@@ -1,0 +1,68 @@
+/* Akış — kendi hikayende + ikonu önde */
+.story-item-host--own {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 72px;
+    max-width: 72px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+}
+
+.story-item-ring-wrap {
+    position: relative;
+    width: 66px;
+    height: 66px;
+}
+
+.story-item-ring-wrap .story-item {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    max-width: none;
+}
+
+.story-item-ring-wrap .story-ring {
+    width: 66px;
+    height: 66px;
+}
+
+.story-add-badge--compose,
+.story-avatar .story-add-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 5;
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    padding: 0;
+    background: #0095f6;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    border: 2px solid var(--surface, #fff);
+    box-sizing: border-box;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+}
+
+.story-item-host--own .online-status-dot {
+    bottom: 4px;
+    left: 4px;
+    right: auto;
+    z-index: 2;
+}
+
+.story-item--add .story-avatar {
+    position: relative;
+}
+
+.story-item--add .story-add-badge {
+    z-index: 5;
+}

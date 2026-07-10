@@ -2,6 +2,10 @@
 
 @php $activeNav = 'feed'; @endphp
 
+@push('head')
+<link rel="stylesheet" href="{{ asset('css/feed-stories.css') }}?v=feed-stories-1">
+@endpush
+
 @section('title', __('app.feed.title') . ' — ' . __('app.brand'))
 
 @section('app-content')
@@ -22,19 +26,26 @@
         <section class="stories-section" aria-label="{{ __('app.feed.stories') }}">
             <div class="stories-strip">
                 @if($ownStoryGroup)
-                <button type="button" class="story-item story-item--own" data-story-index="0" data-user-id="{{ $viewer->id }}" aria-label="{{ __('app.profile.view_story') }}">
-                    <span class="story-ring story-ring--unseen story-ring--own">
-                        <span class="story-avatar">
-                            @if($viewer->profile_photo_url)
-                                <img src="{{ $viewer->profile_photo_url }}" alt="" width="62" height="62" loading="lazy" decoding="async">
-                            @else
-                                {{ strtoupper(substr($viewer->username, 0, 1)) }}
-                            @endif
-                            @include('partials.online-status-badge', ['user' => $viewer, 'size' => 'sm'])
-                        </span>
-                    </span>
+                <div class="story-item-host story-item-host--own">
+                    <div class="story-item-ring-wrap">
+                        <button type="button" class="story-item story-item--own" data-story-index="0" data-user-id="{{ $viewer->id }}" aria-label="{{ __('app.profile.view_story') }}">
+                            <span class="story-ring story-ring--unseen story-ring--own">
+                                <span class="story-avatar">
+                                    @if($viewer->profile_photo_url)
+                                        <img src="{{ $viewer->profile_photo_url }}" alt="" width="62" height="62" loading="lazy" decoding="async">
+                                    @else
+                                        {{ strtoupper(substr($viewer->username, 0, 1)) }}
+                                    @endif
+                                    @include('partials.online-status-badge', ['user' => $viewer, 'size' => 'sm'])
+                                </span>
+                            </span>
+                        </button>
+                        @if($viewer->canPostStories())
+                        <button type="button" class="story-add-badge story-add-badge--compose" data-open-compose="story" aria-label="{{ __('app.feed.add_story') }}">+</button>
+                        @endif
+                    </div>
                     <span class="story-username">{{ __('app.feed.your_story') }}</span>
-                </button>
+                </div>
                 @elseif($viewer->canPostStories())
                 <button type="button" class="story-item story-item--add" data-open-compose="story" aria-label="{{ __('app.feed.add_story') }}">
                     <span class="story-ring story-ring--add">
