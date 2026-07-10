@@ -81,7 +81,5 @@
         openSheet(initialPanel);
     } else if (document.querySelector('.profile-settings-sheet .form-error')) {
         openSheet(initialPanel || 'edit');
-    } else if (document.querySelector('.profile-page .profile-success')) {
-        openSheet(initialPanel && initialPanel !== 'menu' ? initialPanel : 'menu');
     }
 })();

@@ -4,14 +4,6 @@
 
 @section('title', 'Profil — Gönül Köprüsü')
 
-@push('head')
-<link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-2">
-@endpush
-
-@push('header-actions')
-    @include('partials.profile-settings-open-btn')
-@endpush
-
 @section('app-content')
 @php
     $allStoryGroups = $ownStoryGroup ? collect([$ownStoryGroup]) : collect();
@@ -85,7 +77,6 @@
     ])
 </div>
 
-@include('partials.profile-settings-sheet', ['user' => $user])
 @include('partials.feed-compose', ['viewer' => $user])
 
 @if($ownStoryGroup)
@@ -119,9 +110,6 @@
 <script src="{{ asset('js/feed.js') }}?v=feed-upload-v3"></script>
 <script src="{{ asset('js/profile-posts.js') }}?v=profile-posts-1"></script>
 <script src="{{ asset('js/profile-photo.js') }}?v=profile-photo-2"></script>
-<script src="{{ asset('js/profile-settings.js') }}?v=profile-settings-1"></script>
-<script src="{{ asset('js/hobbies-picker.js') }}?v=hobbies-1"></script>
-<script src="{{ asset('js/locations.js') }}?v=world-locations-1"></script>
 @if($ownStoryGroup)
 <script src="{{ asset('js/stories.js') }}?v=ig-stories-3"></script>
 @endif

@@ -134,8 +134,7 @@ class ProfilePageController extends Controller
         LocaleManager::remember($request, $locale);
         LocaleManager::apply($locale);
 
-        return redirect()
-            ->route('profile')
+        return back()
             ->with('success', 'Dil tercihiniz kaydedildi.')
             ->with('settings_panel', 'language')
             ->withCookie(LocaleManager::makeCookie($locale, $request->isSecure()));

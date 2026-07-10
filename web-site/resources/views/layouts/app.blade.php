@@ -38,6 +38,9 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=app-v41">
     @endif
     @auth
+    @if($appShell)
+    <link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-3">
+    @endif
     @php $realtimeEnabled = app(\App\Services\RealtimeBroadcastService::class)->isEnabled(); @endphp
     <meta name="badges-url" content="{{ route('notifications.badge-counts') }}">
     <meta name="live-sync-url" content="{{ route('live.sync') }}">
@@ -100,6 +103,9 @@
             </nav>
             @else
             <div class="site-header-actions">
+                @auth
+                    @include('partials.profile-settings-open-btn')
+                @endauth
                 @stack('header-actions')
             </div>
             @endunless
@@ -126,6 +132,12 @@
     @endif
     <script src="{{ asset('js/live-sync.js') }}?v=live-sync-v3"></script>
     <script src="{{ asset('js/page-auto-refresh.js') }}?v=page-auto-refresh-v1"></script>
+    @if($appShell)
+        @include('partials.profile-settings-sheet', ['user' => auth()->user()])
+        <script src="{{ asset('js/profile-settings.js') }}?v=profile-settings-2"></script>
+        <script src="{{ asset('js/hobbies-picker.js') }}?v=hobbies-1"></script>
+        <script src="{{ asset('js/locations.js') }}?v=world-locations-1"></script>
+    @endif
     @stack('page-scripts')
     @endauth
     @stack('ld-json')
