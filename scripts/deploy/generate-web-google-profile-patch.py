@@ -20,6 +20,8 @@ CSS_FIX = (ROOT / "web-site/public/css/profile-toolbar-mobile.css").read_text(en
 GOOGLE_CONTROLLER = (ROOT / "web-site/app/Http/Controllers/Web/GoogleAuthController.php").read_text(encoding="utf-8")
 GOOGLE_COMPLETE = (ROOT / "web-site/resources/views/web/google-complete.blade.php").read_text(encoding="utf-8")
 LANG_PARTIAL = (ROOT / "web-site/resources/views/partials/profile-language-dropdown.blade.php").read_text(encoding="utf-8")
+MOBILE_NAV_CSS = (ROOT / "web-site/public/css/mobile-bottom-nav.css").read_text(encoding="utf-8")
+APP_SIDEBAR = (ROOT / "web-site/resources/views/partials/app-sidebar.blade.php").read_text(encoding="utf-8")
 
 files = {
     "patch-web-admin-read-file.php": READ_PATCH,
@@ -28,6 +30,8 @@ files = {
     "resources/views/web/google-complete.blade.php": GOOGLE_COMPLETE,
     "resources/views/partials/profile-language-dropdown.blade.php": LANG_PARTIAL,
     "css/profile-toolbar-mobile.css": CSS_FIX,
+    "css/mobile-bottom-nav.css": MOBILE_NAV_CSS,
+    "resources/views/partials/app-sidebar.blade.php": APP_SIDEBAR,
 }
 
 files_json = ",\n".join(
