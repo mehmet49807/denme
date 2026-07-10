@@ -107,14 +107,6 @@ body.app-shell-body .site-header-inner {
     border-color: var(--violet);
     transform: translateY(-1px);
     box-shadow: 0 6px 18px rgba(124, 58, 237, 0.14);
-    color: var(--violet);
-    text-decoration: none;
-}
-
-.profile-settings-open-btn--active {
-    border-color: var(--violet);
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(236, 72, 153, 0.08));
-    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.14);
 }
 
 .profile-settings-open-label {
@@ -162,6 +154,12 @@ body.app-shell-body .site-header-inner {
     color: var(--violet);
     cursor: pointer;
     text-decoration: none;
+}
+
+.profile-settings-page-spacer,
+.profile-settings-sheet-spacer {
+    width: 2.2rem;
+    height: 2.2rem;
 }
 
 .profile-settings-page-body {

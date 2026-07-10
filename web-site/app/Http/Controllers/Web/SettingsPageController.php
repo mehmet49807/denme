@@ -8,18 +8,31 @@ use Illuminate\View\View;
 
 class SettingsPageController extends Controller
 {
-    public function index(Request $request): View
+    public function profile(Request $request): View
     {
-        $user = $request->user();
-        $initialPanel = (string) $request->query(
-            'panel',
-            old('settings_panel', session('settings_panel', 'menu'))
-        );
+        return view('web.settings.profile', [
+            'user' => $request->user(),
+        ]);
+    }
 
-        if ($request->session()->has('settings_panel')) {
-            $request->session()->forget('settings_panel');
-        }
+    public function hobbies(Request $request): View
+    {
+        return view('web.settings.hobbies', [
+            'user' => $request->user(),
+        ]);
+    }
 
-        return view('web.settings', compact('user', 'initialPanel'));
+    public function language(Request $request): View
+    {
+        return view('web.settings.language', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    public function password(Request $request): View
+    {
+        return view('web.settings.password', [
+            'user' => $request->user(),
+        ]);
     }
 }

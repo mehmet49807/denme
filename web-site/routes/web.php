@@ -360,7 +360,11 @@ Route::middleware(['auth', 'locale'])->group(function () {
     Route::post('/stories', [StoryPageController::class, 'store'])->middleware('throttle:15,1,stories-store')->name('stories.store');
     Route::delete('/stories/{story}', [StoryPageController::class, 'destroy'])->name('stories.destroy');
     Route::get('/profile', [ProfilePageController::class, 'index'])->name('profile');
-    Route::get('/settings', [SettingsPageController::class, 'index'])->name('settings');
+    Route::get('/settings/profile', [SettingsPageController::class, 'profile'])->name('settings.profile');
+    Route::get('/settings/hobbies', [SettingsPageController::class, 'hobbies'])->name('settings.hobbies');
+    Route::get('/settings/language', [SettingsPageController::class, 'language'])->name('settings.language');
+    Route::get('/settings/password', [SettingsPageController::class, 'password'])->name('settings.password');
+    Route::redirect('/settings', '/feed', 301);
     Route::get('/davet', [ReferralPageController::class, 'index'])->name('referral');
     Route::put('/profile', [ProfilePageController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfilePageController::class, 'updatePassword'])->name('profile.password');
