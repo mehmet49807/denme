@@ -33,12 +33,12 @@
         -webkit-backdrop-filter: blur(18px);
     }
 
-    /* Ortadaki çentik (sayfa rengi ile delik illüzyonu) */
+    /* Profil FAB çentiği — 5 öğede 2. sıra (~%30) */
     body.app-shell-body .app-sidebar::before {
         content: "";
         position: absolute;
         top: -1.45rem;
-        left: 50%;
+        left: 30%;
         transform: translateX(-50%);
         width: 5.4rem;
         height: 5.4rem;
@@ -56,7 +56,7 @@
     body.app-shell-body .app-sidebar-nav-notch {
         position: absolute;
         top: -0.35rem;
-        left: 50%;
+        left: 30%;
         transform: translateX(-50%);
         width: 4.6rem;
         height: 0.55rem;

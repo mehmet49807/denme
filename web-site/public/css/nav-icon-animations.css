@@ -46,11 +46,11 @@
 }
 
 .app-sidebar-nav li:nth-child(1) .sidebar-nav-icon { animation-delay: 0s; }
-.app-sidebar-nav li:nth-child(2) .sidebar-nav-icon { animation-delay: 0.2s; }
-.app-sidebar-nav li:nth-child(3) .sidebar-nav-icon { animation-delay: 0.4s; }
-.app-sidebar-nav li:nth-child(4) .sidebar-nav-icon { animation-delay: 0.6s; }
-.app-sidebar-nav li:nth-child(5) .sidebar-nav-icon { animation-delay: 0.8s; }
-.app-sidebar-nav li:nth-child(6) .sidebar-nav-icon { animation-delay: 1s; }
+.app-sidebar-nav li:nth-child(2) .sidebar-nav-icon { animation-delay: 0.15s; }
+.app-sidebar-nav li:nth-child(3) .sidebar-nav-icon { animation-delay: 0.3s; }
+.app-sidebar-nav li:nth-child(4) .sidebar-nav-icon { animation-delay: 0.45s; }
+.app-sidebar-nav li:nth-child(5) .sidebar-nav-icon { animation-delay: 0.6s; }
+.app-sidebar-nav li:nth-child(6) .sidebar-nav-icon { animation-delay: 0.75s; }
 
 .app-sidebar-nav a:hover .sidebar-nav-icon {
     animation-duration: 1.8s;

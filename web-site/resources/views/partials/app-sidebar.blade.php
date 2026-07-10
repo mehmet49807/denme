@@ -9,12 +9,6 @@
     <div class="app-sidebar-nav-notch" aria-hidden="true"></div>
     <ul>
         <li>
-            <a href="{{ route('feed') }}" class="{{ $active === 'feed' ? 'active' : '' }}">
-                @include('partials.sidebar-icon', ['icon' => 'feed'])
-                <span class="sidebar-nav-label">{{ __('app.nav.feed') }}</span>
-            </a>
-        </li>
-        <li>
             <a href="{{ route('users.index') }}" class="{{ $active === 'users' ? 'active' : '' }}">
                 @include('partials.sidebar-icon', ['icon' => 'users'])
                 <span class="sidebar-nav-label">{{ __('app.nav.users') }}</span>
@@ -24,6 +18,12 @@
             <a href="{{ route('profile') }}" class="sidebar-nav-fab {{ $active === 'profile' ? 'active' : '' }}">
                 @include('partials.sidebar-icon', ['icon' => 'profile'])
                 <span class="sidebar-nav-label">{{ __('app.nav.profile') }}</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('feed') }}" class="{{ $active === 'feed' ? 'active' : '' }}">
+                @include('partials.sidebar-icon', ['icon' => 'feed'])
+                <span class="sidebar-nav-label">{{ __('app.nav.feed') }}</span>
             </a>
         </li>
         <li>

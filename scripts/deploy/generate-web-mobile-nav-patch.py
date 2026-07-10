@@ -51,8 +51,8 @@ $layoutPath = $webRoot.'/resources/views/layouts/app.blade.php';
 if (is_file($layoutPath)) {
     $layout = file_get_contents($layoutPath);
     $newLayout = $layout;
-    $mobileLink = "<link rel=\"stylesheet\" href=\"{{ asset('css/mobile-bottom-nav.css') }}?v=mobile-bottom-nav-2\">";
-    $navAnimLink = "<link rel=\"stylesheet\" href=\"{{ asset('css/nav-icon-animations.css') }}?v=nav-icon-animations-2\">";
+    $mobileLink = "<link rel=\"stylesheet\" href=\"{{ asset('css/mobile-bottom-nav.css') }}?v=mobile-bottom-nav-3\">";
+    $navAnimLink = "<link rel=\"stylesheet\" href=\"{{ asset('css/nav-icon-animations.css') }}?v=nav-icon-animations-3\">";
 
     if (! str_contains($newLayout, 'mobile-bottom-nav.css')) {
         $needle = "@if(\$appShell)";

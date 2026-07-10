@@ -40,8 +40,8 @@
     @auth
     @if($appShell)
     <link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-6">
-    <link rel="stylesheet" href="{{ asset('css/nav-icon-animations.css') }}?v=nav-icon-animations-2">
-    <link rel="stylesheet" href="{{ asset('css/mobile-bottom-nav.css') }}?v=mobile-bottom-nav-2">
+    <link rel="stylesheet" href="{{ asset('css/nav-icon-animations.css') }}?v=nav-icon-animations-3">
+    <link rel="stylesheet" href="{{ asset('css/mobile-bottom-nav.css') }}?v=mobile-bottom-nav-3">
     @endif
     @php $realtimeEnabled = app(\App\Services\RealtimeBroadcastService::class)->isEnabled(); @endphp
     <meta name="badges-url" content="{{ route('notifications.badge-counts') }}">
