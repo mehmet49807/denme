@@ -28,20 +28,10 @@ files = {
     "resources/views/partials/logo.blade.php": WEB / "resources/views/partials/logo.blade.php",
     "resources/views/partials/profile-settings-open-btn.blade.php": WEB
     / "resources/views/partials/profile-settings-open-btn.blade.php",
-    "resources/views/partials/profile-settings-menu.blade.php": WEB
-    / "resources/views/partials/profile-settings-menu.blade.php",
+    "resources/views/partials/profile-settings-panels.blade.php": WEB
+    / "resources/views/partials/profile-settings-panels.blade.php",
     "resources/views/partials/profile-settings-sheet.blade.php": WEB
     / "resources/views/partials/profile-settings-sheet.blade.php",
-    "resources/views/partials/settings-page-header.blade.php": WEB
-    / "resources/views/partials/settings-page-header.blade.php",
-    "resources/views/web/settings/profile.blade.php": WEB
-    / "resources/views/web/settings/profile.blade.php",
-    "resources/views/web/settings/hobbies.blade.php": WEB
-    / "resources/views/web/settings/hobbies.blade.php",
-    "resources/views/web/settings/language.blade.php": WEB
-    / "resources/views/web/settings/language.blade.php",
-    "resources/views/web/settings/password.blade.php": WEB
-    / "resources/views/web/settings/password.blade.php",
     "resources/views/web/feed.blade.php": WEB / "resources/views/web/feed.blade.php",
     "app/Http/Controllers/Web/HomeController.php": WEB
     / "app/Http/Controllers/Web/HomeController.php",
@@ -49,8 +39,6 @@ files = {
     / "app/Http/Controllers/Web/AuthPageController.php",
     "app/Http/Controllers/Web/FeedPageController.php": WEB
     / "app/Http/Controllers/Web/FeedPageController.php",
-    "app/Http/Controllers/Web/SettingsPageController.php": WEB
-    / "app/Http/Controllers/Web/SettingsPageController.php",
     "app/Http/Controllers/Web/ProfilePageController.php": WEB
     / "app/Http/Controllers/Web/ProfilePageController.php",
     "routes/web.php": WEB / "routes/web.php",
@@ -82,10 +70,20 @@ foreach ($files as $rel => $b64) {
     echo "write $rel ".filesize($path)."\n";
 }
 
-$obsolete = $webRoot.'/resources/views/partials/profile-settings-panels.blade.php';
-if (is_file($obsolete)) {
-    unlink($obsolete);
-    echo "removed profile-settings-panels.blade.php\n";
+foreach ([
+    'app/Http/Controllers/Web/SettingsPageController.php',
+    'resources/views/partials/profile-settings-menu.blade.php',
+    'resources/views/partials/settings-page-header.blade.php',
+    'resources/views/web/settings/profile.blade.php',
+    'resources/views/web/settings/hobbies.blade.php',
+    'resources/views/web/settings/language.blade.php',
+    'resources/views/web/settings/password.blade.php',
+] as $obsolete) {
+    $path = $webRoot.'/'.$obsolete;
+    if (is_file($path)) {
+        unlink($path);
+        echo "removed $obsolete\n";
+    }
 }
 
 foreach (['view:clear', 'route:clear', 'cache:clear', 'config:clear'] as $command) {
