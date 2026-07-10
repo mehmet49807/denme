@@ -1,0 +1,90 @@
+/* Footer (alt menü) ve Ayarlar ikon animasyonları */
+
+.profile-settings-open-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0;
+    transform-origin: center;
+    animation: settingsGearWiggle 3.6s ease-in-out infinite;
+}
+
+.profile-settings-open-btn-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.profile-settings-open-btn:hover .profile-settings-open-btn-icon {
+    animation-duration: 2.4s;
+}
+
+@keyframes settingsGearWiggle {
+    0%, 100% {
+        transform: rotate(0deg) scale(1);
+        filter: drop-shadow(0 0 0 rgba(124, 58, 237, 0));
+    }
+    20% {
+        transform: rotate(18deg) scale(1.05);
+        filter: drop-shadow(0 0 4px rgba(124, 58, 237, 0.35));
+    }
+    40% {
+        transform: rotate(-14deg) scale(1.08);
+    }
+    60% {
+        transform: rotate(10deg) scale(1.04);
+    }
+    80% {
+        transform: rotate(-6deg) scale(1.02);
+    }
+}
+
+.app-sidebar-nav .sidebar-nav-icon {
+    transform-origin: center bottom;
+    animation: sidebarNavIconFloat 2.6s ease-in-out infinite;
+}
+
+.app-sidebar-nav li:nth-child(1) .sidebar-nav-icon { animation-delay: 0s; }
+.app-sidebar-nav li:nth-child(2) .sidebar-nav-icon { animation-delay: 0.2s; }
+.app-sidebar-nav li:nth-child(3) .sidebar-nav-icon { animation-delay: 0.4s; }
+.app-sidebar-nav li:nth-child(4) .sidebar-nav-icon { animation-delay: 0.6s; }
+.app-sidebar-nav li:nth-child(5) .sidebar-nav-icon { animation-delay: 0.8s; }
+.app-sidebar-nav li:nth-child(6) .sidebar-nav-icon { animation-delay: 1s; }
+
+.app-sidebar-nav a:hover .sidebar-nav-icon {
+    animation-duration: 1.8s;
+}
+
+.app-sidebar-nav a.active .sidebar-nav-icon {
+    animation: sidebarNavIconActive 1.5s ease-in-out infinite;
+}
+
+@keyframes sidebarNavIconFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        filter: drop-shadow(0 0 0 rgba(124, 58, 237, 0));
+    }
+    50% {
+        transform: translateY(-2px) scale(1.08);
+        filter: drop-shadow(0 2px 5px rgba(124, 58, 237, 0.22));
+    }
+}
+
+@keyframes sidebarNavIconActive {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        filter: drop-shadow(0 0 0 rgba(124, 58, 237, 0));
+    }
+    50% {
+        transform: translateY(-3px) scale(1.12);
+        filter: drop-shadow(0 3px 8px rgba(124, 58, 237, 0.4));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .profile-settings-open-btn-icon,
+    .app-sidebar-nav .sidebar-nav-icon {
+        animation: none !important;
+    }
+}
