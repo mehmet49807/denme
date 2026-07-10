@@ -67,7 +67,7 @@ if (is_file($layoutPath)) {
     } else {
         $newLayout = preg_replace(
             '/mobile-bottom-nav\.css\'\)\s*\}\}\?v=[^"\']+/',
-            "mobile-bottom-nav.css') }}?v=mobile-bottom-nav-2",
+            "mobile-bottom-nav.css') }}?v=mobile-bottom-nav-3",
             $newLayout
         ) ?? $newLayout;
         echo "bumped mobile-bottom-nav.css version\n";
