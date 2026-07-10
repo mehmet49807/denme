@@ -34,6 +34,14 @@ class AdminMaintenanceController extends Controller
 
         $result = $deploy->clearRemoteCache($target);
         $returnTo = (string) $request->input('return_to', 'maintenance');
+
+        if ($returnTo === 'back') {
+            return redirect()->back()->with(
+                $result['ok'] ? 'success' : 'error',
+                $result['message']
+            );
+        }
+
         $route = $returnTo === 'github' ? 'admin.github' : 'admin.maintenance';
 
         return redirect()->route($route)->with(

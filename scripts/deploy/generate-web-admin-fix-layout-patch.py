@@ -58,6 +58,31 @@ if ($pos !== false) {
     }
 }
 
+$maintenanceInclude = "@include('partials.admin-nav-maintenance-link')";
+$cacheFooterInclude = "@include('partials.admin-sidebar-cache-clear')";
+$newLayout = str_replace($maintenanceInclude, '', $newLayout);
+$newLayout = str_replace('@include("partials.admin-nav-maintenance-link")', '', $newLayout);
+$newLayout = str_replace($cacheFooterInclude, '', $newLayout);
+$newLayout = str_replace('@include("partials.admin-sidebar-cache-clear")', '', $newLayout);
+
+if (! str_contains($newLayout, 'admin-nav-maintenance-link')) {
+    if (str_contains($newLayout, $include)) {
+        $newLayout = str_replace($include, $include."\n            ".$maintenanceInclude, $newLayout);
+        echo "inserted maintenance after github link\n";
+    }
+}
+
+if (! str_contains($newLayout, 'admin-sidebar-cache-clear')) {
+    if (str_contains($newLayout, '<div class="admin-sidebar-footer">')) {
+        $newLayout = str_replace(
+            '<div class="admin-sidebar-footer">',
+            '<div class="admin-sidebar-footer">'."\n            ".$cacheFooterInclude,
+            $newLayout
+        );
+        echo "inserted cache buttons in sidebar footer\n";
+    }
+}
+
 if ($newLayout === $layout) {
     echo "no layout changes needed\n";
 } else {

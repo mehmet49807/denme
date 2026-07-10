@@ -24,6 +24,12 @@ files = {
     / "admin-panel/resources/views/admin/maintenance.blade.php",
     "resources/views/partials/admin-cache-clear-buttons.blade.php": ROOT
     / "admin-panel/resources/views/partials/admin-cache-clear-buttons.blade.php",
+    "resources/views/partials/admin-cache-clear-buttons.blade.php": ROOT
+    / "admin-panel/resources/views/partials/admin-cache-clear-buttons.blade.php",
+    "resources/views/partials/admin-nav-maintenance-link.blade.php": ROOT
+    / "admin-panel/resources/views/partials/admin-nav-maintenance-link.blade.php",
+    "resources/views/partials/admin-sidebar-cache-clear.blade.php": ROOT
+    / "admin-panel/resources/views/partials/admin-sidebar-cache-clear.blade.php",
     "resources/views/partials/admin-nav.blade.php": ROOT
     / "admin-panel/resources/views/partials/admin-nav.blade.php",
     "resources/views/partials/admin-nav-github-link.blade.php": ROOT
@@ -174,7 +180,9 @@ $layoutFile = $adminRoot.'/resources/views/layouts/admin.blade.php';
 if (is_file($layoutFile)) {
     $layout = file_get_contents($layoutFile);
     $newLayout = $layout;
-    $include = "@include('partials.admin-nav-github-link')";
+    $githubInclude = "@include('partials.admin-nav-github-link')";
+    $maintenanceInclude = "@include('partials.admin-nav-maintenance-link')";
+    $cacheFooterInclude = "@include('partials.admin-sidebar-cache-clear')";
 
     $newLayout = preg_replace('/<a[^>]*admin\.rapor[^>]*>[\s\S]*?<\/a>\s*/', '', $newLayout) ?? $newLayout;
     $newLayout = preg_replace('/<a[^>]*\/rapor[^>]*>[\s\S]*?<\/a>\s*/', '', $newLayout) ?? $newLayout;
@@ -182,27 +190,82 @@ if (is_file($layoutFile)) {
     $newLayout = preg_replace('/^.*admin\.rapor.*$\n?/m', '', $newLayout) ?? $newLayout;
     $newLayout = str_replace("route('admin.rapor')", "route('admin.ai')", $newLayout);
     $newLayout = str_replace('route("admin.rapor")', 'route("admin.ai")', $newLayout);
-    $newLayout = str_replace($include, '', $newLayout);
+    $newLayout = str_replace($githubInclude, '', $newLayout);
     $newLayout = str_replace('@include("partials.admin-nav-github-link")', '', $newLayout);
+    $newLayout = str_replace($maintenanceInclude, '', $newLayout);
+    $newLayout = str_replace('@include("partials.admin-nav-maintenance-link")', '', $newLayout);
+    $newLayout = str_replace($cacheFooterInclude, '', $newLayout);
+    $newLayout = str_replace('@include("partials.admin-sidebar-cache-clear")', '', $newLayout);
 
     $aiMarker = "route('admin.ai')";
     $pos = strpos($newLayout, $aiMarker);
-    if ($pos !== false && ! str_contains(substr($newLayout, $pos, 800), 'admin-nav-github-link')) {
+    if ($pos !== false && ! str_contains(substr($newLayout, $pos, 1200), 'admin-nav-github-link')) {
         $close = strpos($newLayout, '</a>', $pos);
         if ($close !== false) {
             $insertAt = $close + 4;
-            $newLayout = substr($newLayout, 0, $insertAt)."\n            ".$include.substr($newLayout, $insertAt);
+            $newLayout = substr($newLayout, 0, $insertAt)."\n            ".$githubInclude.substr($newLayout, $insertAt);
             echo "patched layout: github after AI Denetim\n";
+        }
+    }
+
+    if (! str_contains($newLayout, 'admin-nav-maintenance-link')) {
+        if (str_contains($newLayout, $githubInclude)) {
+            $newLayout = str_replace(
+                $githubInclude,
+                $githubInclude."\n            ".$maintenanceInclude,
+                $newLayout
+            );
+            echo "patched layout: maintenance after GitHub\n";
+        } else {
+            $pos = strpos($newLayout, $aiMarker);
+            if ($pos !== false) {
+                $close = strpos($newLayout, '</a>', $pos);
+                if ($close !== false) {
+                    $insertAt = $close + 4;
+                    $newLayout = substr($newLayout, 0, $insertAt)."\n            ".$maintenanceInclude.substr($newLayout, $insertAt);
+                    echo "patched layout: maintenance after AI Denetim\n";
+                }
+            }
+        }
+    }
+
+    if (! str_contains($newLayout, 'admin-sidebar-cache-clear')) {
+        if (str_contains($newLayout, '<div class="admin-sidebar-footer">')) {
+            $newLayout = str_replace(
+                '<div class="admin-sidebar-footer">',
+                '<div class="admin-sidebar-footer">'."\n            ".$cacheFooterInclude,
+                $newLayout
+            );
+            echo "patched layout: cache buttons in sidebar footer\n";
+        } else {
+            $replaced = preg_replace(
+                '/(\s*)<\/nav>/',
+                "$1    ".$cacheFooterInclude."\n$1</nav>",
+                $newLayout,
+                1,
+                $count
+            );
+            if ($count > 0 && is_string($replaced)) {
+                $newLayout = $replaced;
+                echo "patched layout: cache buttons before nav end\n";
+            }
         }
     }
 
     if (! str_contains($newLayout, "'admin.github'")) {
         $newLayout = str_replace(
             "'admin.ai' => 'ai',",
-            "'admin.ai' => 'ai',\n        'admin.github' => 'seo',",
+            "'admin.ai' => 'ai',\n        'admin.github' => 'seo',\n        'admin.maintenance' => 'violet',",
             $newLayout
         );
         echo "patched layout: admin.github theme\n";
+    } elseif (! str_contains($newLayout, "'admin.maintenance'")) {
+        $newLayout = str_replace(
+            "'admin.github' => 'seo',",
+            "'admin.github' => 'seo',\n        'admin.maintenance' => 'violet',",
+            $newLayout
+        );
+        echo "patched layout: admin.maintenance theme\n";
     }
 
     if ($newLayout !== $layout) {

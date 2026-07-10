@@ -25,6 +25,8 @@
     "post_deploy": [
       "https://gonulkoprusu.com/setup/profile-toolbar-css?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-google-profile.php?key={SETUP_KEY}",
+      "https://gonulkoprusu.com/patch-web-admin-github.php?key={SETUP_KEY}",
+      "https://gonulkoprusu.com/patch-web-admin-nav-partial.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}",
       "https://admin.gonulkoprusu.com/setup/deploy-notify?key={SETUP_KEY}&target=web&commit={GITHUB_SHA}"
     ]
@@ -36,6 +38,7 @@
     "mappings": [
       { "local": "admin-panel/app", "remote": "app" },
       { "local": "admin-panel/config", "remote": "config" },
+      { "local": "admin-panel/routes", "remote": "routes" },
       { "local": "admin-panel/resources", "remote": "resources" },
       { "local": "web-site/public/images/logo-mark.png", "remote": "images/logo-mark.png", "file": true },
       { "local": "web-site/public/images/logo-admin.png", "remote": "images/logo-admin.png", "file": true },
