@@ -371,6 +371,8 @@ Route::middleware(['auth', 'locale'])->group(function () {
     Route::post('/users/{username}/report', [UserProfilePageController::class, 'report'])->middleware('throttle:10,1,users-report')->name('users.report');
     Route::post('/users/{username}/block', [UserProfilePageController::class, 'block'])->middleware('throttle:30,1,users-block')->name('users.block');
     Route::delete('/users/{username}/block', [UserProfilePageController::class, 'unblock'])->middleware('throttle:30,1,users-unblock')->name('users.unblock');
+    Route::get('/locations', [LocationUsersPageController::class, 'search'])->name('locations.search');
+    Route::get('/locations/ara', [LocationUsersPageController::class, 'find'])->name('locations.find');
     Route::get('/locations/{country}/{city}/{district?}', [LocationUsersPageController::class, 'index'])
         ->name('locations.users')
         ->where(['country' => '[^/]+', 'city' => '[^/]+', 'district' => '[^/]*']);

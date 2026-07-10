@@ -111,13 +111,16 @@ class SitemapController extends Controller
             ->distinct()
             ->get();
 
+        $locationUrl = app(\App\Support\LocationUrl::class);
         foreach ($cities as $city) {
-            $country = $city->country ?: 'turkiye';
-            $citySlug = mb_strtolower(str_replace(' ', '-', $city->city));
-            $countrySlug = mb_strtolower(str_replace(' ', '-', $country));
+            $country = $city->country ?: 'Türkiye';
+            if (! $locations->isValidCity($country, $city->city)) {
+                continue;
+            }
 
+            $params = $locationUrl->routeParams($country, $city->city);
             $urls[] = [
-                'loc'        => $baseUrl . '/locations/' . $countrySlug . '/' . $citySlug,
+                'loc'        => $baseUrl . '/locations/' . $params['country'] . '/' . $params['city'],
                 'lastmod'    => now()->toDateString(),
                 'changefreq' => 'weekly',
                 'priority'   => '0.7',
