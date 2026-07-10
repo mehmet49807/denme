@@ -23,7 +23,8 @@
       { "local": "patch-web-google-profile.php", "remote": "patch-web-google-profile.php", "file": true },
       { "local": "patch-web-mobile-nav.php", "remote": "patch-web-mobile-nav.php", "file": true },
       { "local": "patch-web-login-feed.php", "remote": "patch-web-login-feed.php", "file": true },
-      { "local": "patch-web-settings-page.php", "remote": "patch-web-settings-page.php", "file": true }
+      { "local": "patch-web-settings-page.php", "remote": "patch-web-settings-page.php", "file": true },
+      { "local": "patch-web-live-sync.php", "remote": "patch-web-live-sync.php", "file": true }
     ],
     "post_deploy": [
       "https://gonulkoprusu.com/setup/profile-toolbar-css?key={SETUP_KEY}",
@@ -31,6 +32,7 @@
       "https://gonulkoprusu.com/patch-web-mobile-nav.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-login-feed.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-settings-page.php?key={SETUP_KEY}",
+      "https://gonulkoprusu.com/patch-web-live-sync.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}",
       "https://admin.gonulkoprusu.com/setup/deploy-notify?key={SETUP_KEY}&target=web&commit={GITHUB_SHA}"
     ]

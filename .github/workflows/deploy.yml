@@ -74,6 +74,7 @@ jobs:
           python3 scripts/deploy/generate-web-mobile-nav-patch.py
           python3 scripts/deploy/generate-web-login-feed-patch.py
           python3 scripts/deploy/generate-web-settings-page-patch.py
+          python3 scripts/deploy/generate-web-live-sync-patch.py
 
       - name: Hazırla delta sync listesi
         id: sync
