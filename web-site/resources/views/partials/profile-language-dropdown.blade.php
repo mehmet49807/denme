@@ -15,7 +15,7 @@
             <img class="profile-language-trigger-flag-img" src="https://flagcdn.com/w40/{{ $currentMeta['flag'] }}.png" alt="" width="20" height="14" loading="lazy" decoding="async">
             <span class="profile-language-trigger-flag-emoji">{{ $currentMeta['emoji'] }}</span>
         </span>
-        <span class="profile-language-trigger-label">{{ __('Dil seç') }}</span>
+        <span class="profile-language-trigger-label">Dil</span>
         <span class="profile-language-trigger-chevron" aria-hidden="true">▾</span>
     </summary>
     <div class="profile-language-menu">

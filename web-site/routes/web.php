@@ -153,20 +153,36 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         }
 
         $css = file_get_contents($cssPath);
-        $old = "@media (max-width: 520px) {\n    .profile-toolbar-row { flex-wrap: wrap; }\n    .profile-settings--toolbar { flex: 1 1 100%; }\n    .profile-language-dropdown { margin-left: auto; }";
-        $new = "@media (max-width: 520px) {\n    .profile-toolbar-row { flex-wrap: nowrap; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; }\n    .profile-settings--toolbar { flex: 1 1 auto; min-width: 0; margin-bottom: 0; }\n    .profile-language-dropdown { flex: 0 0 auto; margin-left: 0; }\n    .profile-settings-toggle { width: 100%; max-width: 100%; font-size: 0.8rem; padding-left: 0.65rem; padding-right: 0.65rem; }\n    .profile-settings-toggle-label { overflow: hidden; text-overflow: ellipsis; }";
+        $lines = [];
 
-        if (str_contains($css, $new)) {
-            return response("css/app.css already patched\nOK\n", 200, ['Content-Type' => 'text/plain; charset=utf-8']);
+        $replacements = [
+            ".profile-toolbar-row {\n    display: flex;\n    align-items: flex-start;\n    gap: 0.45rem;\n    margin-bottom: 1rem;\n}" =>
+            ".profile-toolbar-row {\n    display: flex;\n    flex-direction: row;\n    flex-wrap: nowrap;\n    align-items: center;\n    gap: 0.5rem;\n    margin: 0 0 0.6rem;\n}",
+            ".profile-page .profile-header {\n    display: flex;\n    gap: 1rem;\n    align-items: flex-start;\n    flex-wrap: wrap;\n    margin-bottom: 1rem;\n    padding: 1rem;" =>
+            ".profile-page .profile-header {\n    display: flex;\n    gap: 1rem;\n    align-items: flex-start;\n    flex-wrap: wrap;\n    margin-bottom: 0.65rem;\n    padding: 0.85rem 0.9rem;",
+            "@media (max-width: 520px) {\n    .profile-toolbar-row { flex-wrap: wrap; }\n    .profile-settings--toolbar { flex: 1 1 100%; }\n    .profile-language-dropdown { margin-left: auto; }" =>
+            "@media (max-width: 520px) {\n    .profile-toolbar-row { flex-wrap: nowrap; align-items: center; gap: 0.5rem; margin: 0 0 0.6rem; }\n    .profile-settings--toolbar { flex: 1 1 auto; min-width: 0; margin-bottom: 0; }\n    .profile-language-dropdown { flex: 0 0 auto; margin-left: auto; }\n    .profile-settings-toggle { width: 100%; max-width: 100%; font-size: 0.8rem; padding-left: 0.65rem; padding-right: 0.65rem; }\n    .profile-settings-toggle-label { overflow: hidden; text-overflow: ellipsis; }",
+        ];
+
+        foreach ($replacements as $old => $new) {
+            if (str_contains($css, $new)) {
+                $lines[] = 'already: '.substr($old, 0, 28).'...';
+                continue;
+            }
+            if (! str_contains($css, $old)) {
+                $lines[] = 'skip (not found): '.substr($old, 0, 28).'...';
+                continue;
+            }
+            $css = str_replace($old, $new, $css);
+            $lines[] = 'patched: '.substr($old, 0, 28).'...';
         }
 
-        if (! str_contains($css, $old)) {
-            return response("css/app.css: expected mobile toolbar block not found\n", 500, ['Content-Type' => 'text/plain; charset=utf-8']);
-        }
+        file_put_contents($cssPath, $css);
 
-        file_put_contents($cssPath, str_replace($old, $new, $css));
-
-        return response("patched css/app.css (mobile toolbar)\nOK\n", 200, ['Content-Type' => 'text/plain; charset=utf-8']);
+        return response(implode("\n", $lines)."\nOK\n", 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-store',
+        ]);
     });
     Route::get('/setup/diag-blog-sss', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {

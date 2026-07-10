@@ -1,33 +1,95 @@
-/* Mobil profil araç çubuğu — düzenle + dil yan yana */
-@media (max-width: 520px) {
-    .profile-toolbar-row {
-        flex-wrap: nowrap;
-        align-items: center;
-        gap: 0.45rem;
-        margin-bottom: 0.85rem;
-    }
+/* Profil araç çubuğu — sol: düzenle, sağ: dil (mobil + web) */
+.profile-page .profile-header {
+    margin-bottom: 0.65rem;
+    padding: 0.85rem 0.9rem;
+}
 
-    .profile-settings--toolbar {
-        flex: 1 1 auto;
-        min-width: 0;
-        margin-bottom: 0;
-    }
+.profile-page .profile-success,
+.profile-page .profile-photo-error {
+    margin-bottom: 0.55rem;
+}
 
-    .profile-language-dropdown {
-        flex: 0 0 auto;
-        margin-left: 0;
-    }
+.profile-page .profile-toolbar-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin: 0 0 0.6rem;
+}
 
-    .profile-settings-toggle {
-        width: 100%;
-        max-width: 100%;
+.profile-page .profile-settings.profile-settings--toolbar {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+}
+
+.profile-page .profile-settings--toolbar > summary.profile-settings-toggle {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0.55rem 0.75rem;
+    box-sizing: border-box;
+}
+
+.profile-page .profile-settings-toggle-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.profile-page .profile-language-dropdown {
+    flex: 0 0 auto;
+    margin: 0 0 0 auto;
+}
+
+.profile-page .profile-language-trigger {
+    min-height: 2.5rem;
+    padding: 0.55rem 0.75rem;
+}
+
+.profile-page .profile-settings-body {
+    margin-top: 0.4rem;
+}
+
+.profile-page .feed-toolbar {
+    margin-top: 0;
+    margin-bottom: 0.65rem;
+}
+
+@media (max-width: 768px) {
+    .profile-page .profile-settings-toggle {
         font-size: 0.8rem;
         padding-left: 0.65rem;
         padding-right: 0.65rem;
     }
 
-    .profile-settings-toggle-label {
-        overflow: hidden;
-        text-overflow: ellipsis;
+    .profile-page .profile-settings-toggle-icon {
+        width: 1.45rem;
+        height: 1.45rem;
+    }
+
+    .profile-page .profile-language-trigger {
+        font-size: 0.82rem;
+        padding-left: 0.65rem;
+        padding-right: 0.65rem;
+    }
+
+    .profile-page .profile-language-trigger-flag-img {
+        display: none;
+    }
+
+    .profile-page .profile-language-trigger-flag-emoji {
+        display: block;
+    }
+
+    .profile-page .profile-language-trigger-flag {
+        width: auto;
+        height: auto;
+        box-shadow: none;
+        overflow: visible;
     }
 }
