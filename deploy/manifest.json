@@ -20,11 +20,13 @@
       { "local": "patch-web-admin-nav-partial.php", "remote": "patch-web-admin-nav-partial.php", "file": true },
       { "local": "patch-web-admin-read-file.php", "remote": "patch-web-admin-read-file.php", "file": true },
       { "local": "patch-web-admin-restore-routes.php", "remote": "patch-web-admin-restore-routes.php", "file": true },
-      { "local": "patch-web-google-profile.php", "remote": "patch-web-google-profile.php", "file": true }
+      { "local": "patch-web-google-profile.php", "remote": "patch-web-google-profile.php", "file": true },
+      { "local": "patch-web-mobile-nav.php", "remote": "patch-web-mobile-nav.php", "file": true }
     ],
     "post_deploy": [
       "https://gonulkoprusu.com/setup/profile-toolbar-css?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-google-profile.php?key={SETUP_KEY}",
+      "https://gonulkoprusu.com/patch-web-mobile-nav.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}",
       "https://admin.gonulkoprusu.com/setup/deploy-notify?key={SETUP_KEY}&target=web&commit={GITHUB_SHA}"
     ]
