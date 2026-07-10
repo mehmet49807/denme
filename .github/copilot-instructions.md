@@ -36,6 +36,12 @@ Bu script sırasıyla:
 - Web: `https://gonulkoprusu.com/setup/clear-cache?key=gk-cpanel-setup-2026`
 - Admin: `https://admin.gonulkoprusu.com/setup/cpanel?key=gk-cpanel-setup-2026`
 
+## Deploy modu
+
+- `master` push → **delta sync** (git diff + FTP boyut kontrolü), web/admin **paralel**
+- Actions → Run workflow → `sync_mode: full` ile tüm dosyaları zorla yükle
+- `scripts/deploy/ftp_sync.py --full` yerel tam sync
+
 ## Copilot'a verilecek örnek görev
 
 > `.env.deploy` dosyasını oluşturup `scripts/setup/github-deploy-all.sh` çalıştır. Secrets kaydedildikten sonra `cursor/github-auto-deploy-9613` dalını `master`'a merge et ve Actions deploy'unun başarılı olduğunu doğrula.

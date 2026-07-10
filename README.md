@@ -20,9 +20,11 @@ Bu depo (`mehmet49807/denme`) **gonulkoprusu.com** web sitesi ve **admin.gonulko
 
 1. `web-site/` → `web@gonulkoprusu.com` (public_html)
 2. `admin-panel/` → `panel@admin.gonulkoprusu.com`
-3. Deploy sonrası önbellek temizlenir
+3. **Web ve admin paralel** yüklenir (ayrı GitHub Actions job)
+4. **Delta sync**: yalnızca değişen dosyalar FTP'ye gider (boyut kontrolü ile)
+5. Deploy sonrası önbellek temizlenir
 
-Manuel tetikleme: GitHub → Actions → Deploy to cPanel → Run workflow (web / admin / all).
+Manuel tetikleme: GitHub → Actions → Deploy to cPanel → Run workflow (web / admin / all, sync: delta / full).
 
 ### Copilot / tek komut kurulum
 
@@ -56,8 +58,15 @@ export FTP_ADMIN_USER='panel@admin.gonulkoprusu.com'
 export FTP_ADMIN_PASSWORD='...'
 export SETUP_CACHE_KEY='gk-cpanel-setup-2026'
 
+# Delta (varsayılan) — sadece değişen dosyalar
 python3 scripts/deploy/ftp_sync.py web
 python3 scripts/deploy/ftp_sync.py admin
+
+# Tam sync
+python3 scripts/deploy/ftp_sync.py --full web admin
+
+# Paralel bağlantı sayısı (varsayılan 4)
+FTP_PARALLEL=6 python3 scripts/deploy/ftp_sync.py web
 ```
 
 ## Admin panel — GitHub menüsü

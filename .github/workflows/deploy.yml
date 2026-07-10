@@ -15,6 +15,14 @@ on:
           - all
           - web
           - admin
+      sync_mode:
+        description: Sync modu
+        required: true
+        default: delta
+        type: choice
+        options:
+          - delta
+          - full
 
 concurrency:
   group: deploy-gonulkoprusu
@@ -51,6 +59,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Generate deploy patch scripts
         run: |
@@ -61,12 +71,39 @@ jobs:
           python3 scripts/deploy/generate-web-admin-read-file-patch.py
           python3 scripts/deploy/generate-web-admin-restore-routes-patch.py
 
-      - name: Deploy web via FTP
+      - name: Hazırla delta sync listesi
+        id: sync
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.sync_mode }}" = "full" ]; then
+            echo "full=1" >> "$GITHUB_OUTPUT"
+            echo "Deploy modu: full"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            BEFORE="${{ github.event.before }}"
+            if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              echo "full=1" >> "$GITHUB_OUTPUT"
+              echo "İlk push / before yok → full sync"
+            else
+              git diff --name-only "$BEFORE" "${{ github.sha }}" > /tmp/changed-files.txt
+              echo "changed_file=/tmp/changed-files.txt" >> "$GITHUB_OUTPUT"
+              echo "Delta dosyalar:"
+              cat /tmp/changed-files.txt || true
+            fi
+          else
+            echo "changed_file=/tmp/changed-files.txt" >> "$GITHUB_OUTPUT"
+            git diff --name-only HEAD~1 HEAD > /tmp/changed-files.txt || true
+            echo "Manuel delta (son commit):"
+            cat /tmp/changed-files.txt || true
+          fi
+
+      - name: Deploy web via FTP (delta + parallel)
         env:
           FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
           FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
           SETUP_CACHE_KEY: ${{ secrets.SETUP_CACHE_KEY }}
           GITHUB_SHA: ${{ github.sha }}
+          FTP_PARALLEL: "4"
+          DEPLOY_FULL_SYNC: ${{ steps.sync.outputs.full }}
+          DEPLOY_CHANGED_FILES: ${{ steps.sync.outputs.changed_file }}
         run: python3 scripts/deploy/ftp_sync.py web
 
   deploy-admin:
@@ -77,11 +114,40 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Deploy admin via FTP
+      - name: Hazırla delta sync listesi
+        id: sync
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.sync_mode }}" = "full" ]; then
+            echo "full=1" >> "$GITHUB_OUTPUT"
+            echo "Deploy modu: full"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            BEFORE="${{ github.event.before }}"
+            if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              echo "full=1" >> "$GITHUB_OUTPUT"
+              echo "İlk push / before yok → full sync"
+            else
+              git diff --name-only "$BEFORE" "${{ github.sha }}" > /tmp/changed-files.txt
+              echo "changed_file=/tmp/changed-files.txt" >> "$GITHUB_OUTPUT"
+              echo "Delta dosyalar:"
+              cat /tmp/changed-files.txt || true
+            fi
+          else
+            echo "changed_file=/tmp/changed-files.txt" >> "$GITHUB_OUTPUT"
+            git diff --name-only HEAD~1 HEAD > /tmp/changed-files.txt || true
+            echo "Manuel delta (son commit):"
+            cat /tmp/changed-files.txt || true
+          fi
+
+      - name: Deploy admin via FTP (delta + parallel)
         env:
           FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
           FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
           SETUP_CACHE_KEY: ${{ secrets.SETUP_CACHE_KEY }}
           GITHUB_SHA: ${{ github.sha }}
+          FTP_PARALLEL: "4"
+          DEPLOY_FULL_SYNC: ${{ steps.sync.outputs.full }}
+          DEPLOY_CHANGED_FILES: ${{ steps.sync.outputs.changed_file }}
         run: python3 scripts/deploy/ftp_sync.py admin
