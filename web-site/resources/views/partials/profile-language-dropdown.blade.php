@@ -9,14 +9,14 @@
     $current = app()->getLocale();
     $currentMeta = $locales[$current] ?? $locales['tr'];
 @endphp
-<details class="profile-language-dropdown" @if($errors->has('locale')) open @endif>
-    <summary class="profile-language-trigger" aria-label="{{ __('Dil seç') }}">
-        <span class="profile-language-trigger-flag" aria-hidden="true">
+<details class="profile-settings profile-settings--toolbar profile-language-dropdown" @if($errors->has('locale')) open @endif>
+    <summary class="profile-settings-toggle" aria-label="{{ __('Dil seç') }}">
+        <span class="profile-settings-toggle-icon profile-language-trigger-icon" aria-hidden="true">
             <img class="profile-language-trigger-flag-img" src="https://flagcdn.com/w40/{{ $currentMeta['flag'] }}.png" alt="" width="20" height="14" loading="lazy" decoding="async">
             <span class="profile-language-trigger-flag-emoji">{{ $currentMeta['emoji'] }}</span>
         </span>
-        <span class="profile-language-trigger-label">Dil</span>
-        <span class="profile-language-trigger-chevron" aria-hidden="true">▾</span>
+        <span class="profile-settings-toggle-label">Dil</span>
+        <span class="profile-settings-toggle-chevron" aria-hidden="true">▾</span>
     </summary>
     <div class="profile-language-menu">
         <p class="profile-language-menu-hint">{{ __('Profil ve uygulama dili') }}</p>
