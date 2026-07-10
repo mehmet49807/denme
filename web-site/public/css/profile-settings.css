@@ -101,12 +101,6 @@ body.app-shell-body .site-header-inner {
     white-space: nowrap;
 }
 
-.profile-settings-open-btn svg {
-    width: 1.15rem;
-    height: 1.15rem;
-    flex-shrink: 0;
-}
-
 .profile-settings-open-btn:hover {
     border-color: var(--violet);
     transform: translateY(-1px);
