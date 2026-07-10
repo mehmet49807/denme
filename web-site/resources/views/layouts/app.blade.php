@@ -98,6 +98,10 @@
                     <a href="{{ route('register') }}" class="btn btn-primary btn-sm">{{ __('app.nav.register') }}</a>
                 @endguest
             </nav>
+            @else
+            <div class="site-header-actions">
+                @stack('header-actions')
+            </div>
             @endunless
         </div>
     </header>
