@@ -100,6 +100,48 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Cache-Control' => 'no-store',
         ]);
     });
+    Route::match(['get', 'post'], '/setup/google-oauth', function () {
+        if (request('key') !== 'gk-cpanel-setup-2026') {
+            abort(403);
+        }
+
+        $envPath = base_path('.env');
+        $clientId = trim((string) request('client_id', ''));
+        $clientSecret = trim((string) request('client_secret', ''));
+
+        if ($clientId !== '' && $clientSecret !== '' && is_writable($envPath)) {
+            $env = is_file($envPath) ? file_get_contents($envPath) : '';
+            $env = preg_replace('/^GOOGLE_CLIENT_ID=.*$/m', '', $env) ?? $env;
+            $env = preg_replace('/^GOOGLE_CLIENT_SECRET=.*$/m', '', $env) ?? $env;
+            $env = preg_replace('/^GOOGLE_REDIRECT_URI=.*$/m', '', $env) ?? $env;
+            $env = rtrim($env)."\n\nGOOGLE_CLIENT_ID={$clientId}\nGOOGLE_CLIENT_SECRET={$clientSecret}\nGOOGLE_REDIRECT_URI=https://gonulkoprusu.com/auth/google/callback\n";
+            file_put_contents($envPath, $env);
+
+            foreach (['config:clear', 'cache:clear'] as $command) {
+                try {
+                    Artisan::call($command);
+                } catch (\Throwable) {
+                }
+            }
+        }
+
+        $configured = trim((string) config('services.google.client_id', '')) !== '';
+        $envConfigured = trim((string) env('GOOGLE_CLIENT_ID', '')) !== '';
+
+        $lines = [
+            'Google OAuth durumu',
+            'config_client_id: '.($configured ? 'tanimli' : 'bos'),
+            'env_client_id: '.($envConfigured ? 'tanimli' : 'bos'),
+            'redirect_uri: '.(config('services.google.redirect') ?: route('auth.google.callback', absolute: true)),
+            '',
+            $configured ? "OK\n" : "Eksik: client_id ve client_secret ile ?key=...&client_id=...&client_secret=...\n",
+        ];
+
+        return response(implode("\n", $lines), 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-store',
+        ]);
+    });
     Route::get('/setup/diag-blog-sss', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
             abort(403);

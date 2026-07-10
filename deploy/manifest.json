@@ -7,18 +7,22 @@
     },
     "mappings": [
       { "local": "web-site/app", "remote": "app" },
+      { "local": "web-site/config", "remote": "config" },
       { "local": "web-site/routes", "remote": "routes" },
       { "local": "web-site/resources", "remote": "resources" },
       { "local": "web-site/public/images", "remote": "images" },
+      { "local": "web-site/public/css", "remote": "css" },
       { "local": "web-site/public/.htaccess", "remote": ".htaccess", "file": true },
       { "local": "patch-web-admin-github.php", "remote": "patch-web-admin-github.php", "file": true },
       { "local": "patch-web-admin-nav.php", "remote": "patch-web-admin-nav.php", "file": true },
       { "local": "patch-web-admin-fix-layout.php", "remote": "patch-web-admin-fix-layout.php", "file": true },
       { "local": "patch-web-admin-nav-partial.php", "remote": "patch-web-admin-nav-partial.php", "file": true },
       { "local": "patch-web-admin-read-file.php", "remote": "patch-web-admin-read-file.php", "file": true },
-      { "local": "patch-web-admin-restore-routes.php", "remote": "patch-web-admin-restore-routes.php", "file": true }
+      { "local": "patch-web-admin-restore-routes.php", "remote": "patch-web-admin-restore-routes.php", "file": true },
+      { "local": "patch-web-google-profile.php", "remote": "patch-web-google-profile.php", "file": true }
     ],
     "post_deploy": [
+      "https://gonulkoprusu.com/patch-web-google-profile.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}",
       "https://admin.gonulkoprusu.com/setup/deploy-notify?key={SETUP_KEY}&target=web&commit={GITHUB_SHA}"
     ]

@@ -1,0 +1,33 @@
+/* Mobil profil araç çubuğu — düzenle + dil yan yana */
+@media (max-width: 520px) {
+    .profile-toolbar-row {
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 0.45rem;
+        margin-bottom: 0.85rem;
+    }
+
+    .profile-settings--toolbar {
+        flex: 1 1 auto;
+        min-width: 0;
+        margin-bottom: 0;
+    }
+
+    .profile-language-dropdown {
+        flex: 0 0 auto;
+        margin-left: 0;
+    }
+
+    .profile-settings-toggle {
+        width: 100%;
+        max-width: 100%;
+        font-size: 0.8rem;
+        padding-left: 0.65rem;
+        padding-right: 0.65rem;
+    }
+
+    .profile-settings-toggle-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

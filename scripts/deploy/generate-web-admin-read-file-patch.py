@@ -13,12 +13,17 @@ if (($_GET['key'] ?? '') !== 'gk-cpanel-setup-2026') {
     http_response_code(403);
     exit('forbidden');
 }
-$adminRoot = dirname(__DIR__).'/admin.gonulkoprusu.com';
-if (! is_dir($adminRoot)) {
-    $adminRoot = '/home/gonulkop/admin.gonulkoprusu.com';
+$root = (string) ($_GET['root'] ?? 'admin');
+if ($root === 'web') {
+    $base = __DIR__;
+} else {
+    $base = dirname(__DIR__).'/admin.gonulkoprusu.com';
+    if (! is_dir($base)) {
+        $base = '/home/gonulkop/admin.gonulkoprusu.com';
+    }
 }
 $rel = (string) ($_GET['file'] ?? 'routes/adminlogin.php');
-$path = $adminRoot.'/'.ltrim($rel, '/');
+$path = $base.'/'.ltrim($rel, '/');
 if (str_contains($rel, '..')) {
     exit("bad path\n");
 }
