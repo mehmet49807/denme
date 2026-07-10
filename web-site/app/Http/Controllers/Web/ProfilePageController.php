@@ -80,9 +80,9 @@ class ProfilePageController extends Controller
         $user = $request->user();
 
         if (! Hash::check($validated['current_password'], $user->password)) {
-            return back()
-                ->withErrors(['current_password' => 'Mevcut şifre hatalı.'])
-                ->with('settings_panel', 'password');
+            return redirect()
+                ->route('settings.password')
+                ->withErrors(['current_password' => 'Mevcut şifre hatalı.']);
         }
 
         $user->update([
@@ -134,9 +134,9 @@ class ProfilePageController extends Controller
         LocaleManager::remember($request, $locale);
         LocaleManager::apply($locale);
 
-        return back()
+        return redirect()
+            ->route('settings.language')
             ->with('success', 'Dil tercihiniz kaydedildi.')
-            ->with('settings_panel', 'language')
             ->withCookie(LocaleManager::makeCookie($locale, $request->isSecure()));
     }
 
@@ -144,8 +144,18 @@ class ProfilePageController extends Controller
     {
         $panel = $request->input('settings_panel', 'edit');
 
-        return back()
-            ->with('success', $message)
-            ->with('settings_panel', $panel);
+        return redirect()
+            ->route($this->settingsRouteForPanel($panel))
+            ->with('success', $message);
+    }
+
+    private function settingsRouteForPanel(string $panel): string
+    {
+        return match ($panel) {
+            'hobbies' => 'settings.hobbies',
+            'language' => 'settings.language',
+            'password' => 'settings.password',
+            default => 'settings.profile',
+        };
     }
 }
