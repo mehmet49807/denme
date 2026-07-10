@@ -19,7 +19,7 @@
 <div class="admin-user-card-actions" role="group" aria-label="{{ $user->username }} işlemleri">
     <button
         type="button"
-        class="btn btn-outline btn-sm admin-edit-user-btn"
+        class="btn btn-outline btn-sm admin-user-card-btn admin-edit-user-btn"
         data-user-id="{{ $user->id }}"
         data-first-name="{{ $user->first_name }}"
         data-last-name="{{ $user->last_name }}"
@@ -36,7 +36,7 @@
     @if(!$user->is_banned)
     <button
         type="button"
-        class="btn btn-outline btn-sm admin-edit-user-btn admin-user-card-btn--warn"
+        class="btn btn-outline btn-sm admin-user-card-btn admin-edit-user-btn admin-user-card-btn--warn"
         data-user-id="{{ $user->id }}"
         data-first-name="{{ $user->first_name }}"
         data-last-name="{{ $user->last_name }}"
@@ -52,14 +52,14 @@
     @else
     <form method="POST" action="{{ route('admin.users.unban', $user) }}" class="admin-user-card-form">
         @csrf
-        <button type="submit" class="btn btn-outline btn-sm admin-user-card-btn--success">Banı Kaldır</button>
+        <button type="submit" class="btn btn-outline btn-sm admin-user-card-btn admin-user-card-btn--success">Banı Kaldır</button>
     </form>
     @endif
 
     @if($canGrantPremium)
     <button
         type="button"
-        class="btn btn-outline btn-sm admin-grant-premium-btn admin-user-card-btn--premium"
+        class="btn btn-outline btn-sm admin-user-card-btn admin-grant-premium-btn admin-user-card-btn--premium"
         data-user-id="{{ $user->id }}"
         data-username="{{ $user->username }}"
         data-is-premium="{{ $user->isPremium() ? '1' : '0' }}"
@@ -67,12 +67,12 @@
     >{{ $user->isPremium() ? 'Premium+' : 'Premium' }}</button>
     @endif
 
-    <a href="{{ rtrim(config('app.frontend_url', 'https://www.gonulkoprusu.com'), '/') }}/users/{{ $user->username }}" class="btn btn-outline btn-sm" target="_blank" rel="noopener">Profil</a>
+    <a href="{{ rtrim(config('app.frontend_url', 'https://www.gonulkoprusu.com'), '/') }}/users/{{ $user->username }}" class="btn btn-outline btn-sm admin-user-card-btn" target="_blank" rel="noopener">Profil</a>
 
     <form
         method="POST"
         action="{{ route('admin.users.destroy', $user) }}"
-        class="admin-user-card-form"
+        class="admin-user-card-form admin-user-card-form--danger"
         onsubmit="return confirm('{{ $user->username }} kullanıcısını ve tüm içeriğini kalıcı olarak silmek istediğinize emin misiniz?');"
     >
         @csrf
@@ -82,7 +82,7 @@
                 <input type="hidden" name="{{ $key }}" value="{{ $value }}">
             @endif
         @endforeach
-        <button type="submit" class="btn btn-outline btn-sm admin-user-card-btn--danger">Sil</button>
+        <button type="submit" class="btn btn-outline btn-sm admin-user-card-btn admin-user-card-btn--danger">Sil</button>
     </form>
 </div>
 @endif

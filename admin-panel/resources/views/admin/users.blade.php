@@ -184,35 +184,32 @@
             $canGrantPremium = $user->gender === 'male' && !$user->is_banned;
             $inviteCount = $referralsTableReady ? (int) ($user->referrals_made_count ?? 0) : 0;
         @endphp
-        <article class="admin-user-card">
-            <header class="admin-user-card-head">
-                @if($canGrantPremium)
-                    <input
-                        type="checkbox"
-                        class="admin-user-select"
-                        value="{{ $user->id }}"
-                        data-username="{{ $user->username }}"
-                        aria-label="{{ $user->username }} seç"
-                    >
-                @else
-                    <span class="admin-user-card-check-spacer" aria-hidden="true"></span>
-                @endif
-
-                <div class="admin-user-cell">
-                    <span class="admin-user-avatar">
-                        @if($user->profile_photo_url)
-                            <img src="{{ $user->profile_photo_url }}" alt="{{ $user->username }}" width="40" height="40" loading="lazy" decoding="async">
-                        @else
-                            {{ strtoupper(substr($user->username, 0, 1)) }}
-                        @endif
-                    </span>
-                    <span class="admin-user-card-identity">
-                        <strong class="admin-user-name">{{ $user->username }}</strong>
-                        <small class="admin-user-meta">{{ $user->first_name }} {{ $user->last_name }} · #{{ $user->id }}</small>
-                    </span>
-                </div>
-
-                <div class="admin-user-card-status">
+        <details class="admin-user-card">
+            <summary class="admin-user-card-summary">
+                <span class="admin-user-card-summary-check" onclick="event.stopPropagation()">
+                    @if($canGrantPremium)
+                        <input
+                            type="checkbox"
+                            class="admin-user-select"
+                            value="{{ $user->id }}"
+                            data-username="{{ $user->username }}"
+                            aria-label="{{ $user->username }} seç"
+                        >
+                    @endif
+                </span>
+                <span class="admin-user-avatar admin-user-avatar--card">
+                    @if($user->profile_photo_url)
+                        <img src="{{ $user->profile_photo_url }}" alt="" width="40" height="40" loading="lazy" decoding="async">
+                    @else
+                        {{ strtoupper(substr($user->username, 0, 1)) }}
+                    @endif
+                </span>
+                <span class="admin-user-card-summary-main">
+                    <strong class="admin-user-name">{{ $user->username }}</strong>
+                    <small class="admin-user-meta">{{ $user->first_name }} {{ $user->last_name }} · #{{ $user->id }}</small>
+                    <span class="admin-user-card-summary-email">{{ $user->email }}</span>
+                </span>
+                <span class="admin-user-card-summary-status">
                     @if($user->is_banned)
                         <span class="badge badge-banned">Banlı</span>
                     @elseif($user->isPremium())
@@ -222,53 +219,47 @@
                     @else
                         <span class="badge badge-resolved">Aktif</span>
                     @endif
-                </div>
-            </header>
+                </span>
+            </summary>
 
-            <dl class="admin-user-card-meta">
-                <div class="admin-user-card-meta-row">
-                    <dt>E-posta</dt>
-                    <dd><a href="mailto:{{ $user->email }}" class="admin-user-card-email">{{ $user->email }}</a></dd>
-                </div>
-                <div class="admin-user-card-meta-row">
-                    <dt>Konum</dt>
-                    <dd>{{ $user->city }}{{ $user->district ? ', '.$user->district : '' }}</dd>
-                </div>
-                <div class="admin-user-card-meta-row admin-user-card-meta-row--split">
-                    <div>
-                        <dt>Cinsiyet</dt>
-                        <dd>
+            <div class="admin-user-card-body">
+                <div class="admin-user-card-facts">
+                    <div class="admin-user-card-fact">
+                        <span class="admin-user-card-fact-label">Konum</span>
+                        <span class="admin-user-card-fact-value">{{ $user->city }}{{ $user->district ? ', '.$user->district : '' }}</span>
+                    </div>
+                    <div class="admin-user-card-fact">
+                        <span class="admin-user-card-fact-label">Cinsiyet</span>
+                        <span class="admin-user-card-fact-value">
                             <span class="badge badge-gender badge-gender--{{ $user->gender }}">
                                 {{ $user->gender === 'male' ? 'Erkek' : 'Kadın' }}
                             </span>
-                        </dd>
+                        </span>
                     </div>
-                    <div>
-                        <dt>Kayıt</dt>
-                        <dd>{{ $user->created_at?->format('d.m.Y') ?? '—' }}</dd>
+                    <div class="admin-user-card-fact">
+                        <span class="admin-user-card-fact-label">Kayıt</span>
+                        <span class="admin-user-card-fact-value">{{ $user->created_at?->format('d.m.Y') ?? '—' }}</span>
                     </div>
+                    @if($user->gender === 'male')
+                    <div class="admin-user-card-fact">
+                        <span class="admin-user-card-fact-label">Davet</span>
+                        <span class="admin-user-card-fact-value">{{ $inviteCount }} · {{ $user->referral_code ?: '—' }}</span>
+                    </div>
+                    <div class="admin-user-card-fact admin-user-card-fact--wide">
+                        <span class="admin-user-card-fact-label">Davet eden</span>
+                        <span class="admin-user-card-fact-value">{{ $user->referredBy?->username ?? '—' }}</span>
+                    </div>
+                    @endif
                 </div>
-                @if($user->gender === 'male')
-                <div class="admin-user-card-meta-row admin-user-card-meta-row--split">
-                    <div>
-                        <dt>Davet</dt>
-                        <dd>{{ $inviteCount }} <small class="admin-user-meta">{{ $user->referral_code ?: 'Kod yok' }}</small></dd>
-                    </div>
-                    <div>
-                        <dt>Davet eden</dt>
-                        <dd>{{ $user->referredBy?->username ?? '—' }}</dd>
-                    </div>
-                </div>
-                @endif
-            </dl>
 
-            @include('partials.admin-user-actions', [
-                'user' => $user,
-                'activePremium' => $activePremium,
-                'canGrantPremium' => $canGrantPremium,
-                'layout' => 'buttons',
-            ])
-        </article>
+                @include('partials.admin-user-actions', [
+                    'user' => $user,
+                    'activePremium' => $activePremium,
+                    'canGrantPremium' => $canGrantPremium,
+                    'layout' => 'buttons',
+                ])
+            </div>
+        </details>
         @empty
         <p class="admin-users-mobile-empty">Arama kriterlerine uygun kullanıcı bulunamadı.</p>
         @endforelse
