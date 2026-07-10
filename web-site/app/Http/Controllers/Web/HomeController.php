@@ -4,12 +4,17 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Support\SeoHelper;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class HomeController extends Controller
 {
-    public function index(): View
+    public function index(): View|RedirectResponse
     {
+        if (auth()->check()) {
+            return redirect()->route('feed');
+        }
+
         SeoHelper::setPage('home');
         SeoHelper::set('pageType', 'home');
         SeoHelper::set('canonical', 'https://gonulkoprusu.com/');

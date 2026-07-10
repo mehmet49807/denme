@@ -1,7 +1,7 @@
 @php
     $logoVersion = (string) config('brand.logo_version', 'brand-v15');
 @endphp
-<a href="{{ route('home') }}" class="site-logo site-logo--brand" aria-label="Gönül Köprüsü — Ana Sayfa">
+<a href="{{ auth()->check() ? route('feed') : route('home') }}" class="site-logo site-logo--brand" aria-label="{{ auth()->check() ? 'Gönül Köprüsü — Akış' : 'Gönül Köprüsü — Ana Sayfa' }}">
     <img
         src="{{ asset('images/logo-220.png') }}?v={{ $logoVersion }}"
         srcset="{{ asset('images/logo-180.png') }}?v={{ $logoVersion }} 180w, {{ asset('images/logo-220.png') }}?v={{ $logoVersion }} 220w, {{ asset('images/logo-320.png') }}?v={{ $logoVersion }} 320w"
