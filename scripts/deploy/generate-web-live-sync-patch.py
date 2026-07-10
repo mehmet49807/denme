@@ -38,6 +38,11 @@ files = {
     / "resources/views/partials/profile-online-label.blade.php",
     "css/feed-stories.css": WEB / "public/css/feed-stories.css",
     "css/profile-toolbar-mobile.css": WEB / "public/css/profile-toolbar-mobile.css",
+    "css/feed-toolbar.css": WEB / "public/css/feed-toolbar.css",
+    "resources/views/partials/feed-toolbar.blade.php": WEB
+    / "resources/views/partials/feed-toolbar.blade.php",
+    "resources/views/partials/theme-icon.blade.php": WEB
+    / "resources/views/partials/theme-icon.blade.php",
     "app/Http/Controllers/Web/HomeController.php": WEB
     / "app/Http/Controllers/Web/HomeController.php",
     "app/Http/Controllers/Web/AuthPageController.php": WEB

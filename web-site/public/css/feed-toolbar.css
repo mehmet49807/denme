@@ -1,0 +1,210 @@
+/* Gönderi / Hikaye — premium segmented toolbar */
+.feed-toolbar--premium {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.3rem;
+    margin-bottom: 0.75rem;
+    padding: 0.28rem;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.035);
+    border: 1px solid rgba(15, 23, 42, 0.07);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.feed-toolbar--premium:has(.feed-create-btn:only-child) {
+    grid-template-columns: 1fr;
+}
+
+.feed-toolbar--premium .feed-create-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.7rem;
+    padding: 0.62rem 0.85rem;
+    font-family: inherit;
+    font-size: 0.84rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    border-radius: 11px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+    transition:
+        background-color 0.16s ease,
+        border-color 0.16s ease,
+        color 0.16s ease,
+        box-shadow 0.16s ease;
+}
+
+.feed-toolbar--premium .feed-create-btn:hover,
+.feed-toolbar--premium .feed-create-btn:focus-visible {
+    transform: none;
+    filter: none;
+}
+
+.feed-toolbar--premium .feed-create-btn:active {
+    transform: scale(0.985);
+}
+
+.feed-toolbar--premium .feed-create-btn--post {
+    color: #6d28d9;
+}
+
+.feed-toolbar--premium .feed-create-btn--post:hover,
+.feed-toolbar--premium .feed-create-btn--post:focus-visible {
+    color: #5b21b6;
+    background: rgba(124, 58, 237, 0.09);
+    border-color: rgba(124, 58, 237, 0.14);
+    box-shadow: 0 1px 0 rgba(124, 58, 237, 0.06);
+}
+
+.feed-toolbar--premium .feed-create-btn--story {
+    color: #c2410c;
+}
+
+.feed-toolbar--premium .feed-create-btn--story:hover,
+.feed-toolbar--premium .feed-create-btn--story:focus-visible {
+    color: #9a3412;
+    background: rgba(234, 88, 12, 0.09);
+    border-color: rgba(234, 88, 12, 0.14);
+    box-shadow: 0 1px 0 rgba(234, 88, 12, 0.06);
+}
+
+.feed-toolbar--premium .feed-create-btn--premium {
+    color: #a16207;
+}
+
+.feed-toolbar--premium .feed-create-btn--premium:hover,
+.feed-toolbar--premium .feed-create-btn--premium:focus-visible {
+    color: #854d0e;
+    background: rgba(202, 138, 4, 0.1);
+    border-color: rgba(202, 138, 4, 0.16);
+    box-shadow: 0 1px 0 rgba(202, 138, 4, 0.06);
+}
+
+.feed-toolbar--premium .feed-create-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 8px;
+    flex-shrink: 0;
+    box-shadow: none;
+}
+
+.feed-toolbar--premium .feed-create-icon .theme-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feed-toolbar--premium .feed-create-icon .theme-icon svg {
+    width: 0.92rem;
+    height: 0.92rem;
+}
+
+.feed-toolbar--premium .feed-create-icon--post {
+    background: rgba(124, 58, 237, 0.12);
+    color: #7c3aed;
+}
+
+.feed-toolbar--premium .feed-create-btn--post:hover .feed-create-icon--post,
+.feed-toolbar--premium .feed-create-btn--post:focus-visible .feed-create-icon--post {
+    background: rgba(124, 58, 237, 0.18);
+}
+
+.feed-toolbar--premium .feed-create-icon--story {
+    background: rgba(234, 88, 12, 0.12);
+    color: #ea580c;
+}
+
+.feed-toolbar--premium .feed-create-btn--story:hover .feed-create-icon--story,
+.feed-toolbar--premium .feed-create-btn--story:focus-visible .feed-create-icon--story {
+    background: rgba(234, 88, 12, 0.18);
+}
+
+.feed-toolbar--premium .feed-create-icon--premium {
+    background: rgba(202, 138, 4, 0.14);
+    color: #ca8a04;
+}
+
+.feed-toolbar--premium .feed-create-btn--premium:hover .feed-create-icon--premium,
+.feed-toolbar--premium .feed-create-btn--premium:focus-visible .feed-create-icon--premium {
+    background: rgba(202, 138, 4, 0.2);
+}
+
+.feed-toolbar--premium .feed-create-label {
+    white-space: nowrap;
+}
+
+.feed-toolbar--premium.feed-toolbar--compact {
+    margin-bottom: 0;
+    gap: 0.25rem;
+    padding: 0.24rem;
+}
+
+.feed-toolbar--premium.feed-toolbar--compact .feed-create-btn {
+    min-height: 2.55rem;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.8rem;
+}
+
+.feed-page .feed-toolbar--premium {
+    margin-top: 0.15rem;
+}
+
+.profile-page .feed-toolbar--premium {
+    margin-top: 0;
+    margin-bottom: 0.65rem;
+}
+
+/* Premium trial / upsell banners */
+.premium-feed-banner--compact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0.65rem;
+    margin: 0.35rem 0 0;
+    border-radius: 12px;
+    font-size: 0.74rem;
+    line-height: 1.35;
+    background: rgba(15, 23, 42, 0.03);
+    border: 1px solid rgba(15, 23, 42, 0.07);
+}
+
+.premium-feed-banner--compact p {
+    margin: 0;
+}
+
+.premium-feed-banner--compact .btn-sm {
+    padding: 0.28rem 0.55rem;
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
+.premium-feed-banner--trial.premium-feed-banner--compact {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(255, 107, 138, 0.08));
+    border-color: rgba(251, 191, 36, 0.2);
+}
+
+@media (max-width: 380px) {
+    .feed-toolbar--premium .feed-create-btn {
+        gap: 0.38rem;
+        padding-left: 0.55rem;
+        padding-right: 0.55rem;
+        font-size: 0.78rem;
+    }
+
+    .feed-toolbar--premium .feed-create-icon {
+        width: 1.42rem;
+        height: 1.42rem;
+    }
+}

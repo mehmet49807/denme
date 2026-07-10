@@ -126,10 +126,6 @@
     left: auto;
 }
 
-.profile-page .feed-toolbar {
-    margin-top: 0;
-    margin-bottom: 0.65rem;
-}
 
 @media (max-width: 768px) {
     .profile-page .profile-settings--toolbar > summary.profile-settings-toggle,

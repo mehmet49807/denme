@@ -3,7 +3,7 @@
 @php $activeNav = 'profile'; @endphp
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('css/profile-toolbar-mobile.css') }}?v=profile-toolbar-mobile-2">
+<link rel="stylesheet" href="{{ asset('css/profile-toolbar-mobile.css') }}?v=profile-toolbar-mobile-3">
 @endpush
 
 @section('title', 'Profil — Gönül Köprüsü')
