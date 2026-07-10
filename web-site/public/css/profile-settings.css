@@ -1,5 +1,6 @@
 /* App header — Logo (sol), Premium + Ayarlar (sağ) */
 body.app-shell-body .site-header-inner {
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
 }

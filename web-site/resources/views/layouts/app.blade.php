@@ -39,7 +39,7 @@
     @endif
     @auth
     @if($appShell)
-    <link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-5">
+    <link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-6">
     <link rel="stylesheet" href="{{ asset('css/nav-icon-animations.css') }}?v=nav-icon-animations-1">
     @endif
     @php $realtimeEnabled = app(\App\Services\RealtimeBroadcastService::class)->isEnabled(); @endphp
