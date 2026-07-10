@@ -85,6 +85,9 @@ jobs:
               echo "İlk push / before yok → full sync"
             else
               git diff --name-only "$BEFORE" "${{ github.sha }}" > /tmp/changed-files.txt
+              for patch in patch-web-*.php; do
+                [ -f "$patch" ] && echo "$patch" >> /tmp/changed-files.txt
+              done
               echo "changed_file=/tmp/changed-files.txt" >> "$GITHUB_OUTPUT"
               echo "Delta dosyalar:"
               cat /tmp/changed-files.txt || true
@@ -92,6 +95,9 @@ jobs:
           else
             echo "changed_file=/tmp/changed-files.txt" >> "$GITHUB_OUTPUT"
             git diff --name-only HEAD~1 HEAD > /tmp/changed-files.txt || true
+            for patch in patch-web-*.php; do
+              [ -f "$patch" ] && echo "$patch" >> /tmp/changed-files.txt
+            done
             echo "Manuel delta (son commit):"
             cat /tmp/changed-files.txt || true
           fi
