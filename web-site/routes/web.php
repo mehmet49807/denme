@@ -361,6 +361,7 @@ Route::middleware(['auth', 'locale'])->group(function () {
     Route::get('/profile', [ProfilePageController::class, 'index'])->name('profile');
     Route::get('/davet', [ReferralPageController::class, 'index'])->name('referral');
     Route::put('/profile', [ProfilePageController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfilePageController::class, 'updatePassword'])->name('profile.password');
     Route::post('/profile/photo', [ProfilePageController::class, 'uploadPhoto'])->name('profile.photo');
     Route::get('/profile/locale/{locale}', [ProfilePageController::class, 'switchLocale'])
         ->where('locale', 'tr|en|de|fr|hi')

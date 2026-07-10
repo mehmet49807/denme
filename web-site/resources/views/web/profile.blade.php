@@ -5,7 +5,7 @@
 @section('title', 'Profil — Gönül Köprüsü')
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('css/profile-toolbar-mobile.css') }}?v=profile-toolbar-mobile-3">
+<link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-1">
 @endpush
 
 @section('app-content')
@@ -15,6 +15,22 @@
 
 <div class="profile-page feed-container">
     <header class="profile-header">
+        <button
+            type="button"
+            class="profile-settings-open-btn"
+            id="profileSettingsOpen"
+            aria-haspopup="dialog"
+            aria-controls="profileSettingsSheet"
+            aria-expanded="false"
+            aria-label="Ayarlar"
+        >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+            </svg>
+            <span class="profile-settings-open-label">Ayarlar</span>
+        </button>
+
         <div class="profile-photo-wrap @if($ownStoryGroup) profile-photo-wrap--has-story @endif">
             @if($ownStoryGroup)
             <button
@@ -68,64 +84,6 @@
     @error('photo') <small class="form-error profile-photo-error">{{ $message }}</small> @enderror
     @if(session('success')) <p class="profile-success">{{ session('success') }}</p> @endif
 
-    <div class="profile-toolbar-row">
-        <details class="profile-settings profile-settings--toolbar">
-            <summary class="profile-settings-toggle">
-                <span class="profile-settings-toggle-icon" aria-hidden="true">
-                    @include('partials.theme-icon', ['icon' => 'edit'])
-                </span>
-                <span class="profile-settings-toggle-label">Profil Bilgilerini Düzenle</span>
-                <span class="profile-settings-toggle-chevron" aria-hidden="true">▾</span>
-            </summary>
-            <div class="profile-settings-body">
-                <form method="POST" action="{{ route('profile') }}">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="form-group">
-                        <label>Kullanıcı Adı (değiştirilemez)</label>
-                        <input type="text" value="{{ $user->username }}" readonly>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Ad</label>
-                            <input type="text" name="first_name" value="{{ old('first_name', $user->first_name) }}">
-                        </div>
-                        <div class="form-group">
-                            <label>Soyad</label>
-                            <input type="text" name="last_name" value="{{ old('last_name', $user->last_name) }}">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>E-posta</label>
-                        <input type="email" name="email" value="{{ old('email', $user->email) }}">
-                        @error('email') <small class="form-error">{{ $message }}</small> @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label>Telefon</label>
-                        <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Ülke, Şehir & İlçe</label>
-                        @include('partials.location-fields', [
-                            'country' => $user->country ?? 'Türkiye',
-                            'city' => $user->city,
-                            'district' => $user->district,
-                        ])
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-full">Kaydet</button>
-                </form>
-            </div>
-        </details>
-
-        @include('partials.profile-language-dropdown')
-    </div>
-
     @include('partials.feed-toolbar', ['viewer' => $user])
     @error('image') <small class="form-error">{{ $message }}</small> @enderror
     @error('story') <small class="form-error">{{ $message }}</small> @enderror
@@ -138,6 +96,7 @@
     ])
 </div>
 
+@include('partials.profile-settings-sheet', ['user' => $user])
 @include('partials.feed-compose', ['viewer' => $user])
 
 @if($ownStoryGroup)
@@ -171,8 +130,10 @@
 <script src="{{ asset('js/feed.js') }}?v=feed-upload-v3"></script>
 <script src="{{ asset('js/profile-posts.js') }}?v=profile-posts-1"></script>
 <script src="{{ asset('js/profile-photo.js') }}?v=profile-photo-2"></script>
+<script src="{{ asset('js/profile-settings.js') }}?v=profile-settings-1"></script>
+<script src="{{ asset('js/hobbies-picker.js') }}?v=hobbies-1"></script>
+<script src="{{ asset('js/locations.js') }}?v=world-locations-1"></script>
 @if($ownStoryGroup)
 <script src="{{ asset('js/stories.js') }}?v=ig-stories-3"></script>
 @endif
-<script src="{{ asset('js/locations.js') }}?v=world-locations-1"></script>
 @endsection

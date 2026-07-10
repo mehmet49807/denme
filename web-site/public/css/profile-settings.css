@@ -1,0 +1,286 @@
+/* Profil ayarlar paneli — web + mobil */
+.profile-page .profile-header {
+    position: relative;
+}
+
+.profile-page .profile-header-meta {
+    padding-right: 3.25rem;
+}
+
+.profile-settings-open-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 999px;
+    border: 2px solid color-mix(in srgb, var(--violet) 35%, var(--border));
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--violet);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.profile-settings-open-btn svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+}
+
+.profile-settings-open-btn:hover {
+    border-color: var(--violet);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.14);
+}
+
+.profile-settings-sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.profile-settings-sheet[hidden] {
+    display: none !important;
+}
+
+.profile-settings-sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgba(15, 23, 42, 0.42);
+    backdrop-filter: blur(3px);
+    cursor: pointer;
+}
+
+.profile-settings-sheet-panel {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 420px);
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    box-shadow: -12px 0 40px rgba(15, 23, 42, 0.18);
+    animation: profileSettingsSlideIn 0.24s ease;
+}
+
+@keyframes profileSettingsSlideIn {
+    from { transform: translateX(100%); opacity: 0.6; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.profile-settings-sheet-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.06), rgba(236, 72, 153, 0.04));
+}
+
+.profile-settings-sheet-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    text-align: center;
+}
+
+.profile-settings-sheet-back,
+.profile-settings-sheet-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(124, 58, 237, 0.08);
+    color: var(--violet);
+    cursor: pointer;
+}
+
+.profile-settings-sheet-body {
+    flex: 1;
+    overflow: auto;
+    padding: 0.75rem 0.9rem 1.25rem;
+    -webkit-overflow-scrolling: touch;
+}
+
+.profile-settings-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.profile-settings-menu-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+    padding: 0.8rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: #fff;
+    color: inherit;
+    font-family: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.profile-settings-menu-item:hover {
+    border-color: color-mix(in srgb, var(--violet) 35%, var(--border));
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.08);
+    transform: translateY(-1px);
+}
+
+.profile-settings-menu-item--danger {
+    border-color: rgba(239, 68, 68, 0.22);
+    background: rgba(254, 242, 242, 0.7);
+    color: #b91c1c;
+}
+
+.profile-settings-menu-item--danger:hover {
+    border-color: rgba(239, 68, 68, 0.35);
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.1);
+}
+
+.profile-settings-menu-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(236, 72, 153, 0.08));
+    font-size: 1.05rem;
+    flex-shrink: 0;
+}
+
+.profile-settings-menu-icon svg {
+    width: 1.05rem;
+    height: 1.05rem;
+}
+
+.profile-settings-menu-item--danger .profile-settings-menu-icon {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.profile-settings-menu-text strong {
+    display: block;
+    font-size: 0.9rem;
+    line-height: 1.25;
+}
+
+.profile-settings-menu-text small {
+    display: block;
+    margin-top: 0.12rem;
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    line-height: 1.3;
+}
+
+.profile-settings-menu-chevron {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.profile-settings-logout-form {
+    margin: 0.35rem 0 0;
+}
+
+.profile-settings-panel-lead {
+    margin: 0 0 0.85rem;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+}
+
+.profile-settings-form .form-group {
+    margin-bottom: 0.85rem;
+}
+
+.profile-settings-language-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.profile-settings-language-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    font-weight: 600;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.profile-settings-language-item:hover {
+    border-color: color-mix(in srgb, var(--violet) 35%, var(--border));
+    background: rgba(124, 58, 237, 0.04);
+}
+
+.profile-settings-language-item--active {
+    border-color: var(--violet);
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.06));
+    color: var(--violet);
+}
+
+.profile-settings-language-flag {
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.profile-settings-language-check {
+    margin-left: auto;
+    font-weight: 800;
+}
+
+body.profile-settings-open {
+    overflow: hidden;
+}
+
+@media (max-width: 520px) {
+    .profile-settings-open-label {
+        display: none;
+    }
+
+    .profile-settings-open-btn {
+        min-width: 2.5rem;
+        justify-content: center;
+        padding-left: 0.65rem;
+        padding-right: 0.65rem;
+    }
+
+    .profile-settings-sheet-panel {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .profile-settings-sheet-panel {
+        border-left: 1px solid var(--border);
+    }
+}

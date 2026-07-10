@@ -12,6 +12,7 @@
       { "local": "web-site/resources", "remote": "resources" },
       { "local": "web-site/public/images", "remote": "images" },
       { "local": "web-site/public/css", "remote": "css" },
+      { "local": "web-site/public/js", "remote": "js" },
       { "local": "web-site/public/.htaccess", "remote": ".htaccess", "file": true },
       { "local": "patch-web-admin-github.php", "remote": "patch-web-admin-github.php", "file": true },
       { "local": "patch-web-admin-nav.php", "remote": "patch-web-admin-nav.php", "file": true },
