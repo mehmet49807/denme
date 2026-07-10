@@ -2,6 +2,10 @@
 
 @php $activeNav = 'profile'; @endphp
 
+@push('head')
+<link rel="stylesheet" href="{{ asset('css/profile-toolbar-mobile.css') }}?v=profile-toolbar-mobile-2">
+@endpush
+
 @section('title', 'Profil — Gönül Köprüsü')
 
 @section('app-content')
@@ -50,7 +54,10 @@
             </form>
         </div>
         <div class="profile-header-meta">
-            <h1 class="profile-username">{{ $user->username }}</h1>
+            <h1 class="profile-username">
+                <span class="profile-username-text">{{ $user->username }}</span>
+                @include('partials.profile-online-label', ['user' => $user])
+            </h1>
             <p class="profile-location-line">
                 {{ $user->country ?? 'Türkiye' }} — {{ $user->city }}
                 @if($user->district) — {{ $user->district }}@endif

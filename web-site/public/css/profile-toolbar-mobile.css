@@ -1,3 +1,40 @@
+/* Profil — kullanıcı adı yanında çevrimiçi */
+.profile-page .profile-username {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0 0 0.25rem;
+    font-size: 1.35rem;
+}
+
+.profile-page .profile-username-text {
+    display: inline-block;
+}
+
+.profile-page .profile-online-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    padding: 0.34rem 0.78rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #065f46;
+    background: rgba(22, 163, 74, 0.1);
+    border: 1px solid rgba(22, 163, 74, 0.22);
+    vertical-align: middle;
+}
+
+.profile-page .profile-online-btn-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #16a34a;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.25);
+    flex-shrink: 0;
+}
+
 /* Profil araç çubuğu — sol: düzenle, sağ: dil (mobil + web) */
 .profile-page .profile-header {
     margin-bottom: 0.65rem;
