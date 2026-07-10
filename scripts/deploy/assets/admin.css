@@ -1134,6 +1134,195 @@ a.admin-sidebar-user.is-active {
     .admin-users-filter-field--grow { min-width: 100%; }
 }
 
+/* Users — mobil kart listesi */
+.admin-users-mobile { display: none; }
+
+.admin-user-card {
+    border: 1px solid rgba(124, 58, 237, 0.14);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.92);
+    padding: 0.9rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 4px 18px rgba(124, 58, 237, 0.06);
+}
+
+.admin-user-card-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+}
+
+.admin-user-card-check-spacer {
+    width: 1rem;
+    height: 1rem;
+    display: block;
+}
+
+.admin-user-card-head .admin-user-cell {
+    min-width: 0;
+}
+
+.admin-user-card-identity {
+    min-width: 0;
+}
+
+.admin-user-card-identity .admin-user-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-user-card-status {
+    flex-shrink: 0;
+}
+
+.admin-user-card-meta {
+    margin: 0 0 0.85rem;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+}
+
+.admin-user-card-meta-row {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.admin-user-card-meta-row--split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+}
+
+.admin-user-card-meta dt {
+    margin: 0;
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-light);
+}
+
+.admin-user-card-meta dd {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.admin-user-card-email {
+    color: var(--violet);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.admin-user-card-email:hover { text-decoration: underline; }
+
+.admin-user-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.admin-user-card-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.admin-user-card-actions .btn {
+    flex: 1 1 calc(50% - 0.25rem);
+    min-width: 0;
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+}
+
+.admin-user-card-btn--danger {
+    color: #B91C1C;
+    border-color: rgba(239, 68, 68, 0.28);
+    background: rgba(239, 68, 68, 0.06);
+}
+
+.admin-user-card-btn--warn {
+    color: #B45309;
+    border-color: rgba(251, 191, 36, 0.35);
+    background: rgba(251, 191, 36, 0.08);
+}
+
+.admin-user-card-btn--success {
+    color: #047857;
+    border-color: rgba(16, 185, 129, 0.28);
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.admin-user-card-btn--premium {
+    color: var(--violet);
+    border-color: rgba(124, 58, 237, 0.28);
+    background: rgba(124, 58, 237, 0.08);
+}
+
+.admin-users-mobile-empty {
+    margin: 0;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-weight: 600;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.65);
+}
+
+@media (max-width: 900px) {
+    .admin-users-desktop { display: none; }
+    .admin-users-mobile { display: block; }
+
+    .admin-users-bulk {
+        position: sticky;
+        top: 0.5rem;
+        z-index: 20;
+        box-shadow: 0 8px 24px rgba(124, 58, 237, 0.12);
+    }
+
+    .admin-stat-grid--compact {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-dialog {
+        width: min(480px, calc(100vw - 1rem));
+        max-height: calc(100vh - 1rem);
+    }
+
+    .admin-dialog-form .form-group {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .admin-dialog-footer {
+        position: sticky;
+        bottom: 0;
+        background: #fff;
+        border-top: 1px solid var(--border);
+        padding: 0.85rem 1rem;
+    }
+}
+
+@media (max-width: 520px) {
+    .admin-user-card-actions .btn {
+        flex: 1 1 100%;
+    }
+
+    .admin-users-bulk {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-users-bulk-count {
+        margin-right: 0;
+        text-align: center;
+    }
+}
+
 /* Forms */
 .form-group { margin-bottom: 1rem; }
 .form-group label {
