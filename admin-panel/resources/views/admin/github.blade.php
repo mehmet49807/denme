@@ -107,9 +107,9 @@
 <div class="admin-panel admin-panel--glass">
     <h3 class="admin-panel-title">Bakım</h3>
     <p class="admin-stat-label">Deploy sonrası önbellek sorunu yaşarsanız temizleyin.</p>
-    <form method="POST" action="{{ route('admin.github.clear-cache') }}" class="admin-inline-form">
-        @csrf
-        <button type="submit" class="btn btn-outline" onclick="return confirm('Önbellek temizlensin mi?')">Önbelleği Temizle</button>
-    </form>
+    @include('partials.admin-cache-clear-buttons', ['returnTo' => 'github', 'compact' => true])
+    <p class="admin-stat-label admin-cache-clear-link">
+        <a href="{{ route('admin.maintenance') }}">Önbellek sayfasına git →</a>
+    </p>
 </div>
 @endsection

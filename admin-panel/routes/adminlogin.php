@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminEmailController;
 use App\Http\Controllers\Admin\AdminReferralController;
 use App\Http\Controllers\Admin\AdminSupportController;
 use App\Http\Controllers\Admin\AdminGithubController;
+use App\Http\Controllers\Admin\AdminMaintenanceController;
 use App\Http\Controllers\Admin\AdminPanelController;
 use App\Http\Controllers\Admin\AdminSeoController;
 use App\Http\Controllers\Admin\AdminProfileController;
@@ -50,7 +51,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/rapor/{rapor}', fn () => redirect()->route('admin.dashboard'))->name('admin.rapor.show');
     Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');
     Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');
-    Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->name('admin.github.clear-cache');
+    Route::post('/github/clear-cache', [AdminMaintenanceController::class, 'clearCache'])->name('admin.github.clear-cache');
+    Route::get('/maintenance', [AdminMaintenanceController::class, 'index'])->name('admin.maintenance');
+    Route::post('/maintenance/clear-cache', [AdminMaintenanceController::class, 'clearCache'])->name('admin.maintenance.clear-cache');
     Route::get('/reports', [AdminPanelController::class, 'reports'])->name('admin.reports');
     Route::put('/reports/{report}', [AdminPanelController::class, 'updateReport'])->name('admin.reports.update');
     Route::get('/premium', [AdminPanelController::class, 'premium'])->name('admin.premium');

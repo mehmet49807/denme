@@ -13,6 +13,7 @@
         ['route' => 'admin.support', 'label' => '7/24 Destek', 'icon' => 'headset', 'theme' => 'lime'],
         ['route' => 'admin.emails', 'label' => 'E-posta', 'icon' => 'mail', 'theme' => 'cyan'],
         ['route' => 'admin.seo', 'label' => 'SEO & Google', 'icon' => 'search', 'theme' => 'teal'],
+        ['route' => 'admin.maintenance', 'label' => 'Önbellek', 'icon' => 'sparkles', 'theme' => 'violet'],
         ['route' => 'admin.profile', 'label' => 'Profilim', 'icon' => 'user', 'theme' => 'rose'],
     ];
 @endphp

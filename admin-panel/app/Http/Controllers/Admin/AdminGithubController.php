@@ -32,21 +32,6 @@ class AdminGithubController extends Controller
         return redirect()->route('admin.github')->with('success', 'Durum yenilendi.');
     }
 
-    public function clearCache(Request $request, DeployGithubService $deploy): RedirectResponse
-    {
-        $target = (string) $request->input('target', 'all');
-        if (! in_array($target, ['web', 'admin', 'all'], true)) {
-            $target = 'all';
-        }
-
-        $result = $deploy->clearRemoteCache($target);
-
-        return redirect()->route('admin.github')->with(
-            $result['ok'] ? 'success' : 'error',
-            $result['message']
-        );
-    }
-
     public function deployNotify(Request $request, DeployGithubService $deploy): Response
     {
         if ($request->query('key') !== config('deploy.setup_key')) {

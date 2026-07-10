@@ -13,11 +13,19 @@ OUT = ROOT / "patch-web-admin-github.php"
 files = {
     "app/Http/Controllers/Admin/AdminGithubController.php": ROOT
     / "admin-panel/app/Http/Controllers/Admin/AdminGithubController.php",
+    "app/Http/Controllers/Admin/AdminMaintenanceController.php": ROOT
+    / "admin-panel/app/Http/Controllers/Admin/AdminMaintenanceController.php",
     "app/Services/DeployGithubService.php": ROOT
     / "admin-panel/app/Services/DeployGithubService.php",
     "config/deploy.php": ROOT / "admin-panel/config/deploy.php",
     "resources/views/admin/github.blade.php": ROOT
     / "admin-panel/resources/views/admin/github.blade.php",
+    "resources/views/admin/maintenance.blade.php": ROOT
+    / "admin-panel/resources/views/admin/maintenance.blade.php",
+    "resources/views/partials/admin-cache-clear-buttons.blade.php": ROOT
+    / "admin-panel/resources/views/partials/admin-cache-clear-buttons.blade.php",
+    "resources/views/partials/admin-nav.blade.php": ROOT
+    / "admin-panel/resources/views/partials/admin-nav.blade.php",
     "resources/views/partials/admin-nav-github-link.blade.php": ROOT
     / "admin-panel/resources/views/partials/admin-nav-github-link.blade.php",
     "routes/admin_subdomain.php": ROOT / "admin-panel/routes/admin_subdomain.php",
@@ -99,17 +107,42 @@ if (is_file($routeFile)) {
             $newRoutes
         );
     }
+    if (! str_contains($newRoutes, 'AdminMaintenanceController')) {
+        $newRoutes = str_replace(
+            'use App\Http\Controllers\Admin\AdminGithubController;',
+            "use App\Http\Controllers\Admin\AdminGithubController;\nuse App\Http\Controllers\Admin\AdminMaintenanceController;",
+            $newRoutes
+        );
+        if (! str_contains($newRoutes, 'AdminMaintenanceController')) {
+            $newRoutes = str_replace(
+                'use App\Http\Controllers\Admin\AdminPanelController;',
+                "use App\Http\Controllers\Admin\AdminPanelController;\nuse App\Http\Controllers\Admin\AdminMaintenanceController;",
+                $newRoutes
+            );
+        }
+    }
     if (! str_contains($newRoutes, "->name('admin.github')")) {
         $newRoutes = preg_replace(
             "/Route::post\('\/ai\/users\/\{user\}\/scan'.*?\n/",
-            "$0    Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');\n    Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');\n    Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->name('admin.github.clear-cache');\n",
+            "$0    Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');\n    Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');\n    Route::post('/github/clear-cache', [AdminMaintenanceController::class, 'clearCache'])->name('admin.github.clear-cache');\n    Route::get('/maintenance', [AdminMaintenanceController::class, 'index'])->name('admin.maintenance');\n    Route::post('/maintenance/clear-cache', [AdminMaintenanceController::class, 'clearCache'])->name('admin.maintenance.clear-cache');\n",
             $newRoutes,
             1
         ) ?? $newRoutes;
     } elseif (! str_contains($newRoutes, "->name('admin.github.check')")) {
         $newRoutes = str_replace(
             "->name('admin.github');",
-            "->name('admin.github');\n    Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');\n    Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->name('admin.github.clear-cache');",
+            "->name('admin.github');\n    Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');\n    Route::post('/github/clear-cache', [AdminMaintenanceController::class, 'clearCache'])->name('admin.github.clear-cache');\n    Route::get('/maintenance', [AdminMaintenanceController::class, 'index'])->name('admin.maintenance');\n    Route::post('/maintenance/clear-cache', [AdminMaintenanceController::class, 'clearCache'])->name('admin.maintenance.clear-cache');",
+            $newRoutes
+        );
+    } elseif (! str_contains($newRoutes, "->name('admin.maintenance')")) {
+        $newRoutes = str_replace(
+            "->name('admin.github.clear-cache');",
+            "->name('admin.github.clear-cache');\n    Route::get('/maintenance', [AdminMaintenanceController::class, 'index'])->name('admin.maintenance');\n    Route::post('/maintenance/clear-cache', [AdminMaintenanceController::class, 'clearCache'])->name('admin.maintenance.clear-cache');",
+            $newRoutes
+        );
+        $newRoutes = str_replace(
+            '[AdminGithubController::class, \'clearCache\']',
+            '[AdminMaintenanceController::class, \'clearCache\']',
             $newRoutes
         );
     }

@@ -45,6 +45,7 @@
     ],
     "post_deploy": [
       "https://admin.gonulkoprusu.com/setup/cpanel?key={SETUP_KEY}",
+      "https://admin.gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}",
       "https://admin.gonulkoprusu.com/setup/deploy-notify?key={SETUP_KEY}&target=admin&commit={GITHUB_SHA}"
     ]
   }

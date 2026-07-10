@@ -64,7 +64,7 @@ class DeployGithubService
             'admin' => $this->pingUrl($adminUrl),
             'admin_github' => $this->pingUrl($adminUrl.'/github'),
             'web_cache' => $this->pingUrl($webUrl.'/setup/clear-cache?key='.$key, 20),
-            'admin_cache' => $this->pingUrl($adminUrl.'/setup/cpanel?key='.$key, 20),
+            'admin_cache' => $this->pingUrl($adminUrl.'/setup/clear-cache?key='.$key, 20),
         ];
     }
 
@@ -224,7 +224,10 @@ class DeployGithubService
 
         if (in_array($target, ['admin', 'all'], true)) {
             $this->clearLocalCache();
-            $result = $this->pingUrl($adminUrl.'/setup/cpanel?key='.$key, 25);
+            $result = $this->pingUrl($adminUrl.'/setup/clear-cache?key='.$key, 25);
+            if (! $result['ok']) {
+                $result = $this->pingUrl($adminUrl.'/setup/cpanel?key='.$key, 25);
+            }
             $messages[] = 'Admin: '.($result['ok'] ? 'önbellek temizlendi' : $result['message']);
         }
 

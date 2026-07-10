@@ -769,6 +769,50 @@ a.admin-sidebar-user.is-active {
     margin-left: 0.5rem;
 }
 
+.admin-cache-clear-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.85rem;
+}
+
+.admin-cache-clear-actions--compact {
+    margin-top: 0.65rem;
+}
+
+.admin-cache-clear-form {
+    margin: 0;
+}
+
+.admin-cache-clear-notes {
+    margin: 1rem 0 0;
+    padding-left: 1.1rem;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+.admin-cache-clear-notes code {
+    font-size: 0.78rem;
+    word-break: break-all;
+}
+
+.admin-cache-clear-link {
+    margin-top: 0.75rem;
+}
+
+@media (max-width: 640px) {
+    .admin-cache-clear-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-cache-clear-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 .admin-flag-details summary {
     cursor: pointer;
     color: var(--violet);
