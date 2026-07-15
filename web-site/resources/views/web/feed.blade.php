@@ -3,7 +3,7 @@
 @php $activeNav = 'feed'; @endphp
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('css/feed-stories.css') }}?v=feed-stories-1">
+<link rel="stylesheet" href="{{ asset('css/feed-stories.css') }}?v=feed-stories-2">
 @endpush
 
 @section('title', __('app.feed.title') . ' — ' . __('app.brand'))
@@ -55,8 +55,8 @@
                             @else
                                 {{ strtoupper(substr($viewer->username, 0, 1)) }}
                             @endif
-                            <span class="story-add-badge" aria-hidden="true">+</span>
                         </span>
+                        <span class="story-add-badge" aria-hidden="true">+</span>
                     </span>
                     <span class="story-username">{{ __('app.feed.add_story') }}</span>
                 </button>
@@ -109,6 +109,9 @@
                 <div class="post-header-top">
                     <a href="{{ route('users.show', $post->user->username) }}" class="post-username">
                         {{ $post->user->username }}
+                        @if($post->user->age())
+                            <span class="post-user-age" title="Yaş">{{ $post->user->age() }}</span>
+                        @endif
                         @include('partials.profile-verified-tick', ['user' => $post->user, 'size' => 'sm'])
                     </a>
                     @include('partials.profile-online-label', ['user' => $post->user, 'compact' => true])

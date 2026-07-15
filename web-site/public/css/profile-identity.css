@@ -45,7 +45,7 @@
     align-items: center;
     gap: 0.35rem;
     margin: 0.15rem 0 0;
-    padding: 0.28rem 0.6rem;
+    padding: 0.28rem 0.65rem;
     width: fit-content;
     border-radius: 999px;
     font-size: 0.8rem;
@@ -55,9 +55,18 @@
     border: 1px solid rgba(244, 63, 94, 0.14);
 }
 
+.profile-relationship-status-label {
+    font-weight: 700;
+    color: #7f1d1d;
+}
+
 .profile-relationship-status-icon {
     font-size: 0.95rem;
     line-height: 1;
+}
+
+.profile-relationship-status-value {
+    font-weight: 600;
 }
 
 .profile-identity .profile-bio {

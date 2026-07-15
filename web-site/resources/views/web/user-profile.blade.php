@@ -3,7 +3,8 @@
 @section('title', $user->username . ' — Gönül Köprüsü')
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-1">
+<link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-2">
+<link rel="stylesheet" href="{{ asset('css/feed-stories.css') }}?v=feed-stories-2">
 @endpush
 
 @section('app-content')

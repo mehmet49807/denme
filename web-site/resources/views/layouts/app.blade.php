@@ -40,7 +40,7 @@
     @auth
     @if($appShell)
     <link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-11">
-    <link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-1">
+    <link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-2">
     <link rel="stylesheet" href="{{ asset('css/feed-toolbar.css') }}?v=feed-toolbar-2">
     <link rel="stylesheet" href="{{ asset('css/nav-icon-animations.css') }}?v=nav-icon-animations-3">
     <link rel="stylesheet" href="{{ asset('css/mobile-bottom-nav.css') }}?v=mobile-bottom-nav-4">

@@ -5,7 +5,8 @@
 @push('head')
 <link rel="stylesheet" href="{{ asset('css/profile-toolbar-mobile.css') }}?v=profile-toolbar-mobile-3">
 <link rel="stylesheet" href="{{ asset('css/profile-premium-sections.css') }}?v=profile-premium-sections-2">
-<link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-1">
+<link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-2">
+<link rel="stylesheet" href="{{ asset('css/feed-stories.css') }}?v=feed-stories-2">
 @endpush
 
 @section('title', 'Profil — Gönül Köprüsü')

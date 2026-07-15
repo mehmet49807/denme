@@ -1,4 +1,48 @@
-/* Akış — kendi hikayende + ikonu önde */
+/* Akış — hikaye avatarı (yuvarlak kesim) + kendi hikayede + ikonu */
+.stories-strip .story-ring,
+.story-item .story-ring,
+.profile-page .story-ring {
+    border-radius: 50%;
+    overflow: visible;
+    flex-shrink: 0;
+}
+
+.stories-strip .story-avatar,
+.story-item .story-avatar,
+.profile-page .story-avatar,
+.story-avatar {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.stories-strip .story-avatar img,
+.story-item .story-avatar img,
+.profile-page .story-avatar img,
+.story-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    object-position: center;
+    display: block;
+    aspect-ratio: 1 / 1;
+}
+
+/* + rozeti avatarın dışına alındı; ring üzerinde konumlanır */
+.story-ring {
+    position: relative;
+}
+
+.story-item--add .story-avatar {
+    overflow: hidden !important;
+}
+
 .story-item-host--own {
     display: flex;
     flex-direction: column;
@@ -29,6 +73,7 @@
 }
 
 .story-add-badge--compose,
+.story-ring > .story-add-badge,
 .story-avatar .story-add-badge {
     position: absolute;
     bottom: 0;
@@ -59,10 +104,36 @@
     z-index: 2;
 }
 
-.story-item--add .story-avatar {
-    position: relative;
+/* Profil sayfası hikaye halkası da daima yuvarlak kalsın */
+.profile-photo--story,
+.profile-photo--story .story-ring,
+.profile-photo--story .story-avatar,
+.profile-photo--story .story-avatar img {
+    border-radius: 50% !important;
 }
 
-.story-item--add .story-add-badge {
-    z-index: 5;
+.profile-photo--story .story-avatar {
+    overflow: hidden !important;
+}
+
+/* Akış — kullanıcı adı yanında yaş */
+.post-username {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.post-user-age {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.35rem;
+    padding: 0.05rem 0.38rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #0f172a;
+    background: rgba(15, 23, 42, 0.08);
 }
