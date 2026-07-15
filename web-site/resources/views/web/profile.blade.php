@@ -4,7 +4,7 @@
 
 @push('head')
 <link rel="stylesheet" href="{{ asset('css/profile-toolbar-mobile.css') }}?v=profile-toolbar-mobile-3">
-<link rel="stylesheet" href="{{ asset('css/profile-premium-sections.css') }}?v=profile-premium-sections-1">
+<link rel="stylesheet" href="{{ asset('css/profile-premium-sections.css') }}?v=profile-premium-sections-2">
 @endpush
 
 @section('title', 'Profil — Gönül Köprüsü')
