@@ -50,8 +50,13 @@ class ProfilePageController extends Controller
         $profileViews = collect();
         if ($user->canAccessPremiumProfileFeatures()) {
             $profileViews = ProfileView::query()
-                ->with('viewer:id,username,profile_photo_url,city,district,country,gender,is_verified,last_active_at')
+                ->with('viewer:id,username,profile_photo_url,city,district,country,gender,is_verified,last_active_at,role')
                 ->where('viewed_id', $user->id)
+                ->whereHas('viewer', function ($query) {
+                    $query->where(function ($inner) {
+                        $inner->whereNull('role')->orWhere('role', '!=', 'admin');
+                    });
+                })
                 ->latest()
                 ->limit(30)
                 ->get();
@@ -183,7 +188,7 @@ class ProfilePageController extends Controller
     {
         $user = $request->user();
 
-        if (! $user->canAccessPremiumProfileFeatures()) {
+        if (! $user->canManageProfileGallery()) {
             return redirect()
                 ->route('premium')
                 ->withErrors(['gallery_photo' => 'Galeri özelliği Premium üyeler içindir.']);
@@ -214,7 +219,7 @@ class ProfilePageController extends Controller
     {
         $user = $request->user();
 
-        if (! $user->canAccessPremiumProfileFeatures()) {
+        if (! $user->canManageProfileGallery()) {
             return redirect()
                 ->route('premium')
                 ->withErrors(['gallery_photo' => 'Galeri özelliği Premium üyeler içindir.']);

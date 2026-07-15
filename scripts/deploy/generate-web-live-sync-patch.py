@@ -67,6 +67,8 @@ files = {
     / "app/Http/Controllers/Web/FeedPageController.php",
     "app/Http/Controllers/Web/ProfilePageController.php": WEB
     / "app/Http/Controllers/Web/ProfilePageController.php",
+    "app/Http/Controllers/Web/UserProfilePageController.php": WEB
+    / "app/Http/Controllers/Web/UserProfilePageController.php",
     "app/Http/Controllers/Web/PremiumPageController.php": WEB
     / "app/Http/Controllers/Web/PremiumPageController.php",
     "app/Http/Controllers/Web/SetupController.php": WEB

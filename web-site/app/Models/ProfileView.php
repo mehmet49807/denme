@@ -28,6 +28,11 @@ class ProfileView extends Model
             return;
         }
 
+        // Yöneticiler Kimler baktı listesinde görünmez.
+        if ($viewer->isAdmin()) {
+            return;
+        }
+
         $recent = static::query()
             ->where('viewer_id', $viewer->id)
             ->where('viewed_id', $viewed->id)

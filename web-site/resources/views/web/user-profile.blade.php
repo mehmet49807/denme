@@ -3,6 +3,7 @@
 @section('title', $user->username . ' — Gönül Köprüsü')
 
 @push('head')
+<link rel="stylesheet" href="{{ asset('css/profile-premium-sections.css') }}?v=profile-premium-sections-2">
 <link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-2">
 <link rel="stylesheet" href="{{ asset('css/feed-stories.css') }}?v=feed-stories-2">
 @endpush
@@ -162,6 +163,8 @@
     @if(session('success'))
         <p class="profile-success">{{ session('success') }}</p>
     @endif
+
+    @include('partials.profile-gallery', ['user' => $user, 'viewer' => $viewer])
 
     @include('partials.profile-posts-grid', [
         'profileUser' => $user,

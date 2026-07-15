@@ -73,7 +73,7 @@
     @error('boost') <small class="form-error">{{ $message }}</small> @enderror
 
     @include('partials.profile-views', ['user' => $user, 'profileViews' => $profileViews ?? collect()])
-    @include('partials.profile-gallery', ['user' => $user])
+    @include('partials.profile-gallery', ['user' => $user, 'viewer' => $user])
 
     @include('partials.feed-toolbar', ['viewer' => $user])
     @error('image') <small class="form-error">{{ $message }}</small> @enderror

@@ -115,7 +115,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Profil Galeri + Kimler baktı:
+     * Kimler baktı görüntüleme + galeri yönetimi:
      * kadınlar her zaman, premium erkekler ve adminler.
      */
     public function canAccessPremiumProfileFeatures(): bool
@@ -129,6 +129,21 @@ class User extends Authenticatable
         }
 
         return $this->gender === 'male' && $this->isPremium();
+    }
+
+    /**
+     * Başkasının galeri fotoğraflarını görme:
+     * kadınlar ve adminler her zaman, erkeklerde yalnızca premium.
+     */
+    public function canViewProfileGallery(): bool
+    {
+        return $this->canAccessPremiumProfileFeatures();
+    }
+
+    /** Kendi galerisine fotoğraf ekleme / silme */
+    public function canManageProfileGallery(): bool
+    {
+        return $this->canAccessPremiumProfileFeatures();
     }
 
     private function canUseMalePremiumFeatures(): bool
