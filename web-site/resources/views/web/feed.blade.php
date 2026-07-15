@@ -3,7 +3,7 @@
 @php $activeNav = 'feed'; @endphp
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('css/feed-stories.css') }}?v=feed-stories-2">
+@include('partials.asset', ['path' => 'css/feed-page.min.css'])
 @endpush
 
 @section('title', __('app.feed.title') . ' — ' . __('app.brand'))
@@ -247,8 +247,5 @@
 </div>
 @endif
 
-<script src="{{ asset('js/feed.js') }}?v=feed-v11"></script>
-@if($allStoryGroups->isNotEmpty())
-<script src="{{ asset('js/stories.js') }}?v=ig-stories-6"></script>
-@endif
+@include('partials.asset', ['path' => 'js/feed-page.min.js'])
 @endsection

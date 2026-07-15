@@ -5,7 +5,7 @@
 @section('title', $locationLabel . ' — ' . __('app.brand'))
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('css/location-search.css') }}?v=location-search-1">
+@include('partials.asset', ['path' => 'css/location-search.min.css'])
 @endpush
 
 @section('app-content')
@@ -79,5 +79,4 @@
     @endif
 </div>
 
-<script src="{{ asset('js/locations.js') }}?v=world-locations-1"></script>
 @endsection

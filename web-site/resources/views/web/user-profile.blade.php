@@ -3,9 +3,7 @@
 @section('title', $user->username . ' — Gönül Köprüsü')
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('css/profile-premium-sections.css') }}?v=profile-premium-sections-2">
-<link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-3">
-<link rel="stylesheet" href="{{ asset('css/feed-stories.css') }}?v=feed-stories-2">
+@include('partials.asset', ['path' => 'css/user-profile.min.css'])
 @endpush
 
 @section('app-content')
@@ -255,8 +253,5 @@
     @endif
 })();
 </script>
-<script src="{{ asset('js/feed.js') }}?v=feed-v11"></script>
-@if($targetStoryGroup)
-<script src="{{ asset('js/stories.js') }}?v=ig-stories-6"></script>
-@endif
+@include('partials.asset', ['path' => 'js/feed-page.min.js'])
 @endsection

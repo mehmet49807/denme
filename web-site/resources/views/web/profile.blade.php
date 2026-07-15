@@ -3,10 +3,7 @@
 @php $activeNav = 'profile'; @endphp
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('css/profile-toolbar-mobile.css') }}?v=profile-toolbar-mobile-3">
-<link rel="stylesheet" href="{{ asset('css/profile-premium-sections.css') }}?v=profile-premium-sections-2">
-<link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-3">
-<link rel="stylesheet" href="{{ asset('css/feed-stories.css') }}?v=feed-stories-2">
+@include('partials.asset', ['path' => 'css/profile-page.min.css'])
 @endpush
 
 @section('title', 'Profil — Gönül Köprüsü')
@@ -117,10 +114,5 @@
 </div>
 @endif
 
-<script src="{{ asset('js/feed.js') }}?v=feed-upload-v3"></script>
-<script src="{{ asset('js/profile-posts.js') }}?v=profile-posts-1"></script>
-<script src="{{ asset('js/profile-photo.js') }}?v=profile-photo-2"></script>
-@if($ownStoryGroup)
-<script src="{{ asset('js/stories.js') }}?v=ig-stories-3"></script>
-@endif
+@include('partials.asset', ['path' => 'js/profile-page.min.js'])
 @endsection

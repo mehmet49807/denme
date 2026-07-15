@@ -25,6 +25,7 @@ files = {
     "resources/views/layouts/app-with-sidebar.blade.php": WEB
     / "resources/views/layouts/app-with-sidebar.blade.php",
     "resources/views/layouts/app.blade.php": WEB / "resources/views/layouts/app.blade.php",
+    "resources/views/partials/asset.blade.php": WEB / "resources/views/partials/asset.blade.php",
     "resources/views/partials/logo.blade.php": WEB / "resources/views/partials/logo.blade.php",
     "resources/views/partials/profile-settings-open-btn.blade.php": WEB
     / "resources/views/partials/profile-settings-open-btn.blade.php",
@@ -34,12 +35,17 @@ files = {
     / "resources/views/partials/profile-settings-sheet.blade.php",
     "resources/views/web/feed.blade.php": WEB / "resources/views/web/feed.blade.php",
     "resources/views/web/profile.blade.php": WEB / "resources/views/web/profile.blade.php",
+    "resources/views/web/location-users.blade.php": WEB
+    / "resources/views/web/location-users.blade.php",
+    "resources/views/web/google-complete.blade.php": WEB
+    / "resources/views/web/google-complete.blade.php",
     "resources/views/partials/profile-online-label.blade.php": WEB
     / "resources/views/partials/profile-online-label.blade.php",
     "css/feed-stories.css": WEB / "public/css/feed-stories.css",
     "css/profile-toolbar-mobile.css": WEB / "public/css/profile-toolbar-mobile.css",
     "css/feed-toolbar.css": WEB / "public/css/feed-toolbar.css",
     "css/profile-premium-sections.css": WEB / "public/css/profile-premium-sections.css",
+    "css/location-search.css": WEB / "public/css/location-search.css",
     "resources/views/partials/feed-toolbar.blade.php": WEB
     / "resources/views/partials/feed-toolbar.blade.php",
     "resources/views/partials/theme-icon.blade.php": WEB
@@ -58,6 +64,20 @@ files = {
     "resources/views/partials/birth-date-fields.blade.php": WEB
     / "resources/views/partials/birth-date-fields.blade.php",
     "css/profile-identity.css": WEB / "public/css/profile-identity.css",
+    "css/app.min.css": WEB / "public/css/app.min.css",
+    "css/app-shell.min.css": WEB / "public/css/app-shell.min.css",
+    "css/feed-page.min.css": WEB / "public/css/feed-page.min.css",
+    "css/profile-page.min.css": WEB / "public/css/profile-page.min.css",
+    "css/user-profile.min.css": WEB / "public/css/user-profile.min.css",
+    "css/location-search.min.css": WEB / "public/css/location-search.min.css",
+    "css/profile-identity.min.css": WEB / "public/css/profile-identity.min.css",
+    "js/core.min.js": WEB / "public/js/core.min.js",
+    "js/app-shell.min.js": WEB / "public/js/app-shell.min.js",
+    "js/feed-page.min.js": WEB / "public/js/feed-page.min.js",
+    "js/profile-page.min.js": WEB / "public/js/profile-page.min.js",
+    "js/register.min.js": WEB / "public/js/register.min.js",
+    "js/rt-client.min.js": WEB / "public/js/rt-client.min.js",
+    "js/locations.min.js": WEB / "public/js/locations.min.js",
     "app/Support/RelationshipStatus.php": WEB / "app/Support/RelationshipStatus.php",
     "app/Http/Controllers/Web/HomeController.php": WEB
     / "app/Http/Controllers/Web/HomeController.php",

@@ -35,15 +35,11 @@
     @endif
     @include('partials.landing-inline-css')
     @else
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=app-v41">
+    @include('partials.asset', ['path' => 'css/app.min.css'])
     @endif
     @auth
     @if($appShell)
-    <link rel="stylesheet" href="{{ asset('css/profile-settings.css') }}?v=profile-settings-11">
-    <link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-3">
-    <link rel="stylesheet" href="{{ asset('css/feed-toolbar.css') }}?v=feed-toolbar-2">
-    <link rel="stylesheet" href="{{ asset('css/nav-icon-animations.css') }}?v=nav-icon-animations-3">
-    <link rel="stylesheet" href="{{ asset('css/mobile-bottom-nav.css') }}?v=mobile-bottom-nav-4">
+    @include('partials.asset', ['path' => 'css/app-shell.min.css'])
     @endif
     @php $realtimeEnabled = app(\App\Services\RealtimeBroadcastService::class)->isEnabled(); @endphp
     <meta name="badges-url" content="{{ route('notifications.badge-counts') }}">
@@ -129,20 +125,15 @@
     @endunless
     @auth
     @php $realtimeEnabled = app(\App\Services\RealtimeBroadcastService::class)->isEnabled(); @endphp
-    <script src="{{ asset('js/badges.js') }}?v=badges-v5"></script>
+    @include('partials.asset', ['path' => 'js/core.min.js'])
     @if($realtimeEnabled)
     <script src="https://js.pusher.com/8.4.0/pusher.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('js/rt-client.js') }}?v=rt-client-v1"></script>
+    @include('partials.asset', ['path' => 'js/rt-client.min.js'])
     @endif
-    <script src="{{ asset('js/live-sync.js') }}?v=live-sync-v3"></script>
-    <script src="{{ asset('js/page-auto-refresh.js') }}?v=page-auto-refresh-v1"></script>
     @if($appShell)
         @include('partials.profile-settings-sheet', ['user' => auth()->user()])
-        <script src="{{ asset('js/profile-settings.js') }}?v=profile-settings-8"></script>
-        <script src="{{ asset('js/hobbies-picker.js') }}?v=hobbies-1"></script>
-        <script src="{{ asset('js/locations.js') }}?v=world-locations-1"></script>
-        <script src="{{ asset('js/mobile-bottom-nav.js') }}?v=mobile-bottom-nav-1"></script>
+        @include('partials.asset', ['path' => 'js/app-shell.min.js'])
     @endif
     @stack('page-scripts')
     @endauth
