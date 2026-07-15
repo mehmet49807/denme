@@ -12,12 +12,15 @@ use App\Services\MediaUploadService;
 use App\Services\ReferralService;
 use App\Services\UserAttributionService;
 use App\Services\UserMailService;
+use App\Support\RelationshipStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AuthPageController extends Controller
@@ -53,6 +56,10 @@ class AuthPageController extends Controller
 
     public function register(Request $request): RedirectResponse
     {
+        if ($request->input('relationship_status') === '') {
+            $request->merge(['relationship_status' => null]);
+        }
+
         $validated = $request->validate([
             'username' => 'required|string|min:3|max:50|unique:users|regex:/^[a-zA-Z0-9_]+$/',
             'first_name' => 'required|string|max:100',
@@ -62,12 +69,18 @@ class AuthPageController extends Controller
             'phone_country_code' => 'nullable|string|max:6',
             'phone_local' => 'nullable|string|max:15',
             'gender' => 'required|in:male,female',
+            'bio' => 'nullable|string|max:500',
+            'relationship_status' => 'nullable|in:'.implode(',', RelationshipStatus::keys()),
+            'birth_day' => 'nullable|integer|min:1|max:31',
+            'birth_month' => 'nullable|integer|min:1|max:12',
+            'birth_year' => 'nullable|integer|min:'.(now()->year - 100).'|max:'.(now()->year - 18),
             'photo' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
             'privacy_accepted' => 'accepted',
             'kvkk_accepted' => 'accepted',
         ], [
             'privacy_accepted.accepted' => 'Kayıt olmak için Gizlilik Sözleşmesi\'ni kabul etmelisiniz.',
             'kvkk_accepted.accepted' => 'Kayıt olmak için KVKK Aydınlatma Metni\'ni kabul etmelisiniz.',
+            'relationship_status.in' => 'Geçerli bir ilişki durumu seçiniz.',
         ]);
 
         if (! empty($validated['phone_country_code']) && ! empty($validated['phone_local'])) {
@@ -86,9 +99,23 @@ class AuthPageController extends Controller
 
         $validated = array_merge($validated, $this->validateLocationInput($request, $this->locations, false, false));
         $validated = array_merge($validated, $this->validateHobbiesInput($request));
+        $validated = array_merge($validated, $this->resolveOptionalBirthDate($request));
 
         $validated['password'] = Hash::make($validated['password']);
-        unset($validated['privacy_accepted'], $validated['kvkk_accepted']);
+        unset(
+            $validated['privacy_accepted'],
+            $validated['kvkk_accepted'],
+            $validated['birth_day'],
+            $validated['birth_month'],
+            $validated['birth_year'],
+        );
+
+        if (($validated['relationship_status'] ?? null) === '') {
+            $validated['relationship_status'] = null;
+        }
+        if (($validated['bio'] ?? null) === '') {
+            $validated['bio'] = null;
+        }
 
         if ($validated['gender'] === 'male') {
             $validated['trial_ends_at'] = User::trialEndsAtForNewMale();
@@ -235,5 +262,33 @@ class AuthPageController extends Controller
     {
         Auth::logout();
         return redirect()->route('home');
+    }
+
+    /** @return array{birth_date?: string} */
+    private function resolveOptionalBirthDate(Request $request): array
+    {
+        $day = $request->input('birth_day');
+        $month = $request->input('birth_month');
+        $year = $request->input('birth_year');
+
+        if ($day === null || $day === '' || $month === null || $month === '' || $year === null || $year === '') {
+            return [];
+        }
+
+        if (! checkdate((int) $month, (int) $day, (int) $year)) {
+            throw ValidationException::withMessages([
+                'birth_date' => 'Geçerli bir doğum tarihi seçiniz.',
+            ]);
+        }
+
+        $date = Carbon::createFromDate((int) $year, (int) $month, (int) $day)->startOfDay();
+
+        if ($date->greaterThan(now()->subYears(18)->startOfDay())) {
+            throw ValidationException::withMessages([
+                'birth_date' => '18 yaşından büyük olmalısınız.',
+            ]);
+        }
+
+        return ['birth_date' => $date->toDateString()];
     }
 }

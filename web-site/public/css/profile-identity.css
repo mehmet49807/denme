@@ -1,0 +1,167 @@
+/* Profil kimlik satırı: kullanıcı adı · yaş · mavi tik + ülke */
+.profile-identity {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+}
+
+.profile-identity-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.profile-identity .profile-username,
+.profile-identity-name {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.45rem;
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.25;
+}
+
+.profile-identity-age {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.6rem;
+    padding: 0.12rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #0f172a;
+    background: rgba(15, 23, 42, 0.08);
+}
+
+.profile-identity-location {
+    margin: 0;
+}
+
+.profile-relationship-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0.15rem 0 0;
+    padding: 0.28rem 0.6rem;
+    width: fit-content;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #9f1239;
+    background: rgba(244, 63, 94, 0.08);
+    border: 1px solid rgba(244, 63, 94, 0.14);
+}
+
+.profile-relationship-status-icon {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+.profile-identity .profile-bio {
+    margin: 0.25rem 0 0;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+}
+
+.profile-identity .profile-post-count {
+    margin: 0.2rem 0 0;
+}
+
+.profile-post-count-age {
+    color: var(--text-muted, #64748b);
+    font-weight: 600;
+}
+
+/* İlişki durumu seçici */
+.relationship-status-picker {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+}
+
+.relationship-status-option {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.65rem 0.7rem;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    background: rgba(15, 23, 42, 0.025);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.relationship-status-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.relationship-status-option-icon {
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.relationship-status-option-label {
+    font-size: 0.86rem;
+    font-weight: 600;
+}
+
+.relationship-status-option--active,
+.relationship-status-option:has(input:checked) {
+    border-color: rgba(225, 29, 72, 0.35);
+    background: rgba(244, 63, 94, 0.08);
+    color: #9f1239;
+}
+
+/* Doğum tarihi */
+.birth-date-fields-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+}
+
+.birth-date-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+    margin: 0;
+}
+
+.birth-date-field-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted, #64748b);
+}
+
+.birth-date-field select {
+    width: 100%;
+}
+
+.profile-settings-hint {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--text-muted, #64748b);
+}
+
+.profile-settings-form textarea {
+    width: 100%;
+    min-height: 7rem;
+    resize: vertical;
+}
+
+@media (max-width: 420px) {
+    .relationship-status-picker {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-identity .profile-username,
+    .profile-identity-name {
+        font-size: 1.2rem;
+    }
+}

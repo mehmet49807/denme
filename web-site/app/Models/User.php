@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\HobbyCatalog;
 use App\Support\LocaleManager;
+use App\Support\RelationshipStatus;
 use App\Services\UserMailService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -21,7 +22,7 @@ class User extends Authenticatable
     protected $fillable = [
         'username', 'first_name', 'last_name', 'email', 'password',
         'phone', 'gender', 'country', 'city', 'district', 'profile_photo_url', 'hobbies', 'google_id',
-        'bio', 'relationship_expectation', 'birth_date', 'gallery_photos',
+        'bio', 'relationship_status', 'relationship_expectation', 'birth_date', 'gallery_photos',
         'is_verified', 'visibility', 'quiet_hours_enabled', 'quiet_hours_start', 'quiet_hours_end',
         'read_receipts_enabled', 'theme_preference', 'boost_until', 'last_boost_at', 'fake_score',
         'role', 'is_banned', 'banned_at', 'banned_reason', 'trial_ends_at', 'locale',
@@ -282,6 +283,12 @@ class User extends Authenticatable
         return $this->birth_date->age;
     }
 
+    /** @return array{id: string, label: string, icon: string}|null */
+    public function resolvedRelationshipStatus(): ?array
+    {
+        return RelationshipStatus::resolve($this->relationship_status);
+    }
+
     public function isOnline(): bool
     {
         if ($this->last_active_at === null) {
@@ -301,6 +308,8 @@ class User extends Authenticatable
             'city' => $this->city,
             'district' => $this->district,
             'bio' => $this->bio,
+            'relationship_status' => $this->relationship_status,
+            'relationship_status_label' => RelationshipStatus::label($this->relationship_status),
             'relationship_expectation' => $this->relationship_expectation,
             'gallery_photos' => $this->galleryPhotos(),
             'hobbies' => $this->resolvedHobbies(),

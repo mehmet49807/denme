@@ -54,6 +54,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
     Route::get('/setup/email-logs', [\App\Http\Controllers\Web\SetupController::class, 'emailLogs']);
     Route::get('/setup/hobbies', [\App\Http\Controllers\Web\SetupController::class, 'hobbies']);
     Route::get('/setup/locale', [\App\Http\Controllers\Web\SetupController::class, 'locale']);
+    Route::get('/setup/profile-fields', [\App\Http\Controllers\Web\SetupController::class, 'profileFields']);
     Route::get('/setup/delete-users', [\App\Http\Controllers\Web\SetupController::class, 'deleteUsers']);
     Route::get('/setup/messages', [\App\Http\Controllers\Web\SetupController::class, 'messagesSchema']);
     Route::get('/setup/cron', [\App\Http\Controllers\Web\SetupController::class, 'cron']);

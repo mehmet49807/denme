@@ -14,6 +14,10 @@
             $initialPanel = 'password';
         } elseif ($errors->has('hobbies') || $errors->has('hobbies.*')) {
             $initialPanel = 'hobbies';
+        } elseif ($errors->has('bio')) {
+            $initialPanel = 'bio';
+        } elseif ($errors->has('relationship_status')) {
+            $initialPanel = 'relationship';
         } elseif ($errors->has('locale')) {
             $initialPanel = 'language';
         } else {
@@ -30,7 +34,27 @@
             </span>
             <span class="profile-settings-menu-text">
                 <strong>Profil Bilgilerini Düzenle</strong>
-                <small>Ad, e-posta, telefon ve konum</small>
+                <small>Ad, e-posta, telefon, konum ve doğum tarihi</small>
+            </span>
+            <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
+        </button>
+
+        <button type="button" class="profile-settings-menu-item" data-open-settings-panel="bio">
+            <span class="profile-settings-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg>
+            </span>
+            <span class="profile-settings-menu-text">
+                <strong>Bio</strong>
+                <small>Kendini tanıtan kısa yazı</small>
+            </span>
+            <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
+        </button>
+
+        <button type="button" class="profile-settings-menu-item" data-open-settings-panel="relationship">
+            <span class="profile-settings-menu-icon" aria-hidden="true">💞</span>
+            <span class="profile-settings-menu-text">
+                <strong>İlişki Durumu</strong>
+                <small>Bekar, evli, boşanmış…</small>
             </span>
             <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
         </button>
@@ -152,7 +176,49 @@
             ])
         </div>
 
+        <div class="form-group">
+            <label>Doğum Tarihi (Gün / Ay / Yıl)</label>
+            @include('partials.birth-date-fields', ['birthDate' => $user->birth_date])
+            <small class="profile-settings-hint">Yaşın profilinde kullanıcı adının yanında görünür.</small>
+        </div>
+
         <button type="submit" class="btn btn-primary btn-full">Kaydet</button>
+    </form>
+</div>
+
+<div class="profile-settings-sheet-stage" data-settings-panel="bio" @if($initialPanel !== 'bio') hidden @endif>
+    <form method="POST" action="{{ route('profile.update') }}" class="profile-settings-form">
+        @csrf
+        @method('PUT')
+        <input type="hidden" name="settings_panel" value="bio">
+
+        <div class="form-group">
+            <label for="settings_bio">Bio</label>
+            <textarea
+                id="settings_bio"
+                name="bio"
+                rows="5"
+                maxlength="500"
+                placeholder="Kendini kısaca anlat…"
+            >{{ old('bio', $user->bio) }}</textarea>
+            @error('bio') <small class="form-error">{{ $message }}</small> @enderror
+            <small class="profile-settings-hint">İsteğe bağlı · En fazla 500 karakter · Herkes görebilir</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">Bio’yu Kaydet</button>
+    </form>
+</div>
+
+<div class="profile-settings-sheet-stage" data-settings-panel="relationship" @if($initialPanel !== 'relationship') hidden @endif>
+    <form method="POST" action="{{ route('profile.update') }}" class="profile-settings-form">
+        @csrf
+        @method('PUT')
+        <input type="hidden" name="settings_panel" value="relationship">
+
+        <p class="profile-settings-panel-lead">İlişki durumunu ikonlu olarak seç. Herkes profilinde görebilir.</p>
+        @include('partials.relationship-status-picker', ['selected' => old('relationship_status', $user->relationship_status)])
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1rem;">İlişki Durumunu Kaydet</button>
     </form>
 </div>
 

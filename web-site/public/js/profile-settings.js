@@ -11,6 +11,8 @@
     var panelTitles = {
         menu: 'Ayarlar',
         edit: 'Profil Düzenle',
+        bio: 'Bio',
+        relationship: 'İlişki Durumu',
         hobbies: 'Hobiler',
         language: 'Dil Seç',
         password: 'Şifre Değiştir',

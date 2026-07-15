@@ -12,8 +12,10 @@ use App\Services\LocationDataService;
 use App\Services\MediaUploadService;
 use App\Services\StoryGroupService;
 use App\Support\LocaleManager;
+use App\Support\RelationshipStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use RuntimeException;
@@ -60,13 +62,21 @@ class ProfilePageController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
+        if ($request->has('relationship_status') && $request->input('relationship_status') === '') {
+            $request->merge(['relationship_status' => null]);
+        }
+
         $validated = $request->validate([
             'first_name' => 'sometimes|string|max:100',
             'last_name' => 'sometimes|string|max:100',
             'email' => 'sometimes|email|unique:users,email,'.$request->user()->id,
             'phone' => 'sometimes|nullable|string|max:20',
             'bio' => 'sometimes|nullable|string|max:500',
+            'relationship_status' => 'sometimes|nullable|in:'.implode(',', RelationshipStatus::keys()),
             'relationship_expectation' => 'sometimes|nullable|string|max:120',
+            'birth_day' => 'sometimes|nullable|integer|min:1|max:31',
+            'birth_month' => 'sometimes|nullable|integer|min:1|max:12',
+            'birth_year' => 'sometimes|nullable|integer|min:'.(now()->year - 100).'|max:'.(now()->year - 18),
             'birth_date' => 'sometimes|nullable|date|before:-18 years',
             'visibility' => 'sometimes|in:everyone,matches,premium,nobody',
             'quiet_hours_enabled' => 'sometimes|boolean',
@@ -74,6 +84,9 @@ class ProfilePageController extends Controller
             'quiet_hours_end' => 'sometimes|nullable|date_format:H:i',
             'read_receipts_enabled' => 'sometimes|boolean',
             'theme_preference' => 'sometimes|in:light,dark,system',
+        ], [
+            'relationship_status.in' => 'Geçerli bir ilişki durumu seçiniz.',
+            'birth_date.before' => 'Kayıt için 18 yaşından büyük olmalısınız.',
         ]);
 
         if ($request->has('quiet_hours_enabled')) {
@@ -88,6 +101,16 @@ class ProfilePageController extends Controller
         }
 
         $validated = array_merge($validated, $this->validateHobbiesInput($request));
+        $validated = array_merge($validated, $this->resolveBirthDateInput($request));
+
+        unset($validated['birth_day'], $validated['birth_month'], $validated['birth_year']);
+
+        if ($request->has('bio') && ! array_key_exists('bio', $validated)) {
+            $validated['bio'] = null;
+        }
+        if ($request->has('relationship_status') && ($validated['relationship_status'] ?? null) === '') {
+            $validated['relationship_status'] = null;
+        }
 
         $request->user()->update($validated);
 
@@ -248,5 +271,41 @@ class ProfilePageController extends Controller
         return back()
             ->with('success', $message)
             ->with('settings_panel', $panel);
+    }
+
+    /** @return array{birth_date?: string|null} */
+    private function resolveBirthDateInput(Request $request): array
+    {
+        if (! $request->hasAny(['birth_day', 'birth_month', 'birth_year'])) {
+            return [];
+        }
+
+        $day = $request->input('birth_day');
+        $month = $request->input('birth_month');
+        $year = $request->input('birth_year');
+
+        if ($day === null || $day === '' || $month === null || $month === '' || $year === null || $year === '') {
+            if ($request->input('settings_panel') === 'edit') {
+                return ['birth_date' => null];
+            }
+
+            return [];
+        }
+
+        if (! checkdate((int) $month, (int) $day, (int) $year)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'birth_date' => 'Geçerli bir doğum tarihi seçiniz.',
+            ]);
+        }
+
+        $date = Carbon::createFromDate((int) $year, (int) $month, (int) $day)->startOfDay();
+
+        if ($date->greaterThan(now()->subYears(18)->startOfDay())) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'birth_date' => '18 yaşından büyük olmalısınız.',
+            ]);
+        }
+
+        return ['birth_date' => $date->toDateString()];
     }
 }

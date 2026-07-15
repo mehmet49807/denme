@@ -5,6 +5,10 @@
             $initialPanel = 'password';
         } elseif ($errors->has('hobbies') || $errors->has('hobbies.*')) {
             $initialPanel = 'hobbies';
+        } elseif ($errors->has('bio')) {
+            $initialPanel = 'bio';
+        } elseif ($errors->has('relationship_status')) {
+            $initialPanel = 'relationship';
         } elseif ($errors->has('locale')) {
             $initialPanel = 'language';
         } else {

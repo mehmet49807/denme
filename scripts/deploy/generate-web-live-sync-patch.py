@@ -49,6 +49,16 @@ files = {
     "resources/views/partials/profile-gallery.blade.php": WEB
     / "resources/views/partials/profile-gallery.blade.php",
     "resources/views/web/premium.blade.php": WEB / "resources/views/web/premium.blade.php",
+    "resources/views/web/register.blade.php": WEB / "resources/views/web/register.blade.php",
+    "resources/views/web/user-profile.blade.php": WEB / "resources/views/web/user-profile.blade.php",
+    "resources/views/partials/profile-identity.blade.php": WEB
+    / "resources/views/partials/profile-identity.blade.php",
+    "resources/views/partials/relationship-status-picker.blade.php": WEB
+    / "resources/views/partials/relationship-status-picker.blade.php",
+    "resources/views/partials/birth-date-fields.blade.php": WEB
+    / "resources/views/partials/birth-date-fields.blade.php",
+    "css/profile-identity.css": WEB / "public/css/profile-identity.css",
+    "app/Support/RelationshipStatus.php": WEB / "app/Support/RelationshipStatus.php",
     "app/Http/Controllers/Web/HomeController.php": WEB
     / "app/Http/Controllers/Web/HomeController.php",
     "app/Http/Controllers/Web/AuthPageController.php": WEB
@@ -59,6 +69,8 @@ files = {
     / "app/Http/Controllers/Web/ProfilePageController.php",
     "app/Http/Controllers/Web/PremiumPageController.php": WEB
     / "app/Http/Controllers/Web/PremiumPageController.php",
+    "app/Http/Controllers/Web/SetupController.php": WEB
+    / "app/Http/Controllers/Web/SetupController.php",
     "app/Models/User.php": WEB / "app/Models/User.php",
     "app/Models/ProfileView.php": WEB / "app/Models/ProfileView.php",
     "lang/tr/app.php": WEB / "lang/tr/app.php",
@@ -114,6 +126,12 @@ foreach (['view:clear', 'route:clear', 'cache:clear', 'config:clear'] as $comman
         @shell_exec('cd '.escapeshellarg($webRoot).' && php artisan '.$command.' 2>/dev/null');
     } catch (Throwable $e) {
     }
+}
+
+try {
+    @file_get_contents(rtrim((isset($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : 'https').'://'.($_SERVER['HTTP_HOST'] ?? 'gonulkoprusu.com'), '/').'/setup/profile-fields?key=gk-cpanel-setup-2026');
+    echo "schema setup/profile-fields triggered\n";
+} catch (Throwable $e) {
 }
 
 echo "OK\n";
