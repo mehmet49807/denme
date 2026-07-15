@@ -363,6 +363,9 @@ Route::middleware(['auth', 'locale'])->group(function () {
     Route::put('/profile', [ProfilePageController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfilePageController::class, 'updatePassword'])->name('profile.password');
     Route::post('/profile/photo', [ProfilePageController::class, 'uploadPhoto'])->name('profile.photo');
+    Route::post('/profile/gallery', [ProfilePageController::class, 'uploadGallery'])->middleware('throttle:20,1,profile-gallery')->name('profile.gallery');
+    Route::delete('/profile/gallery', [ProfilePageController::class, 'destroyGallery'])->middleware('throttle:20,1,profile-gallery-del')->name('profile.gallery.destroy');
+    Route::post('/profile/boost', [ProfilePageController::class, 'boost'])->middleware('throttle:5,1,profile-boost')->name('profile.boost');
     Route::get('/profile/locale/{locale}', [ProfilePageController::class, 'switchLocale'])
         ->where('locale', 'tr|en|de|fr|hi')
         ->name('profile.locale');

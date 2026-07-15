@@ -4,6 +4,7 @@
 
 @push('head')
 <link rel="stylesheet" href="{{ asset('css/profile-toolbar-mobile.css') }}?v=profile-toolbar-mobile-3">
+<link rel="stylesheet" href="{{ asset('css/profile-premium-sections.css') }}?v=profile-premium-sections-1">
 @endpush
 
 @section('title', 'Profil — Gönül Köprüsü')
@@ -56,12 +57,20 @@
         <div class="profile-header-meta">
             <h1 class="profile-username">
                 <span class="profile-username-text">{{ $user->username }}</span>
+                @include('partials.profile-verified-tick', ['user' => $user, 'size' => 'md'])
+                @include('partials.trust-badge', ['user' => $user, 'size' => 'md'])
                 @include('partials.profile-online-label', ['user' => $user])
             </h1>
             <p class="profile-location-line">
                 {{ $user->country ?? 'Türkiye' }} — {{ $user->city }}
                 @if($user->district) — {{ $user->district }}@endif
             </p>
+            @if($user->bio)
+                <p class="profile-bio">{{ $user->bio }}</p>
+            @endif
+            @if($user->relationship_expectation)
+                <p class="profile-expectation"><span>Beklenti:</span> {{ $user->relationship_expectation }}</p>
+            @endif
             <p class="profile-post-count">{{ $posts->count() }} gönderi</p>
             @include('partials.hobbies-display', ['user' => $user])
             @if($ownStoryGroup)
@@ -71,6 +80,10 @@
     </header>
     @error('photo') <small class="form-error profile-photo-error">{{ $message }}</small> @enderror
     @if(session('success')) <p class="profile-success">{{ session('success') }}</p> @endif
+    @error('boost') <small class="form-error">{{ $message }}</small> @enderror
+
+    @include('partials.profile-views', ['user' => $user, 'profileViews' => $profileViews ?? collect()])
+    @include('partials.profile-gallery', ['user' => $user])
 
     @include('partials.feed-toolbar', ['viewer' => $user])
     @error('image') <small class="form-error">{{ $message }}</small> @enderror

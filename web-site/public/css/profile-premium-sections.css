@@ -1,0 +1,255 @@
+/* Profil — Kimler baktı + Galeri (premium sections) */
+.profile-completion {
+    display: none !important;
+}
+
+.profile-views,
+.profile-gallery {
+    margin: 0 0 0.9rem;
+}
+
+.profile-views-head,
+.profile-gallery-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    margin-bottom: 0.55rem;
+}
+
+.profile-views-title,
+.profile-gallery-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.profile-views-title-icon,
+.profile-gallery-title-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 9px;
+    flex-shrink: 0;
+}
+
+.profile-views-title-icon {
+    color: #0f766e;
+    background: rgba(15, 118, 110, 0.12);
+}
+
+.profile-gallery-title-icon {
+    color: #c2410c;
+    background: rgba(234, 88, 12, 0.12);
+}
+
+.profile-views-title-icon .theme-icon svg,
+.profile-gallery-title-icon .theme-icon svg {
+    width: 0.95rem;
+    height: 0.95rem;
+}
+
+.profile-views-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.4rem;
+    height: 1.4rem;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #0f766e;
+    background: rgba(15, 118, 110, 0.12);
+}
+
+.profile-views-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.profile-views-card {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: 14px;
+    text-decoration: none;
+    color: inherit;
+    background: rgba(15, 23, 42, 0.03);
+    border: 1px solid rgba(15, 23, 42, 0.07);
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.profile-views-card:hover,
+.profile-views-card:focus-visible {
+    background: rgba(15, 118, 110, 0.06);
+    border-color: rgba(15, 118, 110, 0.16);
+}
+
+.profile-views-avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.18), rgba(236, 72, 153, 0.16));
+    color: #6d28d9;
+    font-weight: 700;
+}
+
+.profile-views-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-views-avatar-initial {
+    font-size: 1rem;
+}
+
+.profile-views-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+    min-width: 0;
+}
+
+.profile-views-username {
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.profile-views-info,
+.profile-views-time {
+    font-size: 0.78rem;
+    color: var(--text-muted, #64748b);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-views-empty,
+.profile-gallery-empty {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    text-align: center;
+    color: var(--text-muted, #64748b);
+    font-size: 0.85rem;
+    border: 1px dashed rgba(15, 23, 42, 0.12);
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.02);
+}
+
+.profile-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+}
+
+.profile-gallery-item {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.profile-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-gallery-item button {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    cursor: pointer;
+}
+
+.profile-gallery-empty {
+    grid-column: 1 / -1;
+}
+
+.profile-premium-lock {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 0 0 0.9rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(236, 72, 153, 0.06));
+    border: 1px solid rgba(124, 58, 237, 0.14);
+}
+
+.profile-premium-lock-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 11px;
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.12);
+    flex-shrink: 0;
+}
+
+.profile-premium-lock-icon .theme-icon svg {
+    width: 1.05rem;
+    height: 1.05rem;
+}
+
+.profile-premium-lock-copy {
+    flex: 1 1 10rem;
+    min-width: 0;
+}
+
+.profile-premium-lock-copy h2 {
+    margin: 0 0 0.15rem;
+    font-size: 0.95rem;
+}
+
+.profile-premium-lock-copy p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-muted, #64748b);
+    line-height: 1.35;
+}
+
+.profile-premium-lock .btn {
+    flex-shrink: 0;
+}
+
+@media (max-width: 420px) {
+    .profile-views-avatar {
+        width: 2.65rem;
+        height: 2.65rem;
+    }
+
+    .profile-gallery-grid {
+        gap: 0.35rem;
+    }
+}

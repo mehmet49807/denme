@@ -39,10 +39,16 @@ files = {
     "css/feed-stories.css": WEB / "public/css/feed-stories.css",
     "css/profile-toolbar-mobile.css": WEB / "public/css/profile-toolbar-mobile.css",
     "css/feed-toolbar.css": WEB / "public/css/feed-toolbar.css",
+    "css/profile-premium-sections.css": WEB / "public/css/profile-premium-sections.css",
     "resources/views/partials/feed-toolbar.blade.php": WEB
     / "resources/views/partials/feed-toolbar.blade.php",
     "resources/views/partials/theme-icon.blade.php": WEB
     / "resources/views/partials/theme-icon.blade.php",
+    "resources/views/partials/profile-views.blade.php": WEB
+    / "resources/views/partials/profile-views.blade.php",
+    "resources/views/partials/profile-gallery.blade.php": WEB
+    / "resources/views/partials/profile-gallery.blade.php",
+    "resources/views/web/premium.blade.php": WEB / "resources/views/web/premium.blade.php",
     "app/Http/Controllers/Web/HomeController.php": WEB
     / "app/Http/Controllers/Web/HomeController.php",
     "app/Http/Controllers/Web/AuthPageController.php": WEB
@@ -51,6 +57,12 @@ files = {
     / "app/Http/Controllers/Web/FeedPageController.php",
     "app/Http/Controllers/Web/ProfilePageController.php": WEB
     / "app/Http/Controllers/Web/ProfilePageController.php",
+    "app/Http/Controllers/Web/PremiumPageController.php": WEB
+    / "app/Http/Controllers/Web/PremiumPageController.php",
+    "app/Models/User.php": WEB / "app/Models/User.php",
+    "app/Models/ProfileView.php": WEB / "app/Models/ProfileView.php",
+    "lang/tr/app.php": WEB / "lang/tr/app.php",
+    "lang/en/app.php": WEB / "lang/en/app.php",
     "routes/web.php": WEB / "routes/web.php",
 }
 
@@ -84,6 +96,7 @@ foreach ([
     'app/Http/Controllers/Web/SettingsPageController.php',
     'resources/views/partials/profile-settings-menu.blade.php',
     'resources/views/partials/settings-page-header.blade.php',
+    'resources/views/partials/profile-completion.blade.php',
     'resources/views/web/settings/profile.blade.php',
     'resources/views/web/settings/hobbies.blade.php',
     'resources/views/web/settings/language.blade.php',
