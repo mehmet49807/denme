@@ -6,7 +6,7 @@
 @section('auth-visual-lead', 'Ücretsiz hesabını oluştur, profilini tamamla ve anlamlı bağlantılar kurmaya başla.')
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-1">
+<link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-3">
 @endpush
 
 @section('auth-form-header')

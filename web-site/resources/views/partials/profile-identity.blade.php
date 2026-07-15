@@ -31,7 +31,7 @@
     </p>
 
     @if($status)
-        <p class="profile-relationship-status">
+        <p class="profile-relationship-status profile-relationship-status--{{ $status['color'] }}">
             <span class="profile-relationship-status-label">İlişki durumu:</span>
             <span class="profile-relationship-status-icon" aria-hidden="true">{{ $status['icon'] }}</span>
             <span class="profile-relationship-status-value">{{ $status['label'] }}</span>

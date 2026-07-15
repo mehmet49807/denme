@@ -4,18 +4,18 @@ namespace App\Support;
 
 final class RelationshipStatus
 {
-    /** @return array<string, array{label: string, icon: string}> */
+    /** @return array<string, array{label: string, icon: string, color: string}> */
     public static function all(): array
     {
         return [
-            'single' => ['label' => 'Bekar', 'icon' => '💚'],
-            'relationship' => ['label' => 'İlişkide', 'icon' => '💞'],
-            'engaged' => ['label' => 'Nişanlı', 'icon' => '💍'],
-            'married' => ['label' => 'Evli', 'icon' => '💒'],
-            'divorced' => ['label' => 'Boşanmış', 'icon' => '💔'],
-            'widowed' => ['label' => 'Dul', 'icon' => '🤍'],
-            'separated' => ['label' => 'Ayrı Yaşıyor', 'icon' => '🪴'],
-            'complicated' => ['label' => 'Karışık', 'icon' => '🌀'],
+            'single' => ['label' => 'Bekar', 'icon' => '💚', 'color' => 'emerald'],
+            'relationship' => ['label' => 'İlişkide', 'icon' => '💞', 'color' => 'rose'],
+            'engaged' => ['label' => 'Nişanlı', 'icon' => '💍', 'color' => 'amber'],
+            'married' => ['label' => 'Evli', 'icon' => '💒', 'color' => 'violet'],
+            'divorced' => ['label' => 'Boşanmış', 'icon' => '💔', 'color' => 'slate'],
+            'widowed' => ['label' => 'Dul', 'icon' => '🤍', 'color' => 'sky'],
+            'separated' => ['label' => 'Ayrı Yaşıyor', 'icon' => '🪴', 'color' => 'teal'],
+            'complicated' => ['label' => 'Karışık', 'icon' => '🌀', 'color' => 'orange'],
         ];
     }
 
@@ -48,7 +48,16 @@ final class RelationshipStatus
         return self::all()[$status]['icon'];
     }
 
-    /** @return array{id: string, label: string, icon: string}|null */
+    public static function color(?string $status): ?string
+    {
+        if (! self::isValid($status)) {
+            return null;
+        }
+
+        return self::all()[$status]['color'];
+    }
+
+    /** @return array{id: string, label: string, icon: string, color: string}|null */
     public static function resolve(?string $status): ?array
     {
         if (! self::isValid($status)) {
@@ -61,6 +70,7 @@ final class RelationshipStatus
             'id' => $status,
             'label' => $item['label'],
             'icon' => $item['icon'],
+            'color' => $item['color'],
         ];
     }
 }

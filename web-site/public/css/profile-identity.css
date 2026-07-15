@@ -50,14 +50,10 @@
     border-radius: 999px;
     font-size: 0.8rem;
     font-weight: 600;
-    color: #9f1239;
-    background: rgba(244, 63, 94, 0.08);
-    border: 1px solid rgba(244, 63, 94, 0.14);
 }
 
 .profile-relationship-status-label {
     font-weight: 700;
-    color: #7f1d1d;
 }
 
 .profile-relationship-status-icon {
@@ -66,8 +62,65 @@
 }
 
 .profile-relationship-status-value {
-    font-weight: 600;
+    font-weight: 700;
 }
+
+/* Durum bazlı profil renkleri */
+.profile-relationship-status--emerald {
+    color: #047857;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.28);
+}
+.profile-relationship-status--emerald .profile-relationship-status-label { color: #065f46; }
+
+.profile-relationship-status--rose {
+    color: #be123c;
+    background: rgba(244, 63, 94, 0.12);
+    border: 1px solid rgba(244, 63, 94, 0.28);
+}
+.profile-relationship-status--rose .profile-relationship-status-label { color: #9f1239; }
+
+.profile-relationship-status--amber {
+    color: #b45309;
+    background: rgba(245, 158, 11, 0.14);
+    border: 1px solid rgba(245, 158, 11, 0.32);
+}
+.profile-relationship-status--amber .profile-relationship-status-label { color: #92400e; }
+
+.profile-relationship-status--violet {
+    color: #6d28d9;
+    background: rgba(124, 58, 237, 0.12);
+    border: 1px solid rgba(124, 58, 237, 0.28);
+}
+.profile-relationship-status--violet .profile-relationship-status-label { color: #5b21b6; }
+
+.profile-relationship-status--slate {
+    color: #334155;
+    background: rgba(100, 116, 139, 0.14);
+    border: 1px solid rgba(100, 116, 139, 0.3);
+}
+.profile-relationship-status--slate .profile-relationship-status-label { color: #1e293b; }
+
+.profile-relationship-status--sky {
+    color: #0369a1;
+    background: rgba(14, 165, 233, 0.12);
+    border: 1px solid rgba(14, 165, 233, 0.28);
+}
+.profile-relationship-status--sky .profile-relationship-status-label { color: #075985; }
+
+.profile-relationship-status--teal {
+    color: #0f766e;
+    background: rgba(20, 184, 166, 0.12);
+    border: 1px solid rgba(20, 184, 166, 0.28);
+}
+.profile-relationship-status--teal .profile-relationship-status-label { color: #115e59; }
+
+.profile-relationship-status--orange {
+    color: #c2410c;
+    background: rgba(249, 115, 22, 0.12);
+    border: 1px solid rgba(249, 115, 22, 0.28);
+}
+.profile-relationship-status--orange .profile-relationship-status-label { color: #9a3412; }
 
 .profile-identity .profile-bio {
     margin: 0.25rem 0 0;
@@ -101,7 +154,7 @@
     border: 1px solid rgba(15, 23, 42, 0.1);
     background: rgba(15, 23, 42, 0.025);
     cursor: pointer;
-    transition: border-color 0.15s ease, background-color 0.15s ease;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
 .relationship-status-option input {
@@ -120,11 +173,67 @@
     font-weight: 600;
 }
 
-.relationship-status-option--active,
-.relationship-status-option:has(input:checked) {
-    border-color: rgba(225, 29, 72, 0.35);
-    background: rgba(244, 63, 94, 0.08);
-    color: #9f1239;
+.relationship-status-option--neutral.relationship-status-option--active,
+.relationship-status-option--neutral:has(input:checked) {
+    color: #334155;
+    border-color: rgba(100, 116, 139, 0.35);
+    background: rgba(100, 116, 139, 0.1);
+}
+
+.relationship-status-option--emerald.relationship-status-option--active,
+.relationship-status-option--emerald:has(input:checked) {
+    color: #047857;
+    border-color: rgba(16, 185, 129, 0.4);
+    background: rgba(16, 185, 129, 0.12);
+}
+
+.relationship-status-option--rose.relationship-status-option--active,
+.relationship-status-option--rose:has(input:checked) {
+    color: #be123c;
+    border-color: rgba(244, 63, 94, 0.4);
+    background: rgba(244, 63, 94, 0.12);
+}
+
+.relationship-status-option--amber.relationship-status-option--active,
+.relationship-status-option--amber:has(input:checked) {
+    color: #b45309;
+    border-color: rgba(245, 158, 11, 0.45);
+    background: rgba(245, 158, 11, 0.14);
+}
+
+.relationship-status-option--violet.relationship-status-option--active,
+.relationship-status-option--violet:has(input:checked) {
+    color: #6d28d9;
+    border-color: rgba(124, 58, 237, 0.4);
+    background: rgba(124, 58, 237, 0.12);
+}
+
+.relationship-status-option--slate.relationship-status-option--active,
+.relationship-status-option--slate:has(input:checked) {
+    color: #334155;
+    border-color: rgba(100, 116, 139, 0.4);
+    background: rgba(100, 116, 139, 0.14);
+}
+
+.relationship-status-option--sky.relationship-status-option--active,
+.relationship-status-option--sky:has(input:checked) {
+    color: #0369a1;
+    border-color: rgba(14, 165, 233, 0.4);
+    background: rgba(14, 165, 233, 0.12);
+}
+
+.relationship-status-option--teal.relationship-status-option--active,
+.relationship-status-option--teal:has(input:checked) {
+    color: #0f766e;
+    border-color: rgba(20, 184, 166, 0.4);
+    background: rgba(20, 184, 166, 0.12);
+}
+
+.relationship-status-option--orange.relationship-status-option--active,
+.relationship-status-option--orange:has(input:checked) {
+    color: #c2410c;
+    border-color: rgba(249, 115, 22, 0.4);
+    background: rgba(249, 115, 22, 0.12);
 }
 
 /* Doğum tarihi */
