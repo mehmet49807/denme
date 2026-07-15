@@ -6,7 +6,7 @@
 @section('auth-visual-lead', 'Ücretsiz hesabını oluştur, profilini tamamla ve anlamlı bağlantılar kurmaya başla.')
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('css/profile-identity.css') }}?v=profile-identity-3">
+@include('partials.asset', ['path' => 'css/profile-identity.min.css'])
 @endpush
 
 @section('auth-form-header')
@@ -180,9 +180,7 @@
 @endsection
 
 @push('auth-scripts')
-<script src="{{ asset('js/hobbies-picker.js') }}?v=hobbies-1"></script>
-<script src="{{ asset('js/flagged-select.js') }}?v=flagged-select-1"></script>
-<script src="{{ asset('js/locations.js') }}?v=locations-3"></script>
+@include('partials.asset', ['path' => 'js/register.min.js'])
 <script>
 (function () {
     var privacy = document.getElementById('privacy_accepted');

@@ -72,5 +72,5 @@
 @endsection
 
 @push('page-scripts')
-<script src="{{ asset('js/locations.js') }}?v=world-locations-1"></script>
+@include('partials.asset', ['path' => 'js/locations.min.js'])
 @endpush
