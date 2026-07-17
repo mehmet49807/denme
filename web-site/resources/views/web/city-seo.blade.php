@@ -1,10 +1,10 @@
 @extends('layouts.content-page')
 
-@section('title', $city . ' Tanışma ve Evlilik Sitesi — Gönül Köprüsü')
+@section('title', $city . ' Tanışma, Sohbet ve Evlilik Sitesi — Gönül Köprüsü')
 @section('page-eyebrow', 'Şehir rehberi')
-@section('page-title', $city . ' tanışma ve evlilik')
+@section('page-title', $city . ' tanışma sitesi — güvenli sohbet ve evlilik')
 @section('page-lead')
-    {{ $city }} ve çevresinde ciddi ilişki arayan yetişkinler için güvenli tanışma platformu. Ücretsiz kayıt ol, profilleri keşfet.
+    {{ $city }} tanışma sitesi: ücretsiz üye ol, güvenli online sohbet et, ciddi ilişki ve evlilik odaklı profilleri keşfet.
 @endsection
 
 @section('page-content')
@@ -18,16 +18,17 @@
     </div>
 
     <p>
-        Gönül Köprüsü, <strong>{{ $city }}</strong> bölgesinde evlilik ve ciddi ilişki arayan yetişkinleri bir araya getirir.
-        Profil fotoğrafı, ilgi alanları ve konum bilgileriyle sana en uygun eşleşmeleri keşfedebilirsin.
+        <strong>{{ $city }} tanışma</strong> arıyorsan Gönül Köprüsü, evlilik ve ciddi ilişki niyetiyle
+        <strong>{{ $city }}</strong> ve çevresindeki yetişkinleri bir araya getirir.
+        Ücretsiz kayıt sonrası profil fotoğrafı, ilgi alanları ve konum bilgileriyle güvenli <strong>online sohbet</strong> başlatabilirsin.
     </p>
 
     <h2>{{ $city }}’da neden Gönül Köprüsü?</h2>
     <ul>
         <li>{{ $city }} odaklı üye keşfi ve konum filtreleri</li>
-        <li>Moderasyon ve güvenli tanışma rehberi</li>
-        <li>Kadın üyeler için güvenli ortam</li>
-        <li>Ücretsiz kayıt — birkaç dakikada başla</li>
+        <li>Güvenli sohbet, engelleme ve şikayet araçları</li>
+        <li>Moderasyonlu, kadın üyeler için güvenli ortam</li>
+        <li>Ücretsiz kayıt — birkaç dakikada {{ $city }} tanışmaya başla</li>
     </ul>
 
     <p class="city-seo-cta-wrap">
@@ -75,7 +76,3 @@
     </ul>
 @endsection
 
-@push('head')
-    <meta name="description" content="{{ $city }} tanışma ve evlilik sitesi — Gönül Köprüsü ile güvenli, ciddi ilişki odaklı tanışma. Ücretsiz kayıt.">
-    <link rel="canonical" href="{{ route('city.seo', $slug) }}">
-@endpush

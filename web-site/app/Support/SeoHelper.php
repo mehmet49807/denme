@@ -8,37 +8,37 @@ class SeoHelper
 
     protected static array $pages = [
         'home' => [
-            'title' => 'Evlilik ve Tanışma Platformu',
-            'description' => 'Gönül Köprüsü — Ciddi ilişki ve evlilik arayan yetişkinler için güvenli, saygılı tanışma platformu. Ücretsiz üye ol, profilini oluştur, anlamlı bağlar kur.',
-            'keywords' => 'tanışma sitesi, evlilik sitesi, ciddi ilişki, güvenli tanışma, Gönül Köprüsü, eş bulma, arkadaşlık sitesi, online tanışma, evlilik platformu, ücretsiz tanışma, Türkiye tanışma sitesi',
+            'title' => 'Gönül Köprüsü — Tanışma, Sohbet ve Evlilik Sitesi',
+            'description' => 'Gönül Köprüsü: Türkiye\'nin güvenli tanışma ve evlilik sitesi. Ücretsiz üye ol, şehirine göre keşfet, ciddi ilişki ve sohbet için doğru kişiyi bul. İstanbul, Ankara, İzmir ve 80+ şehir.',
+            'keywords' => 'gönül köprüsü, gönül köprüsü tanışma, tanışma sitesi, ücretsiz tanışma sitesi, evlilik sitesi, ciddi ilişki, güvenli tanışma, online tanışma, online sohbet, sohbet sitesi, flört sitesi, eş bulma, arkadaşlık sitesi, Türkiye tanışma sitesi, istanbul tanışma, ankara tanışma, izmir tanışma',
             'ogType' => 'website',
         ],
         'about' => [
-            'title' => 'Hakkımızda',
-            'description' => 'Gönül Köprüsü hakkında bilgi edinin. Türkiye\'nin güvenli, ciddi ve modern tanışma platformu.',
-            'keywords' => 'Gönül Köprüsü hakkında, tanışma platformu, güvenli tanışma, evlilik platformu',
+            'title' => 'Hakkımızda — Gönül Köprüsü Tanışma Platformu',
+            'description' => 'Gönül Köprüsü hakkında: güvenli, ciddi ve modern tanışma platformu. Evlilik ve anlamlı ilişki odaklı üye topluluğu.',
+            'keywords' => 'gönül köprüsü hakkında, tanışma platformu, güvenli tanışma, evlilik platformu, gönül köprüsü nedir',
         ],
         'blog' => [
-            'title' => 'Blog',
-            'description' => 'Gönül Köprüsü blog — ciddi ilişki, güvenli tanışma ve evlilik odaklı Türkçe rehber yazıları.',
-            'keywords' => 'ilişki blog, evlilik rehberi, tanışma tavsiyeleri, Gönül Köprüsü blog',
+            'title' => 'Blog — Tanışma, Sohbet ve Evlilik Rehberleri',
+            'description' => 'Gönül Köprüsü blog: şehir şehir tanışma, güvenli sohbet, ciddi ilişki ve evlilik odaklı Türkçe rehber yazıları.',
+            'keywords' => 'tanışma blog, evlilik rehberi, sohbet tavsiyeleri, flört rehberi, gönül köprüsü blog, şehir tanışma',
             'ogType' => 'website',
         ],
         'sss' => [
-            'title' => 'Sıkça Sorulan Sorular',
-            'description' => 'Gönül Köprüsü SSS — güvenli tanışma, ciddi ilişki, üyelik ve moderasyon hakkında sıkça sorulan sorular.',
-            'keywords' => 'Gönül Köprüsü SSS, tanışma sitesi sorular, üyelik, güvenli tanışma',
+            'title' => 'SSS — Tanışma Sitesi Sıkça Sorulan Sorular',
+            'description' => 'Gönül Köprüsü SSS: ücretsiz üyelik, premium, güvenli tanışma, sohbet ve şehir kaydı hakkında sık sorulan sorular.',
+            'keywords' => 'gönül köprüsü SSS, tanışma sitesi sorular, ücretsiz üyelik, güvenli tanışma, sohbet sitesi SSS',
             'ogType' => 'website',
         ],
         'register' => [
-            'title' => 'Ücretsiz Üye Ol',
-            'description' => 'Gönül Köprüsü\'ne ücretsiz üye olun. Profilinizi oluşturun, binlerce kullanıcı arasında doğru insanı bulun.',
-            'keywords' => 'üye ol, kayıt ol, ücretsiz tanışma sitesi, Gönül Köprüsü kayıt',
+            'title' => 'Ücretsiz Üye Ol — Tanışma ve Sohbete Başla',
+            'description' => 'Gönül Köprüsü\'ne ücretsiz üye olun. Profilinizi oluşturun, şehrinizdeki üyelerle tanışın ve güvenli sohbet edin.',
+            'keywords' => 'ücretsiz üye ol, tanışma sitesi kayıt, ücretsiz tanışma, online sohbet kayıt, gönül köprüsü kayıt',
         ],
         'login' => [
             'title' => 'Giriş Yap',
-            'description' => 'Gönül Köprüsü hesabınıza giriş yapın.',
-            'keywords' => 'giriş yap, login, Gönül Köprüsü giriş',
+            'description' => 'Gönül Köprüsü hesabınıza giriş yapın. Tanışma, mesajlaşma ve keşfe devam edin.',
+            'keywords' => 'giriş yap, gönül köprüsü giriş, tanışma sitesi login',
         ],
         'privacy' => [
             'title' => 'Gizlilik Politikası',
@@ -62,13 +62,13 @@ class SeoHelper
         ],
         'safety' => [
             'title' => 'Güvenli Tanışma Rehberi',
-            'description' => 'Online tanışmada güvende kalma rehberi ve güvenlik ipuçları.',
-            'keywords' => 'güvenli tanışma, online güvenlik, ilk buluşma',
+            'description' => 'Online tanışma ve sohbette güvende kalma rehberi. İlk buluşma ve güvenlik ipuçları.',
+            'keywords' => 'güvenli tanışma, online güvenlik, ilk buluşma, güvenli sohbet',
         ],
         'search' => [
-            'title' => 'Üye Ara',
-            'description' => 'Gönül Köprüsü üye arama sayfası.',
-            'keywords' => 'üye ara, profil ara, tanışma sitesi arama',
+            'title' => 'Üye Ara — Şehir ve Profil Keşfi',
+            'description' => 'Gönül Köprüsü üye arama: şehir, ilçe ve ilgi alanına göre tanışma profilleri keşfedin.',
+            'keywords' => 'üye ara, profil ara, şehir tanışma, tanışma sitesi arama',
         ],
     ];
 
@@ -122,6 +122,7 @@ class SeoHelper
             'keywords' => 'profil, tanışma, '.$city.', Gönül Köprüsü',
             'ogType' => 'profile',
             'ogImage' => $user->profile_photo_url ?? null,
+            'noindex' => true,
         ]);
     }
 
@@ -130,9 +131,19 @@ class SeoHelper
         $location = $district ? $district.', '.$city : $city;
 
         static::$data = array_merge(static::$data, [
-            'title' => $location.' Tanışma ve Evlilik Sitesi',
-            'description' => $location.' bölgesinde ciddi ilişki ve evlilik arayan kişilerle tanışın. Gönül Köprüsü\'nde '.$location.' kullanıcılarını keşfedin.',
-            'keywords' => $location.' tanışma, '.$location.' evlilik, '.$city.' eş bulma',
+            'title' => $location.' Tanışma, Sohbet ve Evlilik Sitesi',
+            'description' => $location.' tanışma sitesi — Gönül Köprüsü ile '.$location.' bölgesinde ciddi ilişki, güvenli sohbet ve evlilik odaklı ücretsiz tanışma. Hemen üye ol.',
+            'keywords' => implode(', ', [
+                $location.' tanışma',
+                $location.' tanışma sitesi',
+                $city.' evlilik',
+                $city.' eş bulma',
+                $city.' sohbet',
+                $city.' flört',
+                'gönül köprüsü '.$city,
+                'ücretsiz tanışma '.$city,
+                'online tanışma '.$city,
+            ]),
         ]);
     }
 

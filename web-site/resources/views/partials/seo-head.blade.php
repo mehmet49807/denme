@@ -18,12 +18,11 @@
     $twitterHandle = ltrim((string) $settings->get('twitter_handle', '@gonulkoprusucom'), '@');
     $googleVerification = trim((string) $settings->get('google_site_verification', ''));
     $bingVerification = trim((string) $settings->get('bing_site_verification', ''));
-    $languages = ['tr', 'en', 'de', 'fr', 'hi'];
     $currentUrl = url()->current();
+    if ($ogImage === '' || str_contains($ogImage, 'og-default.jpg')) {
+        $ogImage = $siteUrl.'/images/logo-320.png';
+    }
 @endphp
-@if($seoTitle !== '' && $pageTitle !== '' && $pageTitle !== $fullTitle)
-<title>{{ $fullTitle }}</title>
-@endif
 <meta name="description" content="{{ $description }}">
 @if($keywords !== '')
 <meta name="keywords" content="{{ $keywords }}">
@@ -52,9 +51,6 @@
 <meta property="og:type" content="{{ $ogType }}">
 <meta property="og:locale" content="tr_TR">
 <meta property="og:site_name" content="{{ $brand }}">
-@foreach(['en_US', 'de_DE', 'fr_FR', 'hi_IN'] as $altLocale)
-<meta property="og:locale:alternate" content="{{ $altLocale }}">
-@endforeach
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $fullTitle }}">
 <meta name="twitter:description" content="{{ $description }}">
@@ -63,10 +59,8 @@
 @if($twitterHandle !== '')
 <meta name="twitter:site" content="@{{ $twitterHandle }}">
 @endif
-@foreach($languages as $lang)
-<link rel="alternate" hreflang="{{ $lang }}" href="{{ $lang === 'tr' ? $currentUrl : $currentUrl.(str_contains($currentUrl, '?') ? '&' : '?').'lang='.$lang }}">
-@endforeach
-<link rel="alternate" hreflang="x-default" href="{{ $currentUrl }}">
+<link rel="alternate" hreflang="tr" href="{{ $canonical }}">
+<link rel="alternate" hreflang="x-default" href="{{ $canonical }}">
 <link rel="dns-prefetch" href="//www.googletagmanager.com">
 <link rel="dns-prefetch" href="//www.google-analytics.com">
 <link rel="dns-prefetch" href="//fonts.googleapis.com">

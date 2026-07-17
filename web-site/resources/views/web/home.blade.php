@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gönül Köprüsü — Evlilik ve Tanışma Platformu')
+@section('title', 'Gönül Köprüsü — Tanışma, Sohbet ve Evlilik Sitesi')
 
 @section('content')
 <section class="landing-hero">
@@ -50,11 +50,11 @@
     <div class="landing-hero-overlay"></div>
     <div class="landing-hero-grid{{ auth()->check() ? ' landing-hero-grid--solo' : '' }}">
         <div class="landing-hero-copy">
-            <p class="landing-hero-eyebrow">Evlilik ve tanışma platformu</p>
+            <p class="landing-hero-eyebrow">Gönül Köprüsü — tanışma ve sohbet sitesi</p>
             <h1>Gönülleri<br><span class="landing-hero-accent">Birleştiren Köprü</span></h1>
             <p class="landing-hero-lead">
-                Ciddi ilişki arayan yetişkinler için güvenli, saygılı ve modern bir tanışma ortamı.
-                Kadın üyelerde mesajlaşma ve kimler baktı ücretsiz — Gönül Köprüsü ile anlamlı bağlar kur.
+                Türkiye’nin güvenli tanışma sitesi: ücretsiz üye ol, şehirine göre keşfet, saygılı online sohbet et.
+                Kadın üyelerde mesajlaşma ve kimler baktı ücretsiz — ciddi ilişki ve evlilik için Gönül Köprüsü.
             </p>
             <ul class="landing-hero-pills">
                 <li>

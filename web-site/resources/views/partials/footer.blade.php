@@ -55,9 +55,11 @@
                            target="_blank" rel="noopener"
                            data-gk-event="instagram_cta" data-gk-event-label="footer">Instagram — @gonulkoprusucom</a>
                     </li>
-                    <li><a href="{{ route('city.seo', 'istanbul') }}">İstanbul’da tanışma</a></li>
-                    <li><a href="{{ route('city.seo', 'ankara') }}">Ankara’da tanışma</a></li>
-                    <li><a href="{{ route('city.seo', 'izmir') }}">İzmir’de tanışma</a></li>
+                    <li><a href="{{ route('city.seo', 'istanbul') }}">İstanbul tanışma</a></li>
+                    <li><a href="{{ route('city.seo', 'ankara') }}">Ankara tanışma</a></li>
+                    <li><a href="{{ route('city.seo', 'izmir') }}">İzmir tanışma</a></li>
+                    <li><a href="{{ route('city.seo', 'bursa') }}">Bursa tanışma</a></li>
+                    <li><a href="{{ route('city.seo', 'antalya') }}">Antalya tanışma</a></li>
                     <li><a href="{{ route('register', ['utm_source' => 'footer', 'utm_medium' => 'cta', 'utm_campaign' => 'organic']) }}" data-gk-event="sign_up_click" data-gk-event-label="footer">Ücretsiz kayıt</a></li>
                 </ul>
                 <p class="site-footer-support-note">

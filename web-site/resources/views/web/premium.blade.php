@@ -6,10 +6,8 @@
     $featureItems = [
         ['icon' => 'camera', 'title' => __('app.premium.feat_stories_title'), 'desc' => __('app.premium.feat_stories_desc'), 'visual' => 'premium-stories.svg'],
         ['icon' => 'eye', 'title' => __('app.premium.feat_who_viewed_title'), 'desc' => __('app.premium.feat_who_viewed_desc'), 'visual' => 'premium-spotlight.svg'],
-        ['icon' => 'camera', 'title' => __('app.premium.feat_gallery_title'), 'desc' => __('app.premium.feat_gallery_desc'), 'visual' => 'premium-stories.svg'],
         ['icon' => 'star', 'title' => __('app.premium.feat_boost_title'), 'desc' => __('app.premium.feat_boost_desc'), 'visual' => 'premium-boost.svg'],
         ['icon' => 'heart', 'title' => __('app.premium.feat_likes_title'), 'desc' => __('app.premium.feat_likes_desc'), 'visual' => 'premium-spotlight.svg'],
-        ['icon' => 'eye', 'title' => __('app.premium.feat_visibility_title'), 'desc' => __('app.premium.feat_visibility_desc'), 'visual' => 'premium-spotlight.svg'],
     ];
     $packageIcons = ['pro' => 'star', 'gold' => 'crown', 'platinum' => 'bolt'];
 @endphp
