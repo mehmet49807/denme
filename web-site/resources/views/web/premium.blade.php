@@ -84,41 +84,7 @@
             </section>
         @endif
 
-        <section class="premium-showcase" aria-label="Premium görselleri">
-            <article class="premium-showcase-card glass-card">
-                <img src="{{ asset('images/premium-stories.svg') }}" alt="" width="100" height="100" loading="lazy">
-                <h3>{{ __('app.premium.showcase_stories') }}</h3>
-                <p>{{ __('app.premium.showcase_stories_desc') }}</p>
-            </article>
-            <article class="premium-showcase-card glass-card">
-                <img src="{{ asset('images/premium-boost.svg') }}" alt="" width="100" height="100" loading="lazy">
-                <h3>{{ __('app.premium.showcase_boost') }}</h3>
-                <p>{{ __('app.premium.showcase_boost_desc') }}</p>
-            </article>
-            <article class="premium-showcase-card glass-card">
-                <img src="{{ asset('images/premium-spotlight.svg') }}" alt="" width="100" height="100" loading="lazy">
-                <h3>{{ __('app.premium.showcase_spotlight') }}</h3>
-                <p>{{ __('app.premium.showcase_spotlight_desc') }}</p>
-            </article>
-        </section>
-
-        <section class="premium-section">
-            <h2 class="premium-section-title">{{ __('app.premium.features_title') }}</h2>
-            <div class="premium-features-grid">
-                @foreach($featureItems as $item)
-                    <article class="premium-feature glass-card">
-                        <div class="premium-feature-top">
-                            <span class="premium-feature-icon">@include('partials.theme-icon', ['icon' => $item['icon']])</span>
-                            <img class="premium-feature-visual" src="{{ asset('images/'.$item['visual']) }}" alt="" width="72" height="72" loading="lazy">
-                        </div>
-                        <h3>{{ $item['title'] }}</h3>
-                        <p>{{ $item['desc'] }}</p>
-                    </article>
-                @endforeach
-            </div>
-        </section>
-
-        <section class="premium-section">
+        <section class="premium-section premium-section--packages">
             <h2 class="premium-section-title">{{ __('app.premium.packages_title') }}</h2>
             <p class="premium-section-sub">{{ __('app.premium.packages_sub') }}</p>
             <div class="premium-packages">
@@ -128,11 +94,10 @@
                         $isActive = $activeSubscription && $activeSubscription->package_type === $type;
                     @endphp
                     <article class="premium-package-card glass-card {{ $isFeatured ? 'premium-package-card--featured' : '' }} {{ $isActive ? 'premium-package-card--active' : '' }}">
-                        @if($isFeatured)
-                            <span class="premium-package-tag">{{ __('app.premium.most_popular') }}</span>
-                        @endif
                         @if($isActive)
                             <span class="premium-package-tag premium-package-tag--active">{{ __('app.premium.active_tag') }}</span>
+                        @elseif($isFeatured)
+                            <span class="premium-package-tag">{{ __('app.premium.most_popular') }}</span>
                         @endif
                         <div class="premium-package-icon premium-package-icon--{{ $type }}">
                             @include('partials.theme-icon', ['icon' => $packageIcons[$type] ?? 'star'])
@@ -155,6 +120,22 @@
                                 <li>{{ __('app.premium.top_visibility') }}</li>
                             @endif
                         </ul>
+                    </article>
+                @endforeach
+            </div>
+        </section>
+
+        <section class="premium-section">
+            <h2 class="premium-section-title">{{ __('app.premium.features_title') }}</h2>
+            <div class="premium-features-grid">
+                @foreach($featureItems as $item)
+                    <article class="premium-feature glass-card">
+                        <div class="premium-feature-top">
+                            <span class="premium-feature-icon">@include('partials.theme-icon', ['icon' => $item['icon']])</span>
+                            <img class="premium-feature-visual" src="{{ asset('images/'.$item['visual']) }}" alt="" width="72" height="72" loading="lazy">
+                        </div>
+                        <h3>{{ $item['title'] }}</h3>
+                        <p>{{ $item['desc'] }}</p>
                     </article>
                 @endforeach
             </div>
