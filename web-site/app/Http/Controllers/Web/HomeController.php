@@ -18,7 +18,7 @@ class HomeController extends Controller
         SeoHelper::setPage('home');
         SeoHelper::set('pageType', 'home');
         SeoHelper::set('canonical', 'https://gonulkoprusu.com/');
-        SeoHelper::set('ogImage', 'https://gonulkoprusu.com/images/og-default.jpg');
+        SeoHelper::set('ogImage', 'https://gonulkoprusu.com/images/logo-320.png');
 
         $siteUrl = 'https://gonulkoprusu.com';
 
@@ -32,17 +32,12 @@ class HomeController extends Controller
                         'url' => $siteUrl,
                         'description' => SeoHelper::get('description'),
                         'inLanguage' => 'tr-TR',
-                        'potentialAction' => [
-                            '@type' => 'SearchAction',
-                            'target' => $siteUrl.'/ara?q={search_term_string}',
-                            'query-input' => 'required name=search_term_string',
-                        ],
                     ],
                     [
                         '@type' => 'Organization',
                         'name' => 'Gönül Köprüsü',
                         'url' => $siteUrl,
-                        'logo' => $siteUrl.'/images/gonul-koprusu-logo.png',
+                        'logo' => $siteUrl.'/images/logo-320.png',
                         'sameAs' => [
                             'https://www.instagram.com/gonulkoprusucom',
                         ],

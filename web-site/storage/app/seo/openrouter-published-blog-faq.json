@@ -118,12 +118,63 @@
         }
       ],
       "faq": []
+    },
+    {
+      "slug": "ucretsiz-tanisma-ve-online-sohbet-sitesi",
+      "title": "Ücretsiz Tanışma ve Online Sohbet Sitesi: Gönül Köprüsü",
+      "description": "Ücretsiz tanışma sitesi arayanlar için Gönül Köprüsü rehberi. Online sohbet, güvenli mesajlaşma ve ciddi ilişki odaklı üyelik.",
+      "updated_at": "2026-07-17",
+      "reading_time": "6 dk",
+      "keywords": ["ücretsiz tanışma sitesi", "online sohbet", "sohbet sitesi", "tanışma sitesi", "gönül köprüsü"],
+      "sections": [
+        {
+          "heading": "Ücretsiz tanışma sitesi ne sunmalı?",
+          "body": "İyi bir tanışma sitesi ücretsiz kayıt, net profiller, moderasyon ve güvenli mesajlaşma sunar. Gönül Köprüsü, ciddi ilişki arayan yetişkinler için online sohbet ve şehir filtreleriyle keşif imkânı verir."
+        },
+        {
+          "heading": "Online sohbet ve güvenlik",
+          "body": "İlk buluşmadan önce platform üzerinden birkaç sohbet edin. Engelleme ve şikayet araçlarını kullanın; kişisel bilgilerinizi erken paylaşmayın. Güvenli tanışma rehberimizi okuyun."
+        },
+        {
+          "heading": "Hemen ücretsiz başlayın",
+          "body": "Kayıt olmak ücretsizdir. Şehrinizi seçin, profilinizi oluşturun ve size uygun üyelerle tanışmaya başlayın: /register"
+        }
+      ],
+      "faq": [
+        {
+          "question": "Online sohbet ücretsiz mi?",
+          "answer": "Kadın üyeler mesajlaşmayı ücretsiz kullanır. Erkek üyeler deneme süresi ve ardından premium paketlerle devam edebilir."
+        }
+      ]
+    },
+    {
+      "slug": "flort-sitesi-yerine-ciddi-tanisma",
+      "title": "Flört Sitesi Yerine Ciddi Tanışma: Doğru Platformu Seçmek",
+      "description": "Flört sitesi arayanlar için alternatif: Gönül Köprüsü ile ciddi ilişki, güvenli tanışma ve evlilik odaklı eşleşme.",
+      "updated_at": "2026-07-17",
+      "reading_time": "5 dk",
+      "keywords": ["flört sitesi", "ciddi tanışma", "evlilik sitesi", "güvenli tanışma", "gönül köprüsü"],
+      "sections": [
+        {
+          "heading": "Flört uygulaması mı, ciddi tanışma mı?",
+          "body": "Birçok flört sitesi hızlı eşleşmeye odaklanır. Evlilik ve uzun soluklu ilişki arıyorsanız niyetin net olduğu, moderasyonlu bir tanışma platformu daha uygundur."
+        },
+        {
+          "heading": "Gönül Köprüsü farkı",
+          "body": "Profil, şehir keşfi ve güvenli mesajlaşma ile anlamlı bağ kurmaya odaklanırız. İstanbul, Ankara, İzmir ve onlarca şehir sayfasından ücretsiz kayıt olabilirsiniz."
+        }
+      ],
+      "faq": []
     }
   ],
   "faq_items": [
     {
       "question": "Gönül Köprüsü ücretsiz mi?",
       "answer": "Evet, üye olmak ücretsizdir. Kadın üyeler mesajlaşma ve temel özellikleri ücretsiz kullanır; erkek üyeler kısa deneme sonrası premium paketlerden yararlanabilir."
+    },
+    {
+      "question": "Online sohbet ve tanışma için uygun mu?",
+      "answer": "Evet. Gönül Köprüsü güvenli online sohbet ve şehir odaklı tanışma sunar; ciddi ilişki ve evlilik niyetiyle üye olanlar için tasarlanmıştır."
     },
     {
       "question": "Şehir sayfalarından nasıl kayıt olurum?",
