@@ -54,7 +54,7 @@
             <h1>Gönülleri<br><span class="landing-hero-accent">Birleştiren Köprü</span></h1>
             <p class="landing-hero-lead">
                 Ciddi ilişki arayan yetişkinler için güvenli, saygılı ve modern bir tanışma ortamı.
-                Gönül Köprüsü ile anlamlı bağlar kur.
+                Kadın üyelerde mesajlaşma ve kimler baktı ücretsiz — Gönül Köprüsü ile anlamlı bağlar kur.
             </p>
             <ul class="landing-hero-pills">
                 <li>

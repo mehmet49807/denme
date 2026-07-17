@@ -58,6 +58,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
     Route::get('/setup/delete-users', [\App\Http\Controllers\Web\SetupController::class, 'deleteUsers']);
     Route::get('/setup/messages', [\App\Http\Controllers\Web\SetupController::class, 'messagesSchema']);
     Route::get('/setup/cron', [\App\Http\Controllers\Web\SetupController::class, 'cron']);
+    Route::get('/setup/growth', [\App\Http\Controllers\Web\SetupController::class, 'growth']);
     Route::get('/setup/ws-check', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
             abort(403);

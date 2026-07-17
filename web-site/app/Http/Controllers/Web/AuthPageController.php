@@ -145,7 +145,11 @@ class AuthPageController extends Controller
         }
 
         Auth::login($user);
-        session(['growth_signed_up' => 1]);
+        session([
+            'growth_signed_up' => 1,
+            'growth_signed_up_method' => 'email',
+            'growth_show_onboarding' => 1,
+        ]);
 
         try {
             $this->userMail->sendWelcome($user);

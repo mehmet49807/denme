@@ -78,8 +78,11 @@
             <section class="premium-status premium-status--expired glass-card">
                 <div class="premium-status-icon">@include('partials.theme-icon', ['icon' => 'star'])</div>
                 <div>
-                    <strong>{{ __('app.premium.expired_title') }}</strong>
-                    <p>{{ __('app.premium.expired_lead') }}</p>
+                    <strong>Deneme bitti — devam için uygulama</strong>
+                    <p>Web’den ödeme yok. Premium’u Android / iOS uygulamasından yenile; mesaj ve hikâye için paket seç.</p>
+                    <div class="premium-app-cta" style="margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.5rem;">
+                        @include('partials.store-badges')
+                    </div>
                 </div>
             </section>
         @endif

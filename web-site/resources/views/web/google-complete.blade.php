@@ -22,10 +22,13 @@
         </div>
 
         <div class="form-group auth-field">
-            <label for="phone">Telefon</label>
-            <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" required autocomplete="tel">
+            <label for="phone">Telefon <small class="auth-optional">(isteğe bağlı)</small></label>
+            <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" autocomplete="tel" placeholder="05xx xxx xx xx">
             @error('phone') <small class="form-error">{{ $message }}</small> @enderror
         </div>
+        <p class="auth-female-banner auth-female-banner--compact" role="note">
+            <strong>Kadın üyeler:</strong> mesajlaşma ve kimler baktı ücretsizdir.
+        </p>
 
         <div class="form-group auth-field">
             <label>Cinsiyet</label>
