@@ -1,0 +1,44 @@
+# robots.txt - Gonul Koprusu
+# https://gonulkoprusu.com
+
+User-agent: *
+Allow: /
+Allow: /hakkimizda
+Allow: /gizlilik-politikasi
+Allow: /kvkk
+Allow: /kullanim-kosullari
+Allow: /sikayet-ve-engelleme
+Allow: /guvenli-tanisma
+Allow: /blog
+Allow: /sss
+Allow: /sehir/
+Allow: /davet/
+Allow: /register
+Allow: /login
+
+# Giriş gerektiren / düşük değerli yollar
+Disallow: /api/
+Disallow: /admin/
+Disallow: /adminlogin/
+Disallow: /setup/
+Disallow: /broadcasting/
+Disallow: /live/
+Disallow: /profile
+Disallow: /feed
+Disallow: /messages/
+Disallow: /notifications/
+Disallow: /premium
+Disallow: /users/
+Disallow: /locations/
+Disallow: /ara
+Disallow: /sanctum/
+Disallow: /storage/
+Disallow: /_debugbar/
+Disallow: /vendor/
+Disallow: /marketing/
+Disallow: /ara/oneriler
+Disallow: /.env
+Disallow: /composer.json
+Disallow: /.ftp-deploy-sync-state.json
+
+Sitemap: https://gonulkoprusu.com/sitemap.xml

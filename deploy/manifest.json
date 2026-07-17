@@ -14,6 +14,7 @@
       { "local": "web-site/public/css", "remote": "css" },
       { "local": "web-site/public/js", "remote": "js" },
       { "local": "web-site/public/.htaccess", "remote": ".htaccess", "file": true },
+      { "local": "web-site/robots.txt", "remote": "robots.txt", "file": true },
       { "local": "patch-web-admin-github.php", "remote": "patch-web-admin-github.php", "file": true },
       { "local": "patch-web-admin-nav.php", "remote": "patch-web-admin-nav.php", "file": true },
       { "local": "patch-web-admin-fix-layout.php", "remote": "patch-web-admin-fix-layout.php", "file": true },

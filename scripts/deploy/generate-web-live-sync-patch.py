@@ -116,6 +116,19 @@ files = {
     / "resources/views/web/invite-landing.blade.php",
     "resources/views/web/city-seo.blade.php": WEB / "resources/views/web/city-seo.blade.php",
     "resources/views/web/home.blade.php": WEB / "resources/views/web/home.blade.php",
+    "resources/views/web/premium.blade.php": WEB / "resources/views/web/premium.blade.php",
+    "resources/views/partials/homepage-body.blade.php": WEB
+    / "resources/views/partials/homepage-body.blade.php",
+    "resources/views/partials/seo-head.blade.php": WEB
+    / "resources/views/partials/seo-head.blade.php",
+    "app/Support/SeoHelper.php": WEB / "app/Support/SeoHelper.php",
+    "app/Http/Controllers/Web/SitemapController.php": WEB
+    / "app/Http/Controllers/Web/SitemapController.php",
+    "app/Http/Controllers/Web/HomeController.php": WEB
+    / "app/Http/Controllers/Web/HomeController.php",
+    "css/app.css": WEB / "public/css/app.css",
+    "css/app.min.css": WEB / "public/css/app.min.css",
+    "robots.txt": WEB / "robots.txt",
     "resources/views/partials/footer.blade.php": WEB / "resources/views/partials/footer.blade.php",
     "resources/views/partials/deferred-analytics.blade.php": WEB
     / "resources/views/partials/deferred-analytics.blade.php",

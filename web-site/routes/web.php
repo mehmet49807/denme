@@ -278,12 +278,16 @@ Route::get('/ara/oneriler', [SearchController::class, 'suggest'])->middleware('t
 // ========== SEO Routes ==========
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', function () {
-    $robotsFile = base_path('../public_html/robots.txt');
-    if (is_file($robotsFile)) {
-        return response(file_get_contents($robotsFile), 200)
-            ->header('Content-Type', 'text/plain; charset=UTF-8')
-            ->header('Cache-Control', 'public, max-age=86400')
-            ->header('X-Robots-Tag', 'noindex');
+    foreach ([
+        base_path('robots.txt'),
+        public_path('robots.txt'),
+        base_path('../public_html/robots.txt'),
+    ] as $robotsFile) {
+        if (is_file($robotsFile)) {
+            return response(file_get_contents($robotsFile), 200)
+                ->header('Content-Type', 'text/plain; charset=UTF-8')
+                ->header('Cache-Control', 'public, max-age=3600');
+        }
     }
     $lines = [
         '# robots.txt - Gonul Koprusu',
