@@ -13,6 +13,9 @@
             @endif
             @include('partials.profile-verified-tick', ['user' => $user, 'size' => $tickSize ?? 'md'])
             @include('partials.trust-badge', ['user' => $user, 'size' => $tickSize ?? 'md'])
+            @if($user->showsReferralBadge())
+                <span class="profile-referral-badge" title="Davetçi">Davetçi</span>
+            @endif
             @include('partials.profile-online-label', ['user' => $user])
         </h1>
     </div>

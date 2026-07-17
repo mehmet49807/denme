@@ -232,6 +232,9 @@ Route::get('/guvenli-tanisma', [LegalPageController::class, 'safeMeeting'])->nam
 Route::get('/destek', [SupportPageController::class, 'show'])->name('support');
 Route::post('/destek', [SupportPageController::class, 'store'])->middleware('throttle:6,1,support')->name('support.store');
 Route::get('/sehir/{slug}', [CitySeoPageController::class, 'show'])->name('city.seo')->where('slug', '[a-z0-9\-]+');
+Route::get('/davet/{code}', [ReferralPageController::class, 'show'])
+    ->name('referral.invite')
+    ->where('code', '[A-Za-z0-9]{4,16}');
 Route::get('/hakkimizda', [LegalPageController::class, 'about'])->name('about');
 Route::get('/blog', [LegalPageController::class, 'blog'])->name('blog');
 Route::get('/blog/{slug}', [LegalPageController::class, 'blogShow'])->name('blog.show')->where('slug', '[a-z0-9\-]+');
@@ -297,6 +300,7 @@ Route::get('/robots.txt', function () {
         'Allow: /sss',
         'Allow: /destek',
         'Allow: /sehir/',
+        'Allow: /davet/',
         'Allow: /register',
         'Allow: /login',
         'Allow: /locations/',

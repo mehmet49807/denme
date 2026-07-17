@@ -214,6 +214,18 @@ class User extends Authenticatable
         return $this->gender === 'female';
     }
 
+    /** En az bir başarılı daveti olan üye rozeti */
+    public function showsReferralBadge(): bool
+    {
+        try {
+            return \App\Models\Referral::query()
+                ->where('referrer_id', $this->id)
+                ->exists();
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
     public function showsTrialBadge(): bool
     {
         return $this->gender === 'male'

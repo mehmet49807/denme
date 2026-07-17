@@ -95,6 +95,39 @@ files = {
     / "app/Http/Controllers/Web/SetupController.php",
     "app/Models/User.php": WEB / "app/Models/User.php",
     "app/Models/ProfileView.php": WEB / "app/Models/ProfileView.php",
+    "app/Models/Referral.php": WEB / "app/Models/Referral.php",
+    "app/Models/PremiumSubscription.php": WEB / "app/Models/PremiumSubscription.php",
+    "app/Models/SiteSetting.php": WEB / "app/Models/SiteSetting.php",
+    "app/Services/ReferralService.php": WEB / "app/Services/ReferralService.php",
+    "app/Services/UserAttributionService.php": WEB / "app/Services/UserAttributionService.php",
+    "app/Services/SiteSettingsService.php": WEB / "app/Services/SiteSettingsService.php",
+    "app/Services/LocationDataService.php": WEB / "app/Services/LocationDataService.php",
+    "app/Support/FeaturedCities.php": WEB / "app/Support/FeaturedCities.php",
+    "app/Http/Controllers/Web/ReferralPageController.php": WEB
+    / "app/Http/Controllers/Web/ReferralPageController.php",
+    "app/Http/Controllers/Web/CitySeoPageController.php": WEB
+    / "app/Http/Controllers/Web/CitySeoPageController.php",
+    "app/Http/Controllers/Web/GoogleAuthController.php": WEB
+    / "app/Http/Controllers/Web/GoogleAuthController.php",
+    "app/Http/Middleware/CaptureGrowthAttribution.php": WEB
+    / "app/Http/Middleware/CaptureGrowthAttribution.php",
+    "resources/views/web/referral.blade.php": WEB / "resources/views/web/referral.blade.php",
+    "resources/views/web/invite-landing.blade.php": WEB
+    / "resources/views/web/invite-landing.blade.php",
+    "resources/views/web/city-seo.blade.php": WEB / "resources/views/web/city-seo.blade.php",
+    "resources/views/web/home.blade.php": WEB / "resources/views/web/home.blade.php",
+    "resources/views/partials/footer.blade.php": WEB / "resources/views/partials/footer.blade.php",
+    "resources/views/partials/deferred-analytics.blade.php": WEB
+    / "resources/views/partials/deferred-analytics.blade.php",
+    "resources/views/partials/google-tag-manager-body.blade.php": WEB
+    / "resources/views/partials/google-tag-manager-body.blade.php",
+    "resources/views/partials/profile-identity.blade.php": WEB
+    / "resources/views/partials/profile-identity.blade.php",
+    "css/growth.css": WEB / "public/css/growth.css",
+    "css/growth.min.css": WEB / "public/css/growth.min.css",
+    "database/data/world-locations.php": WEB / "database/data/world-locations.php",
+    "storage/app/seo/openrouter-published-blog-faq.json": WEB
+    / "storage/app/seo/openrouter-published-blog-faq.json",
     "lang/tr/app.php": WEB / "lang/tr/app.php",
     "lang/en/app.php": WEB / "lang/en/app.php",
     "routes/web.php": WEB / "routes/web.php",

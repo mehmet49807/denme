@@ -198,8 +198,15 @@ class GoogleAuthController extends Controller
 
         $user = User::create($userData);
 
+        try {
+            app(\App\Services\UserAttributionService::class)->applyToNewUser($user, 'google');
+        } catch (\Throwable) {
+            // Atıf/ödül hatası kayıt akışını durdurmasın.
+        }
+
         session()->forget('google_signup');
         Auth::login($user, true);
+        session(['growth_signed_up' => 1]);
 
         try {
             $this->userMail->sendWelcome($user);
