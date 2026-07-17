@@ -4588,6 +4588,11 @@ body.app-shell-body .chat-input { background: var(--bg-alt) !important; }
     padding: 1rem 1.15rem;
 }
 
+.premium-status-copy {
+    min-width: 0;
+    flex: 1;
+}
+
 .premium-status-icon {
     flex-shrink: 0;
     width: 2.5rem;
@@ -4825,6 +4830,8 @@ body.app-shell-body .chat-input { background: var(--bg-alt) !important; }
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.75rem;
     align-items: stretch;
+    padding: 0.65rem 0.15rem 0.25rem;
+    overflow: hidden;
 }
 
 .premium-package-card {
@@ -4845,11 +4852,11 @@ body.app-shell-body .chat-input { background: var(--bg-alt) !important; }
     border-color: rgba(251, 191, 36, 0.55);
     background: linear-gradient(160deg, rgba(251, 191, 36, 0.12) 0%, rgba(255, 255, 255, 0.95) 45%, rgba(236, 72, 153, 0.08) 100%);
     box-shadow: 0 12px 36px rgba(251, 191, 36, 0.18);
-    transform: scale(1.03);
+    z-index: 1;
 }
 
 .premium-package-card--featured:hover {
-    transform: scale(1.03) translateY(-3px);
+    transform: translateY(-3px);
 }
 
 .premium-package-card--active {
@@ -5004,12 +5011,13 @@ body.app-shell-body .chat-input { background: var(--bg-alt) !important; }
     box-shadow: 0 6px 20px rgba(17, 24, 39, 0.15);
 }
 
-@media (max-width: 680px) {
-    .premium-packages { grid-template-columns: 1fr; }
-    .premium-package-card--featured { transform: none; }
-    .premium-package-card--featured:hover { transform: translateY(-3px); }
-    .premium-features-grid { grid-template-columns: 1fr; }
+@media (max-width: 900px) {
+    .premium-packages { grid-template-columns: 1fr; padding: 0.35rem 0 0; }
     .premium-showcase { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 680px) {
+    .premium-features-grid { grid-template-columns: 1fr; }
     .premium-hero { padding: 1.35rem 1.15rem; }
     .premium-hero-grid { grid-template-columns: 1fr; }
     .premium-hero-visual { display: none; }
@@ -5020,6 +5028,7 @@ body.app-shell-body .chat-input { background: var(--bg-alt) !important; }
     .premium-app-cta { grid-template-columns: 1fr; text-align: center; }
     .premium-app-cta-visual { display: none; }
     .premium-app-cta .store-badges { justify-content: center; }
+    .premium-app-cta-copy { display: flex; flex-direction: column; align-items: center; }
 }
 
 .info-banner { padding: 0.85rem 1rem; border-radius: var(--radius); margin-bottom: 1rem; font-size: 0.875rem; }

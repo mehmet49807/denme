@@ -61,7 +61,7 @@
         @if($user->isOnTrial())
             <section class="premium-status premium-status--trial glass-card">
                 <div class="premium-status-icon">@include('partials.theme-icon', ['icon' => 'clock'])</div>
-                <div>
+                <div class="premium-status-copy">
                     <strong>{{ __('app.premium.trial_status') }}</strong>
                     <p>{{ __('app.premium.trial_until', ['date' => $user->trial_ends_at->format('d.m.Y H:i'), 'days' => $user->trialDaysRemaining()]) }}</p>
                 </div>
@@ -69,7 +69,7 @@
         @elseif($activeSubscription)
             <section class="premium-status premium-status--active glass-card">
                 <div class="premium-status-icon">@include('partials.theme-icon', ['icon' => 'crown'])</div>
-                <div>
+                <div class="premium-status-copy">
                     <strong>{{ __('app.premium.active_package', ['name' => $packages[$activeSubscription->package_type]['name'] ?? ucfirst($activeSubscription->package_type)]) }}</strong>
                     <p>{{ __('app.premium.valid_until', ['date' => $activeSubscription->expires_at->format('d.m.Y H:i')]) }}</p>
                 </div>
@@ -77,12 +77,9 @@
         @else
             <section class="premium-status premium-status--expired glass-card">
                 <div class="premium-status-icon">@include('partials.theme-icon', ['icon' => 'star'])</div>
-                <div>
-                    <strong>Deneme bitti — devam için uygulama</strong>
-                    <p>Web’den ödeme yok. Premium’u Android / iOS uygulamasından yenile; mesaj ve hikâye için paket seç.</p>
-                    <div class="premium-app-cta" style="margin-top:.75rem;display:flex;flex-wrap:wrap;gap:.5rem;">
-                        @include('partials.store-badges')
-                    </div>
+                <div class="premium-status-copy">
+                    <strong>{{ __('app.premium.expired_title') }}</strong>
+                    <p>{{ __('app.premium.expired_lead') }}</p>
                 </div>
             </section>
         @endif
