@@ -82,4 +82,14 @@
         max-width: 42vw;
     }
 }
+body.app-shell-body .site-header:has(+ .site-main .dm-shell) .site-logo-brand-img {
+    height: 40px;
+    max-width: min(180px, 46vw);
+}
+@media (max-width: 640px) {
+    body.app-shell-body .site-header:has(+ .site-main .dm-shell) .site-logo-brand-img {
+        height: 36px;
+        max-width: 40vw;
+    }
+}
 </style>
