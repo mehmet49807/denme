@@ -28,6 +28,8 @@ files = {
     "resources/views/partials/logo-brand-css.blade.php": WEB
     / "resources/views/partials/logo-brand-css.blade.php",
     "resources/views/partials/asset.blade.php": WEB / "resources/views/partials/asset.blade.php",
+    "resources/views/partials/critical-ui-css.blade.php": WEB
+    / "resources/views/partials/critical-ui-css.blade.php",
     "resources/views/partials/logo.blade.php": WEB / "resources/views/partials/logo.blade.php",
     "resources/views/partials/profile-settings-open-btn.blade.php": WEB
     / "resources/views/partials/profile-settings-open-btn.blade.php",

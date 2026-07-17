@@ -4497,14 +4497,27 @@ body.app-shell-body .site-main:has(.dm-shell) {
     margin-inline: auto;
 }
 
-/* Theme icons (shared) */
+/* Theme icons (shared) — intrinsic SVG attrs + CSS so icons never explode if CSS is stale */
 .theme-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     line-height: 0;
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
+    max-width: 2.5rem;
+    max-height: 2.5rem;
+    overflow: hidden;
+    vertical-align: middle;
 }
-.theme-icon svg { width: 1em; height: 1em; display: block; }
+.theme-icon svg {
+    width: 1em;
+    height: 1em;
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+}
 
 /* Premium — open canvas (no nested glass shell) */
 .app-content:has(.premium-page) {
