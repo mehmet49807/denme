@@ -40,6 +40,8 @@ class AuthPageController extends Controller
             return redirect()->route('feed');
         }
 
+        app(UserAttributionService::class)->captureFromRequest(request());
+
         $referrer = null;
         $refCode = session('growth_ref') ?? request('ref');
         if ($refCode) {
@@ -56,6 +58,8 @@ class AuthPageController extends Controller
 
     public function register(Request $request): RedirectResponse
     {
+        app(UserAttributionService::class)->captureFromRequest($request);
+
         if ($request->input('relationship_status') === '') {
             $request->merge(['relationship_status' => null]);
         }
@@ -141,6 +145,7 @@ class AuthPageController extends Controller
         }
 
         Auth::login($user);
+        session(['growth_signed_up' => 1]);
 
         try {
             $this->userMail->sendWelcome($user);

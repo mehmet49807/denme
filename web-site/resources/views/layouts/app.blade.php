@@ -34,8 +34,10 @@
     <link rel="preload" as="image" href="{{ asset('images/landing-hero-couple.webp?v=opt-v6') }}" type="image/webp" fetchpriority="high">
     @endif
     @include('partials.landing-inline-css')
+    @include('partials.asset', ['path' => 'css/growth.min.css'])
     @else
     @include('partials.asset', ['path' => 'css/app.min.css'])
+    @include('partials.asset', ['path' => 'css/growth.min.css'])
     @endif
     @auth
     @if($appShell)

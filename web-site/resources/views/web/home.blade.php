@@ -72,9 +72,14 @@
             </ul>
             @guest
             <div class="landing-hero-actions landing-hero-actions--inline">
-                <a href="{{ route('register') }}" class="btn btn-primary">Ücretsiz Üye Ol</a>
+                <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'hero', 'utm_campaign' => 'organic']) }}" class="btn btn-primary" data-gk-event="sign_up_click" data-gk-event-label="home_hero">Ücretsiz Üye Ol</a>
                 <a href="{{ route('login') }}" class="btn btn-ghost">Giriş Yap</a>
             </div>
+            <p class="landing-hero-instagram">
+                <a href="https://www.instagram.com/gonulkoprusucom/?utm_source=home&utm_medium=hero&utm_campaign=instagram"
+                   target="_blank" rel="noopener"
+                   data-gk-event="instagram_cta" data-gk-event-label="home_hero">Instagram’da @gonulkoprusucom</a>
+            </p>
             <div class="landing-trust-wrap">
                 @include('partials.trust-badges')
             </div>
@@ -98,7 +103,7 @@
                     <li>Güvenli mesajlaşma</li>
                     <li>Profil ve keşif</li>
                 </ul>
-                <a href="{{ route('register') }}" class="btn btn-primary btn-full">Ücretsiz Üye Ol</a>
+                <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'sidebar', 'utm_campaign' => 'organic']) }}" class="btn btn-primary btn-full" data-gk-event="sign_up_click" data-gk-event-label="home_sidebar">Ücretsiz Üye Ol</a>
                 <p class="landing-signup-login">Zaten hesabın var mı? <a href="{{ route('login') }}">Giriş Yap</a></p>
             </aside>
         </div>

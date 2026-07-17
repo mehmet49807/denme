@@ -46,6 +46,9 @@
 
     <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data" id="registerForm" class="auth-form auth-form--register">
         @csrf
+        @if(!empty($refCode))
+            <input type="hidden" name="ref" value="{{ $refCode }}">
+        @endif
 
         <div class="auth-form-section">
             <p class="auth-form-section-label">Hızlı başlangıç</p>

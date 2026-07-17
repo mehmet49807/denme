@@ -1,0 +1,38 @@
+Gönül Köprüsü — Instagram CTA disiplini
+=====================================
+
+Bio link (tek CTA):
+  https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=bio&utm_campaign=organic
+
+Story / post swipe-up veya link sticker:
+  https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly
+  Şehir odaklı:
+  https://gonulkoprusu.com/sehir/istanbul?utm_source=instagram&utm_medium=story&utm_campaign=istanbul
+  https://gonulkoprusu.com/sehir/ankara?utm_source=instagram&utm_medium=story&utm_campaign=ankara
+  https://gonulkoprusu.com/sehir/izmir?utm_source=instagram&utm_medium=story&utm_campaign=izmir
+
+Her içerikte tek iş:
+  1) Kısa değer cümlesi (güvenli / ciddi ilişki)
+  2) Tek CTA: "Ücretsiz kayıt ol"
+  3) Yukarıdaki UTM’li link
+
+Haftalık ritim (öneri):
+  - 2 şehir odaklı post (İstanbul / Ankara / İzmir rotasyonu)
+  - 1 güvenli tanışma / SSS içeriği
+  - 1 davet / WhatsApp paylaşım story’si
+  - 1 üye / atmosfer görseli (marketing/instagram/*.png)
+
+Ölçüm (GTM/GA event’leri):
+  - sign_up
+  - sign_up_click
+  - invite_share
+  - invite_cta_click
+  - city_cta_click
+  - instagram_cta
+
+Küçük Ads testi:
+  - Bütçe: düşük, 7 gün
+  - Hedef: kayıt (sign_up)
+  - Kreatif: Instagram görselleri + şehir CTA
+  - Landing: /register?utm_source=meta&utm_medium=paid&utm_campaign=test1
+    veya /sehir/istanbul?utm_source=google&utm_medium=cpc&utm_campaign=test1
