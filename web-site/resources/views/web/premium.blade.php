@@ -96,16 +96,22 @@
                             <span class="premium-package-tag premium-package-tag--active">{{ __('app.premium.active_tag') }}</span>
                         @elseif($isFeatured)
                             <span class="premium-package-tag">{{ __('app.premium.most_popular') }}</span>
+                        @else
+                            <span class="premium-package-tag premium-package-tag--spacer" aria-hidden="true">&nbsp;</span>
                         @endif
-                        <div class="premium-package-icon premium-package-icon--{{ $type }}">
-                            @include('partials.theme-icon', ['icon' => $packageIcons[$type] ?? 'star'])
+                        <div class="premium-package-head">
+                            <div class="premium-package-icon premium-package-icon--{{ $type }}">
+                                @include('partials.theme-icon', ['icon' => $packageIcons[$type] ?? 'star'])
+                            </div>
+                            <div class="premium-package-titleblock">
+                                <h3>{{ $pkg['name'] }}</h3>
+                                <p class="premium-package-duration">{{ __('app.premium.days_access', ['days' => $pkg['duration_days']]) }}</p>
+                            </div>
+                            <p class="premium-package-price">
+                                {{ number_format($pkg['price_tl'], 0, ',', '.') }}
+                                <span>TL</span>
+                            </p>
                         </div>
-                        <h3>{{ $pkg['name'] }}</h3>
-                        <p class="premium-package-price">
-                            {{ number_format($pkg['price_tl'], 0, ',', '.') }}
-                            <span>TL</span>
-                        </p>
-                        <p class="premium-package-duration">{{ __('app.premium.days_access', ['days' => $pkg['duration_days']]) }}</p>
                         <ul class="premium-package-perks">
                             <li>{{ __('app.premium.perk_stories') }}</li>
                             <li>{{ __('app.premium.perk_who_viewed') }}</li>

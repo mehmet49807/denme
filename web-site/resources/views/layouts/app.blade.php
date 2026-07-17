@@ -106,7 +106,9 @@
             @else
             <div class="site-header-toolbar">
                 @auth
-                    @include('partials.header-premium-btn')
+                    @unless(request()->routeIs('premium'))
+                        @include('partials.header-premium-btn')
+                    @endunless
                     @include('partials.profile-settings-open-btn')
                 @endauth
                 @stack('header-actions')
