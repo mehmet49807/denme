@@ -131,6 +131,14 @@ files = {
     "lang/tr/app.php": WEB / "lang/tr/app.php",
     "lang/en/app.php": WEB / "lang/en/app.php",
     "routes/web.php": WEB / "routes/web.php",
+    "app/Services/GrowthOnboardingService.php": WEB / "app/Services/GrowthOnboardingService.php",
+    "app/Services/GrowthLifecycleService.php": WEB / "app/Services/GrowthLifecycleService.php",
+    "app/Services/UserMailService.php": WEB / "app/Services/UserMailService.php",
+    "resources/views/partials/growth-onboarding.blade.php": WEB
+    / "resources/views/partials/growth-onboarding.blade.php",
+    "resources/views/partials/store-badges.blade.php": WEB
+    / "resources/views/partials/store-badges.blade.php",
+    "config/email_templates.php": WEB / "config/email_templates.php",
 }
 
 payload = {

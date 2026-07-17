@@ -166,7 +166,7 @@ class GoogleAuthController extends Controller
 
         $validated = $request->validate([
             'username' => 'required|string|min:3|max:50|unique:users|regex:/^[a-zA-Z0-9_]+$/',
-            'phone' => 'required|string|max:20',
+            'phone' => 'nullable|string|max:20',
             'gender' => 'required|in:male,female',
             'privacy_accepted' => 'accepted',
             'kvkk_accepted' => 'accepted',
@@ -177,12 +177,14 @@ class GoogleAuthController extends Controller
 
         $validated = array_merge($validated, $this->validateLocationInput($request, $this->locations));
 
+        $phone = trim((string) ($validated['phone'] ?? ''));
+
         $userData = [
             'username' => $validated['username'],
             'first_name' => $payload['first_name'] ?: $validated['username'],
             'last_name' => $payload['last_name'] ?: '',
             'email' => $payload['email'],
-            'phone' => $validated['phone'],
+            'phone' => $phone !== '' ? $phone : null,
             'gender' => $validated['gender'],
             'country' => $validated['country'],
             'city' => $validated['city'],
@@ -206,7 +208,11 @@ class GoogleAuthController extends Controller
 
         session()->forget('google_signup');
         Auth::login($user, true);
-        session(['growth_signed_up' => 1]);
+        session([
+            'growth_signed_up' => 1,
+            'growth_signed_up_method' => 'google',
+            'growth_show_onboarding' => 1,
+        ]);
 
         try {
             $this->userMail->sendWelcome($user);

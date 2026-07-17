@@ -21,6 +21,8 @@
     @if(session('success')) <p class="feed-flash profile-success">{{ session('success') }}</p> @endif
     @error('image') <small class="form-error feed-flash">{{ $message }}</small> @enderror
 
+    @include('partials.growth-onboarding', ['viewer' => $viewer, 'onboarding' => $onboarding ?? null])
+
     <div class="feed-top">
         @if($allStoryGroups->isNotEmpty() || $viewer->canPostStories())
         <section class="stories-section" aria-label="{{ __('app.feed.stories') }}">

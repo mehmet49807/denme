@@ -32,7 +32,13 @@ Haftalık ritim (öneri):
 
 Küçük Ads testi:
   - Bütçe: düşük, 7 gün
-  - Hedef: kayıt (sign_up)
+  - Hedef: kayıt (sign_up / google_complete)
   - Kreatif: Instagram görselleri + şehir CTA
   - Landing: /register?utm_source=meta&utm_medium=paid&utm_campaign=test1
     veya /sehir/istanbul?utm_source=google&utm_medium=cpc&utm_campaign=test1
+
+Haftalık metrik (sunucu):
+  https://gonulkoprusu.com/setup/growth?key=gk-cpanel-setup-2026
+
+Cron (lifecycle e-posta + purge):
+  https://gonulkoprusu.com/setup/cron?key=gk-cron-2026

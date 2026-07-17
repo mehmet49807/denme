@@ -41,7 +41,7 @@
 
     <div class="auth-female-banner" role="note">
         <span class="auth-female-banner-icon" aria-hidden="true">💜</span>
-        <p><strong>Kadın üyeler için güvenli ortam:</strong> moderasyon, gizlilik ve 7/24 destek.</p>
+        <p><strong>Kadın üyeler ücretsiz:</strong> mesajlaşma, kimler baktı ve galeri — premium gerekmez. Moderasyon + 7/24 destek.</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data" id="registerForm" class="auth-form auth-form--register">
@@ -58,9 +58,9 @@
                     <span class="auth-photo-upload-icon">@include('partials.theme-icon', ['icon' => 'camera'])</span>
                     <span class="auth-photo-upload-text">
                         <strong>Profil fotoğrafı ekle</strong>
-                        <small>Kayıt için zorunlu</small>
+                        <small>İsteğe bağlı — sonra da ekleyebilirsin</small>
                     </span>
-                    <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/gif,image/webp" required>
+                    <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/gif,image/webp">
                 </label>
                 @error('photo') <small class="form-error">{{ $message }}</small> @enderror
             </div>

@@ -9,6 +9,7 @@
     }
     $deferUntilInteraction = request()->routeIs('home') && auth()->guest();
     $signedUp = session()->pull('growth_signed_up');
+    $signedUpMethod = session()->pull('growth_signed_up_method', 'email');
 @endphp
 <script>
 (function () {
@@ -16,6 +17,7 @@
     var gtmId = @json($gtmId);
     var deferUntilInteraction = @json($deferUntilInteraction);
     var signedUp = @json((bool) $signedUp);
+    var signedUpMethod = @json((string) $signedUpMethod);
     var loaded = false;
 
     window.dataLayer = window.dataLayer || [];
@@ -75,7 +77,10 @@
         loadGa();
         if (signedUp) {
             setTimeout(function () {
-                window.gkTrack('sign_up', { method: 'web', event_category: 'growth' });
+                window.gkTrack('sign_up', { method: signedUpMethod || 'email', event_category: 'growth' });
+                if (signedUpMethod === 'google') {
+                    window.gkTrack('google_complete', { method: 'google', event_category: 'growth' });
+                }
             }, 400);
         }
     }

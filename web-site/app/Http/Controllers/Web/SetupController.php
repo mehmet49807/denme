@@ -378,6 +378,60 @@ class SetupController extends Controller
             }
         }
 
+        try {
+            $lifecycle = app(\App\Services\GrowthLifecycleService::class)->run(30);
+            $lines[] = 'growth-lifecycle: '.json_encode($lifecycle, JSON_UNESCAPED_UNICODE);
+        } catch (\Throwable $e) {
+            $lines[] = 'growth-lifecycle HATA: '.$e->getMessage();
+        }
+
+        $lines[] = '';
+        $lines[] = 'OK';
+
+        return response(implode("\n", $lines)."\n", 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    /** Haftalık büyüme metrikleri — /setup/growth?key=gk-cpanel-setup-2026 */
+    public function growth()
+    {
+        if (request('key') !== 'gk-cpanel-setup-2026') {
+            abort(403);
+        }
+
+        $lines = ['Gönül Köprüsü — büyüme metrikleri (son 7 gün)', 'base='.base_path(), ''];
+
+        try {
+            $since = now()->subDays(7);
+            $users = \App\Models\User::query()->where('role', 'user');
+
+            $signups = (clone $users)->where('created_at', '>=', $since)->count();
+            $female = (clone $users)->where('created_at', '>=', $since)->where('gender', 'female')->count();
+            $male = (clone $users)->where('created_at', '>=', $since)->where('gender', 'male')->count();
+            $withPhoto = (clone $users)->where('created_at', '>=', $since)->whereNotNull('profile_photo_url')->count();
+            $referred = (clone $users)->where('created_at', '>=', $since)->whereNotNull('referred_by_user_id')->count();
+            $google = (clone $users)->where('created_at', '>=', $since)->where('registration_source', 'google')->count();
+            $seoCity = (clone $users)->where('created_at', '>=', $since)->where('utm_medium', 'city')->count();
+            $instagram = (clone $users)->where('created_at', '>=', $since)->where('utm_source', 'instagram')->count();
+
+            $lines[] = 'kayıt_toplam='.$signups;
+            $lines[] = 'kayıt_kadın='.$female;
+            $lines[] = 'kayıt_erkek='.$male;
+            $lines[] = 'kayıt_fotoğraflı='.$withPhoto.($signups > 0 ? ' ('.round($withPhoto / $signups * 100).'%)' : '');
+            $lines[] = 'davetle_gelen='.$referred.($signups > 0 ? ' ('.round($referred / $signups * 100).'%)' : '');
+            $lines[] = 'google_kayıt='.$google;
+            $lines[] = 'şehir_seo_utm='.$seoCity;
+            $lines[] = 'instagram_utm='.$instagram;
+            $lines[] = '';
+            $lines[] = 'GTM event hedefi: sign_up, google_complete, invite_share, city_cta_click, instagram_cta';
+            $lines[] = 'Instagram bio: https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=bio&utm_campaign=organic';
+            $lines[] = 'Ads test: /register?utm_source=meta&utm_medium=paid&utm_campaign=test1';
+        } catch (\Throwable $e) {
+            $lines[] = 'HATA: '.$e->getMessage();
+        }
+
         $lines[] = '';
         $lines[] = 'OK';
 
