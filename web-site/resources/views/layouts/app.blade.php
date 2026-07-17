@@ -18,6 +18,7 @@
     <link rel="icon" href="{{ asset('images/favicon.svg') }}?v={{ config('brand.logo_version') }}" type="image/svg+xml">
     <link rel="apple-touch-icon" href="{{ asset('images/apple-touch-icon.png') }}?v={{ config('brand.logo_version') }}">
     @include('partials.async-fonts')
+    @include('partials.critical-ui-css')
     @if($isLanding)
     @php
         $hero640 = is_file(base_path('images/landing-hero-couple-640.webp'));
