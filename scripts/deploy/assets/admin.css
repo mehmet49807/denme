@@ -3442,6 +3442,14 @@ body.admin-post-viewer-open {
     color: var(--text);
 }
 
+.admin-app-links-preview {
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.35rem;
+}
+.admin-app-links-preview a {
+    word-break: break-all;
+}
 .admin-form-actions {
     display: flex;
     flex-wrap: wrap;

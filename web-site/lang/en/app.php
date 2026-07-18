@@ -223,6 +223,7 @@ return [
         'app_cta_step_start' => 'Start instantly',
         'app_cta_trust' => 'Secure payment · App Store & Google Play',
         'app_store_soon' => 'Coming soon',
+        'app_store_get' => 'Get',
         'feat_stories_title' => 'Story sharing',
         'feat_stories_desc' => 'Share memories as stories',
         'feat_who_viewed_title' => 'Who viewed you',

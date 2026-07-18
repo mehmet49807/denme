@@ -223,6 +223,7 @@ return [
         'app_cta_step_start' => 'Hemen başla',
         'app_cta_trust' => 'Güvenli ödeme · App Store & Google Play',
         'app_store_soon' => 'Yakında',
+        'app_store_get' => 'İndir',
         'feat_stories_title' => 'Hikaye paylaşımı',
         'feat_stories_desc' => 'Anılarını hikaye olarak paylaş',
         'feat_who_viewed_title' => 'Kimler baktı',
