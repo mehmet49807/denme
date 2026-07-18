@@ -308,7 +308,7 @@ class MessagePageController extends Controller
 
         return redirect()
             ->route('messages.index')
-            ->with('success', __('app.messages.block'));
+            ->with('success', __('app.messages.blocked', ['name' => $partner->username]));
     }
 
     private function resolveChatPartner(User $viewer, string $username): ?User

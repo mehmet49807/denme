@@ -181,6 +181,16 @@ files = {
     "app/Support/GreetingTemplates.php": WEB / "app/Support/GreetingTemplates.php",
     "resources/views/web/messages/show.blade.php": WEB
     / "resources/views/web/messages/show.blade.php",
+    "resources/views/web/messages/index.blade.php": WEB
+    / "resources/views/web/messages/index.blade.php",
+    "resources/views/web/messages/partials/dm-inbox.blade.php": WEB
+    / "resources/views/web/messages/partials/dm-inbox.blade.php",
+    "resources/views/web/messages/partials/inbox-body.blade.php": WEB
+    / "resources/views/web/messages/partials/inbox-body.blade.php",
+    "resources/views/web/messages/partials/inbox-actions-script.blade.php": WEB
+    / "resources/views/web/messages/partials/inbox-actions-script.blade.php",
+    "app/Http/Controllers/Web/MessagePageController.php": WEB
+    / "app/Http/Controllers/Web/MessagePageController.php",
     "routes/web.php": WEB / "routes/web.php",
     "app/Services/GrowthOnboardingService.php": WEB / "app/Services/GrowthOnboardingService.php",
     "app/Services/GrowthLifecycleService.php": WEB / "app/Services/GrowthLifecycleService.php",
