@@ -211,7 +211,7 @@ class UserMailService
                 ? $base.'/davet/'.$user->referral_code.'?utm_source=email&utm_medium=lifecycle&utm_campaign=invite'
                 : $base.'/register?utm_source=email&utm_medium=lifecycle&utm_campaign=invite',
             '{referral_url}' => $base.'/davet',
-            '{instagram_url}' => 'https://www.instagram.com/gonulkoprusucom/',
+            '{instagram_url}' => \App\Support\InstagramUrl::withUtm('email', 'lifecycle', 'instagram'),
         ];
 
         return str_replace(array_keys($map), array_values($map), $text);

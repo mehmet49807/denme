@@ -6,8 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\LocationDataService;
 use App\Services\PublishedBlogFaqService;
+use App\Services\UserAttributionService;
+use App\Support\CitySeoCopy;
 use App\Support\FeaturedCities;
+use App\Support\InstagramUrl;
 use App\Support\SeoHelper;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CitySeoPageController extends Controller
@@ -17,8 +21,10 @@ class CitySeoPageController extends Controller
         private PublishedBlogFaqService $blogFaq,
     ) {}
 
-    public function show(string $slug): View
+    public function show(Request $request, string $slug): View
     {
+        app(UserAttributionService::class)->captureFromRequest($request);
+
         $city = $this->locations->resolveCitySlug($slug);
         if (! $city) {
             abort(404);
@@ -63,7 +69,9 @@ class CitySeoPageController extends Controller
             $relatedPosts = collect($this->blogFaq->blogPosts())->take(3)->values()->all();
         }
 
-        $faqItems = collect($this->blogFaq->faqItems())->take(4)->values()->all();
+        $copy = CitySeoCopy::forCity($city, $slug, $memberCount, $femaleCount, $maleCount);
+        $globalFaq = collect($this->blogFaq->faqItems())->take(2)->values()->all();
+        $faqItems = array_merge($copy['faqs'], $globalFaq);
 
         return view('web.city-seo', [
             'slug' => $slug,
@@ -75,12 +83,20 @@ class CitySeoPageController extends Controller
             'cityLinks' => $cityLinks,
             'relatedPosts' => $relatedPosts,
             'faqItems' => $faqItems,
+            'seoLead' => $copy['lead'],
+            'seoWhy' => $copy['why'],
             'registerUrl' => route('register', [
                 'utm_source' => 'seo',
                 'utm_medium' => 'city',
                 'utm_campaign' => $slug,
             ]),
-            'instagramUrl' => 'https://www.instagram.com/gonulkoprusucom/?utm_source=seo&utm_medium=city&utm_campaign='.$slug,
+            'campaignUrl' => route('campaign.landing', [
+                'utm_source' => 'seo',
+                'utm_medium' => 'city',
+                'utm_campaign' => $slug,
+                'city' => $slug,
+            ]),
+            'instagramUrl' => InstagramUrl::withUtm('seo', 'city', $slug),
         ]);
     }
 }

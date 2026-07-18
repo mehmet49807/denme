@@ -51,7 +51,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="https://www.instagram.com/gonulkoprusucom/?utm_source=footer&utm_medium=site&utm_campaign=instagram"
+                        <a href="{{ \App\Support\InstagramUrl::withUtm('footer', 'site', 'instagram') }}"
                            target="_blank" rel="noopener"
                            data-gk-event="instagram_cta" data-gk-event-label="footer">Instagram — @gonulkoprusucom</a>
                     </li>

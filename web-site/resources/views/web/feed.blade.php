@@ -22,6 +22,7 @@
     @error('image') <small class="form-error feed-flash">{{ $message }}</small> @enderror
 
     @include('partials.growth-onboarding', ['viewer' => $viewer, 'onboarding' => $onboarding ?? null])
+    @include('partials.growth-invite-banner', ['viewer' => $viewer, 'showInviteBanner' => $showInviteBanner ?? false])
 
     <div class="feed-top">
         @if($allStoryGroups->isNotEmpty() || $viewer->canPostStories())

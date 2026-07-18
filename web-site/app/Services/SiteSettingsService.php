@@ -26,7 +26,7 @@ class SiteSettingsService
             'support_phone' => '',
             'support_whatsapp' => '',
             'support_hours' => '7/24',
-            'instagram_url' => 'https://www.instagram.com/gonulkoprusu',
+            'instagram_url' => 'https://www.instagram.com/gonulkoprusucom',
             'facebook_url' => 'https://www.facebook.com/gonulkoprusu',
             'twitter_url' => 'https://www.twitter.com/gonulkoprusu',
             'google_analytics_id' => (string) config('services.google_analytics.id', 'G-7Z411GWG80'),
@@ -127,6 +127,7 @@ class SiteSettingsService
         try {
             Cache::forget(self::CACHE_KEY);
             Cache::forget('sitemap.xml.body');
+            Cache::forget('sitemap.xml.body.v2');
         } catch (\Throwable) {
             //
         }
