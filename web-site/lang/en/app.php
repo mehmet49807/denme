@@ -149,6 +149,9 @@ return [
         'quick_replies' => 'Quick messages',
         'original' => 'Original',
         'translated' => 'Translation',
+        'swipe_hint_title' => 'Swipe a chat to manage it',
+        'swipe_hint_delete' => 'Swipe right → Delete',
+        'swipe_hint_block' => 'Swipe left → Block',
     ],
 
     'users' => [
@@ -216,6 +219,12 @@ return [
         'per_day' => ':price TL / day',
         'gold_badge' => 'Gold badge',
         'top_visibility' => 'Top visibility',
+        'badges_title' => 'Package badges',
+        'badges_sub' => 'Each plan shows a distinct badge on your profile — pick the look you want.',
+        'badge_preview' => 'Looks like this on your profile',
+        'perk_priority' => 'Priority visibility',
+        'perk_top_rank' => 'Top visibility',
+        'perk_exclusive' => 'Exclusive Platinum highlight',
         'app_cta_title' => 'Purchase via mobile app',
         'app_cta_lead' => 'Premium payments are made securely through our Android and iOS apps.',
         'app_cta_badge' => 'Mobile payment',

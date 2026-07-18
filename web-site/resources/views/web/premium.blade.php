@@ -62,6 +62,31 @@
             </section>
         @endif
 
+        <section class="pm-section" id="premium-badges">
+            <header class="pm-section__head">
+                <h2 class="pm-section__title">{{ __('app.premium.badges_title') }}</h2>
+                <p class="pm-section__sub">{{ __('app.premium.badges_sub') }}</p>
+            </header>
+            <div class="pm-badge-showcase">
+                @foreach($packages as $packageType => $pkg)
+                    @php
+                        $from = $pkg['gradient_from'] ?? '#e11d48';
+                        $to = $pkg['gradient_to'] ?? '#f59e0b';
+                    @endphp
+                    <article class="pm-badge-card pm-badge-card--{{ $packageType }}" style="--plan-from: {{ $from }}; --plan-to: {{ $to }};">
+                        <span class="member-badge member-badge--{{ $packageType }} pm-badge-card__pill" style="--member-badge-from: {{ $from }}; --member-badge-to: {{ $to }};">
+                            <span class="member-badge-icon" aria-hidden="true">
+                                @include('partials.theme-icon', ['icon' => $pkg['badge_icon'] ?? 'star'])
+                            </span>
+                            <span class="member-badge-label">{{ $pkg['badge_label'] ?? $pkg['name'] }}</span>
+                        </span>
+                        <h3>{{ $pkg['rozet_label'] ?? $pkg['name'] }}</h3>
+                        <p>{{ $pkg['rozet_text'] ?? __('app.premium.badge_preview') }}</p>
+                    </article>
+                @endforeach
+            </div>
+        </section>
+
         <section class="pm-section" id="premium-packages">
             <header class="pm-section__head">
                 <h2 class="pm-section__title">{{ __('app.premium.packages_title') }}</h2>
@@ -101,9 +126,12 @@
 
                         @if(!empty($pkg['badge_enabled']))
                             <div class="pm-plan__badge">
-                                <span>
-                                    @include('partials.theme-icon', ['icon' => $pkg['badge_icon'] ?? 'star'])
-                                    {{ $pkg['rozet_label'] ?? $pkg['badge_label'] }}
+                                <p class="pm-plan__badge-label">{{ __('app.premium.badge_preview') }}</p>
+                                <span class="member-badge member-badge--{{ $packageType }} pm-plan__member-badge" style="--member-badge-from: {{ $from }}; --member-badge-to: {{ $to }};">
+                                    <span class="member-badge-icon" aria-hidden="true">
+                                        @include('partials.theme-icon', ['icon' => $pkg['badge_icon'] ?? 'star'])
+                                    </span>
+                                    <span class="member-badge-label">{{ $pkg['badge_label'] ?? $pkg['name'] }}</span>
                                 </span>
                                 @if(!empty($pkg['rozet_text']))
                                     <p>{{ $pkg['rozet_text'] }}</p>

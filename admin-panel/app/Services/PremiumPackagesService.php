@@ -27,10 +27,10 @@ class PremiumPackagesService
                 'badge_label' => 'Pro',
                 'badge_enabled' => true,
                 'badge_icon' => 'star',
-                'rozet_label' => 'Pro Rozet',
-                'rozet_text' => 'Profilinde özel Pro rozeti görünür.',
+                'rozet_label' => 'Pro Yıldız',
+                'rozet_text' => 'Mor yıldız rozeti — profilinde “Pro” olarak görünür.',
                 'gradient_from' => '#5b21b6',
-                'gradient_to' => '#7c3aed',
+                'gradient_to' => '#a78bfa',
                 'featured' => false,
             ],
             'gold' => [
@@ -40,9 +40,9 @@ class PremiumPackagesService
                 'badge_label' => 'Gold',
                 'badge_enabled' => true,
                 'badge_icon' => 'crown',
-                'rozet_label' => 'Gold Rozet',
-                'rozet_text' => 'Gold rozeti ve öne çıkan profil vurgusu.',
-                'gradient_from' => '#b45309',
+                'rozet_label' => 'Gold Taç',
+                'rozet_text' => 'Altın taç rozeti — öne çıkan ve popüler profil görünümü.',
+                'gradient_from' => '#92400e',
                 'gradient_to' => '#fbbf24',
                 'featured' => true,
             ],
@@ -52,11 +52,11 @@ class PremiumPackagesService
                 'price_tl' => 500,
                 'badge_label' => 'Platinum',
                 'badge_enabled' => true,
-                'badge_icon' => 'bolt',
-                'rozet_label' => 'Platinum Rozet',
-                'rozet_text' => 'En prestijli Platinum rozeti ve üst görünürlük.',
-                'gradient_from' => '#831843',
-                'gradient_to' => '#f472b6',
+                'badge_icon' => 'sparkles',
+                'rozet_label' => 'Platinum Işıltı',
+                'rozet_text' => 'Gümüş ışıltı rozeti — en prestijli ve en yüksek görünürlük.',
+                'gradient_from' => '#0f172a',
+                'gradient_to' => '#94a3b8',
                 'featured' => false,
             ],
         ];
@@ -197,9 +197,13 @@ class PremiumPackagesService
         $catalog = [];
 
         foreach ($this->defaults() as $type => $defaults) {
-            $catalog[$type] = $this->normalizePackage(
+            $catalog[$type] = $this->upgradeBadgeKit(
                 $type,
-                is_array($stored[$type] ?? null) ? $stored[$type] : [],
+                $this->normalizePackage(
+                    $type,
+                    is_array($stored[$type] ?? null) ? $stored[$type] : [],
+                    $defaults,
+                ),
                 $defaults,
             );
         }
@@ -209,6 +213,36 @@ class PremiumPackagesService
         }
 
         return $catalog;
+    }
+
+    /**
+     * @param  array<string, mixed>  $package
+     * @param  array<string, mixed>  $defaults
+     * @return array<string, mixed>
+     */
+    private function upgradeBadgeKit(string $type, array $package, array $defaults): array
+    {
+        $legacyRozet = [
+            'pro' => ['Pro Rozet', 'Pro'],
+            'gold' => ['Gold Rozet', 'Gold'],
+            'platinum' => ['Platinum Rozet', 'Platinum'],
+        ];
+
+        $rozet = (string) ($package['rozet_label'] ?? '');
+        $icon = (string) ($package['badge_icon'] ?? '');
+        $to = strtolower((string) ($package['gradient_to'] ?? ''));
+        $needsUpgrade = in_array($rozet, $legacyRozet[$type] ?? [], true)
+            || ($type === 'platinum' && ($icon === 'bolt' || $to === '#f472b6'));
+
+        if (! $needsUpgrade) {
+            return $package;
+        }
+
+        foreach (['badge_label', 'badge_icon', 'rozet_label', 'rozet_text', 'gradient_from', 'gradient_to'] as $key) {
+            $package[$key] = $defaults[$key];
+        }
+
+        return $package;
     }
 
     /**

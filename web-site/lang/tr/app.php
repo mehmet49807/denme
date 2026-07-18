@@ -149,6 +149,9 @@ return [
         'quick_replies' => 'Hızlı mesajlar',
         'original' => 'Orijinal',
         'translated' => 'Çeviri',
+        'swipe_hint_title' => 'Sohbeti kaydırarak yönet',
+        'swipe_hint_delete' => 'Sağa kaydır → Sil',
+        'swipe_hint_block' => 'Sola kaydır → Engelle',
     ],
 
     'users' => [
@@ -216,6 +219,12 @@ return [
         'per_day' => 'günlük :price TL',
         'gold_badge' => 'Gold rozet',
         'top_visibility' => 'En yüksek görünürlük',
+        'badges_title' => 'Paket rozetleri',
+        'badges_sub' => 'Her paket profilinde farklı bir rozet gösterir — hangisini istediğini seç.',
+        'badge_preview' => 'Profilinde böyle görünür',
+        'perk_priority' => 'Öncelikli görünürlük',
+        'perk_top_rank' => 'En yüksek görünürlük',
+        'perk_exclusive' => 'Özel Platinum vurgusu',
         'app_cta_title' => 'Mobil uygulama ile satın al',
         'app_cta_lead' => 'Premium ödemeler güvenli şekilde Android ve iOS uygulamaları üzerinden yapılır.',
         'app_cta_badge' => 'Mobil ödeme',
