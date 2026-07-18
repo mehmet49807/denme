@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminSupportController;
 use App\Http\Controllers\Admin\AdminGithubController;
 use App\Http\Controllers\Admin\AdminPackagesController;
 use App\Http\Controllers\Admin\AdminAppLinksController;
+use App\Http\Controllers\Admin\AdminMarketingController;
 use App\Http\Controllers\Admin\AdminPanelController;
 use App\Http\Controllers\Admin\AdminSeoController;
 use App\Http\Controllers\Admin\AdminProfileController;
@@ -60,6 +61,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/packages', [AdminPackagesController::class, 'update'])->name('admin.packages.update');
     Route::get('/app-links', [AdminAppLinksController::class, 'index'])->name('admin.app-links');
     Route::post('/app-links', [AdminAppLinksController::class, 'update'])->name('admin.app-links.update');
+    Route::get('/marketing', [AdminMarketingController::class, 'index'])->name('admin.marketing');
+    Route::post('/marketing', [AdminMarketingController::class, 'update'])->name('admin.marketing.update');
     Route::get('/broadcasts', [AdminPanelController::class, 'broadcasts'])->name('admin.broadcasts');
     Route::post('/broadcasts', [AdminPanelController::class, 'sendBroadcast'])->name('admin.broadcasts.send');
     Route::get('/emails', [AdminEmailController::class, 'index'])->name('admin.emails');

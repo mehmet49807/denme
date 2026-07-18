@@ -37,6 +37,8 @@ class SiteSettingsService
             'sitemap_enabled' => '1',
             'android_app_url' => '',
             'ios_app_url' => '',
+            'marketing_notes' => '',
+            'marketing_default_campaign' => 'organic',
         ];
     }
 
