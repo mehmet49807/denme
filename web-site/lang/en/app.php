@@ -210,6 +210,7 @@ return [
         'most_popular' => 'Most popular',
         'active_tag' => 'Active package',
         'days_access' => ':days days access',
+        'per_day' => ':price TL / day',
         'gold_badge' => 'Gold badge',
         'top_visibility' => 'Top visibility',
         'app_cta_title' => 'Purchase via mobile app',
