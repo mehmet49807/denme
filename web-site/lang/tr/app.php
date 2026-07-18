@@ -146,6 +146,7 @@ return [
         'clear_confirm' => 'Bu sohbetteki tüm mesajları kendi görünümünüzden silmek istediğinize emin misiniz?',
         'cleared' => 'Sohbet mesajları silindi.',
         'clear_failed' => 'Sohbet temizlenemedi.',
+        'quick_replies' => 'Hızlı mesajlar',
         'original' => 'Orijinal',
         'translated' => 'Çeviri',
     ],

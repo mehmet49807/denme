@@ -146,6 +146,7 @@ return [
         'clear_confirm' => 'Remove all messages in this chat from your view?',
         'cleared' => 'Chat messages cleared.',
         'clear_failed' => 'Could not clear chat.',
+        'quick_replies' => 'Quick messages',
         'original' => 'Original',
         'translated' => 'Translation',
     ],
