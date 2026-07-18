@@ -6502,26 +6502,68 @@ body.ig-compose-open { overflow: hidden; }
     right: 2px;
 }
 
-/* Growth: trust badges, register UX, city SEO */
+/* Growth: trust badges, register UX, city SEO
+   NOTE: class prefix gk-trust-* — do not reuse .trust-badge (profile icon). */
+.gk-trust-badges,
 .trust-badges {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-    gap: 0.65rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
     margin: 1rem 0 1.25rem;
 }
-.trust-badge {
+.gk-trust-badge {
     display: flex;
     align-items: flex-start;
-    gap: 0.55rem;
-    padding: 0.65rem 0.75rem;
+    gap: 0.5rem;
+    min-width: 0;
+    padding: 0.7rem 0.65rem;
     border-radius: 12px;
     background: rgba(124, 58, 237, 0.06);
     border: 1px solid rgba(124, 58, 237, 0.12);
 }
-.trust-badge-icon .theme-icon svg { width: 18px; height: 18px; color: #7c3aed; }
-.trust-badge-copy strong { display: block; font-size: 0.82rem; line-height: 1.3; }
-.trust-badge-copy small { display: block; font-size: 0.72rem; color: var(--text-muted, #6b6478); }
-.trust-badge-copy a { color: #7c3aed; text-decoration: none; font-weight: 600; }
+.gk-trust-badge-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 1.35rem;
+    height: 1.35rem;
+    align-items: center;
+    justify-content: center;
+}
+.gk-trust-badge-icon .theme-icon,
+.gk-trust-badge-icon .theme-icon svg {
+    width: 18px;
+    height: 18px;
+    color: #7c3aed;
+}
+.gk-trust-badge-copy {
+    min-width: 0;
+}
+.gk-trust-badge-copy strong {
+    display: block;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    color: var(--text, #1a1523);
+    word-break: break-word;
+}
+.gk-trust-badge-copy small {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.7rem;
+    line-height: 1.35;
+    color: var(--text-muted, #6b6478);
+    word-break: break-word;
+}
+.gk-trust-badge-copy a {
+    color: #7c3aed;
+    text-decoration: none;
+    font-weight: 600;
+}
+@media (max-width: 520px) {
+    .gk-trust-badges,
+    .trust-badges {
+        grid-template-columns: 1fr;
+    }
+}
 
 .auth-divider {
     display: flex;
@@ -6564,13 +6606,28 @@ body.ig-compose-open { overflow: hidden; }
     border: 1px dashed rgba(124, 58, 237, 0.2);
     border-radius: 12px;
     padding: 0.65rem 0.85rem;
+    background: rgba(255, 255, 255, 0.55);
+}
+.auth-optional-details + .auth-optional-details {
+    margin-top: 0.55rem;
 }
 .auth-optional-details summary {
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.88rem;
+    color: var(--text, #1a1523);
+    list-style: none;
 }
+.auth-optional-details summary::-webkit-details-marker { display: none; }
+.auth-optional-details summary::after {
+    content: '▾';
+    float: right;
+    color: #7c3aed;
+    font-weight: 700;
+}
+.auth-optional-details[open] summary::after { content: '▴'; }
 .auth-optional-details-body { margin-top: 0.85rem; }
+.auth-female-banner p { margin: 0; }
 
 .city-seo-stats {
     display: flex;
@@ -6648,6 +6705,7 @@ body.ig-compose-open { overflow: hidden; }
 .referral-share-btn--whatsapp { border-color: rgba(37,211,102,0.35); color: #15803d; }
 .referral-tips h2, .referral-recent h2 { margin: 0 0 0.75rem; font-size: 1rem; }
 .referral-tips-list, .referral-steps { margin: 0; padding-left: 1.1rem; line-height: 1.6; font-size: 0.92rem; }
+.referral-tips--female .gk-trust-badges,
 .referral-tips--female .trust-badges { margin-bottom: 0; }
 .referral-recent { margin-top: 0.25rem; }
 .sr-only {
@@ -6749,13 +6807,30 @@ body.ig-compose-open { overflow: hidden; }
 }
 .for-you-card-match { color: var(--violet, #7c3aed); font-weight: 600; }
 
-.trust-badge, .safety-badge {
+/* Profile verification tick icons only — scoped so register trust cards stay intact */
+.profile-identity .trust-badge,
+.profile-identity .safety-badge,
+.user-card .trust-badge,
+.user-card .safety-badge,
+.trust-badge.trust-badge--sm,
+.trust-badge.trust-badge--md,
+.safety-badge.safety-badge--sm,
+.safety-badge.safety-badge--md {
     display: inline-flex;
     width: 1.1rem;
     height: 1.1rem;
     vertical-align: middle;
+    flex-shrink: 0;
 }
-.trust-badge svg, .safety-badge svg { width: 100%; height: 100%; }
+.profile-identity .trust-badge svg,
+.profile-identity .safety-badge svg,
+.user-card .trust-badge svg,
+.user-card .safety-badge svg,
+.trust-badge.trust-badge--sm svg,
+.trust-badge.trust-badge--md svg {
+    width: 100%;
+    height: 100%;
+}
 .trust-badge--sm, .safety-badge--sm { width: 0.95rem; height: 0.95rem; }
 .trust-badge--md, .safety-badge--md { width: 1.2rem; height: 1.2rem; }
 
