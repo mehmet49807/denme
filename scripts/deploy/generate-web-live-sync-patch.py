@@ -189,12 +189,24 @@ $files = json_decode(<<<'JSON'
 FILES_JSON
 JSON, true);
 
+header('Content-Type: text/plain; charset=utf-8');
+header('Cache-Control: no-store');
+header('X-LiteSpeed-Purge: *');
+
 echo "Gonul Koprüsü — canlı senkron patch\n";
+
+if (function_exists('opcache_reset')) {
+    @opcache_reset();
+    echo "opcache_reset before write\n";
+}
 
 foreach ($files as $rel => $b64) {
     $path = $webRoot.'/'.ltrim($rel, '/');
     @mkdir(dirname($path), 0755, true);
     file_put_contents($path, base64_decode($b64));
+    if (function_exists('opcache_invalidate')) {
+        @opcache_invalidate($path, true);
+    }
     echo "write $rel ".filesize($path)."\n";
 }
 
@@ -220,6 +232,15 @@ foreach (['view:clear', 'route:clear', 'cache:clear', 'config:clear'] as $comman
         @shell_exec('cd '.escapeshellarg($webRoot).' && php artisan '.$command.' 2>/dev/null');
     } catch (Throwable $e) {
     }
+}
+
+foreach (glob($webRoot.'/storage/framework/views/*.php') ?: [] as $view) {
+    @unlink($view);
+}
+
+if (function_exists('opcache_reset')) {
+    @opcache_reset();
+    echo "opcache_reset after write\n";
 }
 
 try {
