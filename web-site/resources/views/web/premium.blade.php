@@ -4,10 +4,10 @@
     $activeNav = 'premium';
     $featuredPackage = 'gold';
     $featureItems = [
-        ['icon' => 'camera', 'title' => __('app.premium.feat_stories_title'), 'desc' => __('app.premium.feat_stories_desc'), 'visual' => 'premium-stories.svg'],
-        ['icon' => 'eye', 'title' => __('app.premium.feat_who_viewed_title'), 'desc' => __('app.premium.feat_who_viewed_desc'), 'visual' => 'premium-spotlight.svg'],
-        ['icon' => 'star', 'title' => __('app.premium.feat_boost_title'), 'desc' => __('app.premium.feat_boost_desc'), 'visual' => 'premium-boost.svg'],
-        ['icon' => 'heart', 'title' => __('app.premium.feat_likes_title'), 'desc' => __('app.premium.feat_likes_desc'), 'visual' => 'premium-spotlight.svg'],
+        ['icon' => 'camera', 'title' => __('app.premium.feat_stories_title'), 'desc' => __('app.premium.feat_stories_desc')],
+        ['icon' => 'eye', 'title' => __('app.premium.feat_who_viewed_title'), 'desc' => __('app.premium.feat_who_viewed_desc')],
+        ['icon' => 'star', 'title' => __('app.premium.feat_boost_title'), 'desc' => __('app.premium.feat_boost_desc')],
+        ['icon' => 'heart', 'title' => __('app.premium.feat_likes_title'), 'desc' => __('app.premium.feat_likes_desc')],
     ];
     $packageIcons = ['pro' => 'star', 'gold' => 'crown', 'platinum' => 'bolt'];
 @endphp
@@ -18,34 +18,23 @@
 <div class="premium-page">
     <section class="premium-hero">
         <div class="premium-hero-glow" aria-hidden="true"></div>
-        <div class="premium-hero-grid">
-            <div class="premium-hero-inner">
-                <span class="premium-hero-badge">
-                    @include('partials.theme-icon', ['icon' => 'crown'])
-                    Premium
-                </span>
-                <h1>{{ __('app.premium.hero_title') }}</h1>
-                <p class="premium-hero-lead">{{ __('app.premium.hero_lead') }}</p>
-                <ul class="premium-hero-perks">
-                    <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_stories') }}</li>
-                    <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_who_viewed') }}</li>
-                    <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_gallery') }}</li>
-                    <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_profile') }}</li>
-                </ul>
-            </div>
-            <div class="premium-hero-visual" aria-hidden="true">
-                <img src="{{ asset('images/premium-hero-visual.svg') }}" alt="" width="280" height="245" loading="lazy">
-            </div>
+        <div class="premium-hero-inner">
+            <span class="premium-hero-badge">
+                @include('partials.theme-icon', ['icon' => 'crown'])
+                Premium
+            </span>
+            <h1>{{ __('app.premium.hero_title') }}</h1>
+            <p class="premium-hero-lead">{{ __('app.premium.hero_lead') }}</p>
+            @if($user->gender !== 'female')
+                <a href="#premium-packages" class="premium-hero-cta">{{ __('app.premium.packages_title') }}</a>
+            @endif
         </div>
     </section>
 
     @if($user->gender === 'female')
         <section class="premium-card premium-card--included glass-card">
-            <div class="premium-card-visual">
-                <img src="{{ asset('images/premium-spotlight.svg') }}" alt="" width="120" height="120" loading="lazy">
-            </div>
+            <div class="premium-card-icon">@include('partials.theme-icon', ['icon' => 'heart'])</div>
             <div class="premium-card-copy">
-                <div class="premium-card-icon">@include('partials.theme-icon', ['icon' => 'heart'])</div>
                 <h2>{{ __('app.premium.female_title') }}</h2>
                 <p>{{ __('app.premium.female_lead') }}</p>
                 <ul class="premium-included-list">
@@ -82,7 +71,7 @@
             </section>
         @endif
 
-        <section class="premium-section premium-section--packages">
+        <section class="premium-section premium-section--packages" id="premium-packages">
             <h2 class="premium-section-title">{{ __('app.premium.packages_title') }}</h2>
             <p class="premium-section-sub">{{ __('app.premium.packages_sub') }}</p>
             <div class="premium-packages">
@@ -96,8 +85,6 @@
                             <span class="premium-package-tag premium-package-tag--active">{{ __('app.premium.active_tag') }}</span>
                         @elseif($isFeatured)
                             <span class="premium-package-tag">{{ __('app.premium.most_popular') }}</span>
-                        @else
-                            <span class="premium-package-tag premium-package-tag--spacer" aria-hidden="true">&nbsp;</span>
                         @endif
                         <div class="premium-package-head">
                             <div class="premium-package-icon premium-package-icon--{{ $type }}">
@@ -129,30 +116,26 @@
             </div>
         </section>
 
+        <section class="premium-app-cta glass-card">
+            <div class="premium-app-cta-copy">
+                <h2>{{ __('app.premium.app_cta_title') }}</h2>
+                <p>{{ __('app.premium.app_cta_lead') }}</p>
+                @include('partials.store-badges')
+            </div>
+        </section>
+
         <section class="premium-section">
             <h2 class="premium-section-title">{{ __('app.premium.features_title') }}</h2>
             <div class="premium-features-grid">
                 @foreach($featureItems as $item)
                     <article class="premium-feature glass-card">
-                        <div class="premium-feature-top">
-                            <span class="premium-feature-icon">@include('partials.theme-icon', ['icon' => $item['icon']])</span>
-                            <img class="premium-feature-visual" src="{{ asset('images/'.$item['visual']) }}" alt="" width="72" height="72" loading="lazy">
+                        <span class="premium-feature-icon">@include('partials.theme-icon', ['icon' => $item['icon']])</span>
+                        <div class="premium-feature-copy">
+                            <h3>{{ $item['title'] }}</h3>
+                            <p>{{ $item['desc'] }}</p>
                         </div>
-                        <h3>{{ $item['title'] }}</h3>
-                        <p>{{ $item['desc'] }}</p>
                     </article>
                 @endforeach
-            </div>
-        </section>
-
-        <section class="premium-app-cta glass-card">
-            <div class="premium-app-cta-visual" aria-hidden="true">
-                <img src="{{ asset('images/premium-hero-visual.svg') }}" alt="" width="160" height="140" loading="lazy">
-            </div>
-            <div class="premium-app-cta-copy">
-                <h2>{{ __('app.premium.app_cta_title') }}</h2>
-                <p>{{ __('app.premium.app_cta_lead') }}</p>
-                @include('partials.store-badges')
             </div>
         </section>
     @endif
