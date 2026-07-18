@@ -1,0 +1,4 @@
+file '/workspace/marketing/instagram/stories/story-01-ciddi-iliski.mp4'
+file '/workspace/marketing/instagram/stories/story-02-dogru-insan.mp4'
+file '/workspace/marketing/instagram/stories/story-03-guvenli.mp4'
+file '/workspace/marketing/instagram/stories/story-04-evlilik.mp4'
