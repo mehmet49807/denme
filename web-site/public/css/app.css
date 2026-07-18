@@ -6290,6 +6290,10 @@ body.ig-compose-open { overflow: hidden; }
         padding: 0.35rem 0.65rem 0.5rem;
         border-radius: 0;
     }
+    .app-content:has(.premium-theme) {
+        padding: 0.35rem 0.25rem 0.5rem;
+        border-radius: 0;
+    }
     .feed-container {
         max-width: min(var(--feed-stream-width), 100%);
     }
@@ -6301,6 +6305,10 @@ body.ig-compose-open { overflow: hidden; }
     }
     body.app-shell-body .site-main:has(.feed-page) {
         padding: 0.25rem 0.35rem 0;
+    }
+    body.app-shell-body .site-main:has(.premium-theme) {
+        padding: 0.25rem 0.35rem 0;
+        --smart-nav-page-bg: #f6f0ff;
     }
     body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-header-inner {
         padding: 0.32rem 0.55rem;
