@@ -54,14 +54,15 @@
                         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M6 7h12M9 7V5h6v2M10 11v6M14 11v6M8 7l1 12h6l1-12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        <span class="chat-clear-btn-label">{{ __('app.messages.clear_chat') }}</span>
+                        <span class="chat-clear-btn-label">{{ __('app.messages.delete') }}</span>
                     </button>
                     <details class="chat-safety-menu">
-                        <summary class="chat-safety-toggle" title="{{ __('app.messages.block') }}" aria-label="{{ __('app.messages.block') }}">
+                        <summary class="chat-safety-toggle chat-block-btn" title="{{ __('app.messages.block') }}" aria-label="{{ __('app.messages.block') }}">
                             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.75"/>
                                 <path d="M5.5 5.5l13 13" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
                             </svg>
+                            <span class="chat-block-btn-label">{{ __('app.messages.block') }}</span>
                         </summary>
                         <div class="chat-safety-panel">
                             <form method="POST" action="{{ route('messages.block', $partner->username) }}" data-block-confirm="{{ __('app.messages.block_confirm', ['name' => $partner->username]) }}" class="chat-safety-form" id="chatBlockForm">
@@ -110,18 +111,16 @@
             @if($viewer->canSendMessages())
             @php
                 $isFirstMessage = $messages->isEmpty();
-                $greetings = $isFirstMessage ? \App\Support\GreetingTemplates::all() : [];
+                $quickMessages = \App\Support\QuickMessages::forThread($isFirstMessage);
             @endphp
-            @if($isFirstMessage)
-            <div class="chat-greetings" id="chatGreetings">
-                <p class="chat-greetings-label">Hazır selam</p>
+            <div class="chat-greetings chat-quick-replies" id="chatGreetings" aria-label="{{ __('app.messages.quick_replies') }}">
+                <p class="chat-greetings-label">{{ __('app.messages.quick_replies') }}</p>
                 <div class="chat-greetings-list">
-                    @foreach($greetings as $greeting)
-                        <button type="button" class="chat-greeting-chip" data-greeting="{{ $greeting }}">{{ \Illuminate\Support\Str::limit($greeting, 42) }}</button>
+                    @foreach($quickMessages as $quick)
+                        <button type="button" class="chat-greeting-chip" data-greeting="{{ $quick }}">{{ \Illuminate\Support\Str::limit($quick, 36) }}</button>
                     @endforeach
                 </div>
             </div>
-            @endif
             <form method="POST" action="{{ route('messages.store', $partner->username) }}" class="chat-compose" id="chatComposeForm" enctype="multipart/form-data">
                 @csrf
                 @include('partials.chat-emoji-picker')
@@ -158,6 +157,7 @@
                         if (input) {
                             input.value = btn.getAttribute('data-greeting') || '';
                             input.focus();
+                            input.dispatchEvent(new Event('input', { bubbles: true }));
                         }
                     });
                 });

@@ -177,6 +177,10 @@ files = {
     / "storage/app/seo/openrouter-published-blog-faq.json",
     "lang/tr/app.php": WEB / "lang/tr/app.php",
     "lang/en/app.php": WEB / "lang/en/app.php",
+    "app/Support/QuickMessages.php": WEB / "app/Support/QuickMessages.php",
+    "app/Support/GreetingTemplates.php": WEB / "app/Support/GreetingTemplates.php",
+    "resources/views/web/messages/show.blade.php": WEB
+    / "resources/views/web/messages/show.blade.php",
     "routes/web.php": WEB / "routes/web.php",
     "app/Services/GrowthOnboardingService.php": WEB / "app/Services/GrowthOnboardingService.php",
     "app/Services/GrowthLifecycleService.php": WEB / "app/Services/GrowthLifecycleService.php",
