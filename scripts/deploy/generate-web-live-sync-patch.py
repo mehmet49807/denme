@@ -70,6 +70,7 @@ files = {
     "css/profile-identity.css": WEB / "public/css/profile-identity.css",
     "css/app.min.css": WEB / "public/css/app.min.css",
     "css/app-shell.min.css": WEB / "public/css/app-shell.min.css",
+    "css/premium-page.min.css": WEB / "public/css/premium-page.min.css",
     "css/feed-page.min.css": WEB / "public/css/feed-page.min.css",
     "css/profile-page.min.css": WEB / "public/css/profile-page.min.css",
     "css/user-profile.min.css": WEB / "public/css/user-profile.min.css",
@@ -132,6 +133,8 @@ files = {
     / "app/Http/Controllers/Web/HomeController.php",
     "css/app.css": WEB / "public/css/app.css",
     "css/app.min.css": WEB / "public/css/app.min.css",
+    "css/premium-page.css": WEB / "public/css/premium-page.css",
+    "css/premium-page.min.css": WEB / "public/css/premium-page.min.css",
     "robots.txt": WEB / "robots.txt",
     "resources/views/partials/footer.blade.php": WEB / "resources/views/partials/footer.blade.php",
     "resources/views/partials/deferred-analytics.blade.php": WEB

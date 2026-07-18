@@ -3,6 +3,12 @@
 @php
     $activeNav = 'premium';
     $featuredPackage = 'gold';
+    $heroPerks = [
+        __('app.premium.perk_stories'),
+        __('app.premium.perk_who_viewed'),
+        __('app.premium.perk_gallery'),
+        __('app.premium.perk_profile'),
+    ];
     $featureItems = [
         ['icon' => 'camera', 'title' => __('app.premium.feat_stories_title'), 'desc' => __('app.premium.feat_stories_desc')],
         ['icon' => 'eye', 'title' => __('app.premium.feat_who_viewed_title'), 'desc' => __('app.premium.feat_who_viewed_desc')],
@@ -14,30 +20,46 @@
 
 @section('title', __('app.premium.page_title') . ' — ' . __('app.brand'))
 
+@push('head')
+@include('partials.asset', ['path' => 'css/premium-page.min.css'])
+@endpush
+
 @section('app-content')
-<div class="premium-page">
-    <section class="premium-hero">
-        <div class="premium-hero-glow" aria-hidden="true"></div>
-        <div class="premium-hero-inner">
-            <span class="premium-hero-badge">
+<div class="premium-theme">
+    <header class="premium-theme-hero">
+        <div class="premium-theme-hero__mesh" aria-hidden="true"></div>
+        <div class="premium-theme-hero__orb premium-theme-hero__orb--1" aria-hidden="true"></div>
+        <div class="premium-theme-hero__orb premium-theme-hero__orb--2" aria-hidden="true"></div>
+        <div class="premium-theme-hero__content">
+            <div class="premium-theme-hero__medallion" aria-hidden="true">
                 @include('partials.theme-icon', ['icon' => 'crown'])
+            </div>
+            <span class="premium-theme-hero__badge">
+                @include('partials.theme-icon', ['icon' => 'sparkles'])
                 Premium
             </span>
-            <h1>{{ __('app.premium.hero_title') }}</h1>
-            <p class="premium-hero-lead">{{ __('app.premium.hero_lead') }}</p>
+            <h1 class="premium-theme-hero__title">{{ __('app.premium.hero_title') }}</h1>
+            <p class="premium-theme-hero__lead">{{ __('app.premium.hero_lead') }}</p>
+            <ul class="premium-theme-hero__perks" aria-label="{{ __('app.premium.features_title') }}">
+                @foreach($heroPerks as $perk)
+                    <li>@include('partials.theme-icon', ['icon' => 'check']) {{ $perk }}</li>
+                @endforeach
+            </ul>
             @if($user->gender !== 'female')
-                <a href="#premium-packages" class="premium-hero-cta">{{ __('app.premium.packages_title') }}</a>
+                <a href="#premium-packages" class="premium-theme-hero__cta">{{ __('app.premium.packages_title') }}</a>
             @endif
         </div>
-    </section>
+    </header>
 
     @if($user->gender === 'female')
-        <section class="premium-card premium-card--included glass-card">
-            <div class="premium-card-icon">@include('partials.theme-icon', ['icon' => 'heart'])</div>
-            <div class="premium-card-copy">
+        <section class="premium-theme-included">
+            <div class="premium-theme-included__icon" aria-hidden="true">
+                @include('partials.theme-icon', ['icon' => 'heart'])
+            </div>
+            <div>
                 <h2>{{ __('app.premium.female_title') }}</h2>
                 <p>{{ __('app.premium.female_lead') }}</p>
-                <ul class="premium-included-list">
+                <ul class="premium-theme-included__list">
                     @foreach($features as $feature)
                         <li>{{ $feature }}</li>
                     @endforeach
@@ -46,60 +68,62 @@
         </section>
     @else
         @if($user->isOnTrial())
-            <section class="premium-status premium-status--trial glass-card">
-                <div class="premium-status-icon">@include('partials.theme-icon', ['icon' => 'clock'])</div>
-                <div class="premium-status-copy">
+            <section class="premium-theme-status premium-theme-status--trial">
+                <div class="premium-theme-status__icon">@include('partials.theme-icon', ['icon' => 'clock'])</div>
+                <div class="premium-theme-status__copy">
                     <strong>{{ __('app.premium.trial_status') }}</strong>
                     <p>{{ __('app.premium.trial_until', ['date' => $user->trial_ends_at->format('d.m.Y H:i'), 'days' => $user->trialDaysRemaining()]) }}</p>
                 </div>
             </section>
         @elseif($activeSubscription)
-            <section class="premium-status premium-status--active glass-card">
-                <div class="premium-status-icon">@include('partials.theme-icon', ['icon' => 'crown'])</div>
-                <div class="premium-status-copy">
+            <section class="premium-theme-status premium-theme-status--active">
+                <div class="premium-theme-status__icon">@include('partials.theme-icon', ['icon' => 'crown'])</div>
+                <div class="premium-theme-status__copy">
                     <strong>{{ __('app.premium.active_package', ['name' => $packages[$activeSubscription->package_type]['name'] ?? ucfirst($activeSubscription->package_type)]) }}</strong>
                     <p>{{ __('app.premium.valid_until', ['date' => $activeSubscription->expires_at->format('d.m.Y H:i')]) }}</p>
                 </div>
             </section>
         @else
-            <section class="premium-status premium-status--expired glass-card">
-                <div class="premium-status-icon">@include('partials.theme-icon', ['icon' => 'star'])</div>
-                <div class="premium-status-copy">
+            <section class="premium-theme-status premium-theme-status--expired">
+                <div class="premium-theme-status__icon">@include('partials.theme-icon', ['icon' => 'star'])</div>
+                <div class="premium-theme-status__copy">
                     <strong>{{ __('app.premium.expired_title') }}</strong>
                     <p>{{ __('app.premium.expired_lead') }}</p>
                 </div>
             </section>
         @endif
 
-        <section class="premium-section premium-section--packages" id="premium-packages">
-            <h2 class="premium-section-title">{{ __('app.premium.packages_title') }}</h2>
-            <p class="premium-section-sub">{{ __('app.premium.packages_sub') }}</p>
-            <div class="premium-packages">
+        <section class="premium-theme-section" id="premium-packages">
+            <header class="premium-theme-section__head">
+                <h2 class="premium-theme-section__title">{{ __('app.premium.packages_title') }}</h2>
+                <p class="premium-theme-section__sub">{{ __('app.premium.packages_sub') }}</p>
+            </header>
+            <div class="premium-theme-packages">
                 @foreach($packages as $type => $pkg)
                     @php
                         $isFeatured = $type === $featuredPackage;
                         $isActive = $activeSubscription && $activeSubscription->package_type === $type;
                     @endphp
-                    <article class="premium-package-card glass-card {{ $isFeatured ? 'premium-package-card--featured' : '' }} {{ $isActive ? 'premium-package-card--active' : '' }}">
+                    <article class="premium-theme-pkg premium-theme-pkg--{{ $type }} {{ $isFeatured ? 'premium-theme-pkg--featured' : '' }} {{ $isActive ? 'premium-theme-pkg--active' : '' }}">
                         @if($isActive)
-                            <span class="premium-package-tag premium-package-tag--active">{{ __('app.premium.active_tag') }}</span>
+                            <span class="premium-theme-pkg__ribbon premium-theme-pkg__ribbon--active">{{ __('app.premium.active_tag') }}</span>
                         @elseif($isFeatured)
-                            <span class="premium-package-tag">{{ __('app.premium.most_popular') }}</span>
+                            <span class="premium-theme-pkg__ribbon">{{ __('app.premium.most_popular') }}</span>
                         @endif
-                        <div class="premium-package-head">
-                            <div class="premium-package-icon premium-package-icon--{{ $type }}">
+                        <div class="premium-theme-pkg__top">
+                            <div class="premium-theme-pkg__icon" aria-hidden="true">
                                 @include('partials.theme-icon', ['icon' => $packageIcons[$type] ?? 'star'])
                             </div>
-                            <div class="premium-package-titleblock">
+                            <div class="premium-theme-pkg__meta">
                                 <h3>{{ $pkg['name'] }}</h3>
-                                <p class="premium-package-duration">{{ __('app.premium.days_access', ['days' => $pkg['duration_days']]) }}</p>
+                                <p class="premium-theme-pkg__duration">{{ __('app.premium.days_access', ['days' => $pkg['duration_days']]) }}</p>
                             </div>
-                            <p class="premium-package-price">
+                            <p class="premium-theme-pkg__price">
                                 {{ number_format($pkg['price_tl'], 0, ',', '.') }}
                                 <span>TL</span>
                             </p>
                         </div>
-                        <ul class="premium-package-perks">
+                        <ul class="premium-theme-pkg__perks">
                             <li>{{ __('app.premium.perk_stories') }}</li>
                             <li>{{ __('app.premium.perk_who_viewed') }}</li>
                             <li>{{ __('app.premium.perk_gallery') }}</li>
@@ -116,24 +140,24 @@
             </div>
         </section>
 
-        <section class="premium-app-cta glass-card">
-            <div class="premium-app-cta-copy">
-                <h2>{{ __('app.premium.app_cta_title') }}</h2>
-                <p>{{ __('app.premium.app_cta_lead') }}</p>
-                @include('partials.store-badges')
-            </div>
+        <section class="premium-theme-cta">
+            <h2>{{ __('app.premium.app_cta_title') }}</h2>
+            <p>{{ __('app.premium.app_cta_lead') }}</p>
+            @include('partials.store-badges')
         </section>
 
-        <section class="premium-section">
-            <h2 class="premium-section-title">{{ __('app.premium.features_title') }}</h2>
-            <div class="premium-features-grid">
+        <section class="premium-theme-section">
+            <header class="premium-theme-section__head">
+                <h2 class="premium-theme-section__title">{{ __('app.premium.features_title') }}</h2>
+            </header>
+            <div class="premium-theme-features">
                 @foreach($featureItems as $item)
-                    <article class="premium-feature glass-card">
-                        <span class="premium-feature-icon">@include('partials.theme-icon', ['icon' => $item['icon']])</span>
-                        <div class="premium-feature-copy">
-                            <h3>{{ $item['title'] }}</h3>
-                            <p>{{ $item['desc'] }}</p>
-                        </div>
+                    <article class="premium-theme-feature">
+                        <span class="premium-theme-feature__icon" aria-hidden="true">
+                            @include('partials.theme-icon', ['icon' => $item['icon']])
+                        </span>
+                        <h3>{{ $item['title'] }}</h3>
+                        <p>{{ $item['desc'] }}</p>
                     </article>
                 @endforeach
             </div>

@@ -100,7 +100,8 @@ for f in \
   profile-identity.css \
   profile-premium-sections.css \
   profile-settings.css \
-  profile-toolbar-mobile.css
+  profile-toolbar-mobile.css \
+  premium-page.css
 do
   minify_css_file "$CSS_DIR/$f" "$CSS_DIR/${f%.css}.min.css"
 done
