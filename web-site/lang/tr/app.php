@@ -210,6 +210,7 @@ return [
         'most_popular' => 'En popüler',
         'active_tag' => 'Aktif paket',
         'days_access' => ':days gün erişim',
+        'per_day' => 'günlük :price TL',
         'gold_badge' => 'Gold rozet',
         'top_visibility' => 'En yüksek görünürlük',
         'app_cta_title' => 'Mobil uygulama ile satın al',

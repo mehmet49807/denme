@@ -93,46 +93,52 @@
             </section>
         @endif
 
-        <section class="premium-theme-section" id="premium-packages">
+        <section class="premium-theme-section premium-theme-section--packages" id="premium-packages">
             <header class="premium-theme-section__head">
                 <h2 class="premium-theme-section__title">{{ __('app.premium.packages_title') }}</h2>
                 <p class="premium-theme-section__sub">{{ __('app.premium.packages_sub') }}</p>
             </header>
-            <div class="premium-theme-packages">
+            <div class="premium-pkg-grid">
                 @foreach($packages as $type => $pkg)
                     @php
                         $isFeatured = $type === $featuredPackage;
                         $isActive = $activeSubscription && $activeSubscription->package_type === $type;
+                        $perDay = (int) round($pkg['price_tl'] / max(1, $pkg['duration_days']));
                     @endphp
-                    <article class="premium-theme-pkg premium-theme-pkg--{{ $type }} {{ $isFeatured ? 'premium-theme-pkg--featured' : '' }} {{ $isActive ? 'premium-theme-pkg--active' : '' }}">
+                    <article class="premium-pkg premium-pkg--{{ $type }} {{ $isFeatured ? 'premium-pkg--featured' : '' }} {{ $isActive ? 'premium-pkg--active' : '' }}">
                         @if($isActive)
-                            <span class="premium-theme-pkg__ribbon premium-theme-pkg__ribbon--active">{{ __('app.premium.active_tag') }}</span>
+                            <span class="premium-pkg__flag premium-pkg__flag--active">{{ __('app.premium.active_tag') }}</span>
                         @elseif($isFeatured)
-                            <span class="premium-theme-pkg__ribbon">{{ __('app.premium.most_popular') }}</span>
+                            <span class="premium-pkg__flag">{{ __('app.premium.most_popular') }}</span>
                         @endif
-                        <div class="premium-theme-pkg__top">
-                            <div class="premium-theme-pkg__icon" aria-hidden="true">
-                                @include('partials.theme-icon', ['icon' => $packageIcons[$type] ?? 'star'])
+                        <div class="premium-pkg__banner">
+                            <div class="premium-pkg__tier">
+                                <span class="premium-pkg__icon" aria-hidden="true">
+                                    @include('partials.theme-icon', ['icon' => $packageIcons[$type] ?? 'star'])
+                                </span>
+                                <div class="premium-pkg__tier-copy">
+                                    <h3>{{ $pkg['name'] }}</h3>
+                                    <p>{{ __('app.premium.days_access', ['days' => $pkg['duration_days']]) }}</p>
+                                </div>
                             </div>
-                            <div class="premium-theme-pkg__meta">
-                                <h3>{{ $pkg['name'] }}</h3>
-                                <p class="premium-theme-pkg__duration">{{ __('app.premium.days_access', ['days' => $pkg['duration_days']]) }}</p>
+                            <div class="premium-pkg__pricing">
+                                <p class="premium-pkg__price">
+                                    <span class="premium-pkg__price-value">{{ number_format($pkg['price_tl'], 0, ',', '.') }}</span>
+                                    <span class="premium-pkg__price-currency">TL</span>
+                                </p>
+                                <p class="premium-pkg__per-day">{{ __('app.premium.per_day', ['price' => number_format($perDay, 0, ',', '.')]) }}</p>
                             </div>
-                            <p class="premium-theme-pkg__price">
-                                {{ number_format($pkg['price_tl'], 0, ',', '.') }}
-                                <span>TL</span>
-                            </p>
                         </div>
-                        <ul class="premium-theme-pkg__perks">
-                            <li>{{ __('app.premium.perk_stories') }}</li>
-                            <li>{{ __('app.premium.perk_who_viewed') }}</li>
-                            <li>{{ __('app.premium.perk_gallery') }}</li>
-                            <li>{{ __('app.premium.perk_profile') }}</li>
+                        <ul class="premium-pkg__features">
+                            <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_stories') }}</li>
+                            <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_who_viewed') }}</li>
+                            <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_gallery') }}</li>
+                            <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_profile') }}</li>
                             @if($type === 'gold' || $type === 'platinum')
-                                <li>{{ __('app.premium.gold_badge') }}</li>
+                                <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.gold_badge') }}</li>
                             @endif
                             @if($type === 'platinum')
-                                <li>{{ __('app.premium.top_visibility') }}</li>
+                                <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.top_visibility') }}</li>
                             @endif
                         </ul>
                     </article>
