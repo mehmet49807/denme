@@ -49,6 +49,44 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
     Route::get('/setup/cpanel', [\App\Http\Controllers\Web\SetupController::class, 'cpanel']);
     Route::get('/setup/performance', [\App\Http\Controllers\Web\SetupController::class, 'performance']);
     Route::get('/setup/deploy-sync', [\App\Http\Controllers\Web\SetupController::class, 'deploySync']);
+    // LiteWeight fallback: SetupController opcache stale olsa bile çalışır
+    Route::get('/setup/deploy-sync-lite', function () {
+        if (request('key') !== 'gk-deploy-sync-2026') {
+            abort(403);
+        }
+        if (function_exists('opcache_reset')) {
+            @opcache_reset();
+        }
+        $base = base_path();
+        foreach (glob($base.'/storage/framework/views/*.php') ?: [] as $file) {
+            @unlink($file);
+        }
+        foreach (['view:clear', 'config:clear', 'route:clear'] as $command) {
+            try {
+                \Illuminate\Support\Facades\Artisan::call($command);
+            } catch (\Throwable $e) {
+            }
+        }
+        $lines = ['deploy-sync-lite', 'base='.$base];
+        $lines[] = 'SetupController bytes='.(is_file($base.'/app/Http/Controllers/Web/SetupController.php') ? filesize($base.'/app/Http/Controllers/Web/SetupController.php') : 0);
+        $log = $base.'/storage/logs/laravel.log';
+        if (is_file($log)) {
+            $fp = @fopen($log, 'rb');
+            if ($fp) {
+                @fseek($fp, max(0, (int) filesize($log) - 8192));
+                $lines[] = '--- log ---';
+                $lines[] = trim((string) @stream_get_contents($fp));
+                @fclose($fp);
+            }
+        }
+        $lines[] = 'OK';
+
+        return response(implode("\n", $lines)."\n", 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-store',
+            'X-LiteSpeed-Purge' => '*',
+        ]);
+    });
     Route::get('/setup/notifications', [\App\Http\Controllers\Web\SetupController::class, 'notifications']);
     Route::get('/setup/fcm', [\App\Http\Controllers\Web\SetupController::class, 'fcm']);
     Route::get('/setup/email-logs', [\App\Http\Controllers\Web\SetupController::class, 'emailLogs']);

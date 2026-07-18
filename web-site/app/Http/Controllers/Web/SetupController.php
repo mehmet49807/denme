@@ -282,87 +282,56 @@ class SetupController extends Controller
             abort(403);
         }
 
-        // Önce opcache: aksi halde diskteki yeni SetupController yüklenmez,
-        // eski file(laravel.log) OOM ile 500 vermeye devam eder.
         if (function_exists('opcache_reset')) {
             @opcache_reset();
         }
-        foreach ([
-            __FILE__,
-            base_path('app/Models/User.php'),
-            base_path('app/Services/PremiumPackagesService.php'),
-        ] as $path) {
-            if (function_exists('opcache_invalidate') && is_file($path)) {
-                @opcache_invalidate($path, true);
-            }
+        if (function_exists('opcache_invalidate')) {
+            @opcache_invalidate(__FILE__, true);
         }
 
         $base = base_path();
-        $lines = ['Gönül Köprüsü — deploy sync', 'base='.$base, ''];
-        $lines[] = 'opcache: sifirlandi';
+        $lines = ['Gönül Köprüsü — deploy sync', 'base='.$base, 'opcache: sifirlandi', ''];
 
         foreach (glob($base.'/storage/framework/views/*.php') ?: [] as $file) {
             @unlink($file);
         }
-        foreach (['config.php', 'routes-v7.php'] as $name) {
+        foreach (['config.php', 'routes-v7.php', 'packages.php', 'services.php'] as $name) {
             @unlink($base.'/bootstrap/cache/'.$name);
         }
 
-        try {
-            Artisan::call('view:clear');
-            Artisan::call('config:clear');
-            Artisan::call('route:clear');
-            Artisan::call('cache:clear');
-            $lines[] = 'view/config/route/cache temizlendi';
-        } catch (\Throwable $e) {
-            $lines[] = 'cache uyarı: '.$e->getMessage();
-        }
-
-        foreach ([
-            'cd '.escapeshellarg($base).' && composer dump-autoload -o --no-interaction 2>&1',
-            'cd '.escapeshellarg($base).' && php composer.phar dump-autoload -o --no-interaction 2>&1',
-        ] as $cmd) {
-            $output = @shell_exec($cmd);
-            if (is_string($output) && trim($output) !== '') {
-                $lines[] = 'autoload: '.preg_replace('/\s+/', ' ', trim($output));
-                break;
+        foreach (['view:clear', 'config:clear', 'route:clear'] as $command) {
+            try {
+                Artisan::call($command);
+                $lines[] = $command.' ok';
+            } catch (\Throwable $e) {
+                $lines[] = $command.' uyarı: '.$e->getMessage();
             }
         }
 
-        try {
-            $lines[] = 'PremiumPackagesService: '.(class_exists(\App\Services\PremiumPackagesService::class) ? 'ok' : 'YOK');
-        } catch (\Throwable $e) {
-            $lines[] = 'PremiumPackagesService: HATA '.$e->getMessage();
-        }
+        $serviceFile = $base.'/app/Services/PremiumPackagesService.php';
+        $lines[] = 'PremiumPackagesService.php: '.(is_file($serviceFile) ? 'var' : 'YOK');
+        $lines[] = 'User::packageBadge: '.(method_exists(\App\Models\User::class, 'packageBadge') ? 'var' : 'YOK');
 
         $logFile = $base.'/storage/logs/laravel.log';
         if (is_file($logFile) && is_readable($logFile)) {
             $lines[] = '';
             $lines[] = '--- laravel.log (tail) ---';
-            $tailOutput = @shell_exec('tail -n 40 '.escapeshellarg($logFile).' 2>/dev/null');
-            if (is_string($tailOutput) && trim($tailOutput) !== '') {
-                foreach (preg_split("/\r\n|\n|\r/", rtrim($tailOutput)) as $line) {
+            $size = (int) @filesize($logFile);
+            $fp = @fopen($logFile, 'rb');
+            if ($fp) {
+                @fseek($fp, max(0, $size - 12288));
+                $chunk = trim((string) @stream_get_contents($fp));
+                @fclose($fp);
+                $logLines = preg_split("/\r\n|\n|\r/", $chunk) ?: [];
+                foreach (array_slice($logLines, -30) as $line) {
                     $lines[] = $line;
                 }
             } else {
-                // shell_exec yoksa tüm log'u asla file() ile okuma
-                $size = (int) filesize($logFile);
-                $fp = @fopen($logFile, 'rb');
-                if ($fp) {
-                    fseek($fp, max(0, $size - 16384));
-                    $chunk = trim((string) stream_get_contents($fp));
-                    fclose($fp);
-                    foreach (preg_split("/\r\n|\n|\r/", $chunk) as $line) {
-                        $lines[] = $line;
-                    }
-                } else {
-                    $lines[] = '(log okunamadı veya boş)';
-                }
+                $lines[] = '(log okunamadı)';
             }
         }
 
         $lines[] = '';
-        $lines[] = 'Site: https://gonulkoprusu.com/';
         $lines[] = 'OK';
 
         return response(implode("\n", $lines)."\n", 200, [
