@@ -114,6 +114,7 @@
 
     <div class="admin-form-actions">
         <button type="submit" class="btn btn-primary">Paketleri Kaydet</button>
+        <a href="{{ route('admin.app-links') }}" class="btn btn-outline">Android / iOS Linkleri</a>
         <a href="{{ route('admin.premium') }}" class="btn btn-outline">Premium Özetine Dön</a>
     </div>
 </form>

@@ -9,6 +9,7 @@
         ['route' => 'admin.reports', 'label' => 'Şikayetler', 'icon' => 'flag', 'theme' => 'coral'],
         ['route' => 'admin.premium', 'label' => 'Premium', 'icon' => 'crown', 'theme' => 'amber'],
         ['route' => 'admin.packages', 'label' => 'Paketler', 'icon' => 'gift', 'theme' => 'gold'],
+        ['route' => 'admin.app-links', 'label' => 'Uygulama', 'icon' => 'external', 'theme' => 'sky'],
         ['route' => 'admin.broadcasts', 'label' => 'Duyurular', 'icon' => 'broadcast', 'theme' => 'emerald'],
         ['route' => 'admin.referrals', 'label' => 'Davet / Referans', 'icon' => 'gift', 'theme' => 'pink'],
         ['route' => 'admin.support', 'label' => '7/24 Destek', 'icon' => 'headset', 'theme' => 'lime'],

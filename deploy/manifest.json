@@ -100,6 +100,11 @@
         "file": true
       },
       {
+        "local": "patch-web-admin-packages.php",
+        "remote": "patch-web-admin-packages.php",
+        "file": true
+      },
+      {
         "local": "patch-web-feed-fix.php",
         "remote": "patch-web-feed-fix.php",
         "file": true
@@ -127,6 +132,7 @@
       "https://gonulkoprusu.com/patch-web-settings-page.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-opcache.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-live-sync.php?key={SETUP_KEY}",
+      "https://gonulkoprusu.com/patch-web-admin-packages.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-feed-fix.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-diag2.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}",
@@ -149,6 +155,10 @@
       {
         "local": "admin-panel/resources",
         "remote": "resources"
+      },
+      {
+        "local": "admin-panel/routes",
+        "remote": "routes"
       },
       {
         "local": "web-site/public/images/logo-mark.png",
@@ -178,6 +188,7 @@
     ],
     "post_deploy": [
       "https://admin.gonulkoprusu.com/setup/cpanel?key={SETUP_KEY}",
+      "https://gonulkoprusu.com/patch-web-admin-packages.php?key={SETUP_KEY}",
       "https://admin.gonulkoprusu.com/setup/deploy-notify?key={SETUP_KEY}&target=admin&commit={GITHUB_SHA}"
     ]
   }
