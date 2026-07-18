@@ -115,18 +115,30 @@ files = {
     "app/Services/PremiumPackagesService.php": WEB / "app/Services/PremiumPackagesService.php",
     "app/Services/LocationDataService.php": WEB / "app/Services/LocationDataService.php",
     "app/Support/FeaturedCities.php": WEB / "app/Support/FeaturedCities.php",
+    "app/Support/InstagramUrl.php": WEB / "app/Support/InstagramUrl.php",
+    "app/Support/CitySeoCopy.php": WEB / "app/Support/CitySeoCopy.php",
     "app/Http/Controllers/Web/ReferralPageController.php": WEB
     / "app/Http/Controllers/Web/ReferralPageController.php",
     "app/Http/Controllers/Web/CitySeoPageController.php": WEB
     / "app/Http/Controllers/Web/CitySeoPageController.php",
+    "app/Http/Controllers/Web/CampaignLandingController.php": WEB
+    / "app/Http/Controllers/Web/CampaignLandingController.php",
     "app/Http/Controllers/Web/GoogleAuthController.php": WEB
     / "app/Http/Controllers/Web/GoogleAuthController.php",
+    "app/Http/Controllers/Web/FeedPageController.php": WEB
+    / "app/Http/Controllers/Web/FeedPageController.php",
+    "app/Http/Controllers/Web/LegalPageController.php": WEB
+    / "app/Http/Controllers/Web/LegalPageController.php",
     "app/Http/Middleware/CaptureGrowthAttribution.php": WEB
     / "app/Http/Middleware/CaptureGrowthAttribution.php",
     "resources/views/web/referral.blade.php": WEB / "resources/views/web/referral.blade.php",
     "resources/views/web/invite-landing.blade.php": WEB
     / "resources/views/web/invite-landing.blade.php",
     "resources/views/web/city-seo.blade.php": WEB / "resources/views/web/city-seo.blade.php",
+    "resources/views/web/campaign-landing.blade.php": WEB
+    / "resources/views/web/campaign-landing.blade.php",
+    "resources/views/web/login.blade.php": WEB / "resources/views/web/login.blade.php",
+    "resources/views/web/feed.blade.php": WEB / "resources/views/web/feed.blade.php",
     "resources/views/web/home.blade.php": WEB / "resources/views/web/home.blade.php",
     "resources/views/web/premium.blade.php": WEB / "resources/views/web/premium.blade.php",
     "resources/views/partials/premium-app-cta.blade.php": WEB
@@ -167,9 +179,12 @@ files = {
     "app/Services/UserMailService.php": WEB / "app/Services/UserMailService.php",
     "resources/views/partials/growth-onboarding.blade.php": WEB
     / "resources/views/partials/growth-onboarding.blade.php",
+    "resources/views/partials/growth-invite-banner.blade.php": WEB
+    / "resources/views/partials/growth-invite-banner.blade.php",
     "resources/views/partials/store-badges.blade.php": WEB
     / "resources/views/partials/store-badges.blade.php",
     "config/email_templates.php": WEB / "config/email_templates.php",
+    "marketing/instagram/cta-discipline.txt": ROOT / "marketing/instagram/cta-discipline.txt",
 }
 
 payload = {

@@ -289,3 +289,12 @@
     font-weight: 700;
     color: #7c3aed;
 }
+
+
+/* invite + campaign */
+.growth-invite-banner{margin:0 0 .85rem;padding:.85rem 1rem;border-radius:16px;background:linear-gradient(135deg,rgba(15,118,110,.1),rgba(124,58,237,.1));border:1px solid rgba(15,118,110,.2)}
+.growth-invite-banner__inner{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.growth-invite-banner h2{margin:0 0 .25rem;font-size:1rem}
+.growth-invite-banner p{margin:0;font-size:.85rem;color:var(--text-muted,#64748b)}
+.campaign-landing-cta{display:grid;gap:.65rem;margin:1.25rem 0 1.5rem}
+.campaign-landing-note{margin:.35rem 0 0;font-size:.9rem;color:var(--text-muted,#64748b);text-align:center}

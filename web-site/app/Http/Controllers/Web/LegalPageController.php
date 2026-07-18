@@ -161,6 +161,7 @@ class LegalPageController extends Controller
         }
 
         Cache::forget('sitemap.xml.body');
+        Cache::forget('sitemap.xml.body.v2');
     }
 
     /** @param array<int, array<string, mixed>> $posts */

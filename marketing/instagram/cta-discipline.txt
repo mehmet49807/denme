@@ -4,6 +4,13 @@ Gönül Köprüsü — Instagram CTA disiplini
 Bio link (tek CTA):
   https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=bio&utm_campaign=organic
 
+Alternatif (kampanya landing — Ads / story):
+  https://gonulkoprusu.com/kampanya?utm_source=instagram&utm_medium=story&utm_campaign=weekly
+  https://gonulkoprusu.com/kampanya?utm_source=meta&utm_medium=paid&utm_campaign=test1
+  Şehir:
+  https://gonulkoprusu.com/kampanya?utm_source=meta&utm_medium=paid&utm_campaign=istanbul&city=istanbul
+  https://gonulkoprusu.com/sehir/istanbul?utm_source=instagram&utm_medium=story&utm_campaign=istanbul
+
 Story / post swipe-up veya link sticker:
   https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly
   Şehir odaklı:
@@ -25,20 +32,24 @@ Haftalık ritim (öneri):
 Ölçüm (GTM/GA event’leri):
   - sign_up
   - sign_up_click
+  - google_login_click
   - invite_share
   - invite_cta_click
   - city_cta_click
   - instagram_cta
+  - trial_cta_click
 
 Küçük Ads testi:
   - Bütçe: düşük, 7 gün
   - Hedef: kayıt (sign_up / google_complete)
   - Kreatif: Instagram görselleri + şehir CTA
-  - Landing: /register?utm_source=meta&utm_medium=paid&utm_campaign=test1
-    veya /sehir/istanbul?utm_source=google&utm_medium=cpc&utm_campaign=test1
+  - Landing: /kampanya?utm_source=meta&utm_medium=paid&utm_campaign=test1
+    veya /kampanya?utm_source=google&utm_medium=cpc&utm_campaign=test1&city=istanbul
 
 Haftalık metrik (sunucu):
   https://gonulkoprusu.com/setup/growth?key=gk-cpanel-setup-2026
 
-Cron (lifecycle e-posta + purge):
+Cron (lifecycle e-posta: fotoğraf, davet, trial→premium, re-engagement):
   https://gonulkoprusu.com/setup/cron?key=gk-cron-2026
+
+Hesap: @gonulkoprusucom

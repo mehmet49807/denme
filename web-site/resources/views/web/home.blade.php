@@ -76,7 +76,7 @@
                 <a href="{{ route('login') }}" class="btn btn-ghost">Giriş Yap</a>
             </div>
             <p class="landing-hero-instagram">
-                <a href="https://www.instagram.com/gonulkoprusucom/?utm_source=home&utm_medium=hero&utm_campaign=instagram"
+                <a href="{{ \App\Support\InstagramUrl::withUtm('home', 'hero', 'instagram') }}"
                    target="_blank" rel="noopener"
                    data-gk-event="instagram_cta" data-gk-event-label="home_hero">Instagram’da @gonulkoprusucom</a>
             </p>

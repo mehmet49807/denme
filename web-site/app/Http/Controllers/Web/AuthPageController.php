@@ -166,6 +166,8 @@ class AuthPageController extends Controller
             return redirect()->route('feed');
         }
 
+        app(UserAttributionService::class)->captureFromRequest(request());
+
         return view('web.login');
     }
 

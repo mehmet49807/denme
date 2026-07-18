@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Like;
 use App\Models\Post;
+use App\Models\Referral;
 use App\Services\GenderFilterService;
 use App\Services\GrowthOnboardingService;
 use App\Services\StoryGroupService;
@@ -45,6 +46,15 @@ class FeedPageController extends Controller
             $onboarding = $this->onboarding->progress($viewer);
         }
 
+        $showInviteBanner = false;
+        if ($onboarding === null) {
+            try {
+                $showInviteBanner = ! Referral::query()->where('referrer_id', $viewer->id)->exists();
+            } catch (\Throwable) {
+                $showInviteBanner = true;
+            }
+        }
+
         return view('web.feed', compact(
             'posts',
             'storyGroups',
@@ -52,6 +62,7 @@ class FeedPageController extends Controller
             'viewer',
             'likedPostIds',
             'onboarding',
+            'showInviteBanner',
         ));
     }
 }

@@ -4,7 +4,7 @@
 @section('page-eyebrow', 'Şehir rehberi')
 @section('page-title', $city . ' tanışma sitesi — güvenli sohbet ve evlilik')
 @section('page-lead')
-    {{ $city }} tanışma sitesi: ücretsiz üye ol, güvenli online sohbet et, ciddi ilişki ve evlilik odaklı profilleri keşfet.
+    {{ $seoLead ?? ($city . ' tanışma sitesi: ücretsiz üye ol, güvenli online sohbet et, ciddi ilişki ve evlilik odaklı profilleri keşfet.') }}
 @endsection
 
 @section('page-content')
@@ -25,10 +25,9 @@
 
     <h2>{{ $city }}’da neden Gönül Köprüsü?</h2>
     <ul>
-        <li>{{ $city }} odaklı üye keşfi ve konum filtreleri</li>
-        <li>Güvenli sohbet, engelleme ve şikayet araçları</li>
-        <li>Moderasyonlu, kadın üyeler için güvenli ortam</li>
-        <li>Ücretsiz kayıt — birkaç dakikada {{ $city }} tanışmaya başla</li>
+        @foreach(($seoWhy ?? []) as $reason)
+            <li>{{ $reason }}</li>
+        @endforeach
     </ul>
 
     <p class="city-seo-cta-wrap">
@@ -55,7 +54,7 @@
     @endif
 
     @if(!empty($faqItems))
-        <h2>Sık sorulanlar</h2>
+        <h2>Sık sorulanlar — {{ $city }}</h2>
         <div class="city-seo-faq">
             @foreach($faqItems as $item)
                 <details>
@@ -75,4 +74,3 @@
         @endforeach
     </ul>
 @endsection
-

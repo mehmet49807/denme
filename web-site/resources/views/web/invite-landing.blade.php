@@ -34,7 +34,7 @@
 
     <p class="invite-landing-instagram">
         Bizi Instagram’da takip et:
-        <a href="https://www.instagram.com/gonulkoprusucom/?utm_source=invite&utm_medium=landing&utm_campaign=instagram"
+        <a href="{{ \App\Support\InstagramUrl::withUtm('invite', 'landing', 'instagram') }}"
            target="_blank" rel="noopener"
            data-gk-event="instagram_cta" data-gk-event-label="invite_landing">@gonulkoprusucom</a>
     </p>
