@@ -1668,17 +1668,14 @@ select.loc-country option {
 }
 .users-browse-page.feed-container, .users-browse-page { max-width: 100%; }
 
-/* Feed & Premium — centered stream, compact chrome */
-body.app-shell-body .site-main:has(.feed-page),
-body.app-shell-body .site-main:has(.premium-page) {
+/* Feed — centered stream, compact chrome */
+body.app-shell-body .site-main:has(.feed-page) {
     padding: 0.35rem 0.5rem 0;
 }
-body.app-shell-body .site-main:has(.feed-page) > .flash-success,
-body.app-shell-body .site-main:has(.premium-page) > .flash-success {
+body.app-shell-body .site-main:has(.feed-page) > .flash-success {
     display: none;
 }
-.app-content:has(.feed-page),
-.app-content:has(.premium-page) {
+.app-content:has(.feed-page) {
     padding: 0.55rem 0 0.65rem;
     min-height: auto;
     background: transparent;
@@ -1687,23 +1684,30 @@ body.app-shell-body .site-main:has(.premium-page) > .flash-success {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
 }
-body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-header-inner,
-body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-header-inner {
+body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-header-inner {
     padding: 0.4rem 0.75rem;
 }
-body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-mark,
-body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-mark {
+body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-mark {
     width: 40px;
     height: 40px;
     border-radius: 11px;
 }
-body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-name,
-body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-name {
+body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-name {
     font-size: 0.98rem;
 }
-body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-tagline,
-body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagline {
+body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-tagline {
     display: none;
+}
+
+/* Premium content canvas only — site header/footer match other app pages */
+.app-content:has(.premium-page) {
+    padding: 0.55rem 0 0.65rem;
+    min-height: auto;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 .feed-page .feed-flash {
     margin: 0 0 0.45rem;
@@ -6307,6 +6311,7 @@ body.ig-compose-open { overflow: hidden; }
         padding: 0.35rem 0.65rem 0.5rem;
         border-radius: 0;
     }
+    /* premium uses default site-header chrome (same as profile/messages) */
     .feed-container {
         max-width: min(var(--feed-stream-width), 100%);
     }
@@ -6316,16 +6321,13 @@ body.ig-compose-open { overflow: hidden; }
         padding: 0.45rem 0.55rem 0.4rem;
         border-radius: var(--radius);
     }
-    body.app-shell-body .site-main:has(.feed-page),
-    body.app-shell-body .site-main:has(.premium-page) {
+    body.app-shell-body .site-main:has(.feed-page) {
         padding: 0.25rem 0.35rem 0;
     }
-    body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-header-inner,
-    body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-header-inner {
+    body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-header-inner {
         padding: 0.32rem 0.55rem;
     }
-    body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-name,
-    body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-name {
+    body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-name {
         font-size: 0.92rem;
     }
     .stories-section {

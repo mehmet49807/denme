@@ -7,7 +7,7 @@
 
 @section('title', __('app.premium.page_title') . ' — ' . __('app.brand'))
 
-@push('head')
+@push('head-meta')
 @include('partials.asset', ['path' => 'css/premium-page.min.css'])
 @endpush
 
