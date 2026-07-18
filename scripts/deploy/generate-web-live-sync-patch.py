@@ -64,6 +64,10 @@ files = {
     "resources/views/partials/premium-features.blade.php": WEB
     / "resources/views/partials/premium-features.blade.php",
     "resources/views/web/register.blade.php": WEB / "resources/views/web/register.blade.php",
+    "resources/views/partials/trust-badges.blade.php": WEB
+    / "resources/views/partials/trust-badges.blade.php",
+    "resources/views/partials/relationship-status-picker.blade.php": WEB
+    / "resources/views/partials/relationship-status-picker.blade.php",
     "resources/views/web/user-profile.blade.php": WEB / "resources/views/web/user-profile.blade.php",
     "resources/views/partials/profile-identity.blade.php": WEB
     / "resources/views/partials/profile-identity.blade.php",

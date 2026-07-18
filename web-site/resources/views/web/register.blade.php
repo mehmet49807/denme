@@ -16,7 +16,7 @@
 @endsection
 
 @section('auth-form')
-    <a href="{{ url('auth/google') }}" class="btn-google-login btn-google-login--top">
+    <a href="{{ url('auth/google') }}" class="btn-google-login btn-google-login--top" data-gk-event="sign_up_click" data-gk-event-label="google_register">
         <span class="btn btn-primary btn-full auth-submit" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="22" height="22">
                 <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -25,6 +25,7 @@
                 <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
                 <path fill="none" d="M0 0h48v48H0z"/>
             </svg>
+        </span>
         <span class="btn-google-login__label">Google ile Kayıt Ol</span>
         <span class="btn-google-login__arrow" aria-hidden="true">→</span>
     </a>
@@ -139,14 +140,16 @@
             </div>
 
             <div class="form-group auth-field">
-                <label>İlişki Durumu <small>(isteğe bağlı)</small></label>
-                @include('partials.relationship-status-picker', ['selected' => old('relationship_status')])
-            </div>
-
-            <div class="form-group auth-field">
                 <label>Doğum Tarihi <small>(isteğe bağlı · Gün / Ay / Yıl)</small></label>
                 @include('partials.birth-date-fields')
             </div>
+
+            <details class="auth-optional-details" @if(old('relationship_status') || $errors->has('relationship_status')) open @endif>
+                <summary>İlişki durumu (isteğe bağlı)</summary>
+                <div class="auth-optional-details-body">
+                    @include('partials.relationship-status-picker', ['selected' => old('relationship_status')])
+                </div>
+            </details>
 
             <details class="auth-optional-details" @if(old('hobbies') || $errors->hasAny(['hobbies', 'hobbies.*'])) open @endif>
                 <summary>Hobiler (isteğe bağlı)</summary>
