@@ -19,7 +19,7 @@
 @endpush
 
 @section('app-content')
-<div class="premium-theme">
+<div class="premium-theme premium-page">
     <header class="premium-theme-hero">
         <div class="premium-theme-hero__mesh" aria-hidden="true"></div>
         <div class="premium-theme-hero__orb premium-theme-hero__orb--1" aria-hidden="true"></div>
