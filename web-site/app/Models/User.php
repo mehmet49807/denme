@@ -104,6 +104,27 @@ class User extends Authenticatable
             ->exists();
     }
 
+    public function activePackageType(): ?string
+    {
+        if ($this->gender !== 'male' || ! $this->isPremium() || $this->isAdmin()) {
+            return null;
+        }
+
+        $subscription = $this->premiumSubscriptions()
+            ->active()
+            ->latest('expires_at')
+            ->first();
+
+        $type = $subscription?->package_type;
+
+        return is_string($type) && $type !== '' ? $type : null;
+    }
+
+    public function packageBadge(): ?array
+    {
+        return app(\App\Services\PremiumPackagesService::class)->badgeForUser($this);
+    }
+
     public function canPostStories(): bool
     {
         return $this->canUseMalePremiumFeatures();
@@ -199,7 +220,13 @@ class User extends Authenticatable
 
     public function showsPremiumMemberBadge(): bool
     {
-        return $this->showsPremiumVerifiedTick();
+        if ($this->gender !== 'male' || ! $this->isPremium()) {
+            return false;
+        }
+
+        $badge = $this->packageBadge();
+
+        return $badge !== null || $this->activePackageType() === null;
     }
 
     /** Güven rozeti — doğrulanmış üye */

@@ -3366,3 +3366,94 @@ body.admin-post-viewer-open {
         grid-template-columns: 1fr;
     }
 }
+
+/* Premium packages admin */
+.admin-packages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.admin-package-card__head {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.admin-package-card__sub {
+    margin: 0.2rem 0 0;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.admin-package-card__preview {
+    display: grid;
+    place-items: center;
+    gap: 0.35rem;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 1rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--pkg-from), var(--pkg-to));
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--pkg-from) 35%, transparent);
+    flex-shrink: 0;
+}
+
+.admin-package-card__preview-icon svg {
+    width: 1.35rem;
+    height: 1.35rem;
+    display: block;
+}
+
+.admin-package-card__preview-badge {
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.admin-form-grid .form-group--full {
+    grid-column: 1 / -1;
+}
+
+.admin-package-card__toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border);
+}
+
+.admin-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.admin-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.admin-package-card--pro { border-color: rgba(124, 58, 237, 0.22); }
+.admin-package-card--gold { border-color: rgba(245, 158, 11, 0.28); }
+.admin-package-card--platinum { border-color: rgba(219, 39, 119, 0.24); }
+
+@media (max-width: 720px) {
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -3078,6 +3078,15 @@ a.member-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(
     color: #fff;
     background: linear-gradient(135deg, #F59E0B 0%, #FF6B8A 48%, #8B5CF6 100%);
 }
+.member-badge--pro,
+.member-badge--gold,
+.member-badge--platinum {
+    color: #fff;
+    background: linear-gradient(135deg, var(--member-badge-from, #7c3aed) 0%, var(--member-badge-to, #db2777) 100%);
+}
+.member-badge--pro { box-shadow: 0 2px 12px rgba(91, 33, 182, 0.28); }
+.member-badge--gold { box-shadow: 0 2px 12px rgba(245, 158, 11, 0.32); }
+.member-badge--platinum { box-shadow: 0 2px 12px rgba(219, 39, 119, 0.3); }
 .member-badge--trial {
     color: #78350F;
     background: linear-gradient(135deg, #FDE68A 0%, #FBBF24 55%, #F59E0B 100%);

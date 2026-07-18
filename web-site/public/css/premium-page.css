@@ -523,6 +523,38 @@
     color: rgba(255, 255, 255, 0.78);
 }
 
+.premium-pkg__rozet {
+    padding: 0.75rem 1rem 0.15rem;
+    border-top: 1px solid rgba(124, 58, 237, 0.08);
+    background: linear-gradient(180deg, rgba(124, 58, 237, 0.04), transparent);
+}
+
+.premium-pkg__rozet-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: linear-gradient(135deg, var(--pkg-badge-from, #7c3aed), var(--pkg-badge-to, #db2777));
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--pkg-badge-from, #7c3aed) 35%, transparent);
+}
+
+.premium-pkg__rozet-pill .theme-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+}
+
+.premium-pkg__rozet-text {
+    margin: 0.45rem 0 0;
+    font-size: 0.72rem;
+    line-height: 1.4;
+    color: var(--pt-muted);
+}
+
 .premium-pkg__features {
     list-style: none;
     margin: 0;

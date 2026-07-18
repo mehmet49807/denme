@@ -2,14 +2,13 @@
 
 @php
     $activeNav = 'premium';
-    $featuredPackage = 'gold';
     $heroPerks = [
         __('app.premium.perk_stories'),
         __('app.premium.perk_who_viewed'),
         __('app.premium.perk_gallery'),
         __('app.premium.perk_profile'),
     ];
-    $packageIcons = ['pro' => 'star', 'gold' => 'crown', 'platinum' => 'bolt'];
+    $featuredPackage = $featuredPackage ?? 'gold';
 @endphp
 
 @section('title', __('app.premium.page_title') . ' — ' . __('app.brand'))
@@ -99,7 +98,7 @@
                         $isActive = $activeSubscription && $activeSubscription->package_type === $type;
                         $perDay = (int) round($pkg['price_tl'] / max(1, $pkg['duration_days']));
                     @endphp
-                    <article class="premium-pkg premium-pkg--{{ $type }} {{ $isFeatured ? 'premium-pkg--featured' : '' }} {{ $isActive ? 'premium-pkg--active' : '' }}">
+                    <article class="premium-pkg premium-pkg--{{ $type }} {{ $isFeatured ? 'premium-pkg--featured' : '' }} {{ $isActive ? 'premium-pkg--active' : '' }}" style="--pkg-badge-from: {{ $pkg['gradient_from'] ?? '#7c3aed' }}; --pkg-badge-to: {{ $pkg['gradient_to'] ?? '#db2777' }};">
                         @if($isActive)
                             <span class="premium-pkg__flag premium-pkg__flag--active">{{ __('app.premium.active_tag') }}</span>
                         @elseif($isFeatured)
@@ -108,7 +107,7 @@
                         <div class="premium-pkg__banner">
                             <div class="premium-pkg__tier">
                                 <span class="premium-pkg__icon" aria-hidden="true">
-                                    @include('partials.theme-icon', ['icon' => $packageIcons[$type] ?? 'star'])
+                                    @include('partials.theme-icon', ['icon' => $pkg['badge_icon'] ?? 'star'])
                                 </span>
                                 <div class="premium-pkg__tier-copy">
                                     <h3>{{ $pkg['name'] }}</h3>
@@ -123,16 +122,24 @@
                                 <p class="premium-pkg__per-day">{{ __('app.premium.per_day', ['price' => number_format($perDay, 0, ',', '.')]) }}</p>
                             </div>
                         </div>
+                        @if(!empty($pkg['badge_enabled']))
+                            <div class="premium-pkg__rozet">
+                                <span class="premium-pkg__rozet-pill">
+                                    @include('partials.theme-icon', ['icon' => $pkg['badge_icon'] ?? 'star'])
+                                    {{ $pkg['rozet_label'] ?? $pkg['badge_label'] }}
+                                </span>
+                                @if(!empty($pkg['rozet_text']))
+                                    <p class="premium-pkg__rozet-text">{{ $pkg['rozet_text'] }}</p>
+                                @endif
+                            </div>
+                        @endif
                         <ul class="premium-pkg__features">
                             <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_stories') }}</li>
                             <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_who_viewed') }}</li>
                             <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_gallery') }}</li>
                             <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_profile') }}</li>
-                            @if($type === 'gold' || $type === 'platinum')
-                                <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.gold_badge') }}</li>
-                            @endif
-                            @if($type === 'platinum')
-                                <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.top_visibility') }}</li>
+                            @if(!empty($pkg['rozet_label']))
+                                <li>@include('partials.theme-icon', ['icon' => 'check']) {{ $pkg['rozet_label'] }}</li>
                             @endif
                         </ul>
                     </article>

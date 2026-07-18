@@ -67,6 +67,8 @@ files = {
     "resources/views/web/user-profile.blade.php": WEB / "resources/views/web/user-profile.blade.php",
     "resources/views/partials/profile-identity.blade.php": WEB
     / "resources/views/partials/profile-identity.blade.php",
+    "resources/views/partials/profile-member-badges.blade.php": WEB
+    / "resources/views/partials/profile-member-badges.blade.php",
     "resources/views/partials/relationship-status-picker.blade.php": WEB
     / "resources/views/partials/relationship-status-picker.blade.php",
     "resources/views/partials/birth-date-fields.blade.php": WEB
@@ -110,6 +112,7 @@ files = {
     "app/Services/ReferralService.php": WEB / "app/Services/ReferralService.php",
     "app/Services/UserAttributionService.php": WEB / "app/Services/UserAttributionService.php",
     "app/Services/SiteSettingsService.php": WEB / "app/Services/SiteSettingsService.php",
+    "app/Services/PremiumPackagesService.php": WEB / "app/Services/PremiumPackagesService.php",
     "app/Services/LocationDataService.php": WEB / "app/Services/LocationDataService.php",
     "app/Support/FeaturedCities.php": WEB / "app/Support/FeaturedCities.php",
     "app/Http/Controllers/Web/ReferralPageController.php": WEB

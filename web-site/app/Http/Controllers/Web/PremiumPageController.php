@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\PremiumSubscription;
+use App\Services\PremiumPackagesService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PremiumPageController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, PremiumPackagesService $packages): View
     {
         $user = $request->user();
         $activeSubscription = null;
@@ -22,7 +22,8 @@ class PremiumPageController extends Controller
         }
 
         return view('web.premium', [
-            'packages' => PremiumSubscription::PACKAGES,
+            'packages' => $packages->catalog(),
+            'featuredPackage' => $packages->featuredType(),
             'features' => $this->packageFeatures(),
             'user' => $user,
             'activeSubscription' => $activeSubscription,
