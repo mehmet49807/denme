@@ -313,18 +313,23 @@ class SetupController extends Controller
             }
         }
 
-        $lines[] = 'PremiumPackagesService: '.(class_exists(\App\Services\PremiumPackagesService::class) ? 'ok' : 'YOK');
+        try {
+            $lines[] = 'PremiumPackagesService: '.(class_exists(\App\Services\PremiumPackagesService::class) ? 'ok' : 'YOK');
+        } catch (\Throwable $e) {
+            $lines[] = 'PremiumPackagesService: HATA '.$e->getMessage();
+        }
 
         $logFile = $base.'/storage/logs/laravel.log';
-        if (is_file($logFile)) {
-            $tail = @file($logFile, FILE_IGNORE_NEW_LINES);
-            if (is_array($tail) && $tail !== []) {
-                $snippet = array_slice($tail, -40);
-                $lines[] = '';
-                $lines[] = '--- laravel.log (tail) ---';
-                foreach ($snippet as $line) {
+        if (is_file($logFile) && is_readable($logFile)) {
+            $lines[] = '';
+            $lines[] = '--- laravel.log (tail) ---';
+            $tailOutput = @shell_exec('tail -n 60 '.escapeshellarg($logFile).' 2>/dev/null');
+            if (is_string($tailOutput) && trim($tailOutput) !== '') {
+                foreach (preg_split("/\r\n|\n|\r/", rtrim($tailOutput)) as $line) {
                     $lines[] = $line;
                 }
+            } else {
+                $lines[] = '(log okunamadı veya boş)';
             }
         }
 
