@@ -7,20 +7,6 @@
     @endphp
     <li class="conversation-row" data-username="{{ $user->username }}" data-swipe-row>
         <div class="conversation-swipe-rail" aria-hidden="true">
-            <button
-                type="button"
-                class="conversation-swipe-action conversation-swipe-action--delete"
-                data-inbox-clear
-                data-clear-url="{{ route('messages.clear', $user->username) }}"
-                data-confirm="{{ __('app.messages.clear_confirm') }}"
-                data-failed="{{ __('app.messages.clear_failed') }}"
-                tabindex="-1"
-            >
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M6 7h12M9 7V5h6v2M10 11v6M14 11v6M8 7l1 12h6l1-12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>{{ __('app.messages.delete') }}</span>
-            </button>
             <form
                 method="POST"
                 action="{{ route('messages.block', $user->username) }}"
@@ -37,6 +23,20 @@
                     <span>{{ __('app.messages.block') }}</span>
                 </button>
             </form>
+            <button
+                type="button"
+                class="conversation-swipe-action conversation-swipe-action--delete"
+                data-inbox-clear
+                data-clear-url="{{ route('messages.clear', $user->username) }}"
+                data-confirm="{{ __('app.messages.clear_confirm') }}"
+                data-failed="{{ __('app.messages.clear_failed') }}"
+                tabindex="-1"
+            >
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M6 7h12M9 7V5h6v2M10 11v6M14 11v6M8 7l1 12h6l1-12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>{{ __('app.messages.delete') }}</span>
+            </button>
         </div>
         <div class="conversation-swipe-front">
             <a href="{{ route('messages.show', $user->username) }}" class="conversation-item {{ $conversation['unread_count'] > 0 ? 'conversation-item--unread' : '' }} {{ $isActive ? 'conversation-item--active' : '' }}">

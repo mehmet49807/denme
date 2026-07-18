@@ -150,8 +150,8 @@ return [
         'original' => 'Orijinal',
         'translated' => 'Çeviri',
         'swipe_hint_title' => 'Sohbeti kaydırarak yönet',
-        'swipe_hint_delete' => 'Sağa kaydır → Sil',
-        'swipe_hint_block' => 'Sola kaydır → Engelle',
+        'swipe_hint_block' => 'Sol taraftan sağa kaydır',
+        'swipe_hint_delete' => 'Sağ taraftan sola kaydır',
     ],
 
     'users' => [

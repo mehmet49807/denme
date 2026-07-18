@@ -17,7 +17,7 @@
         var el = hintEl();
         if (!el) return;
         try {
-            if (window.localStorage && localStorage.getItem('gk_inbox_swipe_hint_v1') === '1') {
+            if (window.localStorage && localStorage.getItem('gk_inbox_swipe_hint_v2') === '1') {
                 el.hidden = true;
                 return;
             }
@@ -29,7 +29,7 @@
         var el = hintEl();
         if (el) el.hidden = true;
         try {
-            if (window.localStorage) localStorage.setItem('gk_inbox_swipe_hint_v1', '1');
+            if (window.localStorage) localStorage.setItem('gk_inbox_swipe_hint_v2', '1');
         } catch (err) {}
     }
 
@@ -43,8 +43,10 @@
         var clamped = Math.max(-ACTION_W, Math.min(ACTION_W, x || 0));
         front.style.transition = animate ? 'transform 0.22s ease' : 'none';
         front.style.transform = 'translate3d(' + clamped + 'px,0,0)';
-        row.classList.toggle('is-swiped-delete', clamped > 8);
-        row.classList.toggle('is-swiped-block', clamped < -8);
+        // Sağa kaydır (+X) → Engelle (sol aksiyon)
+        // Sola kaydır (−X) → Sil (sağ aksiyon)
+        row.classList.toggle('is-swiped-block', clamped > 8);
+        row.classList.toggle('is-swiped-delete', clamped < -8);
         row.dataset.swipeX = String(clamped);
     }
 
@@ -77,20 +79,21 @@
 
     function playDemoPeek() {
         try {
-            if (window.localStorage && localStorage.getItem('gk_inbox_swipe_demo_v1') === '1') return;
+            if (window.localStorage && localStorage.getItem('gk_inbox_swipe_demo_v2') === '1') return;
         } catch (err) {}
 
         var first = document.querySelector('#inboxPollRoot [data-swipe-row]');
         if (!first || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
         setTimeout(function () {
+            // Sağa → Engelle, sonra sola → Sil
             setOffset(first, ACTION_W * 0.55, true);
             setTimeout(function () {
                 setOffset(first, -ACTION_W * 0.55, true);
                 setTimeout(function () {
                     closeRow(first, true);
                     try {
-                        if (window.localStorage) localStorage.setItem('gk_inbox_swipe_demo_v1', '1');
+                        if (window.localStorage) localStorage.setItem('gk_inbox_swipe_demo_v2', '1');
                     } catch (err2) {}
                 }, 420);
             }, 480);

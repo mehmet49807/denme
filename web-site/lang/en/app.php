@@ -150,8 +150,8 @@ return [
         'original' => 'Original',
         'translated' => 'Translation',
         'swipe_hint_title' => 'Swipe a chat to manage it',
-        'swipe_hint_delete' => 'Swipe right → Delete',
-        'swipe_hint_block' => 'Swipe left → Block',
+        'swipe_hint_block' => 'Swipe from left to right',
+        'swipe_hint_delete' => 'Swipe from right to left',
     ],
 
     'users' => [
