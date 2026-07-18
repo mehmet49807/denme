@@ -6308,7 +6308,6 @@ body.ig-compose-open { overflow: hidden; }
     }
     body.app-shell-body .site-main:has(.premium-theme) {
         padding: 0.25rem 0.35rem 0;
-        --smart-nav-page-bg: #f6f0ff;
     }
     body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-header-inner {
         padding: 0.32rem 0.55rem;
