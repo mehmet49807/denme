@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate patch-web-admin-packages.php — Paketler + Uygulama linkleri admin'e yazılır."""
+"""Generate patch-web-admin-packages.php — Paketler + Uygulama + Pazarlama admin'e yazılır."""
 
 from __future__ import annotations
 
