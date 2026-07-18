@@ -295,9 +295,37 @@ class SetupController extends Controller
         try {
             Artisan::call('view:clear');
             Artisan::call('config:clear');
-            $lines[] = 'view/config cache temizlendi';
+            Artisan::call('route:clear');
+            Artisan::call('cache:clear');
+            $lines[] = 'view/config/route/cache temizlendi';
         } catch (\Throwable $e) {
             $lines[] = 'cache uyarı: '.$e->getMessage();
+        }
+
+        foreach ([
+            'cd '.escapeshellarg($base).' && composer dump-autoload -o --no-interaction 2>&1',
+            'cd '.escapeshellarg($base).' && php composer.phar dump-autoload -o --no-interaction 2>&1',
+        ] as $cmd) {
+            $output = @shell_exec($cmd);
+            if (is_string($output) && trim($output) !== '') {
+                $lines[] = 'autoload: '.preg_replace('/\s+/', ' ', trim($output));
+                break;
+            }
+        }
+
+        $lines[] = 'PremiumPackagesService: '.(class_exists(\App\Services\PremiumPackagesService::class) ? 'ok' : 'YOK');
+
+        $logFile = $base.'/storage/logs/laravel.log';
+        if (is_file($logFile)) {
+            $tail = @file($logFile, FILE_IGNORE_NEW_LINES);
+            if (is_array($tail) && $tail !== []) {
+                $snippet = array_slice($tail, -40);
+                $lines[] = '';
+                $lines[] = '--- laravel.log (tail) ---';
+                foreach ($snippet as $line) {
+                    $lines[] = $line;
+                }
+            }
         }
 
         if (function_exists('opcache_reset')) {

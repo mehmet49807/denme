@@ -106,23 +106,35 @@ class User extends Authenticatable
 
     public function activePackageType(): ?string
     {
-        if ($this->gender !== 'male' || ! $this->isPremium() || $this->isAdmin()) {
+        try {
+            if ($this->gender !== 'male' || $this->isAdmin() || ! $this->isPremium()) {
+                return null;
+            }
+
+            $subscription = $this->premiumSubscriptions()
+                ->active()
+                ->latest('expires_at')
+                ->first();
+
+            $type = $subscription?->package_type;
+
+            return is_string($type) && $type !== '' ? $type : null;
+        } catch (\Throwable) {
             return null;
         }
-
-        $subscription = $this->premiumSubscriptions()
-            ->active()
-            ->latest('expires_at')
-            ->first();
-
-        $type = $subscription?->package_type;
-
-        return is_string($type) && $type !== '' ? $type : null;
     }
 
     public function packageBadge(): ?array
     {
-        return app(\App\Services\PremiumPackagesService::class)->badgeForUser($this);
+        try {
+            if (! class_exists(\App\Services\PremiumPackagesService::class)) {
+                return null;
+            }
+
+            return app(\App\Services\PremiumPackagesService::class)->badgeForUser($this);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     public function canPostStories(): bool
@@ -220,13 +232,17 @@ class User extends Authenticatable
 
     public function showsPremiumMemberBadge(): bool
     {
-        if ($this->gender !== 'male' || ! $this->isPremium()) {
-            return false;
+        try {
+            if ($this->gender !== 'male' || ! $this->isPremium()) {
+                return false;
+            }
+
+            $badge = $this->packageBadge();
+
+            return $badge !== null || $this->activePackageType() === null;
+        } catch (\Throwable) {
+            return $this->gender === 'male' && $this->isPremium();
         }
-
-        $badge = $this->packageBadge();
-
-        return $badge !== null || $this->activePackageType() === null;
     }
 
     /** Güven rozeti — doğrulanmış üye */
