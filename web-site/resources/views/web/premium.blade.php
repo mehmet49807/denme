@@ -69,15 +69,15 @@
             </header>
 
             <div class="pm-plans">
-                @foreach($packages as $type => $pkg)
+                @foreach($packages as $packageType => $pkg)
                     @php
-                        $isFeatured = $type === $featuredPackage;
-                        $isActive = $activeSubscription && $activeSubscription->package_type === $type;
+                        $isFeatured = $packageType === $featuredPackage;
+                        $isActive = $activeSubscription && $activeSubscription->package_type === $packageType;
                         $perDay = (int) round($pkg['price_tl'] / max(1, $pkg['duration_days']));
                         $from = $pkg['gradient_from'] ?? '#e11d48';
                         $to = $pkg['gradient_to'] ?? '#f59e0b';
                     @endphp
-                    <article class="pm-plan pm-plan--{{ $type }} {{ $isFeatured ? 'pm-plan--featured' : '' }} {{ $isActive ? 'pm-plan--active' : '' }}" style="--plan-from: {{ $from }}; --plan-to: {{ $to }};">
+                    <article class="pm-plan pm-plan--{{ $packageType }} {{ $isFeatured ? 'pm-plan--featured' : '' }} {{ $isActive ? 'pm-plan--active' : '' }}" style="--plan-from: {{ $from }}; --plan-to: {{ $to }};">
                         @if($isActive)
                             <span class="pm-plan__flag">{{ __('app.premium.active_tag') }}</span>
                         @elseif($isFeatured)

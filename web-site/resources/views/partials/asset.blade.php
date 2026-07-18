@@ -1,6 +1,11 @@
 @php
     $path = ltrim($path ?? '', '/');
-    $type = $type ?? (str_ends_with($path, '.css') ? 'css' : 'js');
+    // Explicit css|js only — never inherit leftover $type from parent views
+    // (e.g. premium @foreach($packages as $type => $pkg) was turning CSS into <script>).
+    $assetType = str_ends_with($path, '.css') ? 'css' : 'js';
+    if (isset($type) && in_array($type, ['css', 'js'], true)) {
+        $assetType = $type;
+    }
     $defer = ! empty($defer);
 
     $absolute = null;
@@ -26,7 +31,7 @@
 
     $url = asset($path).'?v='.$version;
 @endphp
-@if($type === 'css')
+@if($assetType === 'css')
 <link rel="stylesheet" href="{{ $url }}">
 @elseif($defer)
 <script src="{{ $url }}" defer></script>

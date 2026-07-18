@@ -83,7 +83,8 @@
     }
 }
 body.app-shell-body .site-header:has(+ .site-main .dm-shell) .site-logo-brand-img,
-body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-brand-img {
+body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-brand-img,
+body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-brand-img {
     height: 40px;
     max-width: min(180px, 46vw);
 }
@@ -93,7 +94,8 @@ body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-brand-i
         max-width: min(150px, 38vw);
     }
     body.app-shell-body .site-header:has(+ .site-main .dm-shell) .site-logo-brand-img,
-    body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-brand-img {
+    body.app-shell-body .site-header:has(+ .site-main .feed-page) .site-logo-brand-img,
+    body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-brand-img {
         height: 34px;
         max-width: min(140px, 36vw);
     }
