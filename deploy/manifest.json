@@ -6,26 +6,104 @@
       "host": "ftp.gonulkoprusu.com"
     },
     "mappings": [
-      { "local": "web-site/app", "remote": "app" },
-      { "local": "web-site/config", "remote": "config" },
-      { "local": "web-site/routes", "remote": "routes" },
-      { "local": "web-site/resources", "remote": "resources" },
-      { "local": "web-site/public/images", "remote": "images" },
-      { "local": "web-site/public/css", "remote": "css" },
-      { "local": "web-site/public/js", "remote": "js" },
-      { "local": "web-site/public/.htaccess", "remote": ".htaccess", "file": true },
-      { "local": "web-site/robots.txt", "remote": "robots.txt", "file": true },
-      { "local": "patch-web-admin-github.php", "remote": "patch-web-admin-github.php", "file": true },
-      { "local": "patch-web-admin-nav.php", "remote": "patch-web-admin-nav.php", "file": true },
-      { "local": "patch-web-admin-fix-layout.php", "remote": "patch-web-admin-fix-layout.php", "file": true },
-      { "local": "patch-web-admin-nav-partial.php", "remote": "patch-web-admin-nav-partial.php", "file": true },
-      { "local": "patch-web-admin-read-file.php", "remote": "patch-web-admin-read-file.php", "file": true },
-      { "local": "patch-web-admin-restore-routes.php", "remote": "patch-web-admin-restore-routes.php", "file": true },
-      { "local": "patch-web-google-profile.php", "remote": "patch-web-google-profile.php", "file": true },
-      { "local": "patch-web-mobile-nav.php", "remote": "patch-web-mobile-nav.php", "file": true },
-      { "local": "patch-web-login-feed.php", "remote": "patch-web-login-feed.php", "file": true },
-      { "local": "patch-web-settings-page.php", "remote": "patch-web-settings-page.php", "file": true },
-      { "local": "patch-web-live-sync.php", "remote": "patch-web-live-sync.php", "file": true }
+      {
+        "local": "web-site/app",
+        "remote": "app"
+      },
+      {
+        "local": "web-site/config",
+        "remote": "config"
+      },
+      {
+        "local": "web-site/routes",
+        "remote": "routes"
+      },
+      {
+        "local": "web-site/resources",
+        "remote": "resources"
+      },
+      {
+        "local": "web-site/public/images",
+        "remote": "images"
+      },
+      {
+        "local": "web-site/public/css",
+        "remote": "css"
+      },
+      {
+        "local": "web-site/public/js",
+        "remote": "js"
+      },
+      {
+        "local": "web-site/public/.htaccess",
+        "remote": ".htaccess",
+        "file": true
+      },
+      {
+        "local": "web-site/robots.txt",
+        "remote": "robots.txt",
+        "file": true
+      },
+      {
+        "local": "patch-web-admin-github.php",
+        "remote": "patch-web-admin-github.php",
+        "file": true
+      },
+      {
+        "local": "patch-web-admin-nav.php",
+        "remote": "patch-web-admin-nav.php",
+        "file": true
+      },
+      {
+        "local": "patch-web-admin-fix-layout.php",
+        "remote": "patch-web-admin-fix-layout.php",
+        "file": true
+      },
+      {
+        "local": "patch-web-admin-nav-partial.php",
+        "remote": "patch-web-admin-nav-partial.php",
+        "file": true
+      },
+      {
+        "local": "patch-web-admin-read-file.php",
+        "remote": "patch-web-admin-read-file.php",
+        "file": true
+      },
+      {
+        "local": "patch-web-admin-restore-routes.php",
+        "remote": "patch-web-admin-restore-routes.php",
+        "file": true
+      },
+      {
+        "local": "patch-web-google-profile.php",
+        "remote": "patch-web-google-profile.php",
+        "file": true
+      },
+      {
+        "local": "patch-web-mobile-nav.php",
+        "remote": "patch-web-mobile-nav.php",
+        "file": true
+      },
+      {
+        "local": "patch-web-login-feed.php",
+        "remote": "patch-web-login-feed.php",
+        "file": true
+      },
+      {
+        "local": "patch-web-settings-page.php",
+        "remote": "patch-web-settings-page.php",
+        "file": true
+      },
+      {
+        "local": "patch-web-live-sync.php",
+        "remote": "patch-web-live-sync.php",
+        "file": true
+      },
+      {
+        "local": "patch-web-feed-fix.php",
+        "remote": "patch-web-feed-fix.php",
+        "file": true
+      }
     ],
     "post_deploy": [
       "https://gonulkoprusu.com/setup/profile-toolbar-css?key={SETUP_KEY}",
@@ -34,6 +112,7 @@
       "https://gonulkoprusu.com/patch-web-login-feed.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-settings-page.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-live-sync.php?key={SETUP_KEY}",
+      "https://gonulkoprusu.com/patch-web-feed-fix.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}",
       "https://admin.gonulkoprusu.com/setup/deploy-notify?key={SETUP_KEY}&target=web&commit={GITHUB_SHA}"
     ]
@@ -43,14 +122,43 @@
       "host": "ftp.gonulkoprusu.com"
     },
     "mappings": [
-      { "local": "admin-panel/app", "remote": "app" },
-      { "local": "admin-panel/config", "remote": "config" },
-      { "local": "admin-panel/resources", "remote": "resources" },
-      { "local": "web-site/public/images/logo-mark.png", "remote": "images/logo-mark.png", "file": true },
-      { "local": "web-site/public/images/logo-admin.png", "remote": "images/logo-admin.png", "file": true },
-      { "local": "web-site/public/images/favicon.png", "remote": "images/favicon.png", "file": true },
-      { "local": "scripts/deploy/assets/admin.css", "remote": "css/admin.css", "file": true },
-      { "local": "scripts/deploy/assets/admin-login-lumiere.css", "remote": "css/admin-login-lumiere.css", "file": true }
+      {
+        "local": "admin-panel/app",
+        "remote": "app"
+      },
+      {
+        "local": "admin-panel/config",
+        "remote": "config"
+      },
+      {
+        "local": "admin-panel/resources",
+        "remote": "resources"
+      },
+      {
+        "local": "web-site/public/images/logo-mark.png",
+        "remote": "images/logo-mark.png",
+        "file": true
+      },
+      {
+        "local": "web-site/public/images/logo-admin.png",
+        "remote": "images/logo-admin.png",
+        "file": true
+      },
+      {
+        "local": "web-site/public/images/favicon.png",
+        "remote": "images/favicon.png",
+        "file": true
+      },
+      {
+        "local": "scripts/deploy/assets/admin.css",
+        "remote": "css/admin.css",
+        "file": true
+      },
+      {
+        "local": "scripts/deploy/assets/admin-login-lumiere.css",
+        "remote": "css/admin-login-lumiere.css",
+        "file": true
+      }
     ],
     "post_deploy": [
       "https://admin.gonulkoprusu.com/setup/cpanel?key={SETUP_KEY}",
