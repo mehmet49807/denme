@@ -140,11 +140,7 @@
             </div>
         </section>
 
-        <section class="premium-theme-cta">
-            <h2>{{ __('app.premium.app_cta_title') }}</h2>
-            <p>{{ __('app.premium.app_cta_lead') }}</p>
-            @include('partials.store-badges')
-        </section>
+        @include('partials.premium-app-cta')
 
         <section class="premium-theme-section">
             <header class="premium-theme-section__head">
