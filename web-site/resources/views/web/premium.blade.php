@@ -9,12 +9,6 @@
         __('app.premium.perk_gallery'),
         __('app.premium.perk_profile'),
     ];
-    $featureItems = [
-        ['icon' => 'camera', 'title' => __('app.premium.feat_stories_title'), 'desc' => __('app.premium.feat_stories_desc')],
-        ['icon' => 'eye', 'title' => __('app.premium.feat_who_viewed_title'), 'desc' => __('app.premium.feat_who_viewed_desc')],
-        ['icon' => 'star', 'title' => __('app.premium.feat_boost_title'), 'desc' => __('app.premium.feat_boost_desc')],
-        ['icon' => 'heart', 'title' => __('app.premium.feat_likes_title'), 'desc' => __('app.premium.feat_likes_desc')],
-    ];
     $packageIcons = ['pro' => 'star', 'gold' => 'crown', 'platinum' => 'bolt'];
 @endphp
 
@@ -148,22 +142,7 @@
 
         @include('partials.premium-app-cta')
 
-        <section class="premium-theme-section">
-            <header class="premium-theme-section__head">
-                <h2 class="premium-theme-section__title">{{ __('app.premium.features_title') }}</h2>
-            </header>
-            <div class="premium-theme-features">
-                @foreach($featureItems as $item)
-                    <article class="premium-theme-feature">
-                        <span class="premium-theme-feature__icon" aria-hidden="true">
-                            @include('partials.theme-icon', ['icon' => $item['icon']])
-                        </span>
-                        <h3>{{ $item['title'] }}</h3>
-                        <p>{{ $item['desc'] }}</p>
-                    </article>
-                @endforeach
-            </div>
-        </section>
+        @include('partials.premium-features')
     @endif
 </div>
 @endsection

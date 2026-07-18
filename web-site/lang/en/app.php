@@ -205,6 +205,8 @@ return [
         'showcase_spotlight' => 'Spotlight',
         'showcase_spotlight_desc' => 'Reach more people',
         'features_title' => 'What you get with Premium',
+        'features_sub' => 'Privileges unlocked in every plan — full access with one subscription.',
+        'features_foot' => 'All premium features are included in every package.',
         'packages_title' => 'Packages',
         'packages_sub' => 'Choose the plan that fits you — payment is via the mobile app.',
         'most_popular' => 'Most popular',

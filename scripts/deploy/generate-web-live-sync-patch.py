@@ -61,6 +61,8 @@ files = {
     "resources/views/web/premium.blade.php": WEB / "resources/views/web/premium.blade.php",
     "resources/views/partials/premium-app-cta.blade.php": WEB
     / "resources/views/partials/premium-app-cta.blade.php",
+    "resources/views/partials/premium-features.blade.php": WEB
+    / "resources/views/partials/premium-features.blade.php",
     "resources/views/web/register.blade.php": WEB / "resources/views/web/register.blade.php",
     "resources/views/web/user-profile.blade.php": WEB / "resources/views/web/user-profile.blade.php",
     "resources/views/partials/profile-identity.blade.php": WEB
@@ -126,6 +128,8 @@ files = {
     "resources/views/web/premium.blade.php": WEB / "resources/views/web/premium.blade.php",
     "resources/views/partials/premium-app-cta.blade.php": WEB
     / "resources/views/partials/premium-app-cta.blade.php",
+    "resources/views/partials/premium-features.blade.php": WEB
+    / "resources/views/partials/premium-features.blade.php",
     "resources/views/partials/homepage-body.blade.php": WEB
     / "resources/views/partials/homepage-body.blade.php",
     "resources/views/partials/seo-head.blade.php": WEB

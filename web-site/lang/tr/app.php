@@ -205,6 +205,8 @@ return [
         'showcase_spotlight' => 'Spotlight',
         'showcase_spotlight_desc' => 'Profilin daha çok kişiye ulaşsın',
         'features_title' => 'Premium ile neler kazanırsın?',
+        'features_sub' => 'Tüm paketlerde açılan ayrıcalıklar — tek abonelikle tam erişim.',
+        'features_foot' => 'Tüm premium özellikler her pakette dahildir.',
         'packages_title' => 'Paketler',
         'packages_sub' => 'İhtiyacına uygun süreyi seç — ödeme mobil uygulama üzerinden yapılır.',
         'most_popular' => 'En popüler',
