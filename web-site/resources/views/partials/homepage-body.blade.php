@@ -276,12 +276,7 @@
             <div class="gk-cta-content">
                 <h2>Hikâyen burada başlasın</h2>
                 <p>Profilini birkaç dakikada oluştur. Kadın üyelik tamamen ücretsiz.</p>
-                <div class="gk-cta-btns">
-                    <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'cta', 'utm_campaign' => 'organic']) }}" class="gk-btn gk-btn--fill" data-gk-event="sign_up_click" data-gk-event-label="home_body_cta">Ücretsiz Kayıt Ol</a>
-                    <a href="{{ route('login') }}" class="gk-btn gk-btn--ghost">Giriş Yap</a>
-                </div>
                 <div class="gk-cta-fast">
-                    <p class="gk-cta-fast-divider" aria-hidden="true"><span>veya</span></p>
                     <a href="{{ url('auth/google') }}" class="gk-cta-google" data-gk-event="sign_up_click" data-gk-event-label="home_body_google">
                         <span class="gk-cta-google__icon" aria-hidden="true">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="16" height="16">
@@ -297,12 +292,14 @@
                             <small>Hesabınla saniyeler içinde üye ol</small>
                         </span>
                     </a>
-                    <ul class="gk-cta-trust" aria-label="Hızlı üyelik avantajları">
-                        <li>30 sn</li>
-                        <li>Ücretsiz</li>
-                        <li>Kadınlarda mesaj ücretsiz</li>
-                        <li>Kart yok</li>
-                    </ul>
+                    <p class="gk-cta-fast-divider" aria-hidden="true"><span>veya</span></p>
+                    <div class="gk-cta-alt">
+                        <p class="gk-cta-alt-note"><span>30 sn</span> · Ücretsiz</p>
+                        <div class="gk-cta-btns">
+                            <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'cta', 'utm_campaign' => 'organic']) }}" class="gk-btn gk-btn--fill" data-gk-event="sign_up_click" data-gk-event-label="home_body_cta">Kayıt Ol</a>
+                            <a href="{{ route('login') }}" class="gk-btn gk-btn--ghost">Giriş Yap</a>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="gk-cta-side">

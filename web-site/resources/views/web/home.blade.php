@@ -57,12 +57,7 @@
                 Kadınlarda mesajlaşma ücretsiz — ciddi ilişki ve evlilik için Gönül Köprüsü.
             </p>
             @guest
-            <div class="landing-hero-actions landing-hero-actions--inline">
-                <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'hero', 'utm_campaign' => 'organic']) }}" class="btn btn-primary" data-gk-event="sign_up_click" data-gk-event-label="home_hero">Ücretsiz Üye Ol</a>
-                <a href="{{ route('login') }}" class="btn btn-ghost">Giriş Yap</a>
-            </div>
-            <div class="landing-hero-fast">
-                <p class="landing-hero-fast-divider" aria-hidden="true"><span>veya</span></p>
+            <div class="landing-hero-signup">
                 <a href="{{ url('auth/google') }}" class="landing-hero-google" data-gk-event="sign_up_click" data-gk-event-label="home_hero_google">
                     <span class="landing-hero-google__icon" aria-hidden="true">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18" height="18">
@@ -78,12 +73,16 @@
                         <small>Hesabınla saniyeler içinde üye ol</small>
                     </span>
                 </a>
-                <ul class="landing-hero-trust" aria-label="Hızlı üyelik avantajları">
-                    <li>30 sn</li>
-                    <li>Ücretsiz</li>
-                    <li>Kadınlarda mesaj ücretsiz</li>
-                    <li>Kart yok</li>
-                </ul>
+
+                <p class="landing-hero-fast-divider" aria-hidden="true"><span>veya</span></p>
+
+                <div class="landing-hero-alt">
+                    <p class="landing-hero-alt-note"><span>30 sn</span> · Ücretsiz</p>
+                    <div class="landing-hero-actions landing-hero-actions--inline">
+                        <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'hero', 'utm_campaign' => 'organic']) }}" class="btn btn-primary" data-gk-event="sign_up_click" data-gk-event-label="home_hero">Kayıt Ol</a>
+                        <a href="{{ route('login') }}" class="btn btn-ghost">Giriş Yap</a>
+                    </div>
+                </div>
             </div>
             @endguest
             @auth
