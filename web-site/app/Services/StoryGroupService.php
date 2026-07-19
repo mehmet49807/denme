@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 
 class StoryGroupService
 {
-    private const DISCOVERY_STORY_LIMIT = 120;
+    private const DISCOVERY_STORY_LIMIT = 160;
 
     private const DISCOVERY_GROUP_LIMIT = 30;
 
@@ -62,26 +62,23 @@ class StoryGroupService
             return collect();
         }
 
-        $grouped = Story::active()
+        $now = now()->toDateTimeString();
+
+        // Önce paket / boost ile sırala, sonra limit — Platinum hikayeleri aday setinden düşmesin.
+        $stories = Story::active()
             ->with('user')
-            ->where('user_id', '!=', $viewer->id)
-            ->whereIn('user_id', $visibleUserIds)
-            ->latest()
+            ->join('users', 'users.id', '=', 'stories.user_id')
+            ->where('stories.user_id', '!=', $viewer->id)
+            ->whereIn('stories.user_id', $visibleUserIds)
+            ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now])
+            ->orderByRaw(User::packageTypeOrderSql('users.id'), [$now])
+            ->orderByDesc('stories.created_at')
+            ->select('stories.*')
             ->limit(self::DISCOVERY_STORY_LIMIT)
-            ->get()
-            ->groupBy('user_id');
+            ->get();
 
-        return $grouped
-            ->sortByDesc(function ($userStories) {
-                $user = $userStories->first()?->user;
-                if (! $user) {
-                    return 0;
-                }
-
-                // Platinum / Gold hikaye şeridinde öne çıkar
-                return ($user->contentVisibilityScore() * 1_000_000_000)
-                    + (int) optional($userStories->first())->created_at?->getTimestamp();
-            })
+        return $stories
+            ->groupBy('user_id')
             ->take(self::DISCOVERY_GROUP_LIMIT)
             ->map(function ($userStories) {
                 $user = $userStories->first()->user;
