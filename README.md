@@ -73,7 +73,7 @@ FTP_PARALLEL=6 python3 scripts/deploy/ftp_sync.py web
 
 Deploy sonrası yan menüde **GitHub Deploy** bağlantısı ve `/github` sayfası kullanılabilir.
 Canlıda eksikse: `python3 scripts/deploy/generate-web-admin-github-patch.py` ardından
-`patch-web-logo-left.php` ve `patch-web-admin-github.php` patch'lerini çalıştırın.
+`patch-web-admin-github.php` patch'ini çalıştırın.
 
 ## Dal stratejisi
 
