@@ -18,17 +18,32 @@
 
     @if(!empty($post['faq']))
         <h2>Sıkça sorulan sorular</h2>
-        <dl class="blog-faq-list">
+        <div class="city-seo-faq">
             @foreach($post['faq'] as $item)
-                <dt>{{ $item['question'] ?? '' }}</dt>
-                <dd>{{ $item['answer'] ?? '' }}</dd>
+                <details>
+                    <summary>{{ $item['question'] ?? '' }}</summary>
+                    <p>{{ $item['answer'] ?? '' }}</p>
+                </details>
             @endforeach
-        </dl>
+        </div>
     @endif
+
+    <p>
+        @if(Route::has('seo.marriage'))
+            <a href="{{ route('seo.marriage') }}">Evlilik sitesi</a> ·
+        @endif
+        @if(Route::has('seo.serious'))
+            <a href="{{ route('seo.serious') }}">Ciddi ilişki</a> ·
+        @endif
+        @if(Route::has('stories'))
+            <a href="{{ route('stories') }}">Başarı hikâyeleri</a> ·
+        @endif
+        <a href="{{ route('safe-meeting') }}">Güvenli tanışma</a>
+    </p>
 
     <p class="city-seo-cta-wrap">
         <a href="{{ url('/blog') }}" class="btn btn-outline">Tüm blog yazıları</a>
-        <a href="{{ route('register') }}" class="btn btn-primary">Ücretsiz Kayıt Ol</a>
+        <a href="{{ route('register', ['utm_source' => 'blog', 'utm_medium' => 'post', 'utm_campaign' => $slug ?? 'seo']) }}" class="btn btn-primary" data-gk-event="sign_up_click" data-gk-event-label="blog_post">Ücretsiz Kayıt Ol</a>
     </p>
 @endsection
 

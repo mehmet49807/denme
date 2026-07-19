@@ -1,14 +1,25 @@
 @extends('layouts.content-page')
 
-@section('title', $city . ' Tanışma, Sohbet ve Evlilik Sitesi — Gönül Köprüsü')
-@section('page-eyebrow', 'Şehir rehberi')
-@section('page-title', $city . ' tanışma sitesi — güvenli sohbet ve evlilik')
+@php
+    $placeTitle = !empty($district) ? ($district.', '.$city) : $city;
+@endphp
+
+@section('title', $placeTitle . ' Tanışma, Sohbet ve Evlilik Sitesi — Gönül Köprüsü')
+@section('page-eyebrow', !empty($district) ? 'İlçe rehberi' : 'Şehir rehberi')
+@section('page-title', $placeTitle . ' tanışma sitesi — güvenli sohbet ve evlilik')
 @section('page-lead')
-    {{ $seoLead ?? ($city . ' tanışma sitesi: ücretsiz üye ol, güvenli online sohbet et, ciddi ilişki ve evlilik odaklı profilleri keşfet.') }}
+    {{ $seoLead ?? ($placeTitle . ' tanışma sitesi: ücretsiz üye ol, güvenli online sohbet et, ciddi ilişki ve evlilik odaklı profilleri keşfet.') }}
 @endsection
 
 @section('page-content')
     @include('partials.trust-badges')
+
+    @if(!empty($district))
+        <p class="city-seo-breadcrumb-inline">
+            <a href="{{ route('city.seo', $slug) }}">{{ $city }} tanışma</a>
+            · {{ $district }}
+        </p>
+    @endif
 
     <div class="city-seo-stats">
         <p><strong>{{ number_format($memberCount) }}</strong> kayıtlı üye</p>
@@ -18,12 +29,13 @@
     </div>
 
     <p>
-        <strong>{{ $city }} tanışma</strong> arıyorsan Gönül Köprüsü, evlilik ve ciddi ilişki niyetiyle
-        <strong>{{ $city }}</strong> ve çevresindeki yetişkinleri bir araya getirir.
+        <strong>{{ $placeTitle }} tanışma</strong> arıyorsan Gönül Köprüsü, evlilik ve ciddi ilişki niyetiyle
+        <strong>{{ $placeTitle }}</strong> ve çevresindeki yetişkinleri bir araya getirir.
         Ücretsiz kayıt sonrası profil fotoğrafı, ilgi alanları ve konum bilgileriyle güvenli <strong>online sohbet</strong> başlatabilirsin.
+        Kadın üyelerde mesajlaşma ücretsizdir.
     </p>
 
-    <h2>{{ $city }}’da neden Gönül Köprüsü?</h2>
+    <h2>{{ $placeTitle }}’da neden Gönül Köprüsü?</h2>
     <ul>
         @foreach(($seoWhy ?? []) as $reason)
             <li>{{ $reason }}</li>
@@ -31,12 +43,21 @@
     </ul>
 
     <p class="city-seo-cta-wrap">
-        <a href="{{ $registerUrl }}" class="btn btn-primary" data-gk-event="city_cta_click" data-gk-event-label="{{ $slug }}">Ücretsiz Kayıt Ol</a>
+        <a href="{{ $registerUrl }}" class="btn btn-primary" data-gk-event="city_cta_click" data-gk-event-label="{{ $slug }}{{ !empty($district) ? '-'.\App\Support\SeoDistricts::slug($district) : '' }}">Ücretsiz Kayıt Ol</a>
         @guest
             <a href="{{ route('login') }}" class="btn btn-outline">Giriş Yap</a>
         @endguest
         <a href="{{ $instagramUrl }}" class="btn btn-ghost" target="_blank" rel="noopener" data-gk-event="instagram_cta" data-gk-event-label="city_{{ $slug }}">Instagram</a>
     </p>
+
+    @if(!empty($districtLinks) && empty($district))
+        <h2>{{ $city }} ilçelerinde tanışma</h2>
+        <ul class="city-seo-links">
+            @foreach($districtLinks as $d)
+                <li><a href="{{ route('city.seo.district', ['slug' => $slug, 'district' => $d['slug']]) }}">{{ $d['name'] }} tanışma</a></li>
+            @endforeach
+        </ul>
+    @endif
 
     @if(!empty($relatedPosts))
         <h2>{{ $city }} ve tanışma rehberi</h2>
@@ -50,11 +71,10 @@
                 </li>
             @endforeach
         </ul>
-        <p><a href="{{ route('blog') }}">Tüm blog yazıları</a> · <a href="{{ route('sss') }}">SSS</a></p>
     @endif
 
     @if(!empty($faqItems))
-        <h2>Sık sorulanlar — {{ $city }}</h2>
+        <h2>Sık sorulan sorular</h2>
         <div class="city-seo-faq">
             @foreach($faqItems as $item)
                 <details>
@@ -65,7 +85,7 @@
         </div>
     @endif
 
-    <h2>Türkiye’de popüler şehirler</h2>
+    <h2>Diğer şehirler</h2>
     <ul class="city-seo-links">
         @foreach($cityLinks as $link)
             @if($link['slug'] !== $slug)
@@ -88,7 +108,11 @@
         @if(Route::has('seo.friendship'))
             <li><a href="{{ route('seo.friendship') }}">Arkadaşlık sitesi</a></li>
         @endif
+        @if(Route::has('stories'))
+            <li><a href="{{ route('stories') }}">Başarı hikâyeleri</a></li>
+        @endif
         <li><a href="{{ route('safe-meeting') }}">Güvenli tanışma</a></li>
+        <li><a href="{{ route('about') }}">Hakkımızda</a></li>
     </ul>
 @endsection
 

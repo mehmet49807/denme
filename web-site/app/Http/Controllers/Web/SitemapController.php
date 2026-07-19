@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Support\SeoDistricts;
 use Illuminate\Support\Facades\Cache;
 
 class SitemapController extends Controller
@@ -17,7 +18,7 @@ class SitemapController extends Controller
             abort(404);
         }
 
-        $xml = Cache::remember('sitemap.xml.body.v3', now()->addHour(), function () use ($settings) {
+        $xml = Cache::remember('sitemap.xml.body.v4', now()->addHour(), function () use ($settings) {
             return $this->buildSitemapXml($settings);
         });
 
@@ -38,7 +39,8 @@ class SitemapController extends Controller
             ['loc' => '/ciddi-iliski', 'priority' => '0.98', 'changefreq' => 'weekly'],
             ['loc' => '/ucretsiz-tanisma-sitesi', 'priority' => '0.98', 'changefreq' => 'weekly'],
             ['loc' => '/arkadaslik-sitesi', 'priority' => '0.95', 'changefreq' => 'weekly'],
-            ['loc' => '/hakkimizda', 'priority' => '0.8', 'changefreq' => 'monthly'],
+            ['loc' => '/basari-hikayeleri', 'priority' => '0.92', 'changefreq' => 'weekly'],
+            ['loc' => '/hakkimizda', 'priority' => '0.85', 'changefreq' => 'monthly'],
             ['loc' => '/blog', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['loc' => '/sss', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['loc' => '/register', 'priority' => '0.95', 'changefreq' => 'monthly'],
@@ -78,6 +80,15 @@ class SitemapController extends Controller
                 'lastmod' => now()->toDateString(),
                 'changefreq' => 'weekly',
                 'priority' => '0.8',
+            ];
+        }
+
+        foreach (SeoDistricts::all() as $item) {
+            $urls[] = [
+                'loc' => $baseUrl.'/sehir/'.$item['city_slug'].'/'.$item['district_slug'],
+                'lastmod' => now()->toDateString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.72',
             ];
         }
 

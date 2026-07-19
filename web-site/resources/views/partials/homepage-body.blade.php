@@ -258,6 +258,12 @@
                 <a href="{{ route('sss') }}">SSS</a>
                 ·
                 <a href="{{ route('safe-meeting') }}">Güvenli tanışma</a>
+                @if(Route::has('stories'))
+                    ·
+                    <a href="{{ route('stories') }}">Başarı hikâyeleri</a>
+                @endif
+                ·
+                <a href="{{ route('about') }}">Hakkımızda</a>
             </p>
         </div>
     </section>

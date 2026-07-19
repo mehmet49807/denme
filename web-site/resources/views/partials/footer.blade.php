@@ -29,6 +29,9 @@
                     @if(Route::has('seo.friendship'))
                         <li><a href="{{ route('seo.friendship') }}">Arkadaşlık Sitesi</a></li>
                     @endif
+                    @if(Route::has('stories'))
+                        <li><a href="{{ route('stories') }}">Başarı Hikâyeleri</a></li>
+                    @endif
                     <li><a href="{{ route('safe-meeting') }}">Güvenli Tanışma</a></li>
                     <li><a href="{{ route('blog') }}">Blog</a></li>
                     <li><a href="{{ route('sss') }}">Sıkça Sorulan Sorular (SSS)</a></li>

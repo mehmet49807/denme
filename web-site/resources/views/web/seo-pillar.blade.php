@@ -54,9 +54,21 @@
         <p>
             <a href="{{ route('blog') }}">Tüm blog</a> ·
             <a href="{{ route('sss') }}">SSS</a> ·
-            <a href="{{ route('safe-meeting') }}">Güvenli tanışma</a>
+            <a href="{{ route('safe-meeting') }}">Güvenli tanışma</a> ·
+            <a href="{{ route('about') }}">Hakkımızda</a>
+            @if(Route::has('stories'))
+                · <a href="{{ route('stories') }}">Başarı hikâyeleri</a>
+            @endif
         </p>
     @endif
+
+    <h2>Güven ve şeffaflık</h2>
+    <p>
+        Kişisel verilerin <a href="{{ route('kvkk') }}">KVKK</a> kapsamında işlenir;
+        <a href="{{ route('privacy') }}">gizlilik politikamızı</a> ve
+        <a href="{{ route('safe-meeting') }}">güvenli tanışma rehberimizi</a> okuyabilirsin.
+        Destek: <a href="mailto:destek@gonulkoprusu.com">destek@gonulkoprusu.com</a>.
+    </p>
 
     <h2>Şehir şehir tanışma</h2>
     <ul class="city-seo-links">

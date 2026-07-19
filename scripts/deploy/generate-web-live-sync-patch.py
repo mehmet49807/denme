@@ -165,14 +165,21 @@ files = {
     "app/Support/InstagramUrl.php": WEB / "app/Support/InstagramUrl.php",
     "app/Support/CitySeoCopy.php": WEB / "app/Support/CitySeoCopy.php",
     "app/Support/SeoSchema.php": WEB / "app/Support/SeoSchema.php",
+    "app/Support/SeoDistricts.php": WEB / "app/Support/SeoDistricts.php",
     "app/Http/Controllers/Web/ReferralPageController.php": WEB
     / "app/Http/Controllers/Web/ReferralPageController.php",
     "app/Http/Controllers/Web/CitySeoPageController.php": WEB
     / "app/Http/Controllers/Web/CitySeoPageController.php",
     "app/Http/Controllers/Web/SeoPillarPageController.php": WEB
     / "app/Http/Controllers/Web/SeoPillarPageController.php",
+    "app/Http/Controllers/Web/SuccessStoriesController.php": WEB
+    / "app/Http/Controllers/Web/SuccessStoriesController.php",
     "resources/views/web/seo-pillar.blade.php": WEB
     / "resources/views/web/seo-pillar.blade.php",
+    "resources/views/web/success-stories.blade.php": WEB
+    / "resources/views/web/success-stories.blade.php",
+    "resources/views/web/about.blade.php": WEB / "resources/views/web/about.blade.php",
+    "resources/views/web/home.blade.php": WEB / "resources/views/web/home.blade.php",
     "app/Http/Controllers/Web/CampaignLandingController.php": WEB
     / "app/Http/Controllers/Web/CampaignLandingController.php",
     "app/Http/Controllers/Web/GoogleAuthController.php": WEB

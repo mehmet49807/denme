@@ -44,8 +44,38 @@ class LegalPageController extends Controller
         SeoHelper::setPage('about');
         SeoHelper::set('canonical', url('/hakkimizda'));
 
+        $siteUrl = rtrim(config('app.url', 'https://gonulkoprusu.com'), '/');
+        $jsonLd = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                $this->breadcrumbSchema('Hakkımızda', url('/hakkimizda')),
+                [
+                    '@type' => 'Organization',
+                    'name' => 'Gönül Köprüsü',
+                    'url' => $siteUrl,
+                    'logo' => $siteUrl.'/images/logo-320.png',
+                    'email' => 'destek@gonulkoprusu.com',
+                    'sameAs' => [
+                        'https://www.instagram.com/gonulkoprusucom',
+                    ],
+                    'contactPoint' => [
+                        '@type' => 'ContactPoint',
+                        'email' => 'destek@gonulkoprusu.com',
+                        'contactType' => 'customer support',
+                        'availableLanguage' => ['Turkish'],
+                    ],
+                ],
+                [
+                    '@type' => 'AboutPage',
+                    'name' => 'Hakkımızda — Gönül Köprüsü',
+                    'url' => url('/hakkimizda'),
+                    'description' => (string) SeoHelper::get('description'),
+                ],
+            ],
+        ];
+
         return view('web.about', array_merge($this->legalData(), [
-            'jsonLd' => $this->breadcrumbSchema('Hakkımızda', url('/hakkimizda')),
+            'jsonLd' => $jsonLd,
         ]));
     }
 
@@ -163,6 +193,7 @@ class LegalPageController extends Controller
         Cache::forget('sitemap.xml.body');
         Cache::forget('sitemap.xml.body.v2');
         Cache::forget('sitemap.xml.body.v3');
+        Cache::forget('sitemap.xml.body.v4');
     }
 
     /** @param array<int, array<string, mixed>> $posts */

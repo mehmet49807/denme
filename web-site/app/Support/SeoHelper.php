@@ -15,8 +15,14 @@ class SeoHelper
         ],
         'about' => [
             'title' => 'Hakkımızda — Gönül Köprüsü Tanışma Platformu',
-            'description' => 'Gönül Köprüsü hakkında: güvenli, ciddi ve modern tanışma platformu. Evlilik ve anlamlı ilişki odaklı üye topluluğu.',
-            'keywords' => 'gönül köprüsü hakkında, tanışma platformu, güvenli tanışma, evlilik platformu, gönül köprüsü nedir',
+            'description' => 'Gönül Köprüsü kimdir: Türkiye\'de güvenli tanışma, ciddi ilişki ve evlilik odaklı platform. Destek, KVKK, moderasyon ve iletişim.',
+            'keywords' => 'gönül köprüsü hakkında, tanışma platformu, güvenli tanışma, evlilik platformu, gönül köprüsü nedir, destek',
+        ],
+        'stories' => [
+            'title' => 'Başarı Hikâyeleri — Ciddi İlişki ve Evlilik',
+            'description' => 'Gönül Köprüsü başarı hikâyeleri: ciddi ilişki ve evlilik niyetiyle tanışan üyelerden esinlenen anlatımlar. Ücretsiz üye ol.',
+            'keywords' => 'başarı hikâyeleri, tanışma hikâyeleri, evlilik hikâyesi, ciddi ilişki, gönül köprüsü',
+            'ogType' => 'website',
         ],
         'blog' => [
             'title' => 'Blog — Tanışma, Sohbet ve Evlilik Rehberleri',

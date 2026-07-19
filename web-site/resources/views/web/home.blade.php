@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gönül Köprüsü — Tanışma, Sohbet ve Evlilik Sitesi')
+@section('title', 'Gönül Köprüsü — Ücretsiz Tanışma, Evlilik ve Ciddi İlişki Sitesi')
 
 @section('content')
 <section class="landing-hero">
@@ -9,7 +9,7 @@
     <div class="landing-hero-glow landing-hero-glow--c" aria-hidden="true"></div>
     <div class="landing-hero-bg" aria-hidden="true">
         @php
-            $heroVersion = 'opt-v6';
+            $heroVersion = 'opt-v7';
             $heroWidths = [640, 960, 1280];
             $heroWebp = [];
             $heroJpg = [];
@@ -39,11 +39,11 @@
             <img
                 src="{{ $heroFallbackWebp }}"
                 @if($heroJpg !== []) srcset="{{ implode(', ', $heroJpg) }}" sizes="(max-width: 768px) 640px, 100vw" @endif
-                alt=""
+                alt="Gönül Köprüsü — güvenli tanışma ve ciddi ilişki"
                 width="1280"
                 height="853"
                 fetchpriority="high"
-                decoding="async"
+                decoding="sync"
             >
         </picture>
     </div>
@@ -113,6 +113,10 @@
 
 @include('partials.homepage-body')
 @endsection
+
+@push('head')
+<link rel="preload" as="image" href="{{ asset('images/landing-hero-couple-640.webp?v=opt-v7') }}" type="image/webp" fetchpriority="high">
+@endpush
 
 @isset($jsonLd)
 @push('ld-json')

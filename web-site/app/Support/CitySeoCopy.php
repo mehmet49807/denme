@@ -45,12 +45,35 @@ final class CitySeoCopy
             'kocaeli' => "{$city} (İzmit çevresi) sanayi kentinde güvenli tanışma ve online sohbet. Ücretsiz üye ol.",
             'mugla' => "{$city} ve Ege sahillerinde ciddi ilişki arayışı — Bodrum, Fethiye ve çevresi dahil keşif.",
             'aydin' => "{$city}'da güvenli tanışma sitesi: ücretsiz kayıt, ciddi niyet, moderasyonlu sohbet.",
+            'afyonkarahisar' => "{$city} tanışma — İç Ege'de evlilik odaklı, ücretsiz ve moderasyonlu platform.",
+            'isparta' => "{$city}'da ciddi ilişki ve güvenli online sohbet. Ücretsiz üye ol, profilini tamamla.",
+            'mardin' => "{$city} tanışma sitesi: ailevi değerlere saygılı, ciddi niyetli üyeler için güvenli ortam.",
+            'ordu' => "Karadeniz'de {$city} tanışma — ücretsiz kayıt, şehir filtresi, evlilik odaklı keşif.",
+            'tokat' => "{$city}'da güvenli tanışma ve ciddi ilişki. Gönül Köprüsü ile ücretsiz başla.",
+            'corum' => "{$city} tanışma sitesi: online sohbet, moderasyon ve ücretsiz üyelik.",
+            'osmaniye' => "{$city}'da evlilik ve ciddi ilişki arayışı için sakin, güvenli tanışma ortamı.",
+            'canakkale' => "{$city} ve çevresinde güvenli tanışma — ücretsiz kayıt, saygılı sohbet.",
+            'edirne' => "{$city} tanışma: Trakya'da ciddi ilişki ve evlilik odaklı üye keşfi.",
+            'kirklareli' => "{$city}'da ücretsiz tanışma sitesi deneyimi — konum filtresi ve güvenli mesaj.",
+            'yozgat' => "{$city} tanışma ve evlilik arayışı için Gönül Köprüsü; ücretsiz üye ol.",
         ];
 
         $lead = $hooks[$slug] ?? (
             "{$city} tanışma sitesi Gönül Köprüsü: ücretsiz üye ol, güvenli online sohbet et, "
             .'ciddi ilişki ve evlilik odaklı profilleri keşfet.'
         );
+
+        // Long-tail H2 sinyali için büyük şehirlerde ek cümle
+        $extra = [
+            'istanbul' => ' İstanbul evlilik sitesi ve İstanbul tanışma aramalarında güvenli, moderasyonlu bir alternatif sunuyoruz.',
+            'ankara' => ' Ankara evlilik sitesi arayanlar için ücretsiz kayıt ve şehir içi keşif açıktır.',
+            'izmir' => ' İzmir evlilik sitesi ve İzmir tanışma niyetiyle gelen üyeler için saygılı bir ortam hedeflenir.',
+            'bursa' => ' Bursa tanışma ve Bursa evlilik arayışında konum filtresi avantaj sağlar.',
+            'antalya' => ' Antalya tanışma sayfamızdan ücretsiz kayıt olup ciddi ilişki odaklı profilleri görebilirsin.',
+        ];
+        if (isset($extra[$slug])) {
+            $lead .= $extra[$slug];
+        }
 
         if ($memberCount > 0) {
             $lead .= " Şu an {$city}'da yaklaşık {$members} kayıtlı üye"
@@ -64,6 +87,7 @@ final class CitySeoCopy
             'Moderasyonlu ortam — kadın üyelerde mesaj / kimler baktı ücretsiz',
             "Ücretsiz kayıt — birkaç dakikada {$city} tanışmaya başla",
             'Instagram ve davet linkleriyle arkadaşlarını da getirebilirsin',
+            "{$city} evlilik ve ciddi ilişki niyeti taşıyan üye kitlesi",
         ];
 
         $faqs = [
@@ -82,6 +106,65 @@ final class CitySeoCopy
             [
                 'question' => "{$city} dışından da üye olabilir miyim?",
                 'answer' => "Evet. Konumunu profilinde güncelleyebilir, {$city} dahil Türkiye şehirlerindeki üyeleri keşfedebilirsin. Şehir SEO sayfaları yalnızca keşif içindir; kayıt tüm Türkiye'den açıktır.",
+            ],
+            [
+                'question' => "{$city} evlilik sitesi olarak Gönül Köprüsü'nü seçmeli miyim?",
+                'answer' => "Evlilik ve uzun soluklu ilişki arıyorsan niyetin net olduğu, moderasyonlu bir platform daha uygundur. {$city} için ücretsiz kayıt olup profilini tamamlayarak başlayabilirsin.",
+            ],
+        ];
+
+        return [
+            'lead' => $lead,
+            'why' => $why,
+            'faqs' => $faqs,
+        ];
+    }
+
+    /**
+     * @return array{lead: string, why: list<string>, faqs: list<array{question: string, answer: string}>}
+     */
+    public static function forDistrict(
+        string $city,
+        string $citySlug,
+        string $district,
+        int $memberCount,
+        int $femaleCount,
+        int $maleCount,
+    ): array {
+        $members = number_format(max(0, $memberCount));
+        $place = $district.', '.$city;
+
+        $lead = "{$district} tanışma — {$city} içinde {$district} ve çevresinde ciddi ilişki, güvenli sohbet ve evlilik odaklı ücretsiz tanışma. "
+            ."{$city} evlilik sitesi arayanlar için ilçe bazlı keşif Gönül Köprüsü'nde.";
+
+        if ($memberCount > 0) {
+            $lead .= " {$place} bölgesinde yaklaşık {$members} kayıtlı üye görünür.";
+        }
+
+        $why = [
+            "{$district} / {$city} konumuna göre üye keşfi",
+            'Ücretsiz kayıt — kadınlarda mesajlaşma ücretsiz',
+            'Moderasyon, engelleme ve şikayet araçları',
+            "{$city} genelinden {$district} odaklı ciddi niyet",
+            'Güvenli ilk buluşma için rehber ve destek',
+        ];
+
+        $faqs = [
+            [
+                'question' => "{$district} tanışma sitesi ücretsiz mi?",
+                'answer' => "Evet. {$city} / {$district} için Gönül Köprüsü'ne ücretsiz üye olabilirsin. Profilinde ilçeni seçerek yakındaki üyeleri önceliklendirebilirsin.",
+            ],
+            [
+                'question' => "{$district}'da ciddi ilişki bulabilir miyim?",
+                'answer' => "Platform ciddi ilişki ve evlilik niyetiyle tasarlandı. {$district} ve {$city} genelindeki yetişkin üyelerle güvenli sohbet edebilirsin.",
+            ],
+            [
+                'question' => "{$city} şehir sayfasına nasıl dönerim?",
+                'answer' => "{$city} genel tanışma sayfası /sehir/{$citySlug} adresindedir. İlçe sayfaları yerel aramalar için ek keşif sunar.",
+            ],
+            [
+                'question' => 'İlk buluşmada nelere dikkat etmeliyim?',
+                'answer' => 'Halka açık yer seç, kişisel/finansal bilgi paylaşma, şüpheli davranışı bildir. Güvenli Tanışma rehberimizi oku.',
             ],
         ];
 

@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\LegalPageController;
 use App\Http\Controllers\Web\LocationUsersPageController;
 use App\Http\Controllers\Web\CitySeoPageController;
 use App\Http\Controllers\Web\SeoPillarPageController;
+use App\Http\Controllers\Web\SuccessStoriesController;
 use App\Http\Controllers\Web\CampaignLandingController;
 use App\Http\Controllers\Web\SupportPageController;
 use App\Http\Controllers\Web\ReferralPageController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Web\StoryPageController;
 use App\Http\Controllers\Web\UserProfilePageController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 $gkHttpHost = strtolower(preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? '')));
@@ -328,10 +330,14 @@ Route::get('/guvenli-tanisma', [LegalPageController::class, 'safeMeeting'])->nam
 Route::get('/destek', [SupportPageController::class, 'show'])->name('support');
 Route::post('/destek', [SupportPageController::class, 'store'])->middleware('throttle:6,1,support')->name('support.store');
 Route::get('/sehir/{slug}', [CitySeoPageController::class, 'show'])->name('city.seo')->where('slug', '[a-z0-9\-]+');
+Route::get('/sehir/{slug}/{district}', [CitySeoPageController::class, 'showDistrict'])
+    ->name('city.seo.district')
+    ->where(['slug' => '[a-z0-9\-]+', 'district' => '[a-z0-9\-]+']);
 Route::get('/evlilik-sitesi', [SeoPillarPageController::class, 'marriage'])->name('seo.marriage');
 Route::get('/ciddi-iliski', [SeoPillarPageController::class, 'serious'])->name('seo.serious');
 Route::get('/ucretsiz-tanisma-sitesi', [SeoPillarPageController::class, 'freeDating'])->name('seo.free');
 Route::get('/arkadaslik-sitesi', [SeoPillarPageController::class, 'friendship'])->name('seo.friendship');
+Route::get('/basari-hikayeleri', [SuccessStoriesController::class, 'show'])->name('stories');
 Route::get('/kampanya', [CampaignLandingController::class, 'show'])->name('campaign.landing');
 Route::get('/ads', [CampaignLandingController::class, 'show'])->name('campaign.ads');
 Route::get('/davet/{code}', [ReferralPageController::class, 'show'])
@@ -378,6 +384,39 @@ Route::get('/ara/oneriler', [SearchController::class, 'suggest'])->middleware('t
 
 // ========== SEO Routes ==========
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/setup/sitemap-ping', function () {
+    if (request('key') !== 'gk-cpanel-setup-2026') {
+        abort(403);
+    }
+
+    Cache::forget('sitemap.xml.body');
+    Cache::forget('sitemap.xml.body.v2');
+    Cache::forget('sitemap.xml.body.v3');
+    Cache::forget('sitemap.xml.body.v4');
+
+    $sitemapUrl = 'https://gonulkoprusu.com/sitemap.xml';
+    $lines = ['sitemap-ping', 'sitemap='.$sitemapUrl];
+
+    foreach ([
+        'https://www.google.com/ping?sitemap='.rawurlencode($sitemapUrl),
+        'https://www.bing.com/ping?sitemap='.rawurlencode($sitemapUrl),
+    ] as $pingUrl) {
+        try {
+            $ctx = stream_context_create(['http' => ['timeout' => 8, 'ignore_errors' => true]]);
+            $body = @file_get_contents($pingUrl, false, $ctx);
+            $lines[] = $pingUrl.' -> '.(is_string($body) ? 'ok('.strlen($body).')' : 'fail');
+        } catch (\Throwable $e) {
+            $lines[] = $pingUrl.' -> '.$e->getMessage();
+        }
+    }
+
+    $lines[] = 'OK';
+
+    return response(implode("\n", $lines)."\n", 200, [
+        'Content-Type' => 'text/plain; charset=utf-8',
+        'Cache-Control' => 'no-store',
+    ]);
+})->name('setup.sitemap-ping');
 Route::get('/robots.txt', function () {
     foreach ([
         base_path('robots.txt'),
@@ -409,6 +448,7 @@ Route::get('/robots.txt', function () {
         'Allow: /ciddi-iliski',
         'Allow: /ucretsiz-tanisma-sitesi',
         'Allow: /arkadaslik-sitesi',
+        'Allow: /basari-hikayeleri',
         'Allow: /davet/',
         'Allow: /register',
         'Allow: /login',

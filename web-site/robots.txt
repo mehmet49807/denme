@@ -16,6 +16,7 @@ Allow: /evlilik-sitesi
 Allow: /ciddi-iliski
 Allow: /ucretsiz-tanisma-sitesi
 Allow: /arkadaslik-sitesi
+Allow: /basari-hikayeleri
 Allow: /davet/
 Allow: /register
 Allow: /login
