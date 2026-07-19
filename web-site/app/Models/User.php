@@ -328,6 +328,35 @@ class User extends Authenticatable
     }
 
     /**
+     * Erkek akışı: karşı cins (kadın) önerileri.
+     * Paket şartı yok — fotoğraflı / öne çıkan / aktif üyeler.
+     *
+     * @param  \Illuminate\Support\Collection<int, int>|array<int, int>  $visibleUserIds
+     * @return \Illuminate\Support\Collection<int, User>
+     */
+    public static function recommendedForMaleFeed($visibleUserIds, int $excludeUserId, int $limit = 12)
+    {
+        $ids = collect($visibleUserIds)->filter()->values();
+        if ($ids->isEmpty()) {
+            return collect();
+        }
+
+        $now = now()->toDateTimeString();
+
+        return static::query()
+            ->where('role', 'user')
+            ->where('is_banned', false)
+            ->where('gender', 'female')
+            ->where('id', '!=', $excludeUserId)
+            ->whereIn('id', $ids)
+            ->orderByRaw('CASE WHEN boost_until IS NOT NULL AND boost_until > ? THEN 0 ELSE 1 END', [$now])
+            ->orderByRaw('CASE WHEN profile_photo_url IS NOT NULL AND profile_photo_url != "" THEN 0 ELSE 1 END')
+            ->latest('last_active_at')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
      * Gönderi akışında paket + boost önceliği (Platinum / Gold öne çıkar).
      *
      * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\Post>  $query

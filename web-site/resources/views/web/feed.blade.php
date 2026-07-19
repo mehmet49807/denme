@@ -243,8 +243,8 @@
         </footer>
     </article>
 
-    {{-- Erkekler: gönderilerin altında "Senin için Önerilen üyeler" kartları --}}
-    @if(($viewer->gender ?? null) === 'male' && ($loop->iteration === 2 || ($loop->last && $loop->count < 2)))
+    {{-- Erkek akışı: gönderilerin altında "Senin için Önerilen üyeler" (kadın kartları) --}}
+    @if(strtolower((string) ($viewer->gender ?? '')) === 'male' && ($loop->iteration === 2 || ($loop->last && $loop->count < 2)))
         @include('partials.feed-recommended-users', [
             'recommendedUsers' => $recommendedUsers ?? collect(),
             'variant' => 'feed',
@@ -252,7 +252,7 @@
     @endif
     @empty
     <p class="feed-empty">{{ __('app.feed.empty') }}</p>
-    @if(($viewer->gender ?? null) === 'male')
+    @if(strtolower((string) ($viewer->gender ?? '')) === 'male')
         @include('partials.feed-recommended-users', [
             'recommendedUsers' => $recommendedUsers ?? collect(),
             'variant' => 'feed',

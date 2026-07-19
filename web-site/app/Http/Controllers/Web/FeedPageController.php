@@ -42,9 +42,9 @@ class FeedPageController extends Controller
             ->pluck('post_id')
             ->all();
 
-        // Erkeklere özel: gönderi altında "Senin için Önerilen üyeler"
-        $recommendedUsers = ($viewer->gender === 'male')
-            ? User::recommendedMembers($visibleUserIds, $viewer->id, 12)
+        // Erkek akışı: gönderi altında kadın öneri kartları. Kadın akışında yok.
+        $recommendedUsers = strtolower((string) $viewer->gender) === 'male'
+            ? User::recommendedForMaleFeed($visibleUserIds, $viewer->id, 12)
             : collect();
 
         $onboarding = null;

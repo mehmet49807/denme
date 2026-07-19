@@ -22,7 +22,8 @@
                 if ($place === '') {
                     $place = $user->country ?: 'Türkiye';
                 }
-                $frame = $isBoosted ? 'boost' : $pkg;
+                // Kadın önerilerinde paket çerçevesi yok; boost varsa vurgula.
+                $frame = $isBoosted ? 'boost' : (($user->gender ?? null) === 'female' ? 'free' : $pkg);
             @endphp
             <a
                 href="{{ route('users.show', $user->username) }}"
