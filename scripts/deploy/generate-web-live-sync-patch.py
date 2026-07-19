@@ -341,11 +341,20 @@ if (($_GET['export'] ?? '') === '1') {
         'app/Models/Message.php',
         'app/Models/Block.php',
         'app/Models/UserNotification.php',
+        'app/Models/AdminBroadcast.php',
+        'app/Models/UserBroadcastRead.php',
+        'app/Models/Report.php',
+        'app/Models/Like.php',
+        'app/Support/SidebarBadgeCounts.php',
         'app/Http/Controllers/Web/NotificationPageController.php',
         'app/Http/Controllers/Web/LiveSyncController.php',
         'resources/views/web/notifications.blade.php',
+        'resources/views/web/notifications/index.blade.php',
+        'resources/views/web/notifications/partials/list-items.blade.php',
         'resources/views/partials/notification-item.blade.php',
         'app/Providers/AppServiceProvider.php',
+        'bootstrap/providers.php',
+        'bootstrap/app.php',
     ] as $rel) {
         $path = $webRoot.'/'.$rel;
         echo "=====FILE:$rel=====\n";
