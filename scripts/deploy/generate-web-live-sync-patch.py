@@ -31,6 +31,20 @@ files = {
     "resources/views/partials/critical-ui-css.blade.php": WEB
     / "resources/views/partials/critical-ui-css.blade.php",
     "resources/views/partials/logo.blade.php": WEB / "resources/views/partials/logo.blade.php",
+    "config/brand.php": WEB / "config/brand.php",
+    "images/logo-180.png": WEB / "public/images/logo-180.png",
+    "images/logo-220.png": WEB / "public/images/logo-220.png",
+    "images/logo-320.png": WEB / "public/images/logo-320.png",
+    "images/logo-180-light.png": WEB / "public/images/logo-180-light.png",
+    "images/logo-220-light.png": WEB / "public/images/logo-220-light.png",
+    "images/logo-320-light.png": WEB / "public/images/logo-320-light.png",
+    "images/logo-mark.png": WEB / "public/images/logo-mark.png",
+    "images/logo-admin.png": WEB / "public/images/logo-admin.png",
+    "images/favicon.png": WEB / "public/images/favicon.png",
+    "images/favicon-32.png": WEB / "public/images/favicon-32.png",
+    "images/favicon-64.png": WEB / "public/images/favicon-64.png",
+    "images/favicon.svg": WEB / "public/images/favicon.svg",
+    "images/apple-touch-icon.png": WEB / "public/images/apple-touch-icon.png",
     "resources/views/partials/profile-settings-open-btn.blade.php": WEB
     / "resources/views/partials/profile-settings-open-btn.blade.php",
     "resources/views/partials/profile-settings-panels.blade.php": WEB

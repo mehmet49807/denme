@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Yönetim Paneli') — Gönül Köprüsü</title>
-    <link rel="icon" href="{{ asset('images/favicon.png') }}?v=brand-v16" sizes="32x32" type="image/png">
+    <link rel="icon" href="{{ asset('images/favicon.png') }}?v=brand-v17" sizes="32x32" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -52,10 +52,10 @@
             </button>
 
             <a href="{{ route('admin.dashboard') }}" class="admin-sidebar-brand">
-                <img src="{{ asset('images/logo-admin.png') }}?v=brand-v16" alt="" width="40" height="40" class="admin-sidebar-logo">
+                <img src="{{ asset('images/logo-admin.png') }}?v=brand-v17" alt="Gönül Köprüsü" width="220" height="76" class="admin-sidebar-logo">
                 <span class="admin-sidebar-brand-text">
-                    <strong>Gönül Köprüsü</strong>
-                    <small>Premium Yönetim</small>
+                    <strong class="admin-sidebar-brand-text__title">Yönetim</strong>
+                    <small>Premium panel</small>
                 </span>
             </a>
 

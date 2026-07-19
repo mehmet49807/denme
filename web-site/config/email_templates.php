@@ -9,7 +9,7 @@ return [
 
     'logo' => [
         'mark' => 'images/logo-mark.png',
-        'version' => 'brand-v12',
+        'version' => 'brand-v17',
         'tagline' => 'Gönülleri Birleştiren Köprü',
     ],
 

@@ -17,7 +17,19 @@
     filter: drop-shadow(0 6px 18px rgba(124, 58, 237, 0.14));
     transition: transform 0.18s ease, filter 0.18s ease;
 }
-.page-landing .site-header--landing .site-logo-brand-img {
+.site-logo-brand-img--light {
+    display: none;
+}
+.page-landing .site-header--landing .site-logo-brand-img--ink,
+.page-auth .site-header--landing .site-logo-brand-img--ink {
+    display: none;
+}
+.page-landing .site-header--landing .site-logo-brand-img--light,
+.page-auth .site-header--landing .site-logo-brand-img--light {
+    display: block;
+}
+.page-landing .site-header--landing .site-logo-brand-img,
+.page-auth .site-header--landing .site-logo-brand-img {
     height: 46px;
     max-width: min(220px, 56vw);
     filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35));

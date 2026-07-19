@@ -87,8 +87,8 @@ a:hover { color: var(--magenta); }
 .admin-sidebar-logo,
 .admin-logo-mark {
     width: auto;
-    height: 42px;
-    max-width: 150px;
+    height: 44px;
+    max-width: 168px;
     flex-shrink: 0;
     display: block;
     border-radius: 0;

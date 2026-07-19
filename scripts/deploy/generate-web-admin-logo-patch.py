@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "patch-web-admin-logo.php"
-VERSION = "brand-v16"
+VERSION = "brand-v17"
 CSS_VERSION = "premium-v4"
 
 files = {
