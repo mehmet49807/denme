@@ -41,14 +41,29 @@
                 <span class="users-browse-pkg-legend__item users-browse-pkg-legend__item--gold">Gold</span>
                 <span class="users-browse-pkg-legend__item users-browse-pkg-legend__item--pro">Pro</span>
             </p>
-            @php $filter = $filter ?? 'all'; @endphp
-            <nav class="users-browse-filters" aria-label="Üye filtresi">
-                <a href="{{ route('users.index', ['filter' => 'all']) }}" class="{{ $filter === 'all' ? 'is-active' : '' }}">Tümü</a>
-                <a href="{{ route('users.index', ['filter' => 'online']) }}" class="{{ $filter === 'online' ? 'is-active' : '' }}">Çevrimiçi</a>
-                @if(filled($viewer->city ?? null))
-                    <a href="{{ route('users.index', ['filter' => 'city']) }}" class="{{ $filter === 'city' ? 'is-active' : '' }}">{{ $viewer->city }}</a>
-                @endif
-            </nav>
+            @php $search = $search ?? ''; @endphp
+            <form class="users-browse-search" method="get" action="{{ route('users.index') }}" role="search">
+                <label class="users-browse-search__label" for="users-search-q">{{ __('app.users.search_label') }}</label>
+                <div class="users-browse-search__row">
+                    <input
+                        id="users-search-q"
+                        class="users-browse-search__input"
+                        type="search"
+                        name="q"
+                        value="{{ $search }}"
+                        placeholder="{{ __('app.users.search_placeholder') }}"
+                        maxlength="80"
+                        autocomplete="off"
+                        enterkeyhint="search"
+                    >
+                    <button type="submit" class="btn btn-primary users-browse-search__btn">
+                        {{ __('app.users.search_button') }}
+                    </button>
+                    @if($search !== '')
+                        <a href="{{ route('users.index') }}" class="users-browse-search__clear">{{ __('app.users.search_clear') }}</a>
+                    @endif
+                </div>
+            </form>
         </div>
     </header>
 
@@ -64,9 +79,9 @@
     @include('partials.empty-state', [
         'class' => 'users-browse-empty',
         'icon' => 'users',
-        'title' => __('app.users.empty_title'),
-        'text' => __('app.users.empty_text'),
-        'ctaUrl' => route('users.index', ['filter' => 'all']),
+        'title' => $search !== '' ? __('app.users.search_empty_title') : __('app.users.empty_title'),
+        'text' => $search !== '' ? __('app.users.search_empty_text') : __('app.users.empty_text'),
+        'ctaUrl' => route('users.index'),
         'ctaLabel' => __('app.users.discover_badge'),
     ])
     @endif

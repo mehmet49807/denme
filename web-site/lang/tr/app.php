@@ -191,6 +191,12 @@ return [
         'empty_text' => 'Şu an görüntülenecek üye bulunmuyor. Daha sonra tekrar kontrol edin.',
         'empty' => 'Henüz görüntülenecek üye bulunmuyor.',
         'posts_label' => 'gönderi',
+        'search_label' => 'Üye ara',
+        'search_placeholder' => 'Kullanıcı adı veya şehir…',
+        'search_button' => 'Ara',
+        'search_clear' => 'Temizle',
+        'search_empty_title' => 'Sonuç bulunamadı',
+        'search_empty_text' => 'Bu aramaya uygun üye yok. Farklı bir kullanıcı adı veya şehir deneyin.',
     ],
 
     'notifications' => [
