@@ -5729,21 +5729,19 @@ body.ig-story-open .app-sidebar {
     color: #1a1523;
     box-shadow: 0 8px 24px rgba(15, 8, 30, 0.24);
 }
-.page-landing .landing-hero-google__icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+.page-landing .landing-hero-google .btn-google-login__icon {
     width: 1.7rem;
     height: 1.7rem;
     border-radius: 9px;
-    background: #fff;
-    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
 }
-.page-landing .landing-hero-google__icon svg {
-    display: block;
+.page-landing .landing-hero-google .btn-google-login__icon svg {
     width: 1.05rem;
     height: 1.05rem;
+}
+.page-landing .landing-hero-google .btn-google-login__label {
+    color: inherit;
+    font: inherit;
+    font-weight: 750;
 }
 .page-landing .landing-hero-google-note {
     display: flex;
@@ -5811,21 +5809,19 @@ body.ig-story-open .app-sidebar {
     background: #fff;
     color: #1a1523;
 }
-.gk-cta-google__icon {
-    display: inline-flex;
+.gk-cta-google .btn-google-login__icon {
     width: 1.65rem;
     height: 1.65rem;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
     border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
 }
-.gk-cta-google__icon svg {
-    display: block;
+.gk-cta-google .btn-google-login__icon svg {
     width: 1rem;
     height: 1rem;
+}
+.gk-cta-google .btn-google-login__label {
+    color: inherit;
+    font: inherit;
+    font-weight: 750;
 }
 .gk-cta-google-note {
     display: flex;

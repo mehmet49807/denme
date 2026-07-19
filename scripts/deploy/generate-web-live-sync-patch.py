@@ -47,6 +47,13 @@ files = {
     / "resources/views/partials/location-fields.blade.php",
     "resources/views/partials/phone-field.blade.php": WEB
     / "resources/views/partials/phone-field.blade.php",
+    "resources/views/partials/google-icon.blade.php": WEB
+    / "resources/views/partials/google-icon.blade.php",
+    "resources/views/partials/google-auth-button.blade.php": WEB
+    / "resources/views/partials/google-auth-button.blade.php",
+    "resources/views/web/login.blade.php": WEB / "resources/views/web/login.blade.php",
+    "resources/views/web/campaign-landing.blade.php": WEB
+    / "resources/views/web/campaign-landing.blade.php",
     "app/Http/Controllers/Web/GoogleAuthController.php": WEB
     / "app/Http/Controllers/Web/GoogleAuthController.php",
     "resources/views/partials/profile-online-label.blade.php": WEB

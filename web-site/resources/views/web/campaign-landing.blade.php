@@ -17,9 +17,13 @@
     @include('partials.trust-badges')
 
     <div class="campaign-landing-cta">
-        <a href="{{ $googleUrl }}" class="btn btn-primary btn-full" data-gk-event="google_complete" data-gk-event-label="campaign_{{ $source }}">
-            Google ile hızlı kayıt
-        </a>
+        @include('partials.google-auth-button', [
+            'href' => $googleUrl,
+            'label' => 'Google ile hızlı kayıt',
+            'event' => 'google_complete',
+            'eventLabel' => 'campaign_'.$source,
+            'iconSize' => 20,
+        ])
         <a href="{{ $registerUrl }}" class="btn btn-outline btn-full" data-gk-event="sign_up_click" data-gk-event-label="campaign_{{ $campaign }}">
             E-posta ile ücretsiz kayıt
         </a>
