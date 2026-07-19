@@ -104,6 +104,12 @@ class User extends Authenticatable
             ->exists();
     }
 
+    public const PACKAGE_RANKS = [
+        'pro' => 1,
+        'gold' => 2,
+        'platinum' => 3,
+    ];
+
     public function activePackageType(): ?string
     {
         try {
@@ -124,6 +130,28 @@ class User extends Authenticatable
         }
     }
 
+    public function packageRank(): int
+    {
+        if ($this->isAdmin() || $this->gender === 'female') {
+            return 99;
+        }
+
+        $type = $this->activePackageType();
+
+        return self::PACKAGE_RANKS[$type] ?? 0;
+    }
+
+    public function hasPackageAtLeast(string $minType): bool
+    {
+        if ($this->isAdmin() || $this->gender === 'female') {
+            return true;
+        }
+
+        $need = self::PACKAGE_RANKS[$minType] ?? 99;
+
+        return $this->packageRank() >= $need;
+    }
+
     public function packageBadge(): ?array
     {
         try {
@@ -137,46 +165,142 @@ class User extends Authenticatable
         }
     }
 
+    /** Gold+ veya deneme: hikaye paylaşımı */
     public function canPostStories(): bool
     {
-        return $this->canUseMalePremiumFeatures();
+        if ($this->isAdmin() || $this->gender === 'female') {
+            return true;
+        }
+
+        if ($this->isOnTrial()) {
+            return true;
+        }
+
+        return $this->hasPackageAtLeast('gold');
     }
 
+    /** Tüm paketler + deneme: sınırsız mesajlaşma */
     public function canSendMessages(): bool
     {
         return $this->canUseMalePremiumFeatures();
     }
 
     /**
-     * Kimler baktı görüntüleme + galeri yönetimi:
-     * kadınlar her zaman, premium erkekler ve adminler.
+     * Galeri erişimi: kadınlar, adminler ve Pro+ erkekler.
+     * (Geriye dönük uyumluluk — kimler baktı ayrı metoda taşındı.)
      */
     public function canAccessPremiumProfileFeatures(): bool
     {
-        if ($this->isAdmin()) {
+        return $this->canManageProfileGallery();
+    }
+
+    /** Platinum: Kimler baktı */
+    public function canAccessWhoViewed(): bool
+    {
+        if ($this->isAdmin() || $this->gender === 'female') {
             return true;
         }
 
-        if ($this->gender === 'female') {
+        return $this->hasPackageAtLeast('platinum');
+    }
+
+    /**
+     * Başkasının galeri fotoğraflarını görme:
+     * kadınlar ve adminler her zaman, erkeklerde Pro+.
+     */
+    public function canViewProfileGallery(): bool
+    {
+        if ($this->isAdmin() || $this->gender === 'female') {
             return true;
         }
 
         return $this->gender === 'male' && $this->isPremium();
     }
 
-    /**
-     * Başkasının galeri fotoğraflarını görme:
-     * kadınlar ve adminler her zaman, erkeklerde yalnızca premium.
-     */
-    public function canViewProfileGallery(): bool
-    {
-        return $this->canAccessPremiumProfileFeatures();
-    }
-
-    /** Kendi galerisine fotoğraf ekleme / silme */
+    /** Kendi galerisine fotoğraf ekleme / silme — Pro+ */
     public function canManageProfileGallery(): bool
     {
-        return $this->canAccessPremiumProfileFeatures();
+        return $this->canViewProfileGallery();
+    }
+
+    /** Gold+: profil öne çıkarma (boost) */
+    public function canUseProfileBoost(): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        if ($this->gender !== 'male') {
+            return false;
+        }
+
+        return $this->hasPackageAtLeast('gold');
+    }
+
+    /**
+     * Aktif paket tipine göre SQL sıra ifadesi (0 = en üstte).
+     * Bind için bir adet datetime parametresi bekler.
+     */
+    public static function packageTypeOrderSql(string $userIdExpression = 'users.id'): string
+    {
+        return "CASE COALESCE((
+            SELECT package_type FROM premium_subscriptions
+            WHERE premium_subscriptions.user_id = {$userIdExpression}
+              AND premium_subscriptions.is_active = 1
+              AND premium_subscriptions.expires_at > ?
+            ORDER BY premium_subscriptions.expires_at DESC
+            LIMIT 1
+        ), '')
+            WHEN 'platinum' THEN 0
+            WHEN 'gold' THEN 1
+            WHEN 'pro' THEN 2
+            ELSE 3
+        END";
+    }
+
+    /**
+     * Keşif / üye listelerinde paket + boost önceliği.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\User>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\User>
+     */
+    public static function applyDiscoveryRanking($query)
+    {
+        $now = now()->toDateTimeString();
+
+        return $query
+            ->orderByRaw('CASE WHEN boost_until IS NOT NULL AND boost_until > ? THEN 0 ELSE 1 END', [$now])
+            ->orderByRaw(self::packageTypeOrderSql('users.id'), [$now])
+            ->latest('last_active_at');
+    }
+
+    /**
+     * Gönderi akışında paket + boost önceliği (Platinum / Gold öne çıkar).
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\Post>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\Post>
+     */
+    public static function applyContentRanking($query, string $postsTable = 'posts')
+    {
+        $now = now()->toDateTimeString();
+
+        return $query
+            ->join('users', 'users.id', '=', $postsTable.'.user_id')
+            ->select($postsTable.'.*')
+            ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now])
+            ->orderByRaw(self::packageTypeOrderSql('users.id'), [$now])
+            ->orderByDesc($postsTable.'.created_at');
+    }
+
+    /** Koleksiyon sıralaması için görünürlük skoru (yüksek = önde). */
+    public function contentVisibilityScore(): int
+    {
+        $score = $this->packageRank() * 10;
+        if ($this->isBoosted()) {
+            $score += 100;
+        }
+
+        return $score;
     }
 
     private function canUseMalePremiumFeatures(): bool
@@ -417,6 +541,10 @@ class User extends Authenticatable
             'trial_days_remaining' => $this->trialDaysRemaining(),
             'can_post_stories' => $this->canPostStories(),
             'can_send_messages' => $this->canSendMessages(),
+            'can_access_who_viewed' => $this->canAccessWhoViewed(),
+            'can_manage_gallery' => $this->canManageProfileGallery(),
+            'package_type' => $this->activePackageType(),
+            'package_rank' => $this->packageRank(),
             'locale' => $this->locale ?: LocaleManager::default(),
             'visibility' => $this->visibility ?: 'everyone',
             'read_receipts_enabled' => $this->wantsReadReceipts(),

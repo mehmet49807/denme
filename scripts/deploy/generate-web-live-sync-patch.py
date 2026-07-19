@@ -122,10 +122,12 @@ files = {
     "app/Http/Controllers/Web/SetupController.php": WEB
     / "app/Http/Controllers/Web/SetupController.php",
     "app/Models/User.php": WEB / "app/Models/User.php",
+    "app/Models/Story.php": WEB / "app/Models/Story.php",
     "app/Models/ProfileView.php": WEB / "app/Models/ProfileView.php",
     "app/Models/Referral.php": WEB / "app/Models/Referral.php",
     "app/Models/PremiumSubscription.php": WEB / "app/Models/PremiumSubscription.php",
     "app/Models/SiteSetting.php": WEB / "app/Models/SiteSetting.php",
+    "app/Services/StoryService.php": WEB / "app/Services/StoryService.php",
     "app/Services/ReferralService.php": WEB / "app/Services/ReferralService.php",
     "app/Services/UserAttributionService.php": WEB / "app/Services/UserAttributionService.php",
     "app/Services/SiteSettingsService.php": WEB / "app/Services/SiteSettingsService.php",

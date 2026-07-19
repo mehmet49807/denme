@@ -28,11 +28,16 @@ class PremiumPackagesService
                 'badge_label' => 'Pro',
                 'badge_enabled' => true,
                 'badge_icon' => 'star',
-                'rozet_label' => 'Pro Rozet',
-                'rozet_text' => 'Profilinde özel Pro rozeti görünür.',
+                'rozet_label' => 'Pro Yıldız Rozet',
+                'rozet_text' => 'Mor yıldız rozeti — profilinde “Pro” olarak görünür.',
                 'gradient_from' => '#5b21b6',
-                'gradient_to' => '#7c3aed',
+                'gradient_to' => '#a78bfa',
                 'featured' => false,
+                'feature_keys' => [
+                    'perk_unlimited_messages',
+                    'perk_gallery',
+                    'perk_badge',
+                ],
             ],
             'gold' => [
                 'name' => 'Gold',
@@ -41,11 +46,18 @@ class PremiumPackagesService
                 'badge_label' => 'Gold',
                 'badge_enabled' => true,
                 'badge_icon' => 'crown',
-                'rozet_label' => 'Gold Rozet',
-                'rozet_text' => 'Gold rozeti ve öne çıkan profil vurgusu.',
-                'gradient_from' => '#b45309',
+                'rozet_label' => 'Gold Taç Rozet',
+                'rozet_text' => 'Altın taç rozeti — öne çıkan ve popüler profil görünümü.',
+                'gradient_from' => '#92400e',
                 'gradient_to' => '#fbbf24',
                 'featured' => true,
+                'feature_keys' => [
+                    'perk_unlimited_messages',
+                    'perk_featured_profile',
+                    'perk_stories',
+                    'perk_gallery',
+                    'perk_badge',
+                ],
             ],
             'platinum' => [
                 'name' => 'Platinum',
@@ -53,14 +65,38 @@ class PremiumPackagesService
                 'price_tl' => 500,
                 'badge_label' => 'Platinum',
                 'badge_enabled' => true,
-                'badge_icon' => 'bolt',
-                'rozet_label' => 'Platinum Rozet',
-                'rozet_text' => 'En prestijli Platinum rozeti ve üst görünürlük.',
-                'gradient_from' => '#831843',
-                'gradient_to' => '#f472b6',
+                'badge_icon' => 'sparkles',
+                'rozet_label' => 'Platinum Işıltı Özel Rozet',
+                'rozet_text' => 'Gümüş ışıltı rozeti — en prestijli ve en yüksek görünürlük.',
+                'gradient_from' => '#0f172a',
+                'gradient_to' => '#94a3b8',
                 'featured' => false,
+                'feature_keys' => [
+                    'perk_unlimited_messages',
+                    'perk_top_featured',
+                    'perk_story_boost',
+                    'perk_who_viewed',
+                    'perk_gallery',
+                    'perk_badge',
+                ],
             ],
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function featureKeysFor(string $type): array
+    {
+        $package = $this->package($type);
+
+        if (! $package) {
+            return [];
+        }
+
+        $keys = $package['feature_keys'] ?? [];
+
+        return is_array($keys) ? array_values(array_filter($keys, 'is_string')) : [];
     }
 
     /**
@@ -194,9 +230,13 @@ class PremiumPackagesService
         $catalog = [];
 
         foreach ($this->defaults() as $type => $defaults) {
-            $catalog[$type] = $this->normalizePackage(
+            $catalog[$type] = $this->upgradeBadgeKit(
                 $type,
-                is_array($stored[$type] ?? null) ? $stored[$type] : [],
+                $this->normalizePackage(
+                    $type,
+                    is_array($stored[$type] ?? null) ? $stored[$type] : [],
+                    $defaults,
+                ),
                 $defaults,
             );
         }
@@ -206,6 +246,38 @@ class PremiumPackagesService
         }
 
         return $catalog;
+    }
+
+    /**
+     * Eski genel rozet metinlerini / ikonlarını yeni paket kimliğine yükselt.
+     *
+     * @param  array<string, mixed>  $package
+     * @param  array<string, mixed>  $defaults
+     * @return array<string, mixed>
+     */
+    private function upgradeBadgeKit(string $type, array $package, array $defaults): array
+    {
+        $legacyRozet = [
+            'pro' => ['Pro Rozet', 'Pro', 'Pro Yıldız'],
+            'gold' => ['Gold Rozet', 'Gold', 'Gold Taç'],
+            'platinum' => ['Platinum Rozet', 'Platinum', 'Platinum Işıltı'],
+        ];
+
+        $rozet = (string) ($package['rozet_label'] ?? '');
+        $icon = (string) ($package['badge_icon'] ?? '');
+        $to = strtolower((string) ($package['gradient_to'] ?? ''));
+        $needsUpgrade = in_array($rozet, $legacyRozet[$type] ?? [], true)
+            || ($type === 'platinum' && ($icon === 'bolt' || $to === '#f472b6'));
+
+        if ($needsUpgrade) {
+            foreach (['badge_label', 'badge_icon', 'rozet_label', 'rozet_text', 'gradient_from', 'gradient_to'] as $key) {
+                $package[$key] = $defaults[$key];
+            }
+        }
+
+        $package['feature_keys'] = $defaults['feature_keys'] ?? [];
+
+        return $package;
     }
 
     /**
@@ -221,6 +293,11 @@ class PremiumPackagesService
             $icon = (string) $defaults['badge_icon'];
         }
 
+        $featureKeys = $input['feature_keys'] ?? ($defaults['feature_keys'] ?? []);
+        if (! is_array($featureKeys)) {
+            $featureKeys = $defaults['feature_keys'] ?? [];
+        }
+
         return [
             'name' => trim((string) ($input['name'] ?? $defaults['name'])) ?: (string) $defaults['name'],
             'duration_days' => max(1, (int) ($input['duration_days'] ?? $defaults['duration_days'])),
@@ -233,6 +310,7 @@ class PremiumPackagesService
             'gradient_from' => $this->normalizeColor((string) ($input['gradient_from'] ?? $defaults['gradient_from']), (string) $defaults['gradient_from']),
             'gradient_to' => $this->normalizeColor((string) ($input['gradient_to'] ?? $defaults['gradient_to']), (string) $defaults['gradient_to']),
             'featured' => filter_var($input['featured'] ?? $defaults['featured'], FILTER_VALIDATE_BOOL),
+            'feature_keys' => array_values(array_filter($featureKeys, 'is_string')),
             'type' => $type,
         ];
     }

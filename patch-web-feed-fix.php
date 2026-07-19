@@ -22,9 +22,10 @@ if (function_exists('opcache_reset')) {
 
 // Kritik dosyalar ayrı parça dosyalardan okunur (deploy ile birlikte gelir).
 $partsDir = $root.'/.gk-feed-fix-parts';
+// User.php buradan yazılmaz — canlı sync / FTP güncel modeli getirir.
+// Eski parts User.php applyContentRanking'i silip /feed 500 üretiyordu.
 $map = [
     'app/Services/PremiumPackagesService.php' => 'PremiumPackagesService.php',
-    'app/Models/User.php' => 'User.php',
     'resources/views/partials/profile-member-badges.blade.php' => 'profile-member-badges.blade.php',
     'app/Http/Controllers/Web/SetupController.php' => 'SetupController.php',
     'routes/web.php' => 'web.php',

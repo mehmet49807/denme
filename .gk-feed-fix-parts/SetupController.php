@@ -440,19 +440,40 @@ class SetupController extends Controller
             $google = (clone $users)->where('created_at', '>=', $since)->where('registration_source', 'google')->count();
             $seoCity = (clone $users)->where('created_at', '>=', $since)->where('utm_medium', 'city')->count();
             $instagram = (clone $users)->where('created_at', '>=', $since)->where('utm_source', 'instagram')->count();
+            $meta = (clone $users)->where('created_at', '>=', $since)->where('utm_source', 'meta')->count();
+            $googleAds = (clone $users)->where('created_at', '>=', $since)->whereIn('utm_source', ['google', 'googleads', 'adwords'])->count();
+            $adsPaid = (clone $users)->where('created_at', '>=', $since)->where('utm_medium', 'paid')->count();
+            $noPhoto = max(0, $signups - $withPhoto);
+            $trialEnding = 0;
+            try {
+                $trialEnding = \App\Models\User::query()
+                    ->where('role', 'user')
+                    ->where('gender', 'male')
+                    ->whereNotNull('trial_ends_at')
+                    ->whereBetween('trial_ends_at', [now()->subDays(3), now()->addDay()])
+                    ->count();
+            } catch (\Throwable) {
+            }
 
             $lines[] = 'kayıt_toplam='.$signups;
             $lines[] = 'kayıt_kadın='.$female;
             $lines[] = 'kayıt_erkek='.$male;
             $lines[] = 'kayıt_fotoğraflı='.$withPhoto.($signups > 0 ? ' ('.round($withPhoto / $signups * 100).'%)' : '');
+            $lines[] = 'kayıt_fotosuz='.$noPhoto;
             $lines[] = 'davetle_gelen='.$referred.($signups > 0 ? ' ('.round($referred / $signups * 100).'%)' : '');
             $lines[] = 'google_kayıt='.$google;
             $lines[] = 'şehir_seo_utm='.$seoCity;
             $lines[] = 'instagram_utm='.$instagram;
+            $lines[] = 'meta_utm='.$meta;
+            $lines[] = 'google_ads_utm='.$googleAds;
+            $lines[] = 'paid_utm='.$adsPaid;
+            $lines[] = 'trial_bitis_penceresi_erkek='.$trialEnding;
             $lines[] = '';
-            $lines[] = 'GTM event hedefi: sign_up, google_complete, invite_share, city_cta_click, instagram_cta';
+            $lines[] = 'GTM event: sign_up, google_complete, google_login_click, invite_share, city_cta_click, instagram_cta, trial_cta_click';
             $lines[] = 'Instagram bio: https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=bio&utm_campaign=organic';
-            $lines[] = 'Ads test: /register?utm_source=meta&utm_medium=paid&utm_campaign=test1';
+            $lines[] = 'Ads landing: https://gonulkoprusu.com/kampanya?utm_source=meta&utm_medium=paid&utm_campaign=test1';
+            $lines[] = 'Ads şehir: https://gonulkoprusu.com/kampanya?utm_source=meta&utm_medium=paid&utm_campaign=istanbul&city=istanbul';
+            $lines[] = 'Cron lifecycle: https://gonulkoprusu.com/setup/cron?key=gk-cron-2026';
         } catch (\Throwable $e) {
             $lines[] = 'HATA: '.$e->getMessage();
         }
