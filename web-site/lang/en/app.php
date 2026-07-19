@@ -77,6 +77,15 @@ return [
         'unblock_title' => 'Unblock :name',
         'unblock_confirm' => 'Are you sure you want to unblock :name?',
         'unblocked' => ':name has been unblocked. You can message them and see their profile again.',
+        'gallery_title' => 'Gallery',
+        'gallery_sub' => 'Extra photos — open them like posts',
+        'gallery_photos' => 'photos',
+        'gallery_add' => 'Add photo',
+        'gallery_zoom' => 'Zoom gallery photo',
+        'gallery_empty_own' => 'No extra photos yet. A gallery strengthens your profile.',
+        'gallery_empty_other' => 'This user has no gallery photos yet.',
+        'posts_sub_own' => 'Posts you shared',
+        'posts_sub_other' => 'Shared posts',
     ],
 
     'hobbies' => [

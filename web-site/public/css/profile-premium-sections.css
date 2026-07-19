@@ -610,39 +610,109 @@
     filter: brightness(1.03);
 }
 
-.profile-gallery-head {
+/* Ortak bölüm başlığı — Galeri & Gönderiler */
+.profile-section-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.65rem;
-    margin-bottom: 0.55rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.7rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: 16px;
+    border: 1px solid rgba(190, 24, 93, 0.12);
+    background:
+        radial-gradient(ellipse 70% 90% at 100% 0%, rgba(251, 113, 133, 0.16), transparent 55%),
+        radial-gradient(ellipse 50% 70% at 0% 100%, rgba(251, 191, 36, 0.12), transparent 50%),
+        linear-gradient(155deg, #fff 0%, #fff7f9 100%);
+    box-shadow: 0 8px 20px rgba(28, 20, 24, 0.04);
 }
 
-.profile-gallery-title {
-    display: inline-flex;
+.profile-section-head--posts {
+    border-color: rgba(234, 88, 12, 0.14);
+    background:
+        radial-gradient(ellipse 70% 90% at 0% 0%, rgba(251, 146, 60, 0.16), transparent 55%),
+        radial-gradient(ellipse 50% 70% at 100% 100%, rgba(244, 63, 94, 0.1), transparent 50%),
+        linear-gradient(155deg, #fff 0%, #fff7ed 100%);
+}
+
+.profile-section-head__main {
+    display: flex;
     align-items: center;
-    gap: 0.45rem;
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.2;
+    gap: 0.7rem;
+    min-width: 0;
 }
 
-.profile-gallery-title-icon {
+.profile-section-head__icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.7rem;
-    height: 1.7rem;
-    border-radius: 9px;
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 12px;
     flex-shrink: 0;
-    color: #c2410c;
-    background: rgba(234, 88, 12, 0.12);
+    color: #be185d;
+    background: linear-gradient(145deg, rgba(244, 63, 94, 0.14), rgba(251, 191, 36, 0.16));
+    box-shadow: inset 0 0 0 1px rgba(190, 24, 93, 0.1);
 }
 
-.profile-gallery-title-icon .theme-icon svg {
-    width: 0.95rem;
-    height: 0.95rem;
+.profile-section-head--posts .profile-section-head__icon {
+    color: #c2410c;
+    background: linear-gradient(145deg, rgba(249, 115, 22, 0.16), rgba(244, 63, 94, 0.12));
+}
+
+.profile-section-head__icon .theme-icon,
+.profile-section-head__icon .theme-icon svg,
+.profile-section-head__icon svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    display: block;
+}
+
+.profile-section-head__copy {
+    min-width: 0;
+}
+
+.profile-section-head__title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: #1c1418;
+}
+
+.profile-section-head__sub {
+    margin: 0.18rem 0 0;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #6a5b63;
+    line-height: 1.35;
+}
+
+.profile-section-head__aside {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.profile-section-head__meta {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.28rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #9f1239;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(190, 24, 93, 0.14);
+    white-space: nowrap;
+}
+
+.profile-section-head--posts .profile-section-head__meta {
+    color: #c2410c;
+    border-color: rgba(234, 88, 12, 0.18);
 }
 
 .profile-gallery-grid {
@@ -660,16 +730,61 @@
     background: rgba(0, 0, 0, 0.04);
 }
 
-.profile-gallery-item img {
+.profile-gallery-open {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+    position: relative;
+}
+
+.profile-gallery-open img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
+    transition: transform 0.2s ease;
 }
 
-.profile-gallery-item button {
+.profile-gallery-open:hover img,
+.profile-gallery-open:focus-visible img {
+    transform: scale(1.04);
+}
+
+.profile-gallery-zoom {
+    position: absolute;
+    right: 0.35rem;
+    bottom: 0.35rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 999px;
+    color: #fff;
+    background: rgba(28, 20, 24, 0.45);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+}
+
+.profile-gallery-open:hover .profile-gallery-zoom,
+.profile-gallery-open:focus-visible .profile-gallery-zoom {
+    opacity: 1;
+}
+
+.profile-gallery-delete {
     position: absolute;
     top: 0.25rem;
     right: 0.25rem;
+    margin: 0;
+    z-index: 2;
+}
+
+.profile-gallery-delete button {
     width: 1.5rem;
     height: 1.5rem;
     border: 0;
@@ -677,6 +792,10 @@
     background: rgba(0, 0, 0, 0.55);
     color: #fff;
     cursor: pointer;
+}
+
+.post-detail-dialog--gallery .post-detail-footer {
+    display: none;
 }
 
 .profile-gallery-empty {

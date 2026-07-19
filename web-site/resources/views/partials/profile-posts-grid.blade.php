@@ -7,10 +7,16 @@
 @endphp
 
 <section class="profile-posts-section">
-    <div class="profile-posts-header">
-        <h2>{{ $postsTitle }}</h2>
-        <span class="profile-posts-count">{{ $posts->count() }} {{ __('app.users.posts_label') }}</span>
-    </div>
+    <header class="profile-section-head profile-section-head--posts">
+        <div class="profile-section-head__main">
+            <span class="profile-section-head__icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'post'])</span>
+            <div class="profile-section-head__copy">
+                <h2 class="profile-section-head__title">{{ $postsTitle }}</h2>
+                <p class="profile-section-head__sub">{{ $isOwnProfile ? __('app.profile.posts_sub_own') : __('app.profile.posts_sub_other') }}</p>
+            </div>
+        </div>
+        <span class="profile-section-head__meta">{{ $posts->count() }} {{ __('app.users.posts_label') }}</span>
+    </header>
     @if($posts->isNotEmpty())
     <div class="user-profile-grid" id="profilePostsGrid">
         @foreach($posts as $post)
@@ -50,7 +56,7 @@
         <div class="post-detail-image-wrap">
             <img id="postDetailImage" src="" alt="{{ __('app.feed.post_image') }}" decoding="async">
         </div>
-        <div class="post-detail-footer">
+        <div class="post-detail-footer" id="postDetailFooter">
             <div class="post-detail-actions">
                 <button type="button" class="like-btn" id="postDetailLikeBtn" data-like-url="" aria-label="{{ __('app.feed.like') }}">
                     <span class="like-icon" aria-hidden="true">♥</span>

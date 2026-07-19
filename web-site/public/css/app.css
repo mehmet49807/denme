@@ -3437,37 +3437,14 @@ a.member-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(
 .profile-action-icon { display: flex; width: 16px; height: 16px; }
 .profile-action-icon svg { width: 100%; height: 100%; }
 .profile-posts-section { margin-top: 0.75rem; }
+.profile-posts-section .profile-section-head { margin-bottom: 0.85rem; }
 .profile-posts-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
     margin-bottom: 0.85rem;
-    padding: 0.55rem 0.15rem 0.65rem;
-    border-bottom: 1px solid var(--border);
 }
-.profile-posts-heading {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-width: 0;
-}
-.profile-posts-heading h2 {
-    margin: 0;
-    font-size: 1rem;
-}
-.profile-posts-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 10px;
-    background: rgba(124, 58, 237, 0.1);
-    color: var(--violet);
-    flex-shrink: 0;
-}
-.profile-posts-icon svg { width: 1.05rem; height: 1.05rem; }
 .profile-posts-count {
     font-size: 0.78rem;
     color: var(--text-light);
@@ -7469,39 +7446,6 @@ body.ig-compose-open { overflow: hidden; }
     font-size: 0.85rem;
 }
 .profile-gallery { margin: 0 0 1.1rem; }
-.profile-gallery-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.55rem;
-}
-.profile-gallery-head h2 { margin: 0; font-size: 1rem; }
-.profile-gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.45rem;
-}
-.profile-gallery-item {
-    position: relative;
-    margin: 0;
-    aspect-ratio: 1;
-    border-radius: 12px;
-    overflow: hidden;
-    background: rgba(0,0,0,0.04);
-}
-.profile-gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-.profile-gallery-item button {
-    position: absolute;
-    top: 0.25rem;
-    right: 0.25rem;
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 0;
-    border-radius: 50%;
-    background: rgba(0,0,0,0.55);
-    color: #fff;
-    cursor: pointer;
-}
 .profile-gallery-empty {
     grid-column: 1 / -1;
     margin: 0;
@@ -7511,6 +7455,9 @@ body.ig-compose-open { overflow: hidden; }
     font-size: 0.85rem;
     border: 1px dashed var(--border);
     border-radius: 12px;
+}
+.post-detail-dialog--gallery .post-detail-footer[hidden] {
+    display: none !important;
 }
 
 .chat-safety-menu { position: relative; }

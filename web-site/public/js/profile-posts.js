@@ -97,22 +97,47 @@
     }
 
     const editBtn = document.getElementById('postDetailEditCaption');
+    const footerEl = document.getElementById('postDetailFooter');
+    const usernameEl = document.getElementById('postDetailUsername');
     let activeGridBtn = null;
+    let dialogMode = 'post';
 
-    function openPostDetail(btn) {
+    function setDialogMode(mode) {
+        dialogMode = mode;
+        dialog.classList.toggle('post-detail-dialog--gallery', mode === 'gallery');
+        if (footerEl) footerEl.hidden = mode === 'gallery';
+        if (likeBtn) likeBtn.hidden = mode === 'gallery';
+        if (editBtn) editBtn.hidden = mode === 'gallery' ? true : editBtn.hidden;
+        if (deleteForm) deleteForm.hidden = mode === 'gallery';
+    }
+
+    function openMediaDetail(btn, mode) {
         activeGridBtn = btn;
+        setDialogMode(mode);
+
         const imageUrl = btn.dataset.imageUrl;
         const caption = btn.dataset.caption || '';
         const likesCount = btn.dataset.likesCount || '0';
         const isLiked = btn.dataset.isLiked === '1';
         const likeUrl = btn.dataset.likeUrl || '';
 
+        if (usernameEl && btn.dataset.username) {
+            usernameEl.textContent = btn.dataset.username;
+        }
+
         if (imageEl) {
             imageEl.src = imageUrl;
+            imageEl.alt = mode === 'gallery' ? 'Galeri fotoğrafı' : (imageEl.alt || 'Gönderi');
             imageEl.style.animation = 'none';
             void imageEl.offsetWidth;
             imageEl.style.animation = '';
         }
+
+        if (mode === 'gallery') {
+            dialog.showModal();
+            return;
+        }
+
         if (likeBtn) likeBtn.dataset.likeUrl = likeUrl;
         setLikeState(isLiked, likesCount);
 
@@ -128,6 +153,7 @@
 
         if (deleteForm && btn.dataset.destroyUrl) {
             deleteForm.action = btn.dataset.destroyUrl;
+            deleteForm.hidden = false;
         }
 
         if (editBtn) {
@@ -143,6 +169,14 @@
         }
 
         dialog.showModal();
+    }
+
+    function openPostDetail(btn) {
+        openMediaDetail(btn, 'post');
+    }
+
+    function openGalleryDetail(btn) {
+        openMediaDetail(btn, 'gallery');
     }
 
     if (editBtn) {
@@ -213,6 +247,12 @@
         });
     });
 
+    document.querySelectorAll('[data-open-gallery-detail]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            openGalleryDetail(btn);
+        });
+    });
+
     document.querySelectorAll('[data-close-post-detail]').forEach(function (el) {
         el.addEventListener('click', function () {
             dialog.close();
@@ -225,6 +265,7 @@
 
     if (likeBtn && csrf) {
         likeBtn.addEventListener('click', async function () {
+            if (dialogMode === 'gallery') return;
             const url = likeBtn.dataset.likeUrl;
             if (!url || likeBtn.disabled) return;
 

@@ -254,4 +254,5 @@
 })();
 </script>
 @include('partials.asset', ['path' => 'js/feed-page.min.js'])
+@include('partials.asset', ['path' => 'js/profile-posts.min.js'])
 @endsection

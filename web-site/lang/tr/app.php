@@ -77,6 +77,15 @@ return [
         'unblock_title' => ':name engelini kaldır',
         'unblock_confirm' => ':name kullanıcısının engelini kaldırmak istediğinize emin misiniz?',
         'unblocked' => ':name engeli kaldırıldı. Tekrar mesaj gönderebilir ve profilini görebilirsiniz.',
+        'gallery_title' => 'Galeri',
+        'gallery_sub' => 'Ek fotoğraflar — gönderiler gibi büyütülebilir',
+        'gallery_photos' => 'fotoğraf',
+        'gallery_add' => 'Fotoğraf ekle',
+        'gallery_zoom' => 'Galeri fotoğrafını büyüt',
+        'gallery_empty_own' => 'Henüz ek fotoğraf yok. Galeri profilini güçlendirir.',
+        'gallery_empty_other' => 'Bu kullanıcının henüz galeri fotoğrafı yok.',
+        'posts_sub_own' => 'Paylaştığın gönderiler',
+        'posts_sub_other' => 'Paylaşılan gönderiler',
     ],
 
     'hobbies' => [
