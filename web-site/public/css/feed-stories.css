@@ -187,12 +187,9 @@
     color: var(--rec-ink);
 }
 
-.rec-strip__sub {
-    margin: 0;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--rec-muted);
-}
+.rec-strip__sub { display: none; }
+
+.rec-strip--members { display: none; }
 
 .rec-strip__track {
     display: flex;

@@ -121,7 +121,7 @@ return [
         'prev' => 'Previous',
         'next' => 'Next',
         'recommended_title' => 'Recommended members',
-        'recommended_sub' => 'Order: boosted → Platinum → Gold → Pro. Swipe the cards sideways.',
+        'recommended_sub' => '',
     ],
 
     'messages' => [
@@ -171,8 +171,9 @@ return [
         'title' => 'Members',
         'explore' => 'Discover',
         'discover_badge' => 'Discover',
-        'hero_lead' => 'Explore members in our community, view their profiles, and connect.',
-        'lead' => 'Explore members in our community, view their profiles, and connect.',
+        'hero_lead' => 'Explore members. Platinum, Gold, and Pro frames show their package.',
+        'lead' => 'Explore members. Platinum, Gold, and Pro frames show their package.',
+        'pkg_legend' => 'Package frames',
         'stat_members' => 'members',
         'stat_pages' => 'pages',
         'page' => 'pages',

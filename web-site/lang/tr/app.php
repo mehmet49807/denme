@@ -121,7 +121,7 @@ return [
         'prev' => 'Önceki',
         'next' => 'Sonraki',
         'recommended_title' => 'Önerilen üyeler',
-        'recommended_sub' => 'Sıra: öne çıkan → Platinum → Gold → Pro. Kartları yana kaydır.',
+        'recommended_sub' => '',
     ],
 
     'messages' => [
@@ -171,8 +171,9 @@ return [
         'title' => 'Üyeler',
         'explore' => 'Keşfet',
         'discover_badge' => 'Keşfet',
-        'hero_lead' => 'Topluluğumuzdaki üyeleri keşfedin, profillerini inceleyin ve bağlantı kurun.',
-        'lead' => 'Topluluğumuzdaki üyeleri keşfedin, profillerini inceleyin ve bağlantı kurun.',
+        'hero_lead' => 'Üyeleri keşfedin. Platinum, Gold ve Pro çerçeveleri paketi gösterir.',
+        'lead' => 'Üyeleri keşfedin. Platinum, Gold ve Pro çerçeveleri paketi gösterir.',
+        'pkg_legend' => 'Paket çerçeveleri',
         'stat_members' => 'üye',
         'stat_pages' => 'sayfa',
         'page' => 'sayfa',

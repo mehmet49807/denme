@@ -91,6 +91,7 @@ class LocationUsersPageController extends Controller
             ->where(function ($q) use ($viewer) {
                 $this->genderFilter->applyDiscoveryFilters($q, $viewer);
             })
+            ->with(['premiumSubscriptions' => fn ($q) => $q->active()->latest('expires_at')])
             ->withCount(['posts' => fn ($q) => $q->where('is_active', true)]);
 
         $users = User::applyDiscoveryRanking($usersQuery)

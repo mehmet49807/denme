@@ -9,7 +9,6 @@
     <header class="rec-strip__head">
         <div class="rec-strip__titles">
             <h2 class="rec-strip__title">{{ __('app.feed.recommended_title') }}</h2>
-            <p class="rec-strip__sub">{{ __('app.feed.recommended_sub') }}</p>
         </div>
     </header>
 

@@ -110,6 +110,8 @@ files = {
     / "app/Http/Controllers/Web/StoryPageController.php",
     "resources/views/partials/feed-recommended-users.blade.php": WEB
     / "resources/views/partials/feed-recommended-users.blade.php",
+    "resources/views/partials/users-browse-grid-items.blade.php": WEB
+    / "resources/views/partials/users-browse-grid-items.blade.php",
     "resources/views/web/users.blade.php": WEB / "resources/views/web/users.blade.php",
     "resources/views/web/feed.blade.php": WEB / "resources/views/web/feed.blade.php",
     "resources/views/web/profile.blade.php": WEB / "resources/views/web/profile.blade.php",

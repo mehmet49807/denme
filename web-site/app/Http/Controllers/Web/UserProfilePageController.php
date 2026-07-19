@@ -32,14 +32,12 @@ class UserProfilePageController extends Controller
             ->where(function ($q) use ($viewer) {
                 $this->genderFilter->applyDiscoveryFilters($q, $viewer);
             })
+            ->with(['premiumSubscriptions' => fn ($q) => $q->active()->latest('expires_at')])
             ->withCount(['posts' => fn ($q) => $q->where('is_active', true)]);
 
         $users = User::applyDiscoveryRanking($users)->paginate(24);
 
-        $visibleUserIds = $this->genderFilter->visibleUserIds($viewer);
-        $recommendedUsers = User::recommendedMembers($visibleUserIds, $viewer->id, 12);
-
-        return view('web.users', compact('users', 'viewer', 'recommendedUsers'));
+        return view('web.users', compact('users', 'viewer'));
     }
 
     public function show(Request $request, string $username): View|RedirectResponse

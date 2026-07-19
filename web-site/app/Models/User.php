@@ -98,6 +98,11 @@ class User extends Authenticatable
             return false;
         }
 
+        if ($this->relationLoaded('premiumSubscriptions')) {
+            return $this->premiumSubscriptions
+                ->contains(fn ($sub) => (bool) $sub->is_active && $sub->expires_at && $sub->expires_at->isFuture());
+        }
+
         return $this->premiumSubscriptions()
             ->where('is_active', true)
             ->where('expires_at', '>', now())
@@ -117,10 +122,17 @@ class User extends Authenticatable
                 return null;
             }
 
-            $subscription = $this->premiumSubscriptions()
-                ->active()
-                ->latest('expires_at')
-                ->first();
+            if ($this->relationLoaded('premiumSubscriptions')) {
+                $subscription = $this->premiumSubscriptions
+                    ->filter(fn ($sub) => (bool) $sub->is_active && $sub->expires_at && $sub->expires_at->isFuture())
+                    ->sortByDesc(fn ($sub) => $sub->expires_at?->getTimestamp() ?? 0)
+                    ->first();
+            } else {
+                $subscription = $this->premiumSubscriptions()
+                    ->active()
+                    ->latest('expires_at')
+                    ->first();
+            }
 
             $type = $subscription?->package_type;
 
