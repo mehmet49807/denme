@@ -111,38 +111,61 @@
 
         <div class="auth-form-section auth-form-section--optional">
             <p class="auth-form-section-label">Ek bilgiler <small>(isteğe bağlı)</small></p>
-            <div class="form-group auth-field auth-field--private-group">
-                <label for="first_name">{{ __('app.auth.register.full_name_private') }} <small>(isteğe bağlı)</small></label>
-                <div class="form-row auth-form-row">
-                    <input type="text" id="first_name" name="first_name" value="{{ old('first_name') }}" placeholder="{{ __('app.auth.register.first_name_placeholder') }}" autocomplete="given-name">
-                    <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" placeholder="{{ __('app.auth.register.last_name_placeholder') }}" autocomplete="family-name" aria-label="{{ __('app.auth.register.last_name_placeholder') }}">
-                </div>
-                @error('first_name') <small class="form-error">{{ $message }}</small> @enderror
-                @error('last_name') <small class="form-error">{{ $message }}</small> @enderror
-            </div>
-            <div class="form-group auth-field">
-                @include('partials.phone-field', [
-                    'dialCodes' => $dialCodes,
-                    'countryMeta' => $countryMeta,
-                    'optional' => true,
-                ])
-            </div>
-            <div class="form-group auth-field">
-                <label for="register_bio">Bio <small>(isteğe bağlı)</small></label>
-                <textarea
-                    id="register_bio"
-                    name="bio"
-                    rows="3"
-                    maxlength="500"
-                    placeholder="Kendini kısaca anlat…"
-                >{{ old('bio') }}</textarea>
-                @error('bio') <small class="form-error">{{ $message }}</small> @enderror
-            </div>
 
-            <div class="form-group auth-field">
-                <label>Doğum Tarihi <small>(isteğe bağlı · Gün / Ay / Yıl)</small></label>
-                @include('partials.birth-date-fields')
-            </div>
+            <details class="auth-optional-details" @if(old('first_name') || old('last_name') || $errors->hasAny(['first_name', 'last_name'])) open @endif>
+                <summary>Ad soyad (isteğe bağlı · gizli)</summary>
+                <div class="auth-optional-details-body">
+                    <div class="form-group auth-field auth-field--private-group">
+                        <label for="first_name">{{ __('app.auth.register.full_name_private') }}</label>
+                        <div class="form-row auth-form-row">
+                            <input type="text" id="first_name" name="first_name" value="{{ old('first_name') }}" placeholder="{{ __('app.auth.register.first_name_placeholder') }}" autocomplete="given-name">
+                            <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" placeholder="{{ __('app.auth.register.last_name_placeholder') }}" autocomplete="family-name" aria-label="{{ __('app.auth.register.last_name_placeholder') }}">
+                        </div>
+                        @error('first_name') <small class="form-error">{{ $message }}</small> @enderror
+                        @error('last_name') <small class="form-error">{{ $message }}</small> @enderror
+                    </div>
+                </div>
+            </details>
+
+            <details class="auth-optional-details" @if(old('phone_local') || old('phone_country_code') || $errors->hasAny(['phone_local', 'phone_country_code', 'phone'])) open @endif>
+                <summary>Telefon (isteğe bağlı · gizli)</summary>
+                <div class="auth-optional-details-body">
+                    <div class="form-group auth-field">
+                        @include('partials.phone-field', [
+                            'dialCodes' => $dialCodes,
+                            'countryMeta' => $countryMeta,
+                            'optional' => true,
+                        ])
+                    </div>
+                </div>
+            </details>
+
+            <details class="auth-optional-details" @if(old('bio') || $errors->has('bio')) open @endif>
+                <summary>Bio (isteğe bağlı)</summary>
+                <div class="auth-optional-details-body">
+                    <div class="form-group auth-field">
+                        <label for="register_bio">Kendini kısaca anlat</label>
+                        <textarea
+                            id="register_bio"
+                            name="bio"
+                            rows="3"
+                            maxlength="500"
+                            placeholder="Kendini kısaca anlat…"
+                        >{{ old('bio') }}</textarea>
+                        @error('bio') <small class="form-error">{{ $message }}</small> @enderror
+                    </div>
+                </div>
+            </details>
+
+            <details class="auth-optional-details" @if(old('birth_day') || old('birth_month') || old('birth_year') || $errors->hasAny(['birth_day', 'birth_month', 'birth_year', 'birth_date'])) open @endif>
+                <summary>Doğum tarihi (isteğe bağlı)</summary>
+                <div class="auth-optional-details-body">
+                    <div class="form-group auth-field">
+                        <label>Gün / Ay / Yıl</label>
+                        @include('partials.birth-date-fields')
+                    </div>
+                </div>
+            </details>
 
             <details class="auth-optional-details" @if(old('relationship_status') || $errors->has('relationship_status')) open @endif>
                 <summary>İlişki durumu (isteğe bağlı)</summary>
