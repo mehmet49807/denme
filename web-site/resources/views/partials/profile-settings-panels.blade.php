@@ -41,7 +41,7 @@
 <div class="profile-settings-sheet-stage" data-settings-panel="menu" @if($initialPanel !== 'menu') hidden @endif>
     <nav class="profile-settings-menu" aria-label="Ayarlar menüsü">
         <button type="button" class="profile-settings-menu-item" data-open-settings-panel="edit">
-            <span class="profile-settings-menu-icon" aria-hidden="true">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--edit" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </span>
             <span class="profile-settings-menu-text">
@@ -52,7 +52,7 @@
         </button>
 
         <button type="button" class="profile-settings-menu-item" data-open-settings-panel="bio">
-            <span class="profile-settings-menu-icon" aria-hidden="true">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--bio" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg>
             </span>
             <span class="profile-settings-menu-text">
@@ -63,7 +63,7 @@
         </button>
 
         <button type="button" class="profile-settings-menu-item" data-open-settings-panel="relationship">
-            <span class="profile-settings-menu-icon" aria-hidden="true">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--heart" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
             </span>
             <span class="profile-settings-menu-text">
@@ -74,7 +74,7 @@
         </button>
 
         <button type="button" class="profile-settings-menu-item" data-open-settings-panel="hobbies">
-            <span class="profile-settings-menu-icon" aria-hidden="true">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--hobbies" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"/></svg>
             </span>
             <span class="profile-settings-menu-text">
@@ -85,7 +85,7 @@
         </button>
 
         <button type="button" class="profile-settings-menu-item" data-open-settings-panel="language">
-            <span class="profile-settings-menu-icon" aria-hidden="true">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--lang" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             </span>
             <span class="profile-settings-menu-text">
@@ -96,7 +96,7 @@
         </button>
 
         <button type="button" class="profile-settings-menu-item" data-open-settings-panel="appearance">
-            <span class="profile-settings-menu-icon" aria-hidden="true">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--theme" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
             </span>
             <span class="profile-settings-menu-text">
@@ -107,7 +107,7 @@
         </button>
 
         <button type="button" class="profile-settings-menu-item" data-open-settings-panel="privacy">
-            <span class="profile-settings-menu-icon" aria-hidden="true">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--privacy" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </span>
             <span class="profile-settings-menu-text">
@@ -118,7 +118,7 @@
         </button>
 
         <button type="button" class="profile-settings-menu-item" data-open-settings-panel="password">
-            <span class="profile-settings-menu-icon" aria-hidden="true">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--lock" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </span>
             <span class="profile-settings-menu-text">
@@ -129,7 +129,7 @@
         </button>
 
         <a href="{{ route('referral') }}" class="profile-settings-menu-item profile-settings-menu-item--link">
-            <span class="profile-settings-menu-icon" aria-hidden="true">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--invite" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7"/><path d="M12 3v13"/><path d="m7 8 5-5 5 5"/></svg>
             </span>
             <span class="profile-settings-menu-text">
@@ -140,7 +140,7 @@
         </a>
 
         <a href="{{ route('complaints') }}" class="profile-settings-menu-item profile-settings-menu-item--link">
-            <span class="profile-settings-menu-icon" aria-hidden="true">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--security" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             </span>
             <span class="profile-settings-menu-text">
@@ -151,7 +151,7 @@
         </a>
 
         <a href="{{ route('support') }}" class="profile-settings-menu-item profile-settings-menu-item--link">
-            <span class="profile-settings-menu-icon" aria-hidden="true">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--support" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
             </span>
             <span class="profile-settings-menu-text">
@@ -164,7 +164,7 @@
         <form method="POST" action="{{ route('logout') }}" class="profile-settings-logout-form">
             @csrf
             <button type="submit" class="profile-settings-menu-item profile-settings-menu-item--danger">
-                <span class="profile-settings-menu-icon" aria-hidden="true">
+                <span class="profile-settings-menu-icon profile-settings-menu-icon--logout" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 </span>
                 <span class="profile-settings-menu-text">
