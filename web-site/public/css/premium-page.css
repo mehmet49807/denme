@@ -677,6 +677,13 @@ a.pm-app__store:hover {
     }
 }
 
+.pm-section__sub--buy-note {
+    margin: 0 0 14px;
+    font-size: 0.9rem;
+    color: var(--text-muted, #6b5e56);
+    line-height: 1.45;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .pm-intro__cta {
         transition: none;

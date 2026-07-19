@@ -251,7 +251,13 @@
         ])
     @endif
     @empty
-    <p class="feed-empty">{{ __('app.feed.empty') }}</p>
+    @include('partials.empty-state', [
+        'class' => 'feed-empty-state',
+        'icon' => 'post',
+        'title' => __('app.feed.empty'),
+        'ctaUrl' => route('profile'),
+        'ctaLabel' => 'İlk gönderini paylaş',
+    ])
     @if(strtolower((string) ($viewer->gender ?? '')) === 'male')
         @include('partials.feed-recommended-users', [
             'recommendedUsers' => $recommendedUsers ?? collect(),

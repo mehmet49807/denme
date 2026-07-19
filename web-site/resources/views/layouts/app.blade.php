@@ -44,7 +44,14 @@
     @if($appShell)
     @include('partials.asset', ['path' => 'css/app-shell.min.css'])
     @endif
-    @php $realtimeEnabled = app(\App\Services\RealtimeBroadcastService::class)->isEnabled(); @endphp
+    @php
+        $realtimeEnabled = false;
+        try {
+            $realtimeEnabled = app(\App\Services\RealtimeBroadcastService::class)->isEnabled();
+        } catch (\Throwable) {
+            $realtimeEnabled = false;
+        }
+    @endphp
     <meta name="badges-url" content="{{ route('notifications.badge-counts') }}">
     <meta name="live-sync-url" content="{{ route('live.sync') }}">
     @if($realtimeEnabled)
@@ -127,7 +134,14 @@
         @include('partials.footer')
     @endunless
     @auth
-    @php $realtimeEnabled = app(\App\Services\RealtimeBroadcastService::class)->isEnabled(); @endphp
+    @php
+        $realtimeEnabled = false;
+        try {
+            $realtimeEnabled = app(\App\Services\RealtimeBroadcastService::class)->isEnabled();
+        } catch (\Throwable) {
+            $realtimeEnabled = false;
+        }
+    @endphp
     @include('partials.asset', ['path' => 'js/core.min.js'])
     @if($realtimeEnabled)
     <script src="https://js.pusher.com/8.4.0/pusher.min.js" crossorigin="anonymous"></script>
@@ -138,6 +152,7 @@
         @include('partials.profile-settings-sheet', ['user' => auth()->user()])
         @include('partials.asset', ['path' => 'js/app-shell.min.js'])
     @endif
+    @include('partials.toast-host')
     @stack('page-scripts')
     @endauth
     @stack('ld-json')

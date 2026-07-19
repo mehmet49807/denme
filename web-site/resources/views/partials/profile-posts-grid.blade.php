@@ -45,7 +45,11 @@
         @endforeach
     </div>
     @else
-    <p class="feed-empty">{{ $emptyMessage }}</p>
+    @include('partials.empty-state', [
+        'class' => 'profile-posts-empty',
+        'icon' => 'post',
+        'title' => $emptyMessage,
+    ])
     @endif
 </section>
 

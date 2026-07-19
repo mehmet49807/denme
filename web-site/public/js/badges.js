@@ -91,7 +91,12 @@
             if (!payload?.success) return;
 
             if (typeof payload.data?.html === 'string') {
+                root.classList.add('is-refreshing');
+                const prevScroll = root.scrollTop;
                 root.innerHTML = payload.data.html;
+                root.scrollTop = prevScroll;
+                root.classList.remove('is-refreshing');
+                document.dispatchEvent(new CustomEvent('gk:inbox-refreshed'));
             }
 
             if (payload.data) {
@@ -100,6 +105,7 @@
         } catch (err) {
             // Sessizce devam et.
         } finally {
+            root.classList.remove('is-refreshing');
             inboxBusy = false;
         }
     }
@@ -127,8 +133,9 @@
         if (!page || page.querySelector('.notifications-empty')) return;
 
         const empty = document.createElement('div');
-        empty.className = 'notifications-empty';
-        empty.innerHTML = '<p>Henüz bildiriminiz yok.</p>';
+        empty.className = 'gk-empty notifications-empty';
+        empty.setAttribute('role', 'status');
+        empty.innerHTML = '<div class="gk-empty__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div><h2 class="gk-empty__title">Henüz bildiriminiz yok.</h2><p class="gk-empty__text">Yeni etkileşimler burada görünecek.</p>';
         page.appendChild(empty);
     }
 
