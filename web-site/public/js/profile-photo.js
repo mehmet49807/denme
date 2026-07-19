@@ -237,15 +237,20 @@
     document.querySelectorAll('[data-profile-open-story]').forEach(function (btn) {
         btn.addEventListener('click', function (e) {
             if (e.target.closest('.profile-photo-change')) return;
+            e.preventDefault();
+            e.stopPropagation();
             const index = parseInt(btn.dataset.profileOpenStory, 10);
-            const storyItem = document.querySelector('.story-item[data-story-index="' + index + '"]');
-            if (storyItem) {
-                storyItem.click();
+            // Never storyItem.click() here — the opener is often the same .story-item
+            // and that creates an infinite recursive click loop.
+            if (typeof window.gkOpenStory === 'function') {
+                window.gkOpenStory(index);
                 return;
             }
-            const viewer = document.getElementById('igStoryViewer');
-            if (viewer && typeof window.gkOpenStory === 'function') {
-                window.gkOpenStory(index);
+            const storyItem = document.querySelector(
+                '.story-item[data-story-index="' + index + '"]:not([data-profile-open-story])'
+            );
+            if (storyItem && storyItem !== btn) {
+                storyItem.click();
             }
         });
     });

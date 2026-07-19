@@ -19,7 +19,6 @@
                 type="button"
                 class="profile-photo profile-photo--story story-item"
                 data-story-index="0"
-                data-profile-open-story="0"
                 data-user-id="{{ $user->id }}"
                 aria-label="{{ $user->username }} hikayesi"
             >

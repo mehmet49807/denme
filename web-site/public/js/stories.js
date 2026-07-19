@@ -181,6 +181,11 @@
         if (!groups.length) return;
         groupIndex = index;
         itemIndex = typeof startItem === 'number' && startItem >= 0 ? startItem : 0;
+        // Escape transformed ancestors so fixed fullscreen covers header/bottom nav
+        // (same Instagram-style experience on profile and feed).
+        if (viewer.parentElement !== document.body) {
+            document.body.appendChild(viewer);
+        }
         viewer.hidden = false;
         document.body.classList.add('ig-story-open');
         renderStory();

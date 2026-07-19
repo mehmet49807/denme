@@ -2810,12 +2810,16 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
     justify-content: center;
     width: 77px;
     height: 77px;
+    min-width: 77px;
+    max-width: 77px;
     padding: 0;
     border: none;
     background: none;
     box-shadow: none;
     cursor: pointer;
     font-family: inherit;
+    flex-direction: row;
+    gap: 0;
 }
 .profile-photo--story .story-ring--profile {
     width: 77px;
@@ -5384,9 +5388,41 @@ body.app-shell-body .site-main:has(.dm-shell) {
 .ig-compose-submit--loading { opacity: 0.7; cursor: wait; }
 body.ig-compose-open { overflow: hidden; }
 
-.ig-story-viewer { position: fixed; inset: 0; z-index: 300; background: #0E0B14; display: flex; align-items: center; justify-content: center; }
-.ig-story-viewer[hidden] { display: none; }
-.ig-story-frame { position: relative; width: 100%; max-width: 400px; height: 100%; max-height: 88vh; background: #1A1523; border-radius: var(--radius-lg); overflow: hidden; }
+.ig-story-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+    background: #0E0B14;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ig-story-viewer[hidden] { display: none !important; }
+.ig-story-frame {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    height: 100%;
+    max-height: 100dvh;
+    background: #0E0B14;
+    border-radius: 0;
+    overflow: hidden;
+}
+body.ig-story-open {
+    overflow: hidden !important;
+}
+body.ig-story-open .site-header,
+body.ig-story-open .app-sidebar {
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+@media (min-width: 721px) {
+    .ig-story-frame {
+        max-height: 88vh;
+        border-radius: var(--radius-lg);
+        background: #1A1523;
+    }
+}
 .ig-story-progress { position: absolute; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 3px; padding: 8px; }
 .ig-story-header { position: absolute; top: 0; left: 0; right: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 0.75rem 0.5rem; background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 100%); }
 .ig-story-user { display: flex; align-items: center; gap: 0.5rem; color: #fff; text-decoration: none; }

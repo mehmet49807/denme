@@ -19,10 +19,9 @@
             @if($ownStoryGroup)
             <button
                 type="button"
-                class="profile-photo profile-photo--story story-item"
+                class="profile-photo profile-photo--story story-item story-item--own"
                 id="profilePhotoPreview"
                 data-story-index="0"
-                data-profile-open-story="0"
                 data-user-id="{{ $user->id }}"
                 aria-label="Hikayeni görüntüle"
             >
