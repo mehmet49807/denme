@@ -5715,7 +5715,8 @@ body.ig-story-open .app-sidebar {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.65rem;
+    gap: 0 !important;
+    column-gap: 0 !important;
     width: 100%;
     min-height: 3rem;
     background: #fff;
@@ -5730,13 +5731,13 @@ body.ig-story-open .app-sidebar {
     box-shadow: 0 8px 24px rgba(15, 8, 30, 0.24);
 }
 .page-landing .landing-hero-google .btn-google-login__icon {
-    width: 1.7rem;
-    height: 1.7rem;
+    width: 1.25rem;
+    height: 1.25rem;
     border-radius: 9px;
 }
 .page-landing .landing-hero-google .btn-google-login__icon svg {
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 1.1rem;
+    height: 1.1rem;
 }
 .page-landing .landing-hero-google .btn-google-login__label {
     color: inherit;
@@ -5797,7 +5798,8 @@ body.ig-story-open .app-sidebar {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.6rem;
+    gap: 0 !important;
+    column-gap: 0 !important;
     width: 100%;
     background: #fff;
     color: #1a1523;
@@ -5810,13 +5812,13 @@ body.ig-story-open .app-sidebar {
     color: #1a1523;
 }
 .gk-cta-google .btn-google-login__icon {
-    width: 1.65rem;
-    height: 1.65rem;
+    width: 1.2rem;
+    height: 1.2rem;
     border-radius: 8px;
 }
 .gk-cta-google .btn-google-login__icon svg {
-    width: 1rem;
-    height: 1rem;
+    width: 1.05rem;
+    height: 1.05rem;
 }
 .gk-cta-google .btn-google-login__label {
     color: inherit;
@@ -7511,11 +7513,15 @@ body.ig-story-open .app-sidebar {
     height: 1px;
     background: rgba(124, 58, 237, 0.15);
 }
-.btn-google-login {
+.btn-google-login,
+.btn-google-auth,
+.btn.btn-google-login,
+.btn.btn-google-auth {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.65rem;
+    gap: 0 !important;
+    column-gap: 0 !important;
     width: 100%;
     min-height: 3.1rem;
     padding: 0.85rem 1.25rem;
@@ -7538,8 +7544,10 @@ body.ig-story-open .app-sidebar {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    width: 1.85rem;
-    height: 1.85rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    margin: 0;
+    padding: 0;
     border-radius: 999px;
     background: #fff;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
@@ -7549,11 +7557,15 @@ body.ig-story-open .app-sidebar {
     display: block;
     width: 1.15rem;
     height: 1.15rem;
+    margin: 0;
 }
 
 .btn-google-login__label {
     color: inherit;
     font: inherit;
+    margin: 0;
+    padding: 0;
+    letter-spacing: 0;
 }
 
 .btn-google-login__arrow {
