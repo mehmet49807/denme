@@ -349,6 +349,7 @@ a.admin-sidebar-user.is-active {
     color: var(--text-muted);
     font-size: 0.92rem;
     max-width: 52ch;
+    line-height: 1.55;
 }
 
 .admin-topbar-actions {
@@ -359,6 +360,115 @@ a.admin-sidebar-user.is-active {
     gap: 0.5rem;
     flex-wrap: wrap;
     padding-top: 0.15rem;
+}
+
+/* Admin button aliases (Profil Onay vb.) */
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    padding: 0.65rem 1.15rem;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    color: var(--violet);
+    background: rgba(124, 58, 237, 0.08);
+    border: 1px solid rgba(124, 58, 237, 0.18);
+}
+
+.admin-btn-primary {
+    color: #fff;
+    background: var(--gradient-sunset);
+    border-color: transparent;
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.22);
+}
+
+.admin-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(124, 58, 237, 0.28);
+}
+
+.admin-btn-ghost {
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+}
+
+.admin-bulk-approve-btn__short {
+    display: none;
+}
+
+/* Mobile/tablet: menü + başlık üstte, aksiyonlar altta tam genişlik */
+@media (max-width: 1024px) {
+    .admin-topbar,
+    .admin-theme-lumiere .admin-topbar {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-areas:
+            "menu head"
+            "actions actions";
+        align-items: start;
+        gap: 0.75rem 0.85rem;
+    }
+
+    .admin-menu-toggle,
+    .admin-theme-lumiere .admin-menu-toggle {
+        grid-area: menu;
+        align-self: start;
+    }
+
+    .admin-page-header,
+    .admin-theme-lumiere .admin-topbar .admin-page-header {
+        grid-area: head;
+        flex: none;
+        max-width: none;
+        min-width: 0;
+    }
+
+    .admin-topbar-actions,
+    .admin-theme-lumiere .admin-topbar-actions {
+        grid-area: actions;
+        width: 100%;
+        justify-content: stretch;
+        padding-top: 0;
+    }
+
+    .admin-page-lead {
+        max-width: none;
+    }
+
+    .admin-topbar-actions .admin-inline-form,
+    .admin-topbar-actions form {
+        display: block;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .admin-topbar-actions .admin-btn,
+    .admin-topbar-actions .btn,
+    .admin-topbar-actions button[type="submit"] {
+        width: 100%;
+        justify-content: center;
+        white-space: normal;
+        text-align: center;
+        line-height: 1.35;
+        padding: 0.8rem 1rem;
+        border-radius: 14px;
+    }
+
+    .admin-bulk-approve-btn__full {
+        display: none;
+    }
+
+    .admin-bulk-approve-btn__short {
+        display: inline;
+    }
 }
 
 .admin-main {
