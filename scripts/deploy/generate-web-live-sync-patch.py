@@ -43,6 +43,12 @@ files = {
     / "resources/views/web/location-users.blade.php",
     "resources/views/web/google-complete.blade.php": WEB
     / "resources/views/web/google-complete.blade.php",
+    "resources/views/partials/location-fields.blade.php": WEB
+    / "resources/views/partials/location-fields.blade.php",
+    "resources/views/partials/phone-field.blade.php": WEB
+    / "resources/views/partials/phone-field.blade.php",
+    "app/Http/Controllers/Web/GoogleAuthController.php": WEB
+    / "app/Http/Controllers/Web/GoogleAuthController.php",
     "resources/views/partials/profile-online-label.blade.php": WEB
     / "resources/views/partials/profile-online-label.blade.php",
     "css/feed-stories.css": WEB / "public/css/feed-stories.css",

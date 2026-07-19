@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Concerns\ValidatesLocation;
 use App\Models\User;
+use App\Services\CountryMetaService;
 use App\Services\LocationDataService;
 use App\Services\UserMailService;
 use Illuminate\Http\RedirectResponse;
@@ -20,6 +21,7 @@ class GoogleAuthController extends Controller
 
     public function __construct(
         private LocationDataService $locations,
+        private CountryMetaService $countryMeta,
         private UserMailService $userMail,
     ) {}
 
@@ -154,6 +156,8 @@ class GoogleAuthController extends Controller
 
         return view('web.google-complete', [
             'googleSignup' => $payload,
+            'dialCodes' => $this->countryMeta->dialCodes(),
+            'countryMeta' => $this->countryMeta,
         ]);
     }
 
@@ -166,7 +170,8 @@ class GoogleAuthController extends Controller
 
         $validated = $request->validate([
             'username' => 'required|string|min:3|max:50|unique:users|regex:/^[a-zA-Z0-9_]+$/',
-            'phone' => 'nullable|string|max:20',
+            'phone_country_code' => 'nullable|string|max:6',
+            'phone_local' => 'nullable|string|max:15',
             'gender' => 'required|in:male,female',
             'privacy_accepted' => 'accepted',
             'kvkk_accepted' => 'accepted',
@@ -175,20 +180,35 @@ class GoogleAuthController extends Controller
             'kvkk_accepted.accepted' => 'Kayıt olmak için KVKK Aydınlatma Metni\'ni kabul etmelisiniz.',
         ]);
 
-        $validated = array_merge($validated, $this->validateLocationInput($request, $this->locations));
+        if (! empty($validated['phone_country_code']) && ! empty($validated['phone_local'])) {
+            if (! $this->countryMeta->isValidDialCode($validated['phone_country_code'])) {
+                return back()->withErrors(['phone_country_code' => 'Geçersiz ülke telefon kodu.'])->withInput();
+            }
 
-        $phone = trim((string) ($validated['phone'] ?? ''));
+            $validated['phone'] = $this->countryMeta->composePhone(
+                $validated['phone_country_code'],
+                $validated['phone_local']
+            );
+        } else {
+            $validated['phone'] = null;
+        }
+        unset($validated['phone_country_code'], $validated['phone_local']);
+
+        $validated = array_merge(
+            $validated,
+            $this->validateLocationInput($request, $this->locations, true, false)
+        );
 
         $userData = [
             'username' => $validated['username'],
             'first_name' => $payload['first_name'] ?: $validated['username'],
             'last_name' => $payload['last_name'] ?: '',
             'email' => $payload['email'],
-            'phone' => $phone !== '' ? $phone : null,
+            'phone' => $validated['phone'],
             'gender' => $validated['gender'],
             'country' => $validated['country'],
             'city' => $validated['city'],
-            'district' => $validated['district'] ?? null,
+            'district' => $validated['district'] ?? '',
             'profile_photo_url' => $payload['profile_photo_url'] ?? null,
             'registration_source' => 'google',
             'email_verified_at' => now(),
