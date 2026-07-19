@@ -53,13 +53,18 @@ class FeedPageController extends Controller
         }
 
         $showInviteBanner = false;
-        if ($onboarding === null) {
+        $inviteDismissed = $request->cookie('gk_invite_banner_off') === '1'
+            || $request->cookie('gk_invite_shared') === '1';
+        if ($onboarding === null && ! $inviteDismissed) {
             try {
                 $showInviteBanner = ! Referral::query()->where('referrer_id', $viewer->id)->exists();
             } catch (\Throwable) {
                 $showInviteBanner = true;
             }
         }
+
+        // Onboarding varken deneme/premium üst şeridini gizle (üst üste binmesin)
+        $showFeedPromoBanner = $onboarding === null && ! $showInviteBanner;
 
         return view('web.feed', compact(
             'posts',
@@ -70,6 +75,7 @@ class FeedPageController extends Controller
             'recommendedUsers',
             'onboarding',
             'showInviteBanner',
+            'showFeedPromoBanner',
         ));
     }
 }

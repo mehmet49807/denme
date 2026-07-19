@@ -25,14 +25,14 @@
         $hero960 = is_file(base_path('images/landing-hero-couple-960.webp'));
     @endphp
     @if($hero640)
-    <link rel="preload" as="image" href="{{ asset('images/landing-hero-couple-640.webp?v=opt-v6') }}" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
+    <link rel="preload" as="image" href="{{ asset('images/landing-hero-couple-640.webp?v=opt-v7') }}" type="image/webp" fetchpriority="high" media="(max-width: 768px)">
     @endif
     @if($hero960)
-    <link rel="preload" as="image" href="{{ asset('images/landing-hero-couple-960.webp?v=opt-v6') }}" type="image/webp" fetchpriority="high" media="(min-width: 769px)">
+    <link rel="preload" as="image" href="{{ asset('images/landing-hero-couple-960.webp?v=opt-v7') }}" type="image/webp" fetchpriority="high" media="(min-width: 769px)">
     @elseif($hero640)
-    <link rel="preload" as="image" href="{{ asset('images/landing-hero-couple-640.webp?v=opt-v6') }}" type="image/webp" fetchpriority="high" media="(min-width: 769px)">
+    <link rel="preload" as="image" href="{{ asset('images/landing-hero-couple-640.webp?v=opt-v7') }}" type="image/webp" fetchpriority="high" media="(min-width: 769px)">
     @else
-    <link rel="preload" as="image" href="{{ asset('images/landing-hero-couple.webp?v=opt-v6') }}" type="image/webp" fetchpriority="high">
+    <link rel="preload" as="image" href="{{ asset('images/landing-hero-couple.webp?v=opt-v7') }}" type="image/webp" fetchpriority="high">
     @endif
     @include('partials.landing-inline-css')
     @include('partials.asset', ['path' => 'css/growth.min.css'])

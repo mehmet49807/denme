@@ -19,6 +19,8 @@ class ReferralPageController extends Controller
     public function index(): View
     {
         $user = auth()->user();
+        session(['growth_invite_shared' => 1]);
+        cookie()->queue('gk_invite_shared', '1', 60 * 24 * 30);
         $inviteUrl = $this->referrals->inviteUrl($user);
         $shareText = $user->gender === 'female'
             ? 'Gönül Köprüsü\'nde güvenli ve saygılı tanışma platformuna seni de bekliyorum. Ücretsiz kayıt ol:'

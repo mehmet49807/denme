@@ -338,6 +338,26 @@
     animation: gib-in 0.45s ease both;
 }
 
+.gib__dismiss {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.55rem;
+    z-index: 2;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.75);
+    color: var(--gib-ink);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.gib__dismiss:hover {
+    background: #fff;
+}
+
 .gib__glow {
     position: absolute;
     inset: auto -20% -40% auto;

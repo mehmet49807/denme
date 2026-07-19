@@ -55,7 +55,21 @@
                 <a href="{{ $whatsappUrl }}" class="btn btn-outline referral-share-btn referral-share-btn--whatsapp" target="_blank" rel="noopener" data-gk-event="invite_share" data-gk-event-label="whatsapp">
                     WhatsApp ile paylaş
                 </a>
+                <button type="button" class="btn btn-outline referral-share-btn" id="nativeShareInviteBtn"
+                    data-share-url="{{ $inviteUrl }}"
+                    data-share-text="{{ $shareText }}"
+                    data-gk-event="invite_share" data-gk-event-label="native_share">
+                    Paylaş / Story’ye hazırla
+                </button>
+                <a href="{{ \App\Support\InstagramUrl::withUtm('referral', 'share', 'instagram') }}"
+                   class="btn btn-ghost referral-share-btn" target="_blank" rel="noopener"
+                   data-gk-event="instagram_cta" data-gk-event-label="referral">
+                    Instagram’da paylaş
+                </a>
             </div>
+            <p class="referral-card-hint" style="margin-top:.65rem">
+                Instagram’da: linki kopyala → hikâyene yapıştır veya DM gönder. Önce “Kopyala” veya “Paylaş” kullan.
+            </p>
         </section>
 
         <section class="glass-card referral-tips {{ $isFemale ? 'referral-tips--female' : '' }}">
@@ -94,16 +108,34 @@
 (function () {
     var btn = document.getElementById('copyInviteBtn');
     var input = document.getElementById('inviteUrl');
-    if (!btn || !input) return;
-    btn.addEventListener('click', function () {
-        input.select();
-        input.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(input.value).then(function () {
-            btn.textContent = 'Kopyalandı!';
-            if (window.gkTrack) window.gkTrack('invite_share', { method: 'copy' });
-            setTimeout(function () { btn.textContent = 'Kopyala'; }, 2000);
+    if (btn && input) {
+        btn.addEventListener('click', function () {
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value).then(function () {
+                btn.textContent = 'Kopyalandı!';
+                if (window.gkTrack) window.gkTrack('invite_share', { method: 'copy' });
+                setTimeout(function () { btn.textContent = 'Kopyala'; }, 2000);
+            });
         });
-    });
+    }
+    var shareBtn = document.getElementById('nativeShareInviteBtn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', function () {
+            var url = shareBtn.getAttribute('data-share-url') || '';
+            var text = (shareBtn.getAttribute('data-share-text') || '').trim();
+            var full = (text ? text + ' ' : '') + url;
+            if (navigator.share) {
+                navigator.share({ title: 'Gönül Köprüsü', text: text, url: url }).catch(function () {});
+                return;
+            }
+            if (navigator.clipboard && full) {
+                navigator.clipboard.writeText(full).then(function () {
+                    shareBtn.textContent = 'Link kopyalandı';
+                });
+            }
+        });
+    }
 })();
 </script>
 @endpush

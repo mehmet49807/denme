@@ -4574,6 +4574,16 @@ body.app-shell-body .chat-input { background: var(--bg-alt) !important; }
     .chat-page { height: calc(100dvh - 7.25rem - env(safe-area-inset-bottom, 0px)); }
 }
 
+@media (max-width: 767px) {
+    body.app-shell-body .dm-shell,
+    body.app-shell-body .chat-page {
+        height: calc(100dvh - 7.25rem - 6.1rem - env(safe-area-inset-bottom, 0px));
+    }
+    body.app-shell-body .site-main:has(.dm-shell) {
+        padding-bottom: 0;
+    }
+}
+
 /* Compact site header on messages / DM */
 body.app-shell-body .site-header:has(+ .site-main .dm-shell) .site-header-inner {
     padding: 0.4rem 0.75rem;

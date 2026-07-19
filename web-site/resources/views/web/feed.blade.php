@@ -86,7 +86,7 @@
         </section>
         @endif
 
-        @include('partials.feed-toolbar', ['viewer' => $viewer])
+        @include('partials.feed-toolbar', ['viewer' => $viewer, 'showFeedPromoBanner' => $showFeedPromoBanner ?? true])
     </div>
 
     <div class="feed-posts">

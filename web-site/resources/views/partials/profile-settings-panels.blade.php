@@ -102,8 +102,8 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             </span>
             <span class="profile-settings-menu-text">
-                <strong>Şikayet ve Engelleme</strong>
-                <small>Güvenlik politikaları</small>
+                <strong>Güvenlik: Engelleme &amp; Şikayet</strong>
+                <small>Politika ve güvenlik kuralları</small>
             </span>
             <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
         </a>
@@ -113,8 +113,8 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
             </span>
             <span class="profile-settings-menu-text">
-                <strong>Şikayet ve Dilekçe</strong>
-                <small>7/24 destek formu</small>
+                <strong>Destek formu</strong>
+                <small>Hesap, premium ve teknik yardım</small>
             </span>
             <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
         </a>

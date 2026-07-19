@@ -27,9 +27,11 @@ final class GrowthOnboardingService
             return false;
         }
 
-        $checklist = $this->checklist($user);
+        // Davet adımı bonus — checklist'i kilitlemez
+        $checklist = collect($this->checklist($user))
+            ->reject(fn (array $item) => ($item['key'] ?? '') === 'invite');
 
-        return collect($checklist)->contains(fn (array $item) => ! $item['done']);
+        return $checklist->contains(fn (array $item) => ! $item['done']);
     }
 
     /**
@@ -100,7 +102,9 @@ final class GrowthOnboardingService
         }
 
         try {
-            $inviteDone = \App\Models\Referral::query()->where('referrer_id', $user->id)->exists();
+            $inviteDone = \App\Models\Referral::query()->where('referrer_id', $user->id)->exists()
+                || (bool) session('growth_invite_shared')
+                || (bool) request()->cookie('gk_invite_shared');
             foreach ($items as &$item) {
                 if ($item['key'] === 'invite') {
                     $item['done'] = $inviteDone;

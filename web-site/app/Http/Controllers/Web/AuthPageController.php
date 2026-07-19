@@ -70,8 +70,8 @@ class AuthPageController extends Controller
 
         $validated = $request->validate([
             'username' => 'required|string|min:3|max:50|unique:users|regex:/^[a-zA-Z0-9_]+$/',
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
+            'first_name' => 'nullable|string|max:100',
+            'last_name' => 'nullable|string|max:100',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|min:8',
             'phone_country_code' => 'nullable|string|max:6',
@@ -123,6 +123,12 @@ class AuthPageController extends Controller
         }
         if (($validated['bio'] ?? null) === '') {
             $validated['bio'] = null;
+        }
+        if (trim((string) ($validated['first_name'] ?? '')) === '') {
+            $validated['first_name'] = (string) $validated['username'];
+        }
+        if (trim((string) ($validated['last_name'] ?? '')) === '') {
+            $validated['last_name'] = '';
         }
 
         if ($validated['gender'] === 'male') {

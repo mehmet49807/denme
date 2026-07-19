@@ -22,14 +22,16 @@
     @endif
 </div>
 
-@if($viewer->isOnTrial())
-<div class="premium-feed-banner premium-feed-banner--trial premium-feed-banner--compact">
-    <p><strong>{{ __('app.feed.trial_banner') }}</strong> {{ __('app.common.days_left', ['count' => $viewer->trialDaysRemaining()]) }}</p>
-    <a href="{{ route('premium') }}#premium-packages" class="btn btn-outline btn-sm">{{ __('app.common.packages') }}</a>
-</div>
-@elseif($viewer->gender === 'male' && !$viewer->canPostStories())
-<div class="premium-feed-banner premium-feed-banner--compact">
-    <p>{{ __('app.premium.stories_lock') }}</p>
-    <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm">{{ __('app.common.review') }}</a>
-</div>
+@if(!empty($showFeedPromoBanner))
+    @if($viewer->isOnTrial())
+    <div class="premium-feed-banner premium-feed-banner--trial premium-feed-banner--compact">
+        <p><strong>{{ __('app.feed.trial_banner') }}</strong> {{ __('app.common.days_left', ['count' => $viewer->trialDaysRemaining()]) }}</p>
+        <a href="{{ route('premium') }}#premium-packages" class="btn btn-outline btn-sm">{{ __('app.common.packages') }}</a>
+    </div>
+    @elseif($viewer->gender === 'male' && !$viewer->canPostStories())
+    <div class="premium-feed-banner premium-feed-banner--compact">
+        <p>{{ __('app.premium.stories_lock') }}</p>
+        <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm">{{ __('app.common.review') }}</a>
+    </div>
+    @endif
 @endif

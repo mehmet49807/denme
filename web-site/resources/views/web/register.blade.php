@@ -110,12 +110,12 @@
         </div>
 
         <div class="auth-form-section auth-form-section--optional">
-            <p class="auth-form-section-label">Ek bilgiler</p>
+            <p class="auth-form-section-label">Ek bilgiler <small>(isteğe bağlı)</small></p>
             <div class="form-group auth-field auth-field--private-group">
-                <label for="first_name">{{ __('app.auth.register.full_name_private') }}</label>
+                <label for="first_name">{{ __('app.auth.register.full_name_private') }} <small>(isteğe bağlı)</small></label>
                 <div class="form-row auth-form-row">
-                    <input type="text" id="first_name" name="first_name" value="{{ old('first_name') }}" placeholder="{{ __('app.auth.register.first_name_placeholder') }}" autocomplete="given-name" required>
-                    <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" placeholder="{{ __('app.auth.register.last_name_placeholder') }}" autocomplete="family-name" required aria-label="{{ __('app.auth.register.last_name_placeholder') }}">
+                    <input type="text" id="first_name" name="first_name" value="{{ old('first_name') }}" placeholder="{{ __('app.auth.register.first_name_placeholder') }}" autocomplete="given-name">
+                    <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" placeholder="{{ __('app.auth.register.last_name_placeholder') }}" autocomplete="family-name" aria-label="{{ __('app.auth.register.last_name_placeholder') }}">
                 </div>
                 @error('first_name') <small class="form-error">{{ $message }}</small> @enderror
                 @error('last_name') <small class="form-error">{{ $message }}</small> @enderror

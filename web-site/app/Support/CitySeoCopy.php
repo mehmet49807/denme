@@ -60,7 +60,9 @@ final class CitySeoCopy
 
         $lead = $hooks[$slug] ?? (
             "{$city} tanışma sitesi Gönül Köprüsü: ücretsiz üye ol, güvenli online sohbet et, "
-            .'ciddi ilişki ve evlilik odaklı profilleri keşfet.'
+            ."ciddi ilişki ve evlilik odaklı profilleri keşfet. {$city} evlilik sitesi veya "
+            ."{$city} sohbet arayanlar için moderasyonlu, saygılı bir ortam sunuyoruz. "
+            .'Kadın üyelerde mesajlaşma ücretsizdir; profilini tamamlayıp konum filtresiyle başla.'
         );
 
         // Long-tail H2 sinyali için büyük şehirlerde ek cümle
@@ -88,6 +90,8 @@ final class CitySeoCopy
             "Ücretsiz kayıt — birkaç dakikada {$city} tanışmaya başla",
             'Instagram ve davet linkleriyle arkadaşlarını da getirebilirsin',
             "{$city} evlilik ve ciddi ilişki niyeti taşıyan üye kitlesi",
+            "İlk buluşmada halka açık yer önerisi — {$city} güvenli tanışma rehberi",
+            'SSL, KVKK uyumu ve 7/24 e-posta desteği',
         ];
 
         $faqs = [

@@ -174,12 +174,25 @@ files = {
     / "app/Http/Controllers/Web/SeoPillarPageController.php",
     "app/Http/Controllers/Web/SuccessStoriesController.php": WEB
     / "app/Http/Controllers/Web/SuccessStoriesController.php",
+    "app/Http/Controllers/Web/SupportPageController.php": WEB
+    / "app/Http/Controllers/Web/SupportPageController.php",
+    "app/Http/Controllers/Web/FeedPageController.php": WEB
+    / "app/Http/Controllers/Web/FeedPageController.php",
+    "app/Http/Controllers/Web/AuthPageController.php": WEB
+    / "app/Http/Controllers/Web/AuthPageController.php",
     "resources/views/web/seo-pillar.blade.php": WEB
     / "resources/views/web/seo-pillar.blade.php",
     "resources/views/web/success-stories.blade.php": WEB
     / "resources/views/web/success-stories.blade.php",
+    "resources/views/web/support.blade.php": WEB / "resources/views/web/support.blade.php",
     "resources/views/web/about.blade.php": WEB / "resources/views/web/about.blade.php",
     "resources/views/web/home.blade.php": WEB / "resources/views/web/home.blade.php",
+    "resources/views/web/referral.blade.php": WEB / "resources/views/web/referral.blade.php",
+    "resources/views/web/feed.blade.php": WEB / "resources/views/web/feed.blade.php",
+    "resources/views/layouts/app.blade.php": WEB / "resources/views/layouts/app.blade.php",
+    "resources/views/partials/profile-settings-panels.blade.php": WEB
+    / "resources/views/partials/profile-settings-panels.blade.php",
+    "css/app.min.css": WEB / "public/css/app.min.css",
     "app/Http/Controllers/Web/CampaignLandingController.php": WEB
     / "app/Http/Controllers/Web/CampaignLandingController.php",
     "app/Http/Controllers/Web/GoogleAuthController.php": WEB

@@ -431,14 +431,18 @@ class User extends Authenticatable
         return $this->username;
     }
 
-    /** Tüm aktif üyelerde premium onay tiki */
+    /** Onaylı / doğrulanmış üyelerde tik (herkese değil) */
     public function showsPremiumVerifiedTick(): bool
     {
         if ($this->is_banned) {
             return false;
         }
 
-        return ($this->role ?? 'user') === 'user' || $this->isAdmin();
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        return (bool) $this->is_verified;
     }
 
     public function showsPremiumMemberBadge(): bool
