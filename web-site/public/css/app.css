@@ -5675,6 +5675,97 @@ body.ig-story-open .app-sidebar {
     box-shadow: 0 6px 24px rgba(251, 191, 36, 0.4);
 }
 
+.page-landing .landing-hero-fast {
+    margin-top: 0.85rem;
+    max-width: 420px;
+}
+.page-landing .landing-hero-google {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    width: 100%;
+    min-height: 2.65rem;
+    padding: 0.65rem 1rem;
+    border-radius: 14px;
+    background: #fff;
+    color: #1a1523;
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(15, 8, 30, 0.22);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.page-landing .landing-hero-google:hover,
+.page-landing .landing-hero-google:focus-visible {
+    color: #1a1523;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 28px rgba(15, 8, 30, 0.28);
+}
+.page-landing .landing-hero-google__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+}
+.page-landing .landing-hero-google__icon svg {
+    display: block;
+    width: 1.05rem;
+    height: 1.05rem;
+}
+.page-landing .landing-hero-trust {
+    margin: 0.55rem 0 0;
+    font-size: 0.78rem;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.78);
+    letter-spacing: 0.01em;
+}
+
+.gk-cta-google {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    min-height: 2.45rem;
+    padding: 0.55rem 1rem;
+    border-radius: 12px;
+    background: #fff;
+    color: #1a1523;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(15, 8, 30, 0.08);
+}
+.gk-cta-google:hover,
+.gk-cta-google:focus-visible {
+    color: #1a1523;
+}
+.gk-cta-google__icon {
+    display: inline-flex;
+    width: 1.35rem;
+    height: 1.35rem;
+    align-items: center;
+    justify-content: center;
+}
+.gk-cta-google__icon svg {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+}
+.gk-cta-trust {
+    margin: 0.5rem 0 0;
+    font-size: 0.78rem;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.78);
+}
+
 .page-landing .landing-hero-visual {
     position: relative;
     display: flex;
@@ -6814,6 +6905,11 @@ body.ig-story-open .app-sidebar {
     .page-landing .landing-hero-lead { margin-left: auto; margin-right: auto; }
     .page-landing .landing-hero-pills { justify-content: center; }
     .page-landing .landing-hero-actions { justify-content: center; }
+    .page-landing .landing-hero-fast {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
     .page-landing .landing-hero-visual { min-height: auto; margin-top: 0.5rem; }
     .page-landing .landing-hero-bg img { object-position: center 30%; }
     .page-landing .landing-hero-overlay {
