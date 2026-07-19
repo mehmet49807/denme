@@ -32,7 +32,9 @@
             data-like-url="{{ route('posts.like', $post) }}"
             @if($isOwnProfile)
             data-destroy-url="{{ route('posts.destroy', $post) }}"
+            @if(\Illuminate\Support\Facades\Route::has('posts.update'))
             data-update-url="{{ route('posts.update', $post) }}"
+            @endif
             @endif
             aria-label="{{ __('app.feed.zoom_post') }}"
         >

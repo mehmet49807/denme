@@ -459,6 +459,7 @@ Route::middleware(['auth', 'locale'])->group(function () {
 
     Route::get('/feed', [FeedPageController::class, 'index'])->name('feed');
     Route::post('/posts', [PostPageController::class, 'store'])->middleware('throttle:20,1,posts-store')->name('posts.store');
+    // Caption edit (profile + feed post detail dialog)
     Route::patch('/posts/{post}', [PostPageController::class, 'update'])->middleware('throttle:30,1,posts-update')->name('posts.update');
     Route::delete('/posts/{post}', [PostPageController::class, 'destroy'])->name('posts.destroy');
     Route::post('/posts/{post}/like', [PostPageController::class, 'toggleLike'])->middleware('throttle:60,1,posts-like')->name('posts.like');
