@@ -308,21 +308,74 @@ body.app-shell-body .site-header-inner {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.2rem;
-    height: 2.2rem;
+    width: 2.35rem;
+    height: 2.35rem;
     border-radius: 12px;
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(236, 72, 153, 0.08));
+    background: linear-gradient(145deg, rgba(124, 58, 237, 0.16), rgba(236, 72, 153, 0.12));
+    color: #7c3aed;
     font-size: 1.05rem;
     flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .profile-settings-menu-icon svg {
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    stroke: currentColor;
+}
+
+.profile-settings-menu-icon--edit {
+    background: linear-gradient(145deg, #dbeafe, #bfdbfe);
+    color: #2563eb;
+}
+.profile-settings-menu-icon--bio {
+    background: linear-gradient(145deg, #ffedd5, #fdba74);
+    color: #ea580c;
+}
+.profile-settings-menu-icon--heart {
+    background: linear-gradient(145deg, #fce7f3, #f9a8d4);
+    color: #db2777;
+}
+.profile-settings-menu-icon--hobbies {
+    background: linear-gradient(145deg, #fef3c7, #fcd34d);
+    color: #d97706;
+}
+.profile-settings-menu-icon--lang {
+    background: linear-gradient(145deg, #e0e7ff, #a5b4fc);
+    color: #4f46e5;
+}
+.profile-settings-menu-icon--theme {
+    background: linear-gradient(145deg, #fde68a, #fbbf24 45%, #c4b5fd);
+    color: #b45309;
+}
+.profile-settings-menu-icon--privacy {
+    background: linear-gradient(145deg, #d1fae5, #6ee7b7);
+    color: #059669;
+}
+.profile-settings-menu-icon--lock {
+    background: linear-gradient(145deg, #ede9fe, #c4b5fd);
+    color: #7c3aed;
+}
+.profile-settings-menu-icon--invite {
+    background: linear-gradient(145deg, #cffafe, #67e8f9);
+    color: #0891b2;
+}
+.profile-settings-menu-icon--security {
+    background: linear-gradient(145deg, #fee2e2, #fca5a5);
+    color: #dc2626;
+}
+.profile-settings-menu-icon--support {
+    background: linear-gradient(145deg, #e0f2fe, #7dd3fc);
+    color: #0284c7;
+}
+.profile-settings-menu-icon--logout {
+    background: linear-gradient(145deg, #fecaca, #f87171);
+    color: #b91c1c;
 }
 
 .profile-settings-menu-item--danger .profile-settings-menu-icon {
-    background: rgba(239, 68, 68, 0.1);
+    background: linear-gradient(145deg, #fecaca, #f87171);
+    color: #b91c1c;
 }
 
 .profile-settings-menu-text strong {
@@ -427,6 +480,33 @@ body.app-shell-body .site-header-inner {
     height: 100%;
     display: block;
 }
+
+.profile-settings-theme-form[data-theme-form="light"] .profile-settings-theme-icon,
+.profile-settings-theme-form:has([data-theme-choice="light"]) .profile-settings-theme-icon {
+    color: #d97706;
+    background: linear-gradient(145deg, #fef3c7, #fde68a);
+    border-radius: 10px;
+    padding: 0.25rem;
+    width: 1.85rem;
+    height: 1.85rem;
+}
+.profile-settings-theme-form:has([data-theme-choice="dark"]) .profile-settings-theme-icon {
+    color: #6366f1;
+    background: linear-gradient(145deg, #e0e7ff, #c7d2fe);
+    border-radius: 10px;
+    padding: 0.25rem;
+    width: 1.85rem;
+    height: 1.85rem;
+}
+.profile-settings-theme-form:has([data-theme-choice="system"]) .profile-settings-theme-icon {
+    color: #0891b2;
+    background: linear-gradient(145deg, #cffafe, #a5f3fc);
+    border-radius: 10px;
+    padding: 0.25rem;
+    width: 1.85rem;
+    height: 1.85rem;
+}
+
 
 .profile-settings-theme-form .profile-settings-menu-text {
     display: flex;
@@ -536,6 +616,22 @@ html[data-theme="dark"] .profile-settings-theme-form .profile-settings-language-
     border-color: rgba(255, 255, 255, 0.1);
     color: var(--text);
 }
+
+html[data-theme="dark"] .profile-settings-menu-icon {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+html[data-theme="dark"] .profile-settings-menu-icon--edit { background: linear-gradient(145deg, rgba(37,99,235,.35), rgba(96,165,250,.28)); color: #93c5fd; }
+html[data-theme="dark"] .profile-settings-menu-icon--bio { background: linear-gradient(145deg, rgba(234,88,12,.35), rgba(251,146,60,.28)); color: #fdba74; }
+html[data-theme="dark"] .profile-settings-menu-icon--heart { background: linear-gradient(145deg, rgba(219,39,119,.35), rgba(244,114,182,.28)); color: #f9a8d4; }
+html[data-theme="dark"] .profile-settings-menu-icon--hobbies { background: linear-gradient(145deg, rgba(217,119,6,.35), rgba(252,211,77,.28)); color: #fcd34d; }
+html[data-theme="dark"] .profile-settings-menu-icon--lang { background: linear-gradient(145deg, rgba(79,70,229,.35), rgba(165,180,252,.28)); color: #c7d2fe; }
+html[data-theme="dark"] .profile-settings-menu-icon--theme { background: linear-gradient(145deg, rgba(180,83,9,.35), rgba(196,181,253,.3)); color: #fde68a; }
+html[data-theme="dark"] .profile-settings-menu-icon--privacy { background: linear-gradient(145deg, rgba(5,150,105,.35), rgba(110,231,183,.28)); color: #6ee7b7; }
+html[data-theme="dark"] .profile-settings-menu-icon--lock { background: linear-gradient(145deg, rgba(124,58,237,.35), rgba(196,181,253,.28)); color: #ddd6fe; }
+html[data-theme="dark"] .profile-settings-menu-icon--invite { background: linear-gradient(145deg, rgba(8,145,178,.35), rgba(103,232,249,.28)); color: #67e8f9; }
+html[data-theme="dark"] .profile-settings-menu-icon--security { background: linear-gradient(145deg, rgba(220,38,38,.35), rgba(252,165,165,.28)); color: #fca5a5; }
+html[data-theme="dark"] .profile-settings-menu-icon--support { background: linear-gradient(145deg, rgba(2,132,199,.35), rgba(125,211,252,.28)); color: #7dd3fc; }
+html[data-theme="dark"] .profile-settings-menu-icon--logout { background: linear-gradient(145deg, rgba(185,28,28,.4), rgba(248,113,113,.3)); color: #fecaca; }
 
 html[data-theme="dark"] .profile-settings-menu-item--danger {
     background: rgba(127, 29, 29, 0.35);
