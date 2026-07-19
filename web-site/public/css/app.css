@@ -5718,15 +5718,16 @@ body.ig-story-open .app-sidebar {
     gap: 0.65rem;
     width: 100%;
     min-height: 3rem;
-    background: linear-gradient(90deg, #FF6B8A, #FBBF24);
-    color: #1a0f2e;
-    box-shadow: 0 6px 24px rgba(251, 191, 36, 0.4);
-    border: 0;
+    background: #fff;
+    color: #1a1523;
+    box-shadow: 0 6px 20px rgba(15, 8, 30, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.7);
 }
 .page-landing .landing-hero-google.btn-primary:hover,
 .page-landing .landing-hero-google.btn-primary:focus-visible {
-    color: #1a0f2e;
-    box-shadow: 0 8px 28px rgba(251, 191, 36, 0.5);
+    background: #fff;
+    color: #1a1523;
+    box-shadow: 0 8px 24px rgba(15, 8, 30, 0.24);
 }
 .page-landing .landing-hero-google__icon {
     display: inline-flex;
@@ -5800,6 +5801,15 @@ body.ig-story-open .app-sidebar {
     justify-content: center;
     gap: 0.6rem;
     width: 100%;
+    background: #fff;
+    color: #1a1523;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 6px 18px rgba(15, 8, 30, 0.16);
+}
+.gk-cta-google.gk-btn--fill:hover,
+.gk-cta-google.gk-btn--fill:focus-visible {
+    background: #fff;
+    color: #1a1523;
 }
 .gk-cta-google__icon {
     display: inline-flex;
