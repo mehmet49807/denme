@@ -1,3 +1,13 @@
+@php
+    $memberCount = (int) ($memberCount ?? 0);
+    $onlineCount = (int) ($onlineCount ?? 0);
+    $memberLabel = $memberCount >= 1000
+        ? number_format((int) floor($memberCount / 1000) * 1000, 0, ',', '.').'+'
+        : ($memberCount > 0 ? number_format($memberCount, 0, ',', '.') : '10.000+');
+    $onlineLabel = $onlineCount > 0 ? number_format($onlineCount, 0, ',', '.') : null;
+    $homeFaqs = $homeFaqs ?? [];
+    $homeStories = $homeStories ?? [];
+@endphp
 <div class="gk-main">
 
     <div class="gk-wave" aria-hidden="true">
@@ -32,11 +42,30 @@
             <div class="gk-intro-text">
                 <p class="gk-label">Gönül Köprüsü — tanışma ve sohbet sitesi</p>
                 <h2>Evlilik niyetiyle tanışmak için<br>modern ve güvenli platform</h2>
-                <p class="gk-lead">Türkiye’nin güvenli <strong>tanışma sitesi</strong>: ücretsiz kayıt, şehir odaklı keşif ve saygılı <strong>online sohbet</strong>. Kaydırmalı uygulamaların hızına değil, ciddi ilişki ve evlilik odaklı bağların kalitesine odaklanıyoruz.</p>
+                <p class="gk-lead">Türkiye’nin güvenli <strong>tanışma sitesi</strong>: ücretsiz kayıt, şehir odaklı keşif ve saygılı <strong>online sohbet</strong>.</p>
+                <p class="gk-intro-perk" role="note">
+                    <strong>Kadınlarda mesajlaşma ücretsiz</strong> — kimler baktı ve galeri de dahil, premium gerekmez.
+                </p>
                 <div class="gk-stats">
-                    <div><strong>10.000+</strong><span>aktif profil</span></div>
-                    <div><strong>%100</strong><span>moderasyon</span></div>
-                    <div><strong>KVKK</strong><span>uyumlu</span></div>
+                    <div>
+                        <strong>{{ $memberLabel }}</strong>
+                        <span>aktif üye</span>
+                    </div>
+                    @if($onlineLabel)
+                    <div>
+                        <strong>{{ $onlineLabel }}</strong>
+                        <span>çevrimiçi</span>
+                    </div>
+                    @else
+                    <div>
+                        <strong>%100</strong>
+                        <span>moderasyon</span>
+                    </div>
+                    @endif
+                    <div>
+                        <strong>KVKK</strong>
+                        <span>uyumlu</span>
+                    </div>
                 </div>
             </div>
             <div class="gk-intro-visual">
@@ -45,7 +74,7 @@
                 </div>
                 <div class="gk-intro-badge">
                     <strong>Ücretsiz</strong>
-                    <span>kadın üyelik</span>
+                    <span>kadın mesaj</span>
                 </div>
             </div>
         </div>
@@ -55,40 +84,23 @@
         <div class="gk-wrap">
             <header class="gk-section-head">
                 <p class="gk-label">Neler sunuyoruz?</p>
-                <h2>Tanışma süreciniz için eksiksiz araçlar</h2>
+                <h2>Ciddi, güvenli, net iletişim</h2>
             </header>
-            <div class="gk-mosaic-grid">
-                <article class="gk-tile gk-tile--hero gk-tile--photo">
-                    <div class="gk-tile-photo" aria-hidden="true">
-                        <x-optimized-image name="landing-community" alt="" width="640" height="800" loading="lazy" />
-                    </div>
-                    <div class="gk-tile-overlay" aria-hidden="true"></div>
-                    <div class="gk-tile-content">
-                        <span class="gk-tile-icon">@include('partials.theme-icon', ['icon' => 'heart'])</span>
-                        <h3>Ciddi Üyelik</h3>
-                        <p>Evlilik ve ciddi ilişki arayan yetişkinler için tasarlanmış topluluk.</p>
-                    </div>
-                </article>
+            <div class="gk-mosaic-grid gk-mosaic-grid--three">
                 <article class="gk-tile gk-tile--coral">
+                    <span class="gk-tile-icon">@include('partials.theme-icon', ['icon' => 'heart'])</span>
+                    <h3>Ciddi Üyelik</h3>
+                    <p>Evlilik ve ciddi ilişki arayan yetişkinler için tasarlanmış topluluk.</p>
+                </article>
+                <article class="gk-tile gk-tile--lilac">
                     <span class="gk-tile-icon">@include('partials.theme-icon', ['icon' => 'shield'])</span>
                     <h3>Güvenli Platform</h3>
                     <p>Engelleme, şikayet ve moderasyon süreçleri aktif.</p>
                 </article>
-                <article class="gk-tile gk-tile--lilac">
+                <article class="gk-tile gk-tile--mint">
                     <span class="gk-tile-icon">@include('partials.theme-icon', ['icon' => 'messages'])</span>
                     <h3>Özel Mesajlaşma</h3>
-                    <p>Güvenli ve özel sohbet ortamında iletişim kurun.</p>
-                </article>
-                <article class="gk-tile gk-tile--wide gk-tile--photo gk-tile--sunset">
-                    <div class="gk-tile-photo" aria-hidden="true">
-                        <x-optimized-image name="landing-step-discover" alt="" width="800" height="400" loading="lazy" />
-                    </div>
-                    <div class="gk-tile-overlay" aria-hidden="true"></div>
-                    <div class="gk-tile-content">
-                        <span class="gk-tile-icon">@include('partials.theme-icon', ['icon' => 'sparkles'])</span>
-                        <h3>Eşleşme Odaklı Keşif</h3>
-                        <p>Şehir ve tercihlerinize göre profilleri keşfedin, anlamlı bağlantılar kurun.</p>
-                    </div>
+                    <p>Kadınlarda mesaj ücretsiz; güvenli sohbet ortamında tanışın.</p>
                 </article>
             </div>
         </div>
@@ -141,6 +153,33 @@
         </div>
     </section>
 
+    @if($homeStories !== [])
+    <section class="gk-home-stories" aria-labelledby="gk-home-stories-heading">
+        <div class="gk-wrap">
+            <header class="gk-section-head">
+                <p class="gk-label">Başarı hikâyeleri</p>
+                <h2 id="gk-home-stories-heading">Gerçek bağlar, kısa hikâyeler</h2>
+            </header>
+            <div class="gk-home-stories-grid">
+                @foreach($homeStories as $story)
+                    <article class="gk-home-story">
+                        <p class="gk-home-story__quote">“{{ $story['quote'] }}”</p>
+                        <footer>
+                            <strong>{{ $story['names'] }}</strong>
+                            <span>{{ $story['city'] }}</span>
+                        </footer>
+                    </article>
+                @endforeach
+            </div>
+            @if(Route::has('stories'))
+                <p class="gk-home-stories-more">
+                    <a href="{{ route('stories') }}">Tüm başarı hikâyeleri</a>
+                </p>
+            @endif
+        </div>
+    </section>
+    @endif
+
     <section class="gk-reviews">
         <div class="gk-wrap">
             <header class="gk-section-head">
@@ -175,6 +214,26 @@
             </div>
         </div>
     </section>
+
+    @if($homeFaqs !== [])
+    <section class="gk-home-faq" aria-labelledby="gk-home-faq-heading">
+        <div class="gk-wrap">
+            <header class="gk-section-head">
+                <p class="gk-label">Sık sorulanlar</p>
+                <h2 id="gk-home-faq-heading">Merak edilen 3 soru</h2>
+            </header>
+            <div class="city-seo-faq gk-home-faq-list">
+                @foreach($homeFaqs as $item)
+                    <details>
+                        <summary>{{ $item['question'] }}</summary>
+                        <p>{{ $item['answer'] }}</p>
+                    </details>
+                @endforeach
+            </div>
+            <p class="gk-home-faq-more"><a href="{{ route('sss') }}">Tüm SSS</a></p>
+        </div>
+    </section>
+    @endif
 
     <section class="gk-trust">
         <div class="gk-wrap gk-trust-inner">
@@ -227,9 +286,9 @@
     <section class="gk-seo-cities" aria-labelledby="gk-seo-cities-heading">
         <div class="gk-wrap">
             <header class="gk-section-head">
-                <p class="gk-label">Şehir şehir tanışma</p>
-                <h2 id="gk-seo-cities-heading">Türkiye’nin her yerinde güvenli tanışma</h2>
-                <p class="gk-lead">İstanbul, Ankara, İzmir ve onlarca şehirde ücretsiz tanışma, sohbet ve evlilik odaklı eşleşme. Şehrini seç, hemen keşfet.</p>
+                <p class="gk-label">Yakınındaki üyeler</p>
+                <h2 id="gk-seo-cities-heading">Şehrindeki profilleri keşfet</h2>
+                <p class="gk-lead">İstanbul’dan Antalya’ya — şehir sayfasından yakındaki üyeleri gör, ücretsiz kayıt ol.</p>
             </header>
             @if(Route::has('seo.marriage') || Route::has('seo.serious') || Route::has('seo.free') || Route::has('seo.friendship'))
             <nav class="gk-seo-pillars" aria-label="Tanışma konuları">
@@ -249,7 +308,12 @@
             @endif
             <ul class="gk-seo-city-list">
                 @foreach($seoCitiesTop as $cityLink)
-                    <li><a href="{{ route('city.seo', $cityLink['slug']) }}">{{ $cityLink['name'] }} tanışma</a></li>
+                    <li>
+                        <a href="{{ route('city.seo', $cityLink['slug']) }}">
+                            <span class="gk-seo-city-name">{{ $cityLink['name'] }}</span>
+                            <span class="gk-seo-city-meta">yakındaki üyeler</span>
+                        </a>
+                    </li>
                 @endforeach
             </ul>
             <p class="gk-seo-city-more">
@@ -270,16 +334,15 @@
 
     @guest
     <section class="gk-cta">
-        <div class="gk-wrap gk-cta-box">
+        <div class="gk-wrap gk-cta-box gk-cta-box--simple">
             <div class="gk-cta-glow gk-cta-glow--a" aria-hidden="true"></div>
             <div class="gk-cta-glow gk-cta-glow--b" aria-hidden="true"></div>
             <div class="gk-cta-content">
-                <h2>Hikâyen burada başlasın</h2>
-                <p>Profilini birkaç dakikada oluştur. Kadın üyelik tamamen ücretsiz.</p>
+                <h2>Hemen üye ol</h2>
+                <p>Kadınlarda mesaj ücretsiz. Google ile saniyeler içinde başla.</p>
                 <div class="gk-cta-fast">
                     <div class="gk-cta-btns">
                         <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'cta', 'utm_campaign' => 'organic']) }}" class="gk-btn gk-btn--fill" data-gk-event="sign_up_click" data-gk-event-label="home_body_cta">Ücretsiz Üye Ol</a>
-                        <a href="{{ route('login') }}" class="gk-btn gk-btn--ghost">Giriş Yap</a>
                     </div>
                     <p class="gk-cta-fast-divider" aria-hidden="true"><span>veya</span></p>
                     <div class="gk-cta-google-wrap">
@@ -290,21 +353,10 @@
                             'eventLabel' => 'home_body_google',
                             'showArrow' => false,
                             'iconSize' => 16,
+                            'gate' => true,
                         ])
-                        <p class="gk-cta-google-note">
-                            <span class="gk-cta-google-note__icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'heart'])</span>
-                            Ücretsiz kayıt ol ve hesabınla saniyeler içinde mesajlaşmaya başla
-                        </p>
                     </div>
                 </div>
-            </div>
-            <div class="gk-cta-side">
-                @include('partials.store-badges')
-                <ul>
-                    <li>Ücretsiz kayıt</li>
-                    <li>Güvenli mesajlaşma</li>
-                    <li>Profil ve keşif</li>
-                </ul>
             </div>
         </div>
     </section>

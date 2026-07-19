@@ -51,6 +51,12 @@ files = {
     / "resources/views/partials/google-icon.blade.php",
     "resources/views/partials/google-auth-button.blade.php": WEB
     / "resources/views/partials/google-auth-button.blade.php",
+    "resources/views/partials/google-signup-gate.blade.php": WEB
+    / "resources/views/partials/google-signup-gate.blade.php",
+    "css/landing.css": WEB / "css/landing.css",
+    "css/homepage-ember.css": WEB / "css/homepage-ember.css",
+    "resources/views/partials/landing-inline-css.blade.php": WEB
+    / "resources/views/partials/landing-inline-css.blade.php",
     "resources/views/web/login.blade.php": WEB / "resources/views/web/login.blade.php",
     "resources/views/web/campaign-landing.blade.php": WEB
     / "resources/views/web/campaign-landing.blade.php",

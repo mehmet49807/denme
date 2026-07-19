@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Http\Concerns\ValidatesLocation;
 use App\Models\User;
-use App\Services\CountryMetaService;
 use App\Services\LocationDataService;
 use App\Services\UserMailService;
 use Illuminate\Http\RedirectResponse;
@@ -17,13 +15,43 @@ use Illuminate\View\View;
 
 class GoogleAuthController extends Controller
 {
-    use ValidatesLocation;
-
     public function __construct(
         private LocationDataService $locations,
-        private CountryMetaService $countryMeta,
         private UserMailService $userMail,
     ) {}
+
+    /**
+     * Google'a gitmeden önce cinsiyet + KVKK kaydı (kayıt akışları).
+     */
+    public function prepare(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'gender' => 'required|in:male,female',
+            'privacy_accepted' => 'accepted',
+            'kvkk_accepted' => 'accepted',
+            'city' => 'nullable|string|max:100',
+        ], [
+            'gender.required' => 'Devam etmek için cinsiyet seçmelisiniz.',
+            'privacy_accepted.accepted' => 'Kayıt olmak için Gizlilik Sözleşmesi\'ni kabul etmelisiniz.',
+            'kvkk_accepted.accepted' => 'Kayıt olmak için KVKK Aydınlatma Metni\'ni kabul etmelisiniz.',
+        ]);
+
+        $city = trim((string) ($validated['city'] ?? ''));
+        if ($city !== '' && ! $this->locations->isValidCity('Türkiye', $city)) {
+            $city = '';
+        }
+
+        session([
+            'google_signup_intent' => [
+                'gender' => $validated['gender'],
+                'privacy_accepted' => true,
+                'kvkk_accepted' => true,
+                'city' => $city,
+            ],
+        ]);
+
+        return $this->redirect();
+    }
 
     public function redirect(): RedirectResponse
     {
@@ -125,24 +153,37 @@ class GoogleAuthController extends Controller
                     ->withErrors(['login' => 'Hesabınız askıya alınmıştır.']);
             }
 
+            $updates = [];
             if ($photo !== '' && empty($user->profile_photo_url)) {
-                $user->update(['profile_photo_url' => $photo]);
+                $updates['profile_photo_url'] = $photo;
+            }
+            if ($googleId !== '' && empty($user->google_id)) {
+                $updates['google_id'] = $googleId;
+            }
+            if ($updates !== []) {
+                $user->update($updates);
             }
 
+            session()->forget(['google_signup', 'google_signup_intent']);
             Auth::login($user, true);
 
             return redirect()->intended(route('feed'));
         }
 
-        session([
-            'google_signup' => [
-                'google_id' => $googleId,
-                'email' => $email,
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'profile_photo_url' => $photo,
-            ],
-        ]);
+        $payload = [
+            'google_id' => $googleId,
+            'email' => $email,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'profile_photo_url' => $photo,
+        ];
+
+        $intent = session('google_signup_intent');
+        if (is_array($intent) && in_array($intent['gender'] ?? '', ['male', 'female'], true)) {
+            return $this->createGoogleUser($payload, $intent);
+        }
+
+        session(['google_signup' => $payload]);
 
         return redirect()->route('auth.google.complete');
     }
@@ -151,13 +192,11 @@ class GoogleAuthController extends Controller
     {
         $payload = session('google_signup');
         if (! is_array($payload) || empty($payload['email'])) {
-            return redirect()->route('login');
+            return redirect()->route('register');
         }
 
         return view('web.google-complete', [
             'googleSignup' => $payload,
-            'dialCodes' => $this->countryMeta->dialCodes(),
-            'countryMeta' => $this->countryMeta,
         ]);
     }
 
@@ -165,56 +204,68 @@ class GoogleAuthController extends Controller
     {
         $payload = session('google_signup');
         if (! is_array($payload) || empty($payload['email'])) {
-            return redirect()->route('login');
+            return redirect()->route('register');
         }
 
         $validated = $request->validate([
-            'username' => 'required|string|min:3|max:50|unique:users|regex:/^[a-zA-Z0-9_]+$/',
-            'phone_country_code' => 'nullable|string|max:6',
-            'phone_local' => 'nullable|string|max:15',
             'gender' => 'required|in:male,female',
             'privacy_accepted' => 'accepted',
             'kvkk_accepted' => 'accepted',
+            'city' => 'nullable|string|max:100',
         ], [
             'privacy_accepted.accepted' => 'Kayıt olmak için Gizlilik Sözleşmesi\'ni kabul etmelisiniz.',
             'kvkk_accepted.accepted' => 'Kayıt olmak için KVKK Aydınlatma Metni\'ni kabul etmelisiniz.',
         ]);
 
-        if (! empty($validated['phone_country_code']) && ! empty($validated['phone_local'])) {
-            if (! $this->countryMeta->isValidDialCode($validated['phone_country_code'])) {
-                return back()->withErrors(['phone_country_code' => 'Geçersiz ülke telefon kodu.'])->withInput();
-            }
-
-            $validated['phone'] = $this->countryMeta->composePhone(
-                $validated['phone_country_code'],
-                $validated['phone_local']
-            );
-        } else {
-            $validated['phone'] = null;
+        $city = trim((string) ($validated['city'] ?? ''));
+        if ($city !== '' && ! $this->locations->isValidCity('Türkiye', $city)) {
+            $city = '';
         }
-        unset($validated['phone_country_code'], $validated['phone_local']);
 
-        $validated = array_merge(
-            $validated,
-            $this->validateLocationInput($request, $this->locations, true, false)
+        return $this->createGoogleUser($payload, [
+            'gender' => $validated['gender'],
+            'privacy_accepted' => true,
+            'kvkk_accepted' => true,
+            'city' => $city,
+        ]);
+    }
+
+    /**
+     * @param  array{google_id?:string,email:string,first_name?:string,last_name?:string,profile_photo_url?:string|null}  $payload
+     * @param  array{gender:string,city?:string}  $intent
+     */
+    private function createGoogleUser(array $payload, array $intent): RedirectResponse
+    {
+        $email = (string) $payload['email'];
+        if (User::query()->where('email', $email)->exists()) {
+            session()->forget(['google_signup', 'google_signup_intent']);
+
+            return redirect()->route('login')->withErrors(['login' => 'Bu e-posta ile zaten bir hesap var. Giriş yapın.']);
+        }
+
+        $username = $this->makeUniqueUsername(
+            (string) ($payload['first_name'] ?? ''),
+            (string) ($payload['last_name'] ?? ''),
+            $email
         );
 
+        $city = trim((string) ($intent['city'] ?? ''));
         $userData = [
-            'username' => $validated['username'],
-            'first_name' => $payload['first_name'] ?: $validated['username'],
-            'last_name' => $payload['last_name'] ?: '',
-            'email' => $payload['email'],
-            'phone' => $validated['phone'],
-            'gender' => $validated['gender'],
-            'country' => $validated['country'],
-            'city' => $validated['city'],
-            'district' => $validated['district'] ?? '',
+            'username' => $username,
+            'first_name' => ($payload['first_name'] ?? '') !== '' ? $payload['first_name'] : $username,
+            'last_name' => $payload['last_name'] ?? '',
+            'email' => $email,
+            'google_id' => $payload['google_id'] ?? null,
+            'gender' => $intent['gender'],
+            'country' => 'Türkiye',
+            'city' => $city,
+            'district' => '',
             'profile_photo_url' => $payload['profile_photo_url'] ?? null,
             'registration_source' => 'google',
             'email_verified_at' => now(),
         ];
 
-        if ($validated['gender'] === 'male') {
+        if ($intent['gender'] === 'male') {
             $userData['trial_ends_at'] = User::trialEndsAtForNewMale();
         }
 
@@ -226,7 +277,7 @@ class GoogleAuthController extends Controller
             // Atıf/ödül hatası kayıt akışını durdurmasın.
         }
 
-        session()->forget('google_signup');
+        session()->forget(['google_signup', 'google_signup_intent']);
         Auth::login($user, true);
         session([
             'growth_signed_up' => 1,
@@ -241,6 +292,40 @@ class GoogleAuthController extends Controller
         }
 
         return redirect()->route('feed')->with('success', 'Google hesabınızla kayıt tamamlandı.');
+    }
+
+    private function makeUniqueUsername(string $firstName, string $lastName, string $email): string
+    {
+        $raw = trim($firstName.' '.$lastName);
+        $slug = Str::lower(Str::ascii($raw));
+        $slug = preg_replace('/[^a-z0-9]+/', '_', $slug ?? '') ?? '';
+        $slug = trim($slug, '_');
+
+        if ($slug === '') {
+            $local = Str::lower(Str::ascii(Str::before($email, '@')));
+            $slug = preg_replace('/[^a-z0-9_]+/', '', $local ?? '') ?? '';
+            $slug = trim($slug, '_');
+        }
+
+        if ($slug === '' || strlen($slug) < 3) {
+            $slug = 'user'.random_int(100, 999);
+        }
+
+        $slug = substr($slug, 0, 40);
+        $candidate = $slug;
+        $i = 0;
+
+        while (User::query()->where('username', $candidate)->exists()) {
+            $i++;
+            $suffix = (string) random_int(10, 99).$i;
+            $candidate = substr($slug, 0, max(3, 50 - strlen($suffix) - 1)).'_'.$suffix;
+            if ($i > 40) {
+                $candidate = 'user_'.Str::lower(Str::random(8));
+                break;
+            }
+        }
+
+        return $candidate;
     }
 
     private function redirectUri(): string

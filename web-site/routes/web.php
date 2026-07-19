@@ -502,6 +502,7 @@ Route::post('/reset-password', [AuthPageController::class, 'resetPassword'])->mi
 Route::post('/logout', [AuthPageController::class, 'logout'])->name('logout');
 
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
+Route::post('/auth/google/prepare', [GoogleAuthController::class, 'prepare'])->middleware('throttle:20,1,google-prepare')->name('auth.google.prepare');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 Route::get('/auth/google/complete', [GoogleAuthController::class, 'completeForm'])->name('auth.google.complete');
 Route::post('/auth/google/complete', [GoogleAuthController::class, 'complete'])->middleware('throttle:10,1,google-complete');

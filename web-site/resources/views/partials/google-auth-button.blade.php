@@ -1,5 +1,6 @@
 @php
-    $href = $href ?? url('auth/google');
+    $gate = ! empty($gate);
+    $href = $gate ? '#' : ($href ?? url('auth/google'));
     $label = $label ?? 'oogle ile devam et';
     if (str_starts_with($label, 'Google')) {
         $label = substr($label, 1);
@@ -8,11 +9,14 @@
     $class = trim('btn-google-auth '.($class ?? 'btn btn-primary btn-full btn-google-login btn-google-login--top'));
     $showArrow = $showArrow ?? true;
     $iconSize = $iconSize ?? 20;
+    $city = $city ?? '';
 @endphp
 <a
     href="{{ $href }}"
     class="{{ $class }}"
     aria-label="{{ $ariaLabel }}"
+    @if($gate) data-google-signup-gate="1" @endif
+    @if($gate && $city !== '') data-google-city="{{ $city }}" @endif
     @if(!empty($event)) data-gk-event="{{ $event }}" @endif
     @if(!empty($eventLabel)) data-gk-event-label="{{ $eventLabel }}" @endif
 >{{-- no whitespace between icon and label --}}<span class="btn-google-login__icon" aria-hidden="true">@include('partials.google-icon', ['size' => $iconSize])</span><span class="btn-google-login__label">{{ $label }}</span>@if($showArrow)<span class="btn-google-login__arrow" aria-hidden="true">→</span>@endif</a>

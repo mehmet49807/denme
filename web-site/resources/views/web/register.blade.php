@@ -21,7 +21,10 @@
         'event' => 'sign_up_click',
         'eventLabel' => 'google_register',
         'iconSize' => 22,
+        'gate' => true,
+        'city' => old('city', request('city', '')),
     ])
+    @include('partials.google-signup-gate')
 
     <p class="auth-divider"><span>veya e-posta ile</span></p>
 
@@ -84,10 +87,16 @@
 
             <div class="form-group auth-field">
                 <label for="gender"><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'users'])</span><span>Cinsiyet</span></label>
+                @php
+                    $prefillGender = old('gender', request('gender'));
+                    if (! in_array($prefillGender, ['female', 'male'], true)) {
+                        $prefillGender = '';
+                    }
+                @endphp
                 <select id="gender" name="gender" required>
                     <option value="">Seçiniz</option>
-                    <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Kadın</option>
-                    <option value="male" {{ old('gender') === 'male' ? 'selected' : '' }}>Erkek</option>
+                    <option value="female" {{ $prefillGender === 'female' ? 'selected' : '' }}>Kadın</option>
+                    <option value="male" {{ $prefillGender === 'male' ? 'selected' : '' }}>Erkek</option>
                 </select>
             </div>
 
@@ -96,7 +105,7 @@
                 @include('partials.location-fields', [
                     'countryMeta' => $countryMeta,
                     'country' => old('country', 'Türkiye'),
-                    'city' => old('city'),
+                    'city' => old('city', request('city')),
                     'district' => old('district'),
                 ])
             </div>

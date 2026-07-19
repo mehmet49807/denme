@@ -53,10 +53,22 @@
             <p class="landing-hero-eyebrow">Gönül Köprüsü — tanışma ve sohbet sitesi</p>
             <h1>Gönülleri<br><span class="landing-hero-accent">Birleştiren Köprü</span></h1>
             <p class="landing-hero-lead">
-                Ücretsiz üye ol, şehrine göre keşfet, güvenli sohbet et.
-                Kadınlarda mesajlaşma ücretsiz — ciddi ilişki ve evlilik için Gönül Köprüsü.
+                Şehrinde güvenli tanış — kadınlarda mesajlaşma ücretsiz.
             </p>
             @guest
+            @if(!empty($heroCities))
+            <ul class="landing-hero-city-chips" aria-label="Şehrine göre kayıt ol">
+                @foreach($heroCities as $cityLink)
+                    <li>
+                        <a
+                            href="{{ route('register', ['city' => $cityLink['name'], 'utm_source' => 'home', 'utm_medium' => 'hero_city', 'utm_campaign' => $cityLink['slug']]) }}"
+                            data-gk-event="sign_up_click"
+                            data-gk-event-label="home_hero_city_{{ $cityLink['slug'] }}"
+                        >{{ $cityLink['name'] }}</a>
+                    </li>
+                @endforeach
+            </ul>
+            @endif
             <div class="landing-hero-signup">
                 <div class="landing-hero-actions landing-hero-actions--inline">
                     <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'hero', 'utm_campaign' => 'organic']) }}" class="btn btn-primary" data-gk-event="sign_up_click" data-gk-event-label="home_hero">Ücretsiz Üye Ol</a>
@@ -73,6 +85,7 @@
                         'eventLabel' => 'home_hero_google',
                         'showArrow' => false,
                         'iconSize' => 18,
+                        'gate' => true,
                     ])
                     <p class="landing-hero-google-note">
                         <span class="landing-hero-google-note__icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'heart'])</span>
@@ -92,6 +105,23 @@
 </section>
 
 @include('partials.homepage-body')
+
+@guest
+<nav class="home-sticky-cta" aria-label="Hızlı üyelik">
+    <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'sticky', 'utm_campaign' => 'organic']) }}" class="home-sticky-cta__primary" data-gk-event="sign_up_click" data-gk-event-label="home_sticky">Üye Ol</a>
+    @include('partials.google-auth-button', [
+        'label' => 'oogle',
+        'ariaLabel' => 'Google ile üye ol',
+        'class' => 'home-sticky-cta__google',
+        'event' => 'sign_up_click',
+        'eventLabel' => 'home_sticky_google',
+        'showArrow' => false,
+        'iconSize' => 16,
+        'gate' => true,
+    ])
+</nav>
+@include('partials.google-signup-gate')
+@endguest
 @endsection
 
 @isset($jsonLd)

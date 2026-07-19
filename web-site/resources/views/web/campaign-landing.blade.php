@@ -18,12 +18,14 @@
 
     <div class="campaign-landing-cta">
         @include('partials.google-auth-button', [
-            'href' => $googleUrl,
             'label' => 'oogle ile hızlı kayıt',
-            'event' => 'google_complete',
-            'eventLabel' => 'campaign_'.$source,
+            'event' => 'sign_up_click',
+            'eventLabel' => 'campaign_'.$source.'_google',
             'iconSize' => 20,
+            'gate' => true,
+            'city' => $cityName ?? '',
         ])
+        @include('partials.google-signup-gate')
         <a href="{{ $registerUrl }}" class="btn btn-outline btn-full" data-gk-event="sign_up_click" data-gk-event-label="campaign_{{ $campaign }}">
             E-posta ile ücretsiz kayıt
         </a>
