@@ -48,21 +48,30 @@ class ProfilePageController extends Controller
             ->all();
 
         $profileViews = collect();
+        $profileViewsCount = 0;
         if ($user->canAccessWhoViewed()) {
+            $viewerScope = function ($query) {
+                $query->where(function ($inner) {
+                    $inner->whereNull('role')->orWhere('role', '!=', 'admin');
+                });
+            };
+
+            $profileViewsCount = ProfileView::query()
+                ->where('viewed_id', $user->id)
+                ->whereHas('viewer', $viewerScope)
+                ->count();
+
+            // Sayfa yükünü sabit tut: kapalı panel + sınırlı liste.
             $profileViews = ProfileView::query()
                 ->with('viewer:id,username,profile_photo_url,city,district,country,gender,is_verified,last_active_at,role,birth_date')
                 ->where('viewed_id', $user->id)
-                ->whereHas('viewer', function ($query) {
-                    $query->where(function ($inner) {
-                        $inner->whereNull('role')->orWhere('role', '!=', 'admin');
-                    });
-                })
+                ->whereHas('viewer', $viewerScope)
                 ->latest()
-                ->limit(30)
+                ->limit(40)
                 ->get();
         }
 
-        return view('web.profile', compact('user', 'posts', 'ownStoryGroup', 'likedPostIds', 'profileViews'));
+        return view('web.profile', compact('user', 'posts', 'ownStoryGroup', 'likedPostIds', 'profileViews', 'profileViewsCount'));
     }
 
     public function update(Request $request): RedirectResponse
