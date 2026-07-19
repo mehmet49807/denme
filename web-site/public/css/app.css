@@ -5677,13 +5677,22 @@ body.ig-story-open .app-sidebar {
 
 .page-landing .landing-hero-signup {
     margin-top: 0.15rem;
-    max-width: 420px;
+    max-width: 440px;
+}
+.page-landing .landing-hero-signup .landing-hero-actions {
+    width: 100%;
+}
+.page-landing .landing-hero-signup .landing-hero-actions .btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
 }
 .page-landing .landing-hero-fast-divider {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin: 0.85rem 0;
+    margin: 0.9rem 0;
     color: rgba(255, 255, 255, 0.62);
     font-size: 0.72rem;
     font-weight: 700;
@@ -5697,108 +5706,88 @@ body.ig-story-open .app-sidebar {
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
 }
+.page-landing .landing-hero-google-wrap {
+    padding: 0.85rem;
+    border-radius: 18px;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 10px 28px rgba(15, 8, 30, 0.16);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
 .page-landing .landing-hero-google {
     display: inline-flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 0.75rem;
+    justify-content: center;
+    gap: 0.7rem;
     width: 100%;
-    min-height: 3.25rem;
-    padding: 0.75rem 1rem;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.97);
+    min-height: 3.1rem;
+    padding: 0.7rem 1rem;
+    border-radius: 14px;
+    background: #fff;
     color: #1a1523;
+    font-size: 0.95rem;
+    font-weight: 750;
     text-decoration: none;
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    box-shadow:
-        0 10px 28px rgba(15, 8, 30, 0.22),
-        inset 0 1px 0 rgba(255, 255, 255, 0.85);
-    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 8px 22px rgba(15, 8, 30, 0.18);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 .page-landing .landing-hero-google:hover,
 .page-landing .landing-hero-google:focus-visible {
     color: #1a1523;
-    background: #fff;
     transform: translateY(-2px);
-    box-shadow:
-        0 14px 34px rgba(15, 8, 30, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    box-shadow: 0 12px 30px rgba(15, 8, 30, 0.26);
 }
 .page-landing .landing-hero-google__icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    width: 2.2rem;
-    height: 2.2rem;
-    border-radius: 12px;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 10px;
     background: #fff;
     border: 1px solid rgba(15, 23, 42, 0.08);
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 .page-landing .landing-hero-google__icon svg {
     display: block;
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 1.15rem;
+    height: 1.15rem;
 }
-.page-landing .landing-hero-google__text {
+.page-landing .landing-hero-google-note {
     display: flex;
-    flex-direction: column;
     align-items: flex-start;
-    gap: 0.1rem;
-    min-width: 0;
-    text-align: left;
-}
-.page-landing .landing-hero-google__text strong {
-    font-size: 0.98rem;
-    font-weight: 750;
-    line-height: 1.2;
-}
-.page-landing .landing-hero-google__text small {
-    font-size: 0.72rem;
-    font-weight: 500;
-    line-height: 1.25;
-    color: #5c5470;
-}
-.page-landing .landing-hero-alt {
-    padding: 0.85rem 0.95rem;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-.page-landing .landing-hero-alt-note {
-    margin: 0 0 0.7rem;
-    font-size: 0.82rem;
-    font-weight: 650;
-    line-height: 1.3;
+    gap: 0.45rem;
+    margin: 0.7rem 0 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.4;
     color: rgba(255, 255, 255, 0.9);
-    letter-spacing: 0.01em;
 }
-.page-landing .landing-hero-alt-note span {
-    color: #FBBF24;
-    font-weight: 750;
+.page-landing .landing-hero-google-note__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    color: #FF6B8A;
 }
-.page-landing .landing-hero-alt .landing-hero-actions {
-    width: 100%;
-}
-.page-landing .landing-hero-alt .landing-hero-actions .btn {
-    flex: 1 1 auto;
-    min-width: 0;
-    justify-content: center;
-    text-align: center;
+.page-landing .landing-hero-google-note__icon .theme-icon,
+.page-landing .landing-hero-google-note__icon .theme-icon svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    display: block;
 }
 
 .gk-cta-fast {
     margin-top: 0.35rem;
-    max-width: 360px;
+    max-width: 380px;
 }
 .gk-cta-fast-divider {
     display: flex;
     align-items: center;
     gap: 0.7rem;
-    margin: 0.75rem 0;
+    margin: 0.8rem 0;
     color: rgba(255, 255, 255, 0.65);
     font-size: 0.7rem;
     font-weight: 700;
@@ -5812,20 +5801,26 @@ body.ig-story-open .app-sidebar {
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
 }
+.gk-cta-google-wrap {
+    padding: 0.8rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
 .gk-cta-google {
     display: inline-flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 0.7rem;
+    justify-content: center;
+    gap: 0.65rem;
     width: 100%;
-    min-height: 2.9rem;
+    min-height: 2.85rem;
     padding: 0.65rem 0.9rem;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.96);
+    border-radius: 12px;
+    background: #fff;
     color: #1a1523;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.55);
     font-size: 0.9rem;
-    font-weight: 700;
+    font-weight: 750;
     text-decoration: none;
     box-shadow: 0 8px 22px rgba(15, 8, 30, 0.16);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
@@ -5838,51 +5833,41 @@ body.ig-story-open .app-sidebar {
 }
 .gk-cta-google__icon {
     display: inline-flex;
-    width: 2rem;
-    height: 2rem;
+    width: 1.75rem;
+    height: 1.75rem;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border-radius: 10px;
+    border-radius: 9px;
     background: #fff;
     border: 1px solid rgba(15, 23, 42, 0.08);
 }
 .gk-cta-google__icon svg {
     display: block;
-    width: 1.1rem;
-    height: 1.1rem;
+    width: 1.05rem;
+    height: 1.05rem;
 }
-.gk-cta-google__text {
+.gk-cta-google-note {
     display: flex;
-    flex-direction: column;
     align-items: flex-start;
-    gap: 0.08rem;
-    text-align: left;
-}
-.gk-cta-google__text strong {
-    font-size: 0.9rem;
-    line-height: 1.2;
-}
-.gk-cta-google__text small {
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: #5c5470;
-}
-.gk-cta-alt {
-    padding: 0.8rem 0.9rem;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-}
-.gk-cta-alt-note {
-    margin: 0 0 0.65rem;
-    font-size: 0.8rem;
-    font-weight: 650;
+    gap: 0.4rem;
+    margin: 0.65rem 0 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.4;
     color: rgba(255, 255, 255, 0.9);
 }
-.gk-cta-alt-note span {
-    color: #FBBF24;
-    font-weight: 750;
+.gk-cta-google-note__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    color: #FF6B8A;
+}
+.gk-cta-google-note__icon .theme-icon,
+.gk-cta-google-note__icon .theme-icon svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    display: block;
 }
 
 .page-landing .landing-hero-visual {
@@ -7028,11 +7013,9 @@ body.ig-story-open .app-sidebar {
         margin-left: auto;
         margin-right: auto;
     }
-    .page-landing .landing-hero-alt-note {
-        text-align: center;
-    }
-    .page-landing .landing-hero-alt .landing-hero-actions {
+    .page-landing .landing-hero-google-note {
         justify-content: center;
+        text-align: center;
     }
     .page-landing .landing-hero-visual { min-height: auto; margin-top: 0.5rem; }
     .page-landing .landing-hero-bg img { object-position: center 30%; }
