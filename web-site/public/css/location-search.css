@@ -14,6 +14,25 @@
     border-radius: var(--radius);
     background: rgba(255, 255, 255, 0.82);
     box-shadow: 0 8px 28px rgba(124, 58, 237, 0.06);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .location-search-panel {
+    background: rgba(27, 22, 36, 0.92);
+    border-color: var(--border);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme="dark"] .location-search-field select {
+    background: #1a1422;
+    color: var(--text);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+html[data-theme="dark"] .location-search-hint {
+    background: rgba(34, 26, 45, 0.9);
+    color: var(--text-muted);
+    border-color: rgba(255, 255, 255, 0.14);
 }
 
 .location-search-form-grid {
@@ -26,8 +45,9 @@
     display: block;
     margin-bottom: 0.35rem;
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--text-muted);
+    -webkit-text-fill-color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }

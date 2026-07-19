@@ -2,7 +2,7 @@
 
 .premium-page {
     --pm-ink: #1f1520;
-    --pm-muted: #6b5a66;
+    --pm-muted: #4b3b46;
     --pm-line: rgba(190, 24, 93, 0.14);
     --pm-surface: #ffffff;
     --pm-soft: #fff7f9;
@@ -23,6 +23,22 @@
     gap: 0.9rem;
     color: var(--pm-ink);
     font-family: var(--pm-font);
+}
+
+html[data-theme="dark"] .premium-page {
+    --pm-ink: #f4f1f8;
+    --pm-muted: #d4cce3;
+    --pm-line: rgba(251, 113, 133, 0.28);
+    --pm-surface: #1b1624;
+    --pm-soft: #221a2d;
+    --pm-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="dark"] .pm-intro {
+    background:
+        radial-gradient(ellipse 80% 70% at 100% 0%, rgba(251, 191, 36, 0.16), transparent 55%),
+        linear-gradient(145deg, #1b1624 0%, #221a2d 55%, #1a1422 100%);
+    border-color: var(--pm-line);
 }
 
 /* Intro — compact, brand-first, no shell interference */

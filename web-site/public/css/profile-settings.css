@@ -435,6 +435,7 @@ body.app-shell-body .site-header-inner {
     font-weight: 700;
     letter-spacing: 0.02em;
     color: var(--text-muted);
+    -webkit-text-fill-color: var(--text-muted);
     text-transform: uppercase;
 }
 
@@ -443,10 +444,19 @@ body.app-shell-body .site-header-inner {
 .profile-settings-form--authlike .auth-field textarea {
     padding: 0.72rem 0.95rem;
     border-radius: 14px;
-    border: 1.5px solid rgba(124, 58, 237, 0.14);
+    border: 1.5px solid rgba(124, 58, 237, 0.22);
     background: rgba(255, 255, 255, 0.95);
+    color: var(--text);
+    -webkit-text-fill-color: var(--text);
     font-size: 0.925rem;
     transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.profile-settings-form--authlike .auth-field input::placeholder,
+.profile-settings-form--authlike .auth-field textarea::placeholder {
+    color: var(--text-light);
+    -webkit-text-fill-color: var(--text-light);
+    opacity: 1;
+    font-weight: 500;
 }
 
 .profile-settings-form--authlike .auth-field input:focus,
