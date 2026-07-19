@@ -62,6 +62,7 @@
                 <a href="{{ route('login') }}" class="btn btn-ghost">Giriş Yap</a>
             </div>
             <div class="landing-hero-fast">
+                <p class="landing-hero-fast-divider" aria-hidden="true"><span>veya</span></p>
                 <a href="{{ url('auth/google') }}" class="landing-hero-google" data-gk-event="sign_up_click" data-gk-event-label="home_hero_google">
                     <span class="landing-hero-google__icon" aria-hidden="true">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18" height="18">
@@ -72,9 +73,17 @@
                             <path fill="none" d="M0 0h48v48H0z"/>
                         </svg>
                     </span>
-                    <span>Google ile devam et</span>
+                    <span class="landing-hero-google__text">
+                        <strong>Google ile devam et</strong>
+                        <small>Hesabınla saniyeler içinde üye ol</small>
+                    </span>
                 </a>
-                <p class="landing-hero-trust">30 sn · Ücretsiz · Kadınlarda mesaj ücretsiz · Kart yok</p>
+                <ul class="landing-hero-trust" aria-label="Hızlı üyelik avantajları">
+                    <li>30 sn</li>
+                    <li>Ücretsiz</li>
+                    <li>Kadınlarda mesaj ücretsiz</li>
+                    <li>Kart yok</li>
+                </ul>
             </div>
             @endguest
             @auth

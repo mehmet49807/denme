@@ -5676,94 +5676,210 @@ body.ig-story-open .app-sidebar {
 }
 
 .page-landing .landing-hero-fast {
-    margin-top: 0.85rem;
+    margin-top: 1rem;
     max-width: 420px;
+}
+.page-landing .landing-hero-fast-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 0.75rem;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.page-landing .landing-hero-fast-divider::before,
+.page-landing .landing-hero-fast-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
 }
 .page-landing .landing-hero-google {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.55rem;
+    justify-content: flex-start;
+    gap: 0.75rem;
     width: 100%;
-    min-height: 2.65rem;
-    padding: 0.65rem 1rem;
-    border-radius: 14px;
-    background: #fff;
+    min-height: 3.15rem;
+    padding: 0.7rem 0.95rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.96);
     color: #1a1523;
-    font-size: 0.92rem;
-    font-weight: 700;
     text-decoration: none;
-    box-shadow: 0 8px 24px rgba(15, 8, 30, 0.22);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow:
+        0 10px 28px rgba(15, 8, 30, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 .page-landing .landing-hero-google:hover,
 .page-landing .landing-hero-google:focus-visible {
     color: #1a1523;
-    transform: translateY(-1px);
-    box-shadow: 0 10px 28px rgba(15, 8, 30, 0.28);
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow:
+        0 14px 34px rgba(15, 8, 30, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 .page-landing .landing-hero-google__icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    width: 1.55rem;
-    height: 1.55rem;
-    border-radius: 999px;
+    width: 2.15rem;
+    height: 2.15rem;
+    border-radius: 12px;
     background: #fff;
     border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 .page-landing .landing-hero-google__icon svg {
     display: block;
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 1.2rem;
+    height: 1.2rem;
+}
+.page-landing .landing-hero-google__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+    min-width: 0;
+    text-align: left;
+}
+.page-landing .landing-hero-google__text strong {
+    font-size: 0.95rem;
+    font-weight: 750;
+    line-height: 1.2;
+}
+.page-landing .landing-hero-google__text small {
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.25;
+    color: #5c5470;
 }
 .page-landing .landing-hero-trust {
-    margin: 0.55rem 0 0;
-    font-size: 0.78rem;
-    line-height: 1.35;
-    color: rgba(255, 255, 255, 0.78);
-    letter-spacing: 0.01em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0.7rem 0 0;
+    padding: 0;
+}
+.page-landing .landing-hero-trust li {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.28rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 650;
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
+.gk-cta-fast {
+    margin-top: 0.9rem;
+}
+.gk-cta-fast-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0 0 0.65rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.gk-cta-fast-divider::before,
+.gk-cta-fast-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+}
 .gk-cta-google {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-    min-height: 2.45rem;
-    padding: 0.55rem 1rem;
-    border-radius: 12px;
-    background: #fff;
+    justify-content: flex-start;
+    gap: 0.7rem;
+    width: 100%;
+    max-width: 360px;
+    min-height: 2.9rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.96);
     color: #1a1523;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    font-size: 0.88rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
     font-weight: 700;
     text-decoration: none;
-    box-shadow: 0 4px 14px rgba(15, 8, 30, 0.08);
+    box-shadow: 0 8px 22px rgba(15, 8, 30, 0.16);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 .gk-cta-google:hover,
 .gk-cta-google:focus-visible {
     color: #1a1523;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(15, 8, 30, 0.22);
 }
 .gk-cta-google__icon {
     display: inline-flex;
-    width: 1.35rem;
-    height: 1.35rem;
+    width: 2rem;
+    height: 2rem;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
 }
 .gk-cta-google__icon svg {
     display: block;
-    width: 1rem;
-    height: 1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+}
+.gk-cta-google__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.08rem;
+    text-align: left;
+}
+.gk-cta-google__text strong {
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+.gk-cta-google__text small {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #5c5470;
 }
 .gk-cta-trust {
-    margin: 0.5rem 0 0;
-    font-size: 0.78rem;
-    line-height: 1.35;
-    color: rgba(255, 255, 255, 0.78);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0.65rem 0 0;
+    padding: 0;
+}
+.gk-cta-trust li {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.26rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 650;
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .page-landing .landing-hero-visual {
@@ -6908,7 +7024,9 @@ body.ig-story-open .app-sidebar {
     .page-landing .landing-hero-fast {
         margin-left: auto;
         margin-right: auto;
-        text-align: center;
+    }
+    .page-landing .landing-hero-trust {
+        justify-content: center;
     }
     .page-landing .landing-hero-visual { min-height: auto; margin-top: 0.5rem; }
     .page-landing .landing-hero-bg img { object-position: center 30%; }
