@@ -448,7 +448,9 @@ admin_payload = {
     if path.is_file()
 }
 OUT.write_text(
-    php.replace("FILES_JSON", json.dumps(payload)).replace("ADMIN_FILES_JSON", json.dumps(admin_payload)),
+    php.replace("__ADMIN_FILES_JSON__", json.dumps(admin_payload)).replace(
+        "FILES_JSON", json.dumps(payload)
+    ),
     encoding="utf-8",
 )
 print(f"wrote {OUT} ({OUT.stat().st_size} bytes, {len(payload)} files)")
