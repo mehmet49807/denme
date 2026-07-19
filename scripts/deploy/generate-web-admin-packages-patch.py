@@ -29,6 +29,8 @@ files = {
     / "resources/views/admin/marketing.blade.php",
     "resources/views/partials/admin-nav.blade.php": ADMIN
     / "resources/views/partials/admin-nav.blade.php",
+    "resources/views/layouts/admin.blade.php": ADMIN
+    / "resources/views/layouts/admin.blade.php",
     "routes/adminlogin.php": ADMIN / "routes/adminlogin.php",
     "public/css/admin.css": ROOT / "scripts/deploy/assets/admin.css",
     "css/admin.css": ROOT / "scripts/deploy/assets/admin.css",

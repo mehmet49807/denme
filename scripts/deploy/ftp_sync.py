@@ -90,6 +90,11 @@ def should_upload(
     if remote_size != local_size:
         return True, "size-diff"
 
+    # Delta-listed files can keep the same byte size (e.g. cache-bust v1→v2).
+    # Always re-upload those instead of trusting size-match alone.
+    if changed is not None and path_matches_delta(repo_rel, changed):
+        return True, "delta-force"
+
     if not verify_hash:
         return False, "size-match"
 
