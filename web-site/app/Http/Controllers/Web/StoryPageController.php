@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class StoryPageController extends Controller
 {
@@ -44,7 +45,12 @@ class StoryPageController extends Controller
         $file = $request->file('media');
 
         if ($this->detectMediaType($file) === 'video') {
-            $duration = $this->getVideoDurationSeconds($file);
+            try {
+                $duration = $this->getVideoDurationSeconds($file);
+            } catch (\Throwable) {
+                $duration = null;
+            }
+
             if ($duration !== null && $duration > 15.5) {
                 $message = 'Hikaye videoları en fazla 15 saniye olabilir. Lütfen daha kısa bir video seçin.';
 
@@ -71,6 +77,11 @@ class StoryPageController extends Controller
             if ($mediaUrl) {
                 $this->mediaUpload->deleteByUrl($mediaUrl);
             }
+
+            Log::error('Story upload failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
 
             if ($request->expectsJson()) {
                 return response()->json([
@@ -117,14 +128,34 @@ class StoryPageController extends Controller
     private function getVideoDurationSeconds(UploadedFile $file): ?float
     {
         $path = $file->getRealPath();
-        if (!$path || !is_readable($path)) {
+        if (! $path || ! is_readable($path)) {
+            return null;
+        }
+
+        // cPanel'de shell_exec/exec sık disable_functions'ta; istemci zaten 15 sn kırpıyor.
+        $canShell = function_exists('shell_exec');
+        $canExec = function_exists('exec');
+        if (! $canShell && ! $canExec) {
             return null;
         }
 
         $escaped = escapeshellarg($path);
         foreach (['ffprobe', '/usr/bin/ffprobe', '/usr/local/bin/ffprobe'] as $bin) {
-            $cmd = $bin . ' -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ' . $escaped . ' 2>/dev/null';
-            $output = trim((string) @\shell_exec($cmd));
+            $cmd = $bin.' -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 '.$escaped.' 2>/dev/null';
+            $output = '';
+
+            try {
+                if ($canShell) {
+                    $output = trim((string) \shell_exec($cmd));
+                } elseif ($canExec) {
+                    $lines = [];
+                    \exec($cmd, $lines);
+                    $output = trim(implode("\n", $lines));
+                }
+            } catch (\Throwable) {
+                return null;
+            }
+
             if ($output !== '' && is_numeric($output)) {
                 return (float) $output;
             }

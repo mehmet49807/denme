@@ -9,7 +9,7 @@ class Story extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'user_id', 'media_url', 'media_type', 'expires_at',
+        'user_id', 'media_url', 'media_type', 'expires_at', 'created_at',
     ];
 
     protected static function booted(): void

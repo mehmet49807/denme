@@ -21,11 +21,14 @@ class StoryService
 
     public function createForUser(User $user, string $mediaUrl, string $mediaType): Story
     {
+        $now = now();
+
         return Story::create([
             'user_id' => $user->id,
             'media_url' => $mediaUrl,
             'media_type' => $mediaType,
-            'expires_at' => $this->expiresAtForNewStory(),
+            'expires_at' => $this->expiresAtForNewStory($now),
+            'created_at' => $now,
         ]);
     }
 

@@ -150,6 +150,8 @@ files = {
     "app/Models/PremiumSubscription.php": WEB / "app/Models/PremiumSubscription.php",
     "app/Models/SiteSetting.php": WEB / "app/Models/SiteSetting.php",
     "app/Services/StoryService.php": WEB / "app/Services/StoryService.php",
+    "app/Services/MediaUploadService.php": WEB / "app/Services/MediaUploadService.php",
+    "app/Services/MediaOptimizer.php": WEB / "app/Services/MediaOptimizer.php",
     "app/Services/ReferralService.php": WEB / "app/Services/ReferralService.php",
     "app/Services/UserAttributionService.php": WEB / "app/Services/UserAttributionService.php",
     "app/Services/SiteSettingsService.php": WEB / "app/Services/SiteSettingsService.php",
