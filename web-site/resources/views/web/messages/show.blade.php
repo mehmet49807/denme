@@ -254,5 +254,5 @@ window.__gk_chat = {!! json_encode([
     }
 })();
 </script>
-<script src="{{ asset('js/chat.js') }}?v=chat-ig-v3"></script>
+@include('partials.asset', ['path' => 'js/chat.min.js'])
 @endsection

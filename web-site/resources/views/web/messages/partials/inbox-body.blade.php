@@ -73,9 +73,12 @@
     @endforeach
 </ul>
 @else
-<div class="messages-empty">
-    <p>{{ __('app.messages.empty_list') }}</p>
-    <p class="messages-empty-hint">{{ __('app.messages.empty_hint') }}</p>
-    <a href="{{ route('feed') }}" class="btn btn-primary btn-sm">{{ __('app.messages.go_feed') }}</a>
-</div>
+@include('partials.empty-state', [
+    'class' => 'messages-empty',
+    'icon' => 'messages',
+    'title' => __('app.messages.empty_list'),
+    'text' => __('app.messages.empty_hint'),
+    'ctaUrl' => route('users.index'),
+    'ctaLabel' => 'Üyeleri keşfet',
+])
 @endif

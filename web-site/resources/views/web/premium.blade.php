@@ -1,7 +1,7 @@
 @extends('layouts.app-with-sidebar')
 
 @php
-    $activeNav = '';
+    $activeNav = 'premium';
     $featuredPackage = $featuredPackage ?? 'gold';
 @endphp
 
@@ -160,22 +160,15 @@
                                     data-gk-event="premium_interest"
                                     data-gk-event-label="{{ $packageType }}"
                                 >
-                                    Web’den talep et
-                                </a>
-                                <a
-                                    href="mailto:destek@gonulkoprusu.com?subject={{ rawurlencode('Premium: '.$pkg['name']) }}&body={{ rawurlencode('Merhaba, '.$pkg['name'].' paketini satın almak istiyorum. Kullanıcı adım: '.($user->username ?? '')) }}"
-                                    class="pm-plan__buy-mail"
-                                >
-                                    E-posta ile satın al
+                                    {{ $pkg['name'] }} paketini seç
                                 </a>
                             </div>
                         @endunless
                     </article>
                 @endforeach
             </div>
-            <p class="pm-section__sub" style="margin-top:1rem">
-                Web’den paket talebi oluşturun; ekibimiz kısa sürede aktivasyon için size dönüş yapar.
-                Dilerseniz uygulamadan da satın alabilirsiniz.
+            <p class="pm-section__sub pm-section__sub--buy-note">
+                Paketi seçin; destek ekibi aktivasyonu tamamlar. Dilerseniz uygulamadan da satın alabilirsiniz.
             </p>
         </section>
 
@@ -184,10 +177,3 @@
     @endif
 </div>
 @endsection
-
-@push('head')
-<style>
-.pm-plan__buy{display:flex;flex-direction:column;gap:.45rem;margin-top:1rem}
-.pm-plan__buy-mail{font-size:.82rem;font-weight:650;text-align:center;color:var(--text-muted,#64748b)}
-</style>
-@endpush

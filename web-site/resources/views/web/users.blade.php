@@ -41,6 +41,14 @@
                 <span class="users-browse-pkg-legend__item users-browse-pkg-legend__item--gold">Gold</span>
                 <span class="users-browse-pkg-legend__item users-browse-pkg-legend__item--pro">Pro</span>
             </p>
+            @php $filter = $filter ?? 'all'; @endphp
+            <nav class="users-browse-filters" aria-label="Üye filtresi">
+                <a href="{{ route('users.index', ['filter' => 'all']) }}" class="{{ $filter === 'all' ? 'is-active' : '' }}">Tümü</a>
+                <a href="{{ route('users.index', ['filter' => 'online']) }}" class="{{ $filter === 'online' ? 'is-active' : '' }}">Çevrimiçi</a>
+                @if(filled($viewer->city ?? null))
+                    <a href="{{ route('users.index', ['filter' => 'city']) }}" class="{{ $filter === 'city' ? 'is-active' : '' }}">{{ $viewer->city }}</a>
+                @endif
+            </nav>
         </div>
     </header>
 
@@ -53,18 +61,14 @@
         {{ $users->links() }}
     </div>
     @else
-    <div class="users-browse-empty">
-        <div class="users-browse-empty-icon" aria-hidden="true">
-            <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-        </div>
-        <h2>{{ __('app.users.empty_title') }}</h2>
-        <p>{{ __('app.users.empty_text') }}</p>
-    </div>
+    @include('partials.empty-state', [
+        'class' => 'users-browse-empty',
+        'icon' => 'users',
+        'title' => __('app.users.empty_title'),
+        'text' => __('app.users.empty_text'),
+        'ctaUrl' => route('users.index', ['filter' => 'all']),
+        'ctaLabel' => __('app.users.discover_badge'),
+    ])
     @endif
 </div>
 @endsection

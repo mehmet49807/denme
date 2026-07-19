@@ -83,7 +83,7 @@ for f in app.css; do
     cp "/tmp/prod-assets/css/$f" "$CSS_DIR/$f"
   fi
 done
-for f in badges.js live-sync.js page-auto-refresh.js rt-client.js feed.js stories.js locations.js profile-photo.js profile-posts.js flagged-select.js; do
+for f in badges.js live-sync.js page-auto-refresh.js rt-client.js feed.js stories.js locations.js profile-photo.js profile-posts.js flagged-select.js chat.js; do
   if [[ ! -f "$JS_DIR/$f" && -f "/tmp/prod-assets/js/$f" ]]; then
     cp "/tmp/prod-assets/js/$f" "$JS_DIR/$f"
   fi
@@ -143,7 +143,8 @@ for f in \
   hobbies-picker.js \
   mobile-bottom-nav.js \
   profile-settings.js \
-  flagged-select.js
+  flagged-select.js \
+  chat.js
 do
   minify_js_file "$JS_DIR/$f" "$JS_DIR/${f%.js}.min.js"
 done

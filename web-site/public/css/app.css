@@ -8089,3 +8089,146 @@ html[data-theme="dark"] .chat-greeting-chip {
     font-weight: 700;
     cursor: pointer;
 }
+
+/* —— App premium stability pack —— */
+.app-content:has(.users-browse-page),
+.app-content:has(.notifications-page),
+.app-content:has(.dm-shell),
+.app-content:has(.profile-page) {
+    padding: 0.55rem 0 0.65rem;
+    min-height: auto;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.gk-empty {
+    text-align: center;
+    padding: 2.4rem 1.15rem;
+    border-radius: var(--radius-lg, 24px);
+    border: 1px dashed var(--border-strong, rgba(236, 72, 153, 0.28));
+    background: linear-gradient(160deg, rgba(124, 58, 237, 0.06), rgba(255, 107, 138, 0.05));
+}
+.gk-empty__icon {
+    width: 3.25rem;
+    height: 3.25rem;
+    margin: 0 auto 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    color: #7C3AED;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.16), rgba(236, 72, 153, 0.14));
+    border: 1px solid rgba(124, 58, 237, 0.2);
+}
+.gk-empty__icon .theme-icon svg,
+.gk-empty__icon svg { width: 1.35rem; height: 1.35rem; display: block; }
+.gk-empty__title {
+    margin: 0 0 0.35rem;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+.gk-empty__text {
+    margin: 0 auto;
+    max-width: 28rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+.gk-empty__cta { margin-top: 1rem; }
+
+.gk-toast-host {
+    position: fixed;
+    left: 50%;
+    bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    z-index: 120;
+    display: grid;
+    gap: 0.45rem;
+    width: min(92vw, 360px);
+    pointer-events: none;
+}
+.gk-toast {
+    padding: 0.75rem 0.95rem;
+    border-radius: 14px;
+    background: rgba(26, 18, 37, 0.92);
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 650;
+    box-shadow: 0 12px 32px rgba(15, 8, 30, 0.28);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+.gk-toast.is-in { opacity: 1; transform: translateY(0); }
+.gk-toast.is-out { opacity: 0; transform: translateY(6px); }
+.gk-toast--success { background: linear-gradient(135deg, #0f766e, #059669); }
+.gk-toast--error { background: linear-gradient(135deg, #b91c1c, #e11d48); }
+
+.users-browse-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.85rem 0 1rem;
+}
+.users-browse-filters a,
+.users-browse-filters button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(28, 20, 24, 0.1);
+    background: #fff;
+    color: #4a3b43;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+.users-browse-filters a.is-active,
+.users-browse-filters button.is-active {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.14), rgba(124, 58, 237, 0.12));
+    border-color: rgba(236, 72, 153, 0.28);
+    color: #9d174d;
+}
+.users-browse-card-skeleton {
+    min-height: 220px;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #f3eef4 25%, #faf7fa 37%, #f3eef4 63%);
+    background-size: 400% 100%;
+    animation: gk-shimmer 1.2s ease infinite;
+}
+@keyframes gk-shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+}
+.dm-inbox-body.is-refreshing { opacity: 0.72; transition: opacity 0.2s ease; }
+.header-premium-btn--active {
+    box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.45), 0 8px 22px rgba(236, 72, 153, 0.22);
+}
+
+@media (max-width: 768px) {
+    .app-content:has(.users-browse-page),
+    .app-content:has(.notifications-page),
+    .app-content:has(.dm-shell),
+    .app-content:has(.profile-page) {
+        padding: 0.35rem 0.65rem 0.5rem;
+        border-radius: 0;
+    }
+    .users-browse-cta { opacity: 1 !important; transform: none !important; }
+}
+
+
+/* Shared empty-state bridges (legacy class names) */
+.gk-empty.notifications-empty,
+.gk-empty.messages-empty,
+.gk-empty.feed-empty-state,
+.gk-empty.profile-posts-empty,
+.gk-empty.users-browse-empty {
+    margin: 1rem 0 1.25rem;
+    background: linear-gradient(160deg, rgba(124, 58, 237, 0.06), rgba(255, 107, 138, 0.05));
+    border: 1px dashed var(--border-strong, rgba(236, 72, 153, 0.28));
+}
