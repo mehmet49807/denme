@@ -76,10 +76,18 @@
 
     <h2>İlgili konular</h2>
     <ul class="city-seo-links">
-        <li><a href="{{ route('seo.marriage') }}">Evlilik sitesi</a></li>
-        <li><a href="{{ route('seo.serious') }}">Ciddi ilişki</a></li>
-        <li><a href="{{ route('seo.free') }}">Ücretsiz tanışma sitesi</a></li>
-        <li><a href="{{ route('seo.friendship') }}">Arkadaşlık sitesi</a></li>
+        @if(Route::has('seo.marriage'))
+            <li><a href="{{ route('seo.marriage') }}">Evlilik sitesi</a></li>
+        @endif
+        @if(Route::has('seo.serious'))
+            <li><a href="{{ route('seo.serious') }}">Ciddi ilişki</a></li>
+        @endif
+        @if(Route::has('seo.free'))
+            <li><a href="{{ route('seo.free') }}">Ücretsiz tanışma sitesi</a></li>
+        @endif
+        @if(Route::has('seo.friendship'))
+            <li><a href="{{ route('seo.friendship') }}">Arkadaşlık sitesi</a></li>
+        @endif
         <li><a href="{{ route('safe-meeting') }}">Güvenli tanışma</a></li>
     </ul>
 @endsection

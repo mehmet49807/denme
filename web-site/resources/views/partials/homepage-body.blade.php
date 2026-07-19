@@ -231,12 +231,22 @@
                 <h2 id="gk-seo-cities-heading">Türkiye’nin her yerinde güvenli tanışma</h2>
                 <p class="gk-lead">İstanbul, Ankara, İzmir ve onlarca şehirde ücretsiz tanışma, sohbet ve evlilik odaklı eşleşme. Şehrini seç, hemen keşfet.</p>
             </header>
+            @if(Route::has('seo.marriage') || Route::has('seo.serious') || Route::has('seo.free') || Route::has('seo.friendship'))
             <nav class="gk-seo-pillars" aria-label="Tanışma konuları">
-                <a href="{{ route('seo.marriage') }}">Evlilik sitesi</a>
-                <a href="{{ route('seo.serious') }}">Ciddi ilişki</a>
-                <a href="{{ route('seo.free') }}">Ücretsiz tanışma</a>
-                <a href="{{ route('seo.friendship') }}">Arkadaşlık sitesi</a>
+                @if(Route::has('seo.marriage'))
+                    <a href="{{ route('seo.marriage') }}">Evlilik sitesi</a>
+                @endif
+                @if(Route::has('seo.serious'))
+                    <a href="{{ route('seo.serious') }}">Ciddi ilişki</a>
+                @endif
+                @if(Route::has('seo.free'))
+                    <a href="{{ route('seo.free') }}">Ücretsiz tanışma</a>
+                @endif
+                @if(Route::has('seo.friendship'))
+                    <a href="{{ route('seo.friendship') }}">Arkadaşlık sitesi</a>
+                @endif
             </nav>
+            @endif
             <ul class="gk-seo-city-list">
                 @foreach($seoCitiesTop as $cityLink)
                     <li><a href="{{ route('city.seo', $cityLink['slug']) }}">{{ $cityLink['name'] }} tanışma</a></li>
