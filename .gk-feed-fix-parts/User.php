@@ -165,7 +165,16 @@ class User extends Authenticatable
         }
     }
 
-    /** Gold+ veya deneme: hikaye paylaşımı */
+    /**
+     * Hikaye görüntüleme: paket gerekmez.
+     * Pro/Gold/Platinum olmayan kullanıcılar da tüm hikayeleri görebilir.
+     */
+    public function canViewStories(): bool
+    {
+        return ! $this->is_banned;
+    }
+
+    /** Gold+ veya deneme: hikaye paylaşımı (görüntüleme serbest) */
     public function canPostStories(): bool
     {
         if ($this->isAdmin() || $this->gender === 'female') {
@@ -539,6 +548,7 @@ class User extends Authenticatable
             'is_on_trial' => $this->isOnTrial(),
             'trial_ends_at' => $this->trial_ends_at?->toIso8601String(),
             'trial_days_remaining' => $this->trialDaysRemaining(),
+            'can_view_stories' => $this->canViewStories(),
             'can_post_stories' => $this->canPostStories(),
             'can_send_messages' => $this->canSendMessages(),
             'can_access_who_viewed' => $this->canAccessWhoViewed(),

@@ -8,9 +8,10 @@ use Illuminate\Support\Collection;
 
 class StoryGroupService
 {
-    private const DISCOVERY_STORY_LIMIT = 160;
+    /** Paketsiz kullanıcılar da mümkün olduğunca tüm hikayeleri görsün. */
+    private const DISCOVERY_STORY_LIMIT = 500;
 
-    private const DISCOVERY_GROUP_LIMIT = 30;
+    private const DISCOVERY_GROUP_LIMIT = 150;
 
     public function __construct(
         private GenderFilterService $genderFilter,
@@ -64,20 +65,32 @@ class StoryGroupService
 
         $now = now()->toDateTimeString();
 
-        // Önce paket / boost ile sırala, sonra limit — Platinum hikayeleri aday setinden düşmesin.
-        $stories = Story::active()
-            ->with('user')
-            ->join('users', 'users.id', '=', 'stories.user_id')
-            ->where('stories.user_id', '!=', $viewer->id)
-            ->whereIn('stories.user_id', $visibleUserIds)
-            ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now])
-            ->orderByRaw(User::packageTypeOrderSql('users.id'), [$now])
-            ->orderByDesc('stories.created_at')
-            ->select('stories.*')
-            ->limit(self::DISCOVERY_STORY_LIMIT)
-            ->get();
+        try {
+            // Önce paket / boost ile sırala — görüntüleme herkese açık, sıralama sadece öne çıkarma.
+            $stories = Story::active()
+                ->with('user')
+                ->join('users', 'users.id', '=', 'stories.user_id')
+                ->where('stories.user_id', '!=', $viewer->id)
+                ->whereIn('stories.user_id', $visibleUserIds)
+                ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now])
+                ->orderByRaw(User::packageTypeOrderSql('users.id'), [$now])
+                ->orderByDesc('stories.created_at')
+                ->select('stories.*')
+                ->limit(self::DISCOVERY_STORY_LIMIT)
+                ->get();
+        } catch (\Throwable) {
+            // Sıralama sorgusu düşerse paketsiz kullanıcılar yine tüm hikayeleri görsün.
+            $stories = Story::active()
+                ->with('user')
+                ->where('user_id', '!=', $viewer->id)
+                ->whereIn('user_id', $visibleUserIds)
+                ->latest()
+                ->limit(self::DISCOVERY_STORY_LIMIT)
+                ->get();
+        }
 
         return $stories
+            ->filter(fn ($story) => $story->user)
             ->groupBy('user_id')
             ->take(self::DISCOVERY_GROUP_LIMIT)
             ->map(function ($userStories) {

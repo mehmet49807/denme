@@ -25,7 +25,7 @@
     @include('partials.growth-invite-banner', ['viewer' => $viewer, 'showInviteBanner' => $showInviteBanner ?? false])
 
     <div class="feed-top">
-        @if($allStoryGroups->isNotEmpty() || $viewer->canPostStories())
+        @if($viewer->canViewStories() && ($allStoryGroups->isNotEmpty() || $viewer->canPostStories()))
         <section class="stories-section" aria-label="{{ __('app.feed.stories') }}">
             <div class="stories-strip">
                 @if($ownStoryGroup)
