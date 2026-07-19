@@ -66,7 +66,7 @@
                 <p class="landing-hero-fast-divider" aria-hidden="true"><span>veya</span></p>
 
                 <div class="landing-hero-google-wrap">
-                    <a href="{{ url('auth/google') }}" class="landing-hero-google" data-gk-event="sign_up_click" data-gk-event-label="home_hero_google">
+                    <a href="{{ url('auth/google') }}" class="btn btn-primary landing-hero-google" data-gk-event="sign_up_click" data-gk-event-label="home_hero_google">
                         <span class="landing-hero-google__icon" aria-hidden="true">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18" height="18">
                                 <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>

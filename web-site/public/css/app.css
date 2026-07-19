@@ -5707,60 +5707,48 @@ body.ig-story-open .app-sidebar {
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
 }
 .page-landing .landing-hero-google-wrap {
-    padding: 0.85rem;
-    border-radius: 18px;
-    background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    box-shadow: 0 10px 28px rgba(15, 8, 30, 0.16);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
 }
-.page-landing .landing-hero-google {
+.page-landing .landing-hero-google.btn-primary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.7rem;
+    gap: 0.65rem;
     width: 100%;
-    min-height: 3.1rem;
-    padding: 0.7rem 1rem;
-    border-radius: 14px;
-    background: #fff;
-    color: #1a1523;
-    font-size: 0.95rem;
-    font-weight: 750;
-    text-decoration: none;
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    box-shadow: 0 8px 22px rgba(15, 8, 30, 0.18);
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    min-height: 3rem;
+    background: linear-gradient(90deg, #FF6B8A, #FBBF24);
+    color: #1a0f2e;
+    box-shadow: 0 6px 24px rgba(251, 191, 36, 0.4);
+    border: 0;
 }
-.page-landing .landing-hero-google:hover,
-.page-landing .landing-hero-google:focus-visible {
-    color: #1a1523;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(15, 8, 30, 0.26);
+.page-landing .landing-hero-google.btn-primary:hover,
+.page-landing .landing-hero-google.btn-primary:focus-visible {
+    color: #1a0f2e;
+    box-shadow: 0 8px 28px rgba(251, 191, 36, 0.5);
 }
 .page-landing .landing-hero-google__icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    width: 1.85rem;
-    height: 1.85rem;
-    border-radius: 10px;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 9px;
     background: #fff;
-    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
 }
 .page-landing .landing-hero-google__icon svg {
     display: block;
-    width: 1.15rem;
-    height: 1.15rem;
+    width: 1.05rem;
+    height: 1.05rem;
 }
 .page-landing .landing-hero-google-note {
     display: flex;
     align-items: flex-start;
     gap: 0.45rem;
-    margin: 0.7rem 0 0;
+    margin: 0;
     font-size: 0.8rem;
     font-weight: 600;
     line-height: 1.4;
@@ -5802,56 +5790,38 @@ body.ig-story-open .app-sidebar {
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
 }
 .gk-cta-google-wrap {
-    padding: 0.8rem;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
 }
-.gk-cta-google {
+.gk-cta-google.gk-btn--fill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.65rem;
+    gap: 0.6rem;
     width: 100%;
-    min-height: 2.85rem;
-    padding: 0.65rem 0.9rem;
-    border-radius: 12px;
-    background: #fff;
-    color: #1a1523;
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    font-size: 0.9rem;
-    font-weight: 750;
-    text-decoration: none;
-    box-shadow: 0 8px 22px rgba(15, 8, 30, 0.16);
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-.gk-cta-google:hover,
-.gk-cta-google:focus-visible {
-    color: #1a1523;
-    transform: translateY(-1px);
-    box-shadow: 0 12px 28px rgba(15, 8, 30, 0.22);
 }
 .gk-cta-google__icon {
     display: inline-flex;
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 1.65rem;
+    height: 1.65rem;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border-radius: 9px;
+    border-radius: 8px;
     background: #fff;
-    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
 }
 .gk-cta-google__icon svg {
     display: block;
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 1rem;
+    height: 1rem;
 }
 .gk-cta-google-note {
     display: flex;
     align-items: flex-start;
     gap: 0.4rem;
-    margin: 0.65rem 0 0;
+    margin: 0;
     font-size: 0.78rem;
     font-weight: 600;
     line-height: 1.4;
