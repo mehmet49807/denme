@@ -5,6 +5,7 @@
         ['icon' => 'star', 'title' => __('app.premium.perk_featured_profile'), 'desc' => 'Gold ve Platinum'],
         ['icon' => 'camera', 'title' => __('app.premium.perk_stories'), 'desc' => 'Gold ve Platinum'],
         ['icon' => 'bolt', 'title' => __('app.premium.perk_top_featured'), 'desc' => 'Platinum'],
+        ['icon' => 'sparkles', 'title' => __('app.premium.perk_story_boost'), 'desc' => 'Platinum'],
         ['icon' => 'eye', 'title' => __('app.premium.perk_who_viewed'), 'desc' => 'Platinum'],
     ];
 @endphp
