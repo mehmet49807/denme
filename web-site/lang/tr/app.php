@@ -120,7 +120,7 @@ return [
         'story_expires_hint' => 'Video en fazla 15 saniye · 24 saat sonra otomatik silinir',
         'prev' => 'Önceki',
         'next' => 'Sonraki',
-        'recommended_title' => 'Önerilen üyeler',
+        'recommended_title' => 'Senin için Önerilen üyeler',
         'recommended_sub' => '',
     ],
 

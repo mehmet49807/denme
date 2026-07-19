@@ -120,7 +120,7 @@ return [
         'story_expires_hint' => 'Video up to 15 seconds · automatically deleted after 24 hours',
         'prev' => 'Previous',
         'next' => 'Next',
-        'recommended_title' => 'Recommended members',
+        'recommended_title' => 'Recommended for you',
         'recommended_sub' => '',
     ],
 

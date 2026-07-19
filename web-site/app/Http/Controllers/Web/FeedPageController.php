@@ -42,8 +42,10 @@ class FeedPageController extends Controller
             ->pluck('post_id')
             ->all();
 
-        // Önerilen üyeler: gönderilerin altında, paket sırasıyla (boost → Platinum → Gold → Pro)
-        $recommendedUsers = User::recommendedMembers($visibleUserIds, $viewer->id, 12);
+        // Erkeklere özel: gönderi altında "Senin için Önerilen üyeler"
+        $recommendedUsers = ($viewer->gender === 'male')
+            ? User::recommendedMembers($visibleUserIds, $viewer->id, 12)
+            : collect();
 
         $onboarding = null;
         if ($this->onboarding->shouldShow($viewer) || session('growth_show_onboarding')) {
