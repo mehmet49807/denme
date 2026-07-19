@@ -168,13 +168,16 @@ html[data-theme="dark"] .profile-boost--active .profile-boost__icon {
 /* —— Kimler baktı (yeniden tasarım) —— */
 .pv-panel {
     --pv-ink: #0f172a;
-    --pv-muted: #64748b;
+    --pv-muted: #3F3849;
     --pv-teal: #0f766e;
     --pv-teal-soft: rgba(15, 118, 110, 0.12);
     --pv-line: rgba(15, 23, 42, 0.08);
+    --text: #0f172a;
+    --text-muted: #3F3849;
     margin: 0 0 0.95rem;
     border-radius: 18px;
     border: 1px solid var(--pv-line);
+    color: var(--pv-ink);
     background:
         radial-gradient(ellipse 90% 80% at 100% 0%, rgba(15, 118, 110, 0.1), transparent 55%),
         linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
@@ -240,9 +243,10 @@ html[data-theme="dark"] .profile-boost--active .profile-boost__icon {
 }
 
 .pv-panel__subtitle {
-    font-size: 0.72rem;
-    font-weight: 600;
+    font-size: 0.74rem;
+    font-weight: 700;
     color: var(--pv-muted);
+    -webkit-text-fill-color: var(--pv-muted);
     line-height: 1.25;
 }
 
@@ -648,6 +652,9 @@ html[data-theme="dark"] .profile-boost--active .profile-boost__icon {
 
 /* Ortak bölüm başlığı — Galeri & Gönderiler */
 .profile-section-head {
+    --text: #1A1523;
+    --text-muted: #3F3849;
+    --text-light: #5C5470;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -657,6 +664,7 @@ html[data-theme="dark"] .profile-boost--active .profile-boost__icon {
     padding: 0.85rem 0.95rem;
     border-radius: 16px;
     border: 1px solid rgba(190, 24, 93, 0.12);
+    color: #1A1523;
     background:
         radial-gradient(ellipse 70% 90% at 100% 0%, rgba(251, 113, 133, 0.16), transparent 55%),
         radial-gradient(ellipse 50% 70% at 0% 100%, rgba(251, 191, 36, 0.12), transparent 50%),
@@ -716,13 +724,15 @@ html[data-theme="dark"] .profile-boost--active .profile-boost__icon {
     letter-spacing: -0.02em;
     line-height: 1.2;
     color: #1c1418;
+    -webkit-text-fill-color: #1c1418;
 }
 
 .profile-section-head__sub {
     margin: 0.18rem 0 0;
-    font-size: 0.74rem;
-    font-weight: 600;
-    color: #6a5b63;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #3F3849;
+    -webkit-text-fill-color: #3F3849;
     line-height: 1.35;
 }
 

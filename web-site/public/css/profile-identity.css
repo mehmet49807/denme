@@ -21,6 +21,8 @@
     margin: 0;
     font-size: 1.35rem;
     line-height: 1.25;
+    color: #1A1523;
+    -webkit-text-fill-color: #1A1523;
 }
 
 .profile-identity-age {
@@ -38,6 +40,14 @@
 
 .profile-identity-location {
     margin: 0;
+    color: #3F3849;
+    -webkit-text-fill-color: #3F3849;
+    font-weight: 600;
+}
+
+.profile-identity .profile-bio {
+    color: #1A1523;
+    -webkit-text-fill-color: #1A1523;
 }
 
 .profile-relationship-status {

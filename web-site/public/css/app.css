@@ -25,7 +25,7 @@
     --gradient-logo: linear-gradient(135deg, var(--coral) 0%, var(--orange) 55%, var(--purple) 100%);
     --gradient-sunset: linear-gradient(135deg, var(--violet) 0%, var(--magenta) 32%, var(--coral) 62%, var(--gold) 100%);
     --gradient-post: linear-gradient(135deg, var(--violet) 0%, var(--magenta) 52%, var(--coral) 100%);
-    --gradient-story: linear-gradient(135deg, var(--coral) 0%, var(--orange) 48%, var(--gold) 100%);
+    --gradient-story: linear-gradient(135deg, #db2777 0%, #ea580c 52%, #c2410c 100%);
     --gradient-soft: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(236, 72, 153, 0.08) 40%, rgba(255, 107, 138, 0.1) 70%, rgba(251, 191, 36, 0.08) 100%);
     --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
 }
@@ -2124,14 +2124,22 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
 }
 .feed-create-btn--story {
     color: #fff;
+    -webkit-text-fill-color: #fff;
+    text-shadow: 0 1px 2px rgba(80, 20, 10, 0.35);
     border-color: transparent;
-    background: var(--gradient-story);
-    box-shadow: 0 4px 16px rgba(255, 107, 138, 0.32);
+    background: linear-gradient(135deg, #db2777 0%, #ea580c 52%, #c2410c 100%);
+    box-shadow: 0 4px 16px rgba(219, 39, 119, 0.32);
 }
 .feed-create-btn--story:hover {
     color: #fff;
-    box-shadow: 0 6px 22px rgba(255, 159, 67, 0.36);
+    -webkit-text-fill-color: #fff;
+    box-shadow: 0 6px 22px rgba(234, 88, 12, 0.38);
     filter: brightness(1.04);
+}
+.feed-create-btn--story .feed-create-icon,
+.feed-create-btn--story .feed-create-label {
+    color: #fff;
+    -webkit-text-fill-color: #fff;
 }
 .feed-create-icon {
     display: inline-flex;
@@ -2916,6 +2924,13 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
 
 /* Profile */
 .profile-page .profile-header {
+    /* Açık kart: dark tema metin token’ları buraya sızmasın */
+    --text: #1A1523;
+    --text-muted: #3F3849;
+    --text-light: #5C5470;
+    --surface: #FFFFFF;
+    --bg-alt: #F3EEFF;
+    --border: rgba(124, 58, 237, 0.16);
     display: flex;
     gap: 1rem;
     align-items: flex-start;
@@ -2924,7 +2939,8 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
     padding: 0.85rem 0.9rem;
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.96) 0%, rgba(249, 246, 255, 0.88) 100%);
+    color: var(--text);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 246, 255, 0.94) 100%);
     box-shadow: 0 8px 28px rgba(124, 58, 237, 0.06);
 }
 .profile-photo-wrap {
@@ -3028,14 +3044,41 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
 .profile-photo-change input { display: none; }
 .icon-camera { width: 13px; height: 13px; color: #fff; }
 .profile-header-meta { flex: 1; min-width: 180px; }
-.profile-username { font-size: 1.35rem; margin-bottom: 0.25rem; display: inline-flex; align-items: center; flex-wrap: wrap; gap: 0.35rem; }
-.profile-location-line, .profile-post-count, .profile-story-hint { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem; }
-.profile-post-count { font-size: 0.82rem; color: var(--text-light); font-weight: 600; }
+.profile-username {
+    font-size: 1.35rem;
+    margin-bottom: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    color: #1A1523;
+    -webkit-text-fill-color: #1A1523;
+}
+.profile-location-line,
+.profile-post-count {
+    font-size: 0.85rem;
+    color: #3F3849;
+    -webkit-text-fill-color: #3F3849;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+.profile-post-count {
+    font-size: 0.82rem;
+    color: #3F3849;
+    -webkit-text-fill-color: #3F3849;
+    font-weight: 700;
+}
+.profile-post-count-age {
+    color: #5C5470;
+    -webkit-text-fill-color: #5C5470;
+    font-weight: 600;
+}
 .profile-story-hint {
     font-size: 0.78rem;
-    color: var(--violet);
+    color: #5b21b6;
+    -webkit-text-fill-color: #5b21b6;
     margin: 0;
-    font-weight: 600;
+    font-weight: 700;
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
@@ -3043,7 +3086,18 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
 .profile-story-hint::before {
     content: "✦";
     font-size: 0.7rem;
-    color: var(--magenta);
+    color: #db2777;
+    -webkit-text-fill-color: #db2777;
+}
+.profile-page .profile-bio {
+    color: #1A1523;
+    -webkit-text-fill-color: #1A1523;
+}
+.profile-page .profile-location-line .location-link,
+.profile-page .profile-location-line a {
+    color: #3F3849;
+    -webkit-text-fill-color: #3F3849;
+    font-weight: 600;
 }
 
 .profile-stories-section {
@@ -3285,7 +3339,14 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
     .profile-settings-toggle { border-color: var(--border); background: var(--surface); box-shadow: none; }
     .profile-settings[open] .profile-settings-toggle { background: var(--gradient-sunset); color: #fff; }
     .feed-create-btn--post { border-color: transparent; background: var(--gradient-post); color: #fff; box-shadow: 0 4px 16px rgba(124, 58, 237, 0.32); }
-    .feed-create-btn--story { border-color: transparent; background: var(--gradient-story); color: #fff; box-shadow: 0 4px 16px rgba(255, 107, 138, 0.32); }
+    .feed-create-btn--story {
+        border-color: transparent;
+        background: var(--gradient-story);
+        color: #fff;
+        -webkit-text-fill-color: #fff;
+        text-shadow: 0 1px 2px rgba(80, 20, 10, 0.35);
+        box-shadow: 0 4px 16px rgba(219, 39, 119, 0.32);
+    }
 }
 
 /* Hobiler — seçici & profil rozetleri */

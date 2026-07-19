@@ -12,9 +12,9 @@
 html[data-theme="dark"] {
     --smart-nav-page-bg: var(--bg, #121018);
     --smart-nav-bar-bg: rgba(27, 22, 36, 0.96);
-    --smart-nav-accent: #c4b5fd;
+    --smart-nav-accent: #e9d5ff;
     --smart-nav-accent-soft: rgba(196, 181, 253, 0.16);
-    --smart-nav-inactive: #d4cce3;
+    --smart-nav-inactive: #efe8f8;
 }
 
 @media (max-width: 767px) {
@@ -132,8 +132,8 @@ html[data-theme="dark"] {
         border-radius: 14px;
         background: transparent;
         color: var(--smart-nav-inactive, #4b556f);
-        font-size: 0.58rem;
-        font-weight: 700;
+        font-size: 0.62rem;
+        font-weight: 800;
         letter-spacing: 0.02em;
         text-transform: uppercase;
         transition:
