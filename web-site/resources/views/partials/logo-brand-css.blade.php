@@ -21,12 +21,24 @@
     display: none;
 }
 .page-landing .site-header--landing .site-logo-brand-img--ink,
-.page-auth .site-header--landing .site-logo-brand-img--ink {
+.page-auth .site-header--landing .site-logo-brand-img--ink,
+.site-footer .site-logo-brand-img--ink {
     display: none;
 }
 .page-landing .site-header--landing .site-logo-brand-img--light,
-.page-auth .site-header--landing .site-logo-brand-img--light {
+.page-auth .site-header--landing .site-logo-brand-img--light,
+.site-footer .site-logo-brand-img--light {
     display: block;
+}
+.site-footer .site-logo-brand-img {
+    height: 56px;
+    max-width: min(260px, 70vw);
+    filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.35));
+}
+.site-footer .site-logo--brand {
+    display: inline-flex;
+    padding: 0.35rem 0.45rem 0.35rem 0;
+    border-radius: 12px;
 }
 .page-landing .site-header--landing .site-logo-brand-img,
 .page-auth .site-header--landing .site-logo-brand-img {
