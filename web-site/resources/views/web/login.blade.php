@@ -13,7 +13,7 @@
 
 @section('auth-form')
     @include('partials.google-auth-button', [
-        'label' => 'Google ile Giriş Yap',
+        'label' => 'oogle ile Giriş Yap',
         'event' => 'google_login_click',
         'iconSize' => 22,
     ])

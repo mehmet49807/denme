@@ -17,7 +17,7 @@
 
 @section('auth-form')
     @include('partials.google-auth-button', [
-        'label' => 'Google ile Kayıt Ol',
+        'label' => 'oogle ile Kayıt Ol',
         'event' => 'sign_up_click',
         'eventLabel' => 'google_register',
         'iconSize' => 22,

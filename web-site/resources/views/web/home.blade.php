@@ -67,7 +67,7 @@
 
                 <div class="landing-hero-google-wrap">
                     @include('partials.google-auth-button', [
-                        'label' => 'Google ile devam et',
+                        'label' => 'oogle ile devam et',
                         'class' => 'btn btn-primary landing-hero-google',
                         'event' => 'sign_up_click',
                         'eventLabel' => 'home_hero_google',

@@ -19,7 +19,7 @@
     <div class="campaign-landing-cta">
         @include('partials.google-auth-button', [
             'href' => $googleUrl,
-            'label' => 'Google ile hızlı kayıt',
+            'label' => 'oogle ile hızlı kayıt',
             'event' => 'google_complete',
             'eventLabel' => 'campaign_'.$source,
             'iconSize' => 20,

@@ -284,7 +284,7 @@
                     <p class="gk-cta-fast-divider" aria-hidden="true"><span>veya</span></p>
                     <div class="gk-cta-google-wrap">
                         @include('partials.google-auth-button', [
-                            'label' => 'Google ile devam et',
+                            'label' => 'oogle ile devam et',
                             'class' => 'gk-btn gk-btn--fill gk-cta-google',
                             'event' => 'sign_up_click',
                             'eventLabel' => 'home_body_google',
