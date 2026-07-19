@@ -1,10 +1,11 @@
 @php
     $memberCount = (int) ($memberCount ?? 0);
     $onlineCount = (int) ($onlineCount ?? 0);
+    // Küçük sayıları pazarlama metninde gösterme; anlamlı eşik üstünde yuvarla.
     $memberLabel = $memberCount >= 1000
         ? number_format((int) floor($memberCount / 1000) * 1000, 0, ',', '.').'+'
-        : ($memberCount > 0 ? number_format($memberCount, 0, ',', '.') : '10.000+');
-    $onlineLabel = $onlineCount > 0 ? number_format($onlineCount, 0, ',', '.') : null;
+        : '10.000+';
+    $onlineLabel = $onlineCount >= 10 ? number_format($onlineCount, 0, ',', '.') : null;
     $homeFaqs = $homeFaqs ?? [];
     $homeStories = $homeStories ?? [];
 @endphp
