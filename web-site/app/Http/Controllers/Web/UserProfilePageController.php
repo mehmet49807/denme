@@ -36,7 +36,10 @@ class UserProfilePageController extends Controller
 
         $users = User::applyDiscoveryRanking($users)->paginate(24);
 
-        return view('web.users', compact('users', 'viewer'));
+        $visibleUserIds = $this->genderFilter->visibleUserIds($viewer);
+        $recommendedUsers = User::recommendedMembers($visibleUserIds, $viewer->id, 12);
+
+        return view('web.users', compact('users', 'viewer', 'recommendedUsers'));
     }
 
     public function show(Request $request, string $username): View|RedirectResponse

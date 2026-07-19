@@ -42,26 +42,8 @@ class FeedPageController extends Controller
             ->pluck('post_id')
             ->all();
 
-        $recommendedUsers = collect();
-        if ($visibleUserIds->isNotEmpty()) {
-            $recommendedQuery = User::query()
-                ->where('role', 'user')
-                ->where('is_banned', false)
-                ->where('id', '!=', $viewer->id)
-                ->whereIn('id', $visibleUserIds)
-                ->where(function ($q) {
-                    $q->where('boost_until', '>', now())
-                        ->orWhereHas('premiumSubscriptions', function ($sub) {
-                            $sub->where('is_active', true)
-                                ->where('expires_at', '>', now())
-                                ->whereIn('package_type', ['gold', 'platinum']);
-                        });
-                });
-
-            $recommendedUsers = User::applyDiscoveryRanking($recommendedQuery)
-                ->limit(10)
-                ->get();
-        }
+        // Önerilen üyeler: gönderilerin altında, paket sırasıyla (boost → Platinum → Gold → Pro)
+        $recommendedUsers = User::recommendedMembers($visibleUserIds, $viewer->id, 12);
 
         $onboarding = null;
         if ($this->onboarding->shouldShow($viewer) || session('growth_show_onboarding')) {

@@ -110,7 +110,7 @@ return [
         'prev' => 'Önceki',
         'next' => 'Sonraki',
         'recommended_title' => 'Önerilen üyeler',
-        'recommended_sub' => 'Gold ve Platinum üyeler keşifte öne çıkar.',
+        'recommended_sub' => 'Sıra: öne çıkan → Platinum → Gold → Pro. Kartları yana kaydır.',
     ],
 
     'messages' => [
@@ -158,13 +158,18 @@ return [
 
     'users' => [
         'title' => 'Üyeler',
+        'explore' => 'Keşfet',
         'discover_badge' => 'Keşfet',
+        'hero_lead' => 'Topluluğumuzdaki üyeleri keşfedin, profillerini inceleyin ve bağlantı kurun.',
         'lead' => 'Topluluğumuzdaki üyeleri keşfedin, profillerini inceleyin ve bağlantı kurun.',
         'stat_members' => 'üye',
         'stat_pages' => 'sayfa',
+        'page' => 'sayfa',
         'view_profile' => 'Profili Gör',
         'empty_title' => 'Henüz üye yok',
+        'empty_text' => 'Şu an görüntülenecek üye bulunmuyor. Daha sonra tekrar kontrol edin.',
         'empty' => 'Henüz görüntülenecek üye bulunmuyor.',
+        'posts_label' => 'gönderi',
     ],
 
     'notifications' => [

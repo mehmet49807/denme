@@ -89,8 +89,6 @@
         @include('partials.feed-toolbar', ['viewer' => $viewer])
     </div>
 
-    @include('partials.feed-recommended-users', ['recommendedUsers' => $recommendedUsers ?? collect()])
-
     <div class="feed-posts">
     @forelse($posts as $post)
     <article
@@ -213,8 +211,20 @@
             </div>
         </footer>
     </article>
+
+    {{-- Önerilen üyeler: gönderilerin altında, kart + yatay kaydırma, paket sırası --}}
+    @if($loop->iteration === 2 || ($loop->last && $loop->count < 2))
+        @include('partials.feed-recommended-users', [
+            'recommendedUsers' => $recommendedUsers ?? collect(),
+            'variant' => 'feed',
+        ])
+    @endif
     @empty
     <p class="feed-empty">{{ __('app.feed.empty') }}</p>
+    @include('partials.feed-recommended-users', [
+        'recommendedUsers' => $recommendedUsers ?? collect(),
+        'variant' => 'feed',
+    ])
     @endforelse
 
     {{ $posts->links() }}

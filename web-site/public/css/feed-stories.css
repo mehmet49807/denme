@@ -148,93 +148,198 @@
     color: #b45309;
 }
 
-/* Önerilen üyeler (Gold / Platinum) */
-.feed-recommended {
-    margin: 0 0 0.85rem;
-    padding: 0.75rem 0.85rem 0.9rem;
-    border-radius: 16px;
-    border: 1px solid rgba(245, 158, 11, 0.22);
+/* Önerilen üyeler — kart + yatay kaydırma */
+.rec-strip {
+    --rec-ink: #1f1520;
+    --rec-muted: #6b5a66;
+    margin: 0.85rem 0;
+    padding: 0.9rem 0.85rem 1rem;
+    border-radius: 18px;
+    border: 1px solid rgba(180, 83, 9, 0.18);
     background:
-        linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(255, 255, 255, 0.92) 55%),
-        #fff;
+        radial-gradient(ellipse 70% 80% at 0% 0%, rgba(245, 158, 11, 0.14), transparent 55%),
+        linear-gradient(160deg, #fff 0%, #fffbeb 100%);
+    box-shadow: 0 10px 24px rgba(31, 21, 32, 0.05);
 }
 
-.feed-recommended__head {
-    margin-bottom: 0.55rem;
+.rec-strip--feed {
+    margin: 0.75rem 0 1rem;
 }
 
-.feed-recommended__title {
+.rec-strip--members {
+    margin: 0 0 1.1rem;
+    border-color: rgba(15, 118, 110, 0.18);
+    background:
+        radial-gradient(ellipse 70% 80% at 100% 0%, rgba(15, 118, 110, 0.12), transparent 55%),
+        radial-gradient(ellipse 50% 60% at 0% 100%, rgba(245, 158, 11, 0.1), transparent 50%),
+        linear-gradient(155deg, #fff 0%, #f0fdfa 48%, #fffbeb 100%);
+}
+
+.rec-strip__head {
+    margin-bottom: 0.65rem;
+}
+
+.rec-strip__title {
     margin: 0 0 0.15rem;
-    font-size: 0.92rem;
+    font-size: 1rem;
     font-weight: 800;
-    letter-spacing: -0.01em;
-    color: var(--text, #1f1520);
+    letter-spacing: -0.02em;
+    color: var(--rec-ink);
 }
 
-.feed-recommended__sub {
+.rec-strip__sub {
     margin: 0;
     font-size: 0.72rem;
     font-weight: 600;
-    color: var(--text-muted, #6b5a66);
+    color: var(--rec-muted);
 }
 
-.feed-recommended__strip {
+.rec-strip__track {
     display: flex;
-    gap: 0.65rem;
+    gap: 0.7rem;
     overflow-x: auto;
-    padding-bottom: 0.15rem;
+    padding: 0.15rem 0.1rem 0.35rem;
+    scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
     scrollbar-width: thin;
 }
 
-.feed-recommended__card {
+.rec-card {
+    position: relative;
     flex: 0 0 auto;
-    width: 4.6rem;
+    width: 8.4rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 0.28rem;
+    gap: 0.45rem;
+    padding: 0.55rem 0.55rem 0.65rem;
+    border-radius: 16px;
     text-decoration: none;
     color: inherit;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    scroll-snap-align: start;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.feed-recommended__avatar {
+.rec-card:hover,
+.rec-card:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
+}
+
+.rec-card__frame {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 2px transparent;
+}
+
+.rec-card--pro .rec-card__frame {
+    box-shadow: inset 0 0 0 2px rgba(14, 165, 233, 0.55);
+}
+
+.rec-card--gold .rec-card__frame {
+    box-shadow: inset 0 0 0 2px rgba(245, 158, 11, 0.75);
+}
+
+.rec-card--platinum .rec-card__frame {
+    box-shadow:
+        inset 0 0 0 2px rgba(148, 163, 184, 0.9),
+        inset 0 0 0 3px rgba(251, 191, 36, 0.45);
+}
+
+.rec-card--boost .rec-card__frame {
+    box-shadow:
+        inset 0 0 0 2px rgba(245, 158, 11, 0.85),
+        0 0 0 3px rgba(245, 158, 11, 0.18);
+}
+
+.rec-strip--members .rec-card {
+    width: 9.2rem;
+    padding: 0.65rem;
+}
+
+.rec-strip--members .rec-card__photo {
+    width: 100%;
+    aspect-ratio: 1;
+    height: auto;
+    border-radius: 14px;
+}
+
+.rec-card__photo {
     position: relative;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
     overflow: hidden;
     display: grid;
     place-items: center;
     font-weight: 800;
-    color: #7c3aed;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(124, 58, 237, 0.16));
-    box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(245, 158, 11, 0.55);
+    color: #0f766e;
+    background: linear-gradient(145deg, rgba(15, 118, 110, 0.12), rgba(245, 158, 11, 0.14));
 }
 
-.feed-recommended__avatar img {
+.rec-card__photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-.feed-recommended__name {
-    max-width: 100%;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-align: center;
+.rec-card__initial {
+    font-size: 1.6rem;
+}
+
+.rec-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.rec-card__name {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--rec-ink);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.feed-recommended__card .profile-member-badges--compact {
-    justify-content: center;
-    margin: 0;
+.rec-card__age {
+    flex-shrink: 0;
+    padding: 0.05rem 0.35rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #0f766e;
+    background: rgba(15, 118, 110, 0.1);
 }
 
-.feed-recommended__card .member-badge {
-    font-size: 0.58rem;
-    padding: 0.12rem 0.4rem;
+.rec-card__place {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--rec-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+
+.rec-card .profile-member-badges--compact {
+    justify-content: flex-start;
+    margin: 0.15rem 0 0;
+}
+
+.rec-card .member-badge {
+    font-size: 0.58rem;
+    padding: 0.1rem 0.35rem;
+}
+
+/* geriye dönük eski sınıf */
+.feed-recommended { display: none; }

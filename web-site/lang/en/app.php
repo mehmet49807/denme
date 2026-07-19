@@ -110,7 +110,7 @@ return [
         'prev' => 'Previous',
         'next' => 'Next',
         'recommended_title' => 'Recommended members',
-        'recommended_sub' => 'Gold and Platinum members are featured in discovery.',
+        'recommended_sub' => 'Order: boosted → Platinum → Gold → Pro. Swipe the cards sideways.',
     ],
 
     'messages' => [
@@ -158,13 +158,18 @@ return [
 
     'users' => [
         'title' => 'Members',
+        'explore' => 'Discover',
         'discover_badge' => 'Discover',
+        'hero_lead' => 'Explore members in our community, view their profiles, and connect.',
         'lead' => 'Explore members in our community, view their profiles, and connect.',
         'stat_members' => 'members',
         'stat_pages' => 'pages',
+        'page' => 'pages',
         'view_profile' => 'View Profile',
         'empty_title' => 'No members yet',
+        'empty_text' => 'No members to display right now. Check back later.',
         'empty' => 'No members to display yet.',
+        'posts_label' => 'posts',
     ],
 
     'notifications' => [

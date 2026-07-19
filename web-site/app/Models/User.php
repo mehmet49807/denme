@@ -284,6 +284,38 @@ class User extends Authenticatable
     }
 
     /**
+     * Önerilen üyeler: boost → Platinum → Gold → Pro sırası.
+     *
+     * @param  \Illuminate\Support\Collection<int, int>|array<int, int>  $visibleUserIds
+     * @return \Illuminate\Support\Collection<int, User>
+     */
+    public static function recommendedMembers($visibleUserIds, int $excludeUserId, int $limit = 12)
+    {
+        $ids = collect($visibleUserIds)->filter()->values();
+        if ($ids->isEmpty()) {
+            return collect();
+        }
+
+        $query = static::query()
+            ->where('role', 'user')
+            ->where('is_banned', false)
+            ->where('id', '!=', $excludeUserId)
+            ->whereIn('id', $ids)
+            ->where(function ($q) {
+                $q->where('boost_until', '>', now())
+                    ->orWhereHas('premiumSubscriptions', function ($sub) {
+                        $sub->where('is_active', true)
+                            ->where('expires_at', '>', now())
+                            ->whereIn('package_type', ['pro', 'gold', 'platinum']);
+                    });
+            });
+
+        return static::applyDiscoveryRanking($query)
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
      * Gönderi akışında paket + boost önceliği (Platinum / Gold öne çıkar).
      *
      * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\Post>  $query

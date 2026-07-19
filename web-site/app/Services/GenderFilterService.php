@@ -78,4 +78,15 @@ class GenderFilterService
             })
             ->pluck('id');
     }
+
+    public function forgetVisibleUserIds(?int $userId = null): void
+    {
+        if ($userId === null) {
+            $this->blockedIdsCache = [];
+
+            return;
+        }
+
+        unset($this->blockedIdsCache[$userId]);
+    }
 }

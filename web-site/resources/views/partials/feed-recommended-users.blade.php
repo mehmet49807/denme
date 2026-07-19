@@ -1,26 +1,54 @@
 @php
     $recommendedUsers = $recommendedUsers ?? collect();
+    $variant = $variant ?? 'feed'; // feed | members
+    $sectionClass = $variant === 'members' ? 'rec-strip rec-strip--members' : 'rec-strip rec-strip--feed';
 @endphp
 
 @if($recommendedUsers->isNotEmpty())
-<section class="feed-recommended" aria-label="{{ __('app.feed.recommended_title') }}">
-    <header class="feed-recommended__head">
-        <h2 class="feed-recommended__title">{{ __('app.feed.recommended_title') }}</h2>
-        <p class="feed-recommended__sub">{{ __('app.feed.recommended_sub') }}</p>
+<section class="{{ $sectionClass }}" aria-label="{{ __('app.feed.recommended_title') }}">
+    <header class="rec-strip__head">
+        <div class="rec-strip__titles">
+            <h2 class="rec-strip__title">{{ __('app.feed.recommended_title') }}</h2>
+            <p class="rec-strip__sub">{{ __('app.feed.recommended_sub') }}</p>
+        </div>
     </header>
-    <div class="feed-recommended__strip">
+
+    <div class="rec-strip__track" role="list">
         @foreach($recommendedUsers as $user)
-            <a href="{{ route('users.show', $user->username) }}" class="feed-recommended__card">
-                <span class="feed-recommended__avatar" aria-hidden="true">
+            @php
+                $pkg = method_exists($user, 'activePackageType') ? $user->activePackageType() : null;
+                $pkg = $pkg ?: 'free';
+                $isBoosted = method_exists($user, 'isBoosted') && $user->isBoosted();
+                $place = collect([$user->city, $user->district])->filter()->implode(' · ');
+                if ($place === '') {
+                    $place = $user->country ?: 'Türkiye';
+                }
+                $frame = $isBoosted ? 'boost' : $pkg;
+            @endphp
+            <a
+                href="{{ route('users.show', $user->username) }}"
+                class="rec-card rec-card--{{ $frame }}"
+                role="listitem"
+            >
+                <span class="rec-card__frame" aria-hidden="true"></span>
+                <span class="rec-card__photo">
                     @if($user->profile_photo_url)
-                        <img src="{{ $user->profile_photo_url }}" alt="" width="56" height="56" loading="lazy" decoding="async">
+                        <img src="{{ $user->profile_photo_url }}" alt="" width="120" height="120" loading="lazy" decoding="async">
                     @else
-                        <span>{{ strtoupper(substr($user->username, 0, 1)) }}</span>
+                        <span class="rec-card__initial">{{ strtoupper(substr($user->username, 0, 1)) }}</span>
                     @endif
                     @include('partials.online-status-badge', ['user' => $user, 'size' => 'sm'])
                 </span>
-                <span class="feed-recommended__name">{{ $user->username }}</span>
-                @include('partials.profile-member-badges', ['user' => $user, 'compact' => true])
+                <span class="rec-card__body">
+                    <span class="rec-card__name">
+                        {{ $user->username }}
+                        @if(method_exists($user, 'age') && $user->age())
+                            <span class="rec-card__age">{{ $user->age() }}</span>
+                        @endif
+                    </span>
+                    <span class="rec-card__place">{{ $place }}</span>
+                    @include('partials.profile-member-badges', ['user' => $user, 'compact' => true])
+                </span>
             </a>
         @endforeach
     </div>
