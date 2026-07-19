@@ -183,34 +183,52 @@
         <input type="hidden" name="settings_panel" value="edit">
 
         <div class="form-group">
-            <label>Kullanıcı Adı (değiştirilemez)</label>
+            <label>
+                <span class="auth-field-icon auth-field-icon--user" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'user'])</span>
+                <span>Kullanıcı Adı (değiştirilemez)</span>
+            </label>
             <input type="text" value="{{ $user->username }}" readonly>
         </div>
 
         <div class="form-row">
             <div class="form-group">
-                <label>Ad</label>
+                <label>
+                    <span class="auth-field-icon auth-field-icon--user" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'user'])</span>
+                    <span>Ad</span>
+                </label>
                 <input type="text" name="first_name" value="{{ old('first_name', $user->first_name) }}" required>
             </div>
             <div class="form-group">
-                <label>Soyad</label>
+                <label>
+                    <span class="auth-field-icon auth-field-icon--user" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'user'])</span>
+                    <span>Soyad</span>
+                </label>
                 <input type="text" name="last_name" value="{{ old('last_name', $user->last_name) }}" required>
             </div>
         </div>
 
         <div class="form-group">
-            <label>E-posta</label>
+            <label>
+                <span class="auth-field-icon auth-field-icon--mail" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'mail'])</span>
+                <span>E-posta</span>
+            </label>
             <input type="email" name="email" value="{{ old('email', $user->email) }}" required>
             @error('email') <small class="form-error">{{ $message }}</small> @enderror
         </div>
 
         <div class="form-group">
-            <label>Telefon</label>
+            <label>
+                <span class="auth-field-icon auth-field-icon--phone" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'phone'])</span>
+                <span>Telefon</span>
+            </label>
             <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}">
         </div>
 
         <div class="form-group">
-            <label>Ülke, Şehir & İlçe</label>
+            <label>
+                <span class="auth-field-icon auth-field-icon--map" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'map-pin'])</span>
+                <span>Ülke, Şehir & İlçe</span>
+            </label>
             @include('partials.location-fields', [
                 'country' => $user->country ?? 'Türkiye',
                 'city' => $user->city,
@@ -219,7 +237,10 @@
         </div>
 
         <div class="form-group">
-            <label>Doğum Tarihi (Gün / Ay / Yıl)</label>
+            <label>
+                <span class="auth-field-icon auth-field-icon--calendar" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'calendar'])</span>
+                <span>Doğum Tarihi (Gün / Ay / Yıl)</span>
+            </label>
             @include('partials.birth-date-fields', ['birthDate' => $user->birth_date])
             <small class="profile-settings-hint">Yaşın profilinde kullanıcı adının yanında görünür.</small>
         </div>
