@@ -10,6 +10,7 @@ use App\Http\Controllers\Web\SitemapController;
 use App\Http\Controllers\Web\LegalPageController;
 use App\Http\Controllers\Web\LocationUsersPageController;
 use App\Http\Controllers\Web\CitySeoPageController;
+use App\Http\Controllers\Web\SeoPillarPageController;
 use App\Http\Controllers\Web\CampaignLandingController;
 use App\Http\Controllers\Web\SupportPageController;
 use App\Http\Controllers\Web\ReferralPageController;
@@ -327,6 +328,10 @@ Route::get('/guvenli-tanisma', [LegalPageController::class, 'safeMeeting'])->nam
 Route::get('/destek', [SupportPageController::class, 'show'])->name('support');
 Route::post('/destek', [SupportPageController::class, 'store'])->middleware('throttle:6,1,support')->name('support.store');
 Route::get('/sehir/{slug}', [CitySeoPageController::class, 'show'])->name('city.seo')->where('slug', '[a-z0-9\-]+');
+Route::get('/evlilik-sitesi', [SeoPillarPageController::class, 'marriage'])->name('seo.marriage');
+Route::get('/ciddi-iliski', [SeoPillarPageController::class, 'serious'])->name('seo.serious');
+Route::get('/ucretsiz-tanisma-sitesi', [SeoPillarPageController::class, 'freeDating'])->name('seo.free');
+Route::get('/arkadaslik-sitesi', [SeoPillarPageController::class, 'friendship'])->name('seo.friendship');
 Route::get('/kampanya', [CampaignLandingController::class, 'show'])->name('campaign.landing');
 Route::get('/ads', [CampaignLandingController::class, 'show'])->name('campaign.ads');
 Route::get('/davet/{code}', [ReferralPageController::class, 'show'])
@@ -400,13 +405,15 @@ Route::get('/robots.txt', function () {
         'Allow: /blog',
         'Allow: /sss',
         'Allow: /sehir/',
+        'Allow: /evlilik-sitesi',
+        'Allow: /ciddi-iliski',
+        'Allow: /ucretsiz-tanisma-sitesi',
+        'Allow: /arkadaslik-sitesi',
         'Allow: /davet/',
         'Allow: /register',
         'Allow: /login',
         '',
         '# Giriş gerektiren / düşük değerli yollar',
-        'Disallow: /kampanya',
-        'Disallow: /ads',
         'Disallow: /api/',
         'Disallow: /admin/',
         'Disallow: /adminlogin/',
@@ -427,6 +434,11 @@ Route::get('/robots.txt', function () {
         'Disallow: /vendor/',
         'Disallow: /marketing/',
         'Disallow: /ara/oneriler',
+        'Disallow: /kampanya',
+        'Disallow: /ads',
+        'Disallow: /.env',
+        'Disallow: /composer.json',
+        'Disallow: /.ftp-deploy-sync-state.json',
         '',
         'Sitemap: https://gonulkoprusu.com/sitemap.xml',
     ];

@@ -162,6 +162,7 @@ class LegalPageController extends Controller
 
         Cache::forget('sitemap.xml.body');
         Cache::forget('sitemap.xml.body.v2');
+        Cache::forget('sitemap.xml.body.v3');
     }
 
     /** @param array<int, array<string, mixed>> $posts */
@@ -202,26 +203,56 @@ class LegalPageController extends Controller
     {
         $siteUrl = rtrim(config('app.url', 'https://gonulkoprusu.com'), '/');
         $url = $siteUrl.'/blog/'.$slug;
+        $graph = [
+            [
+                '@type' => 'BlogPosting',
+                'headline' => (string) ($post['title'] ?? 'Blog'),
+                'description' => (string) ($post['description'] ?? ''),
+                'url' => $url,
+                'mainEntityOfPage' => $url,
+                'datePublished' => (string) ($post['published_at'] ?? $post['updated_at'] ?? now()->toDateString()),
+                'dateModified' => (string) ($post['updated_at'] ?? now()->toDateString()),
+                'image' => $siteUrl.'/images/logo-320.png',
+                'author' => ['@type' => 'Organization', 'name' => 'Gönül Köprüsü'],
+                'publisher' => [
+                    '@type' => 'Organization',
+                    'name' => 'Gönül Köprüsü',
+                    'url' => $siteUrl,
+                    'logo' => [
+                        '@type' => 'ImageObject',
+                        'url' => $siteUrl.'/images/logo-320.png',
+                    ],
+                ],
+            ],
+            $this->breadcrumbSchema((string) ($post['title'] ?? 'Blog'), $url, 'Blog', $siteUrl.'/blog'),
+        ];
+
+        $faqEntities = [];
+        foreach ((array) ($post['faqs'] ?? $post['faq'] ?? []) as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+            $question = trim((string) ($item['question'] ?? ''));
+            $answer = trim((string) ($item['answer'] ?? ''));
+            if ($question === '' || $answer === '') {
+                continue;
+            }
+            $faqEntities[] = [
+                '@type' => 'Question',
+                'name' => $question,
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $answer],
+            ];
+        }
+        if ($faqEntities !== []) {
+            $graph[] = [
+                '@type' => 'FAQPage',
+                'mainEntity' => $faqEntities,
+            ];
+        }
 
         return [
             '@context' => 'https://schema.org',
-            '@graph' => [
-                [
-                    '@type' => 'BlogPosting',
-                    'headline' => (string) ($post['title'] ?? 'Blog'),
-                    'description' => (string) ($post['description'] ?? ''),
-                    'url' => $url,
-                    'mainEntityOfPage' => $url,
-                    'author' => ['@type' => 'Organization', 'name' => 'Gönül Köprüsü'],
-                    'publisher' => [
-                        '@type' => 'Organization',
-                        'name' => 'Gönül Köprüsü',
-                        'url' => $siteUrl,
-                    ],
-                    'dateModified' => (string) ($post['updated_at'] ?? now()->toDateString()),
-                ],
-                $this->breadcrumbSchema((string) ($post['title'] ?? 'Blog'), $url, 'Blog', $siteUrl.'/blog'),
-            ],
+            '@graph' => $graph,
         ];
     }
 

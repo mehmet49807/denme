@@ -11,6 +11,7 @@ use App\Support\CitySeoCopy;
 use App\Support\FeaturedCities;
 use App\Support\InstagramUrl;
 use App\Support\SeoHelper;
+use App\Support\SeoSchema;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -73,6 +74,20 @@ class CitySeoPageController extends Controller
         $globalFaq = collect($this->blogFaq->faqItems())->take(2)->values()->all();
         $faqItems = array_merge($copy['faqs'], $globalFaq);
 
+        $canonical = route('city.seo', $slug);
+        $breadcrumb = SeoSchema::breadcrumb($city.' tanışma', $canonical);
+        $jsonLd = SeoSchema::faqPage($faqItems, $breadcrumb);
+        $jsonLd['@graph'][] = [
+            '@type' => 'WebPage',
+            'name' => $city.' Tanışma, Sohbet ve Evlilik Sitesi',
+            'url' => $canonical,
+            'description' => SeoHelper::get('description'),
+            'about' => [
+                '@type' => 'Place',
+                'name' => $city.', Türkiye',
+            ],
+        ];
+
         return view('web.city-seo', [
             'slug' => $slug,
             'city' => $city,
@@ -85,6 +100,7 @@ class CitySeoPageController extends Controller
             'faqItems' => $faqItems,
             'seoLead' => $copy['lead'],
             'seoWhy' => $copy['why'],
+            'jsonLd' => $jsonLd,
             'registerUrl' => route('register', [
                 'utm_source' => 'seo',
                 'utm_medium' => 'city',

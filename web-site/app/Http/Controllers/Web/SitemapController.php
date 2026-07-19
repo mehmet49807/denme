@@ -17,7 +17,7 @@ class SitemapController extends Controller
             abort(404);
         }
 
-        $xml = Cache::remember('sitemap.xml.body.v2', now()->addHour(), function () use ($settings) {
+        $xml = Cache::remember('sitemap.xml.body.v3', now()->addHour(), function () use ($settings) {
             return $this->buildSitemapXml($settings);
         });
 
@@ -34,6 +34,10 @@ class SitemapController extends Controller
 
         $staticPages = [
             ['loc' => '/', 'priority' => '1.0', 'changefreq' => 'daily'],
+            ['loc' => '/evlilik-sitesi', 'priority' => '0.98', 'changefreq' => 'weekly'],
+            ['loc' => '/ciddi-iliski', 'priority' => '0.98', 'changefreq' => 'weekly'],
+            ['loc' => '/ucretsiz-tanisma-sitesi', 'priority' => '0.98', 'changefreq' => 'weekly'],
+            ['loc' => '/arkadaslik-sitesi', 'priority' => '0.95', 'changefreq' => 'weekly'],
             ['loc' => '/hakkimizda', 'priority' => '0.8', 'changefreq' => 'monthly'],
             ['loc' => '/blog', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['loc' => '/sss', 'priority' => '0.9', 'changefreq' => 'weekly'],
@@ -42,7 +46,7 @@ class SitemapController extends Controller
             ['loc' => '/kvkk', 'priority' => '0.4', 'changefreq' => 'yearly'],
             ['loc' => '/kullanim-kosullari', 'priority' => '0.4', 'changefreq' => 'yearly'],
             ['loc' => '/sikayet-ve-engelleme', 'priority' => '0.4', 'changefreq' => 'yearly'],
-            ['loc' => '/guvenli-tanisma', 'priority' => '0.8', 'changefreq' => 'monthly'],
+            ['loc' => '/guvenli-tanisma', 'priority' => '0.85', 'changefreq' => 'monthly'],
         ];
 
         foreach ($staticPages as $page) {

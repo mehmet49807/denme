@@ -73,4 +73,17 @@
             @endif
         @endforeach
     </ul>
+
+    <h2>İlgili konular</h2>
+    <ul class="city-seo-links">
+        <li><a href="{{ route('seo.marriage') }}">Evlilik sitesi</a></li>
+        <li><a href="{{ route('seo.serious') }}">Ciddi ilişki</a></li>
+        <li><a href="{{ route('seo.free') }}">Ücretsiz tanışma sitesi</a></li>
+        <li><a href="{{ route('seo.friendship') }}">Arkadaşlık sitesi</a></li>
+        <li><a href="{{ route('safe-meeting') }}">Güvenli tanışma</a></li>
+    </ul>
 @endsection
+
+@push('ld-json')
+@include('partials.json-ld', ['data' => $jsonLd])
+@endpush

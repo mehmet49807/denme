@@ -8,9 +8,9 @@ class SeoHelper
 
     protected static array $pages = [
         'home' => [
-            'title' => 'Gönül Köprüsü — Tanışma, Sohbet ve Evlilik Sitesi',
-            'description' => 'Gönül Köprüsü: Türkiye\'nin güvenli tanışma ve evlilik sitesi. Ücretsiz üye ol, şehirine göre keşfet, ciddi ilişki ve sohbet için doğru kişiyi bul. İstanbul, Ankara, İzmir ve 80+ şehir.',
-            'keywords' => 'gönül köprüsü, gönül köprüsü tanışma, tanışma sitesi, ücretsiz tanışma sitesi, evlilik sitesi, ciddi ilişki, güvenli tanışma, online tanışma, online sohbet, sohbet sitesi, flört sitesi, eş bulma, arkadaşlık sitesi, Türkiye tanışma sitesi, istanbul tanışma, ankara tanışma, izmir tanışma',
+            'title' => 'Gönül Köprüsü — Ücretsiz Tanışma, Evlilik ve Ciddi İlişki Sitesi',
+            'description' => 'Türkiye\'nin güvenli tanışma ve evlilik sitesi. Ücretsiz üye ol, ciddi ilişki için tanış, şehirine göre keşfet. İstanbul, Ankara, İzmir ve 80+ şehirde online sohbet — kadınlarda mesajlaşma ücretsiz.',
+            'keywords' => 'gönül köprüsü, tanışma sitesi, ücretsiz tanışma sitesi, evlilik sitesi, ciddi ilişki, arkadaşlık sitesi, güvenli tanışma, online tanışma, online sohbet, sohbet sitesi, eş bulma, Türkiye tanışma sitesi, istanbul tanışma, ankara tanışma, izmir tanışma, ücretsiz evlilik sitesi',
             'ogType' => 'website',
         ],
         'about' => [

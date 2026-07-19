@@ -13,6 +13,7 @@ use App\Services\ReferralService;
 use App\Services\UserAttributionService;
 use App\Services\UserMailService;
 use App\Support\RelationshipStatus;
+use App\Support\SeoHelper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -41,6 +42,9 @@ class AuthPageController extends Controller
         }
 
         app(UserAttributionService::class)->captureFromRequest(request());
+
+        SeoHelper::setPage('register');
+        SeoHelper::set('canonical', url('/register'));
 
         $referrer = null;
         $refCode = session('growth_ref') ?? request('ref');
@@ -167,6 +171,9 @@ class AuthPageController extends Controller
         }
 
         app(UserAttributionService::class)->captureFromRequest(request());
+
+        SeoHelper::setPage('login');
+        SeoHelper::set('canonical', url('/login'));
 
         return view('web.login');
     }

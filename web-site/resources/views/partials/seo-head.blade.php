@@ -5,15 +5,22 @@
     $siteUrl = rtrim((string) $settings->get('site_url', config('app.url', 'https://gonulkoprusu.com')), '/');
     $pageTitle = trim($__env->yieldContent('title'));
     $seoTitle = (string) ($seo['title'] ?? '');
-    $fullTitle = $pageTitle !== '' && ! str_contains($pageTitle, $brand)
-        ? $pageTitle
-        : ($seoTitle !== '' ? $seoTitle.' — '.$brand : $brand);
+    // Prefer explicit page/SEO title as-is when it already includes the brand.
+    if ($pageTitle !== '') {
+        $fullTitle = $pageTitle;
+    } elseif ($seoTitle !== '') {
+        $fullTitle = str_contains($seoTitle, $brand) ? $seoTitle : ($seoTitle.' — '.$brand);
+    } else {
+        $fullTitle = $brand;
+    }
     $description = (string) ($seo['description'] ?? $settings->get('default_description', ''));
     $keywords = (string) ($seo['keywords'] ?? $settings->get('default_keywords', ''));
     $canonical = (string) ($seo['canonical'] ?? url()->current());
     $ogImage = (string) ($seo['ogImage'] ?? $settings->get('og_image_url', $siteUrl.'/images/og-default.jpg'));
     $ogType = (string) ($seo['ogType'] ?? 'website');
-    $noindex = (bool) ($seo['noindex'] ?? false);
+    $robotsDirective = strtolower(trim((string) ($seo['robots'] ?? '')));
+    $noindex = (bool) ($seo['noindex'] ?? false)
+        || str_contains($robotsDirective, 'noindex');
     $robotsIndex = $settings->bool('robots_index', true);
     $twitterHandle = ltrim((string) $settings->get('twitter_handle', '@gonulkoprusucom'), '@');
     $googleVerification = trim((string) $settings->get('google_site_verification', ''));
@@ -34,7 +41,11 @@
 @if($bingVerification !== '')
 <meta name="msvalidate.01" content="{{ $bingVerification }}">
 @endif
+@if($robotsDirective !== '')
+<meta name="robots" content="{{ $robotsDirective }}">
+@else
 <meta name="robots" content="{{ ($noindex || ! $robotsIndex) ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' }}">
+@endif
 <link rel="canonical" href="{{ $canonical }}">
 <meta name="format-detection" content="telephone=no">
 <meta name="mobile-web-app-capable" content="yes">

@@ -12,6 +12,10 @@ Allow: /guvenli-tanisma
 Allow: /blog
 Allow: /sss
 Allow: /sehir/
+Allow: /evlilik-sitesi
+Allow: /ciddi-iliski
+Allow: /ucretsiz-tanisma-sitesi
+Allow: /arkadaslik-sitesi
 Allow: /davet/
 Allow: /register
 Allow: /login
@@ -37,6 +41,8 @@ Disallow: /_debugbar/
 Disallow: /vendor/
 Disallow: /marketing/
 Disallow: /ara/oneriler
+Disallow: /kampanya
+Disallow: /ads
 Disallow: /.env
 Disallow: /composer.json
 Disallow: /.ftp-deploy-sync-state.json

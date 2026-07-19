@@ -17,6 +17,10 @@
                 <ul class="site-footer-list">
                     <li><a href="{{ route('home') }}">Ana Sayfa</a></li>
                     <li><a href="{{ route('about') }}">Hakkımızda</a></li>
+                    <li><a href="{{ route('seo.marriage') }}">Evlilik Sitesi</a></li>
+                    <li><a href="{{ route('seo.serious') }}">Ciddi İlişki</a></li>
+                    <li><a href="{{ route('seo.free') }}">Ücretsiz Tanışma</a></li>
+                    <li><a href="{{ route('seo.friendship') }}">Arkadaşlık Sitesi</a></li>
                     <li><a href="{{ route('safe-meeting') }}">Güvenli Tanışma</a></li>
                     <li><a href="{{ route('blog') }}">Blog</a></li>
                     <li><a href="{{ route('sss') }}">Sıkça Sorulan Sorular (SSS)</a></li>

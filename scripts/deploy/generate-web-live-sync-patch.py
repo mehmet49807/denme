@@ -164,10 +164,15 @@ files = {
     "app/Support/FeaturedCities.php": WEB / "app/Support/FeaturedCities.php",
     "app/Support/InstagramUrl.php": WEB / "app/Support/InstagramUrl.php",
     "app/Support/CitySeoCopy.php": WEB / "app/Support/CitySeoCopy.php",
+    "app/Support/SeoSchema.php": WEB / "app/Support/SeoSchema.php",
     "app/Http/Controllers/Web/ReferralPageController.php": WEB
     / "app/Http/Controllers/Web/ReferralPageController.php",
     "app/Http/Controllers/Web/CitySeoPageController.php": WEB
     / "app/Http/Controllers/Web/CitySeoPageController.php",
+    "app/Http/Controllers/Web/SeoPillarPageController.php": WEB
+    / "app/Http/Controllers/Web/SeoPillarPageController.php",
+    "resources/views/web/seo-pillar.blade.php": WEB
+    / "resources/views/web/seo-pillar.blade.php",
     "app/Http/Controllers/Web/CampaignLandingController.php": WEB
     / "app/Http/Controllers/Web/CampaignLandingController.php",
     "app/Http/Controllers/Web/GoogleAuthController.php": WEB
