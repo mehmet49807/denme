@@ -12,9 +12,11 @@
 @endsection
 
 @section('auth-form')
+    @include('partials.trust-badges')
+
     <div class="auth-female-banner" role="note">
         <span class="auth-female-banner-icon" aria-hidden="true">💜</span>
-        <p><strong>Kadın üyeler ücretsiz:</strong> mesajlaşma, kimler baktı ve galeri — premium gerekmez.</p>
+        <p><strong>Kadın üyeler ücretsiz:</strong> mesajlaşma, kimler baktı ve galeri — premium gerekmez. Moderasyon + 7/24 destek.</p>
     </div>
 
     <form method="POST" action="{{ route('auth.google.complete') }}" class="auth-form auth-form--register" id="googleCompleteForm">
