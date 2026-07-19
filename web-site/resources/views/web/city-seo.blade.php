@@ -85,5 +85,5 @@
 @endsection
 
 @push('ld-json')
-@include('partials.json-ld', ['data' => $jsonLd])
+@include('partials.json-ld', ['schema' => $jsonLd ?? []])
 @endpush

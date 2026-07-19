@@ -1,6 +1,6 @@
 @extends('layouts.content-page')
 
-@section('title', $h1.' — Gönül Köprüsü')
+@section('title', $documentTitle)
 @section('page-eyebrow', $eyebrow)
 @section('page-title', $h1)
 @section('page-lead', $lead)
@@ -67,7 +67,7 @@
 @endsection
 
 @push('ld-json')
-@include('partials.json-ld', ['data' => $jsonLd])
+@include('partials.json-ld', ['schema' => $jsonLd ?? []])
 @endpush
 
 @push('head')

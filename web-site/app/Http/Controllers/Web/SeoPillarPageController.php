@@ -70,6 +70,7 @@ class SeoPillarPageController extends Controller
         return view('web.seo-pillar', [
             'lastUpdated' => '19 Temmuz 2026',
             'pageKey' => $key,
+            'documentTitle' => $page['title'],
             'h1' => $page['h1'],
             'eyebrow' => $page['eyebrow'],
             'lead' => $page['lead'],
