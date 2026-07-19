@@ -291,10 +291,262 @@
 }
 
 
-/* invite + campaign */
-.growth-invite-banner{margin:0 0 .85rem;padding:.85rem 1rem;border-radius:16px;background:linear-gradient(135deg,rgba(15,118,110,.1),rgba(124,58,237,.1));border:1px solid rgba(15,118,110,.2)}
-.growth-invite-banner__inner{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
-.growth-invite-banner h2{margin:0 0 .25rem;font-size:1rem}
-.growth-invite-banner p{margin:0;font-size:.85rem;color:var(--text-muted,#64748b)}
+/* invite + campaign — feed davet kartı */
+.gib {
+    --gib-ink: #1f1520;
+    --gib-muted: #6b5a66;
+    --gib-rose: #e11d48;
+    --gib-coral: #ff6b8a;
+    --gib-amber: #f59e0b;
+    --gib-teal: #0f766e;
+    position: relative;
+    margin: 0 0 0.95rem;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(225, 29, 72, 0.16);
+    background:
+        radial-gradient(ellipse 70% 80% at 0% 0%, rgba(255, 107, 138, 0.18), transparent 55%),
+        radial-gradient(ellipse 60% 70% at 100% 100%, rgba(245, 158, 11, 0.14), transparent 50%),
+        linear-gradient(155deg, #fff 0%, #fff5f7 48%, #fffbeb 100%);
+    box-shadow: 0 12px 28px rgba(31, 21, 32, 0.07);
+    animation: gib-in 0.45s ease both;
+}
+
+.gib__glow {
+    position: absolute;
+    inset: auto -20% -40% auto;
+    width: 12rem;
+    height: 12rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 107, 138, 0.22), transparent 68%);
+    pointer-events: none;
+}
+
+.gib__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem 0.85rem;
+    padding: 1rem 1.05rem 1.05rem;
+}
+
+.gib__visual {
+    position: relative;
+    grid-row: span 2;
+    align-self: start;
+}
+
+.gib__icon {
+    display: grid;
+    place-items: center;
+    width: 3.1rem;
+    height: 3.1rem;
+    border-radius: 1rem;
+    color: #fff;
+    background: linear-gradient(145deg, var(--gib-rose), var(--gib-coral) 55%, var(--gib-amber));
+    box-shadow: 0 10px 22px rgba(225, 29, 72, 0.28);
+    animation: gib-float 3.2s ease-in-out infinite;
+}
+
+.gib__icon .theme-icon,
+.gib__icon svg {
+    width: 1.35rem;
+    height: 1.35rem;
+    display: block;
+}
+
+.gib__spark {
+    position: absolute;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--gib-amber);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+.gib__spark--a {
+    top: -0.1rem;
+    right: -0.15rem;
+    animation: gib-spark 1.8s ease-in-out infinite;
+}
+
+.gib__spark--b {
+    bottom: 0.15rem;
+    left: -0.2rem;
+    width: 0.35rem;
+    height: 0.35rem;
+    background: var(--gib-teal);
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.18);
+    animation: gib-spark 2.2s ease-in-out 0.4s infinite;
+}
+
+.gib__copy {
+    min-width: 0;
+}
+
+.gib__eyebrow {
+    margin: 0 0 0.2rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gib-rose);
+}
+
+.gib__title {
+    margin: 0 0 0.3rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--gib-ink);
+}
+
+.gib__lead {
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: var(--gib-muted);
+}
+
+.gib__perks {
+    list-style: none;
+    margin: 0.55rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.gib__perks li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.28rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #9f1239;
+    background: rgba(225, 29, 72, 0.08);
+    border: 1px solid rgba(225, 29, 72, 0.12);
+}
+
+.gib__perk-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gib-rose), var(--gib-amber));
+    flex-shrink: 0;
+}
+
+.gib__actions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.15rem;
+}
+
+.gib__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 2.45rem;
+    padding: 0.5rem 0.95rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-decoration: none;
+    line-height: 1.2;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.gib__btn svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    display: block;
+    flex-shrink: 0;
+}
+
+.gib__btn--whatsapp {
+    flex: 1 1 auto;
+    color: #fff;
+    background: linear-gradient(120deg, #128c7e, #25d366);
+    box-shadow: 0 8px 18px rgba(37, 211, 102, 0.28);
+}
+
+.gib__btn--whatsapp:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    filter: brightness(1.03);
+}
+
+.gib__btn--ghost {
+    color: var(--gib-ink);
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(31, 21, 32, 0.1);
+}
+
+.gib__btn--ghost:hover {
+    color: var(--gib-ink);
+    background: #fff;
+    transform: translateY(-1px);
+}
+
+@keyframes gib-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gib-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes gib-spark {
+    0%, 100% { opacity: 0.55; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.15); }
+}
+
+@media (min-width: 560px) {
+    .gib__inner {
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+    }
+
+    .gib__visual {
+        grid-row: auto;
+    }
+
+    .gib__actions {
+        grid-column: auto;
+        flex-direction: column;
+        align-items: stretch;
+        margin-top: 0;
+        min-width: 11.5rem;
+    }
+
+    .gib__btn--whatsapp {
+        flex: 0 0 auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gib,
+    .gib__icon,
+    .gib__spark,
+    .gib__btn {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* geriye dönük sınıf (eski markup) */
+.growth-invite-banner {
+    display: none;
+}
+
 .campaign-landing-cta{display:grid;gap:.65rem;margin:1.25rem 0 1.5rem}
 .campaign-landing-note{margin:.35rem 0 0;font-size:.9rem;color:var(--text-muted,#64748b);text-align:center}
