@@ -67,8 +67,8 @@
 
                 @foreach($storyGroups as $index => $group)
                 @php $storyIndex = ($ownStoryGroup ? 1 : 0) + $index; @endphp
-                <button type="button" class="story-item" data-story-index="{{ $storyIndex }}" data-user-id="{{ $group['user_id'] }}" aria-label="{{ __('app.feed.story_of', ['name' => $group['username']]) }}">
-                    <span class="story-ring story-ring--unseen">
+                <button type="button" class="story-item {{ !empty($group['is_featured']) ? 'story-item--featured' : '' }}" data-story-index="{{ $storyIndex }}" data-user-id="{{ $group['user_id'] }}" aria-label="{{ __('app.feed.story_of', ['name' => $group['username']]) }}">
+                    <span class="story-ring story-ring--unseen {{ !empty($group['is_featured']) ? 'story-ring--featured' : '' }}">
                         <span class="story-avatar">
                             @if($group['profile_photo_url'])
                                 <img src="{{ $group['profile_photo_url'] }}" alt="" width="62" height="62" loading="lazy" decoding="async">
@@ -88,6 +88,8 @@
 
         @include('partials.feed-toolbar', ['viewer' => $viewer])
     </div>
+
+    @include('partials.feed-recommended-users', ['recommendedUsers' => $recommendedUsers ?? collect()])
 
     <div class="feed-posts">
     @forelse($posts as $post)

@@ -100,6 +100,9 @@ files = {
     / "app/Http/Controllers/Web/AuthPageController.php",
     "app/Http/Controllers/Web/FeedPageController.php": WEB
     / "app/Http/Controllers/Web/FeedPageController.php",
+    "app/Services/StoryGroupService.php": WEB / "app/Services/StoryGroupService.php",
+    "resources/views/partials/feed-recommended-users.blade.php": WEB
+    / "resources/views/partials/feed-recommended-users.blade.php",
     "app/Http/Controllers/Web/ProfilePageController.php": WEB
     / "app/Http/Controllers/Web/ProfilePageController.php",
     "app/Http/Controllers/Web/UserProfilePageController.php": WEB

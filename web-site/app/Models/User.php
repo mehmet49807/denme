@@ -238,6 +238,27 @@ class User extends Authenticatable
     }
 
     /**
+     * Aktif paket tipine göre SQL sıra ifadesi (0 = en üstte).
+     * Bind için bir adet datetime parametresi bekler.
+     */
+    public static function packageTypeOrderSql(string $userIdExpression = 'users.id'): string
+    {
+        return "CASE COALESCE((
+            SELECT package_type FROM premium_subscriptions
+            WHERE premium_subscriptions.user_id = {$userIdExpression}
+              AND premium_subscriptions.is_active = 1
+              AND premium_subscriptions.expires_at > ?
+            ORDER BY premium_subscriptions.expires_at DESC
+            LIMIT 1
+        ), '')
+            WHEN 'platinum' THEN 0
+            WHEN 'gold' THEN 1
+            WHEN 'pro' THEN 2
+            ELSE 3
+        END";
+    }
+
+    /**
      * Keşif / üye listelerinde paket + boost önceliği.
      *
      * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\User>  $query
@@ -249,23 +270,37 @@ class User extends Authenticatable
 
         return $query
             ->orderByRaw('CASE WHEN boost_until IS NOT NULL AND boost_until > ? THEN 0 ELSE 1 END', [$now])
-            ->orderByRaw(
-                "CASE COALESCE((
-                    SELECT package_type FROM premium_subscriptions
-                    WHERE premium_subscriptions.user_id = users.id
-                      AND premium_subscriptions.is_active = 1
-                      AND premium_subscriptions.expires_at > ?
-                    ORDER BY premium_subscriptions.expires_at DESC
-                    LIMIT 1
-                ), '')
-                    WHEN 'platinum' THEN 0
-                    WHEN 'gold' THEN 1
-                    WHEN 'pro' THEN 2
-                    ELSE 3
-                END",
-                [$now]
-            )
+            ->orderByRaw(self::packageTypeOrderSql('users.id'), [$now])
             ->latest('last_active_at');
+    }
+
+    /**
+     * Gönderi akışında paket + boost önceliği (Platinum / Gold öne çıkar).
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\Post>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\Post>
+     */
+    public static function applyContentRanking($query, string $postsTable = 'posts')
+    {
+        $now = now()->toDateTimeString();
+
+        return $query
+            ->join('users', 'users.id', '=', $postsTable.'.user_id')
+            ->select($postsTable.'.*')
+            ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now])
+            ->orderByRaw(self::packageTypeOrderSql('users.id'), [$now])
+            ->orderByDesc($postsTable.'.created_at');
+    }
+
+    /** Koleksiyon sıralaması için görünürlük skoru (yüksek = önde). */
+    public function contentVisibilityScore(): int
+    {
+        $score = $this->packageRank() * 10;
+        if ($this->isBoosted()) {
+            $score += 100;
+        }
+
+        return $score;
     }
 
     private function canUseMalePremiumFeatures(): bool

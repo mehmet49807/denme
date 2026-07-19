@@ -104,11 +104,13 @@ return [
         'story' => 'Hikaye',
         'trial_banner' => 'Deneme:',
         'premium_app_hint' => 'Premium için uygulamayı kullanın.',
-        'story_premium_required' => 'Hikaye eklemek için premium üyelik veya deneme süresi gereklidir.',
+        'story_premium_required' => 'Hikaye eklemek için Gold / Platinum paket veya deneme süresi gereklidir.',
         'delete_story' => 'Hikayeyi sil',
         'story_expires_hint' => 'Video en fazla 15 saniye · 24 saat sonra otomatik silinir',
         'prev' => 'Önceki',
         'next' => 'Sonraki',
+        'recommended_title' => 'Önerilen üyeler',
+        'recommended_sub' => 'Gold ve Platinum üyeler keşifte öne çıkar.',
     ],
 
     'messages' => [

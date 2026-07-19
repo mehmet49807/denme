@@ -109,6 +109,8 @@ return [
         'story_expires_hint' => 'Video up to 15 seconds · automatically deleted after 24 hours',
         'prev' => 'Previous',
         'next' => 'Next',
+        'recommended_title' => 'Recommended members',
+        'recommended_sub' => 'Gold and Platinum members are featured in discovery.',
     ],
 
     'messages' => [
