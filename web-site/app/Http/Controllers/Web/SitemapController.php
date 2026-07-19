@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Support\SeoDistricts;
+use App\Support\FeaturedCities;
 use Illuminate\Support\Facades\Cache;
 
 class SitemapController extends Controller
 {
     /**
-     * Dinamik sitemap.xml olustur — yalnızca herkese açık SEO sayfaları.
+     * Dinamik sitemap.xml — Google crawl bütçesi için daraltılmış öncelikli URL seti.
+     * İlçe sayfaları ve tüm 81 il sitemap'te yok; sayfalar canlı kalır, iç linklerle keşfedilir.
      */
     public function index()
     {
@@ -18,7 +19,7 @@ class SitemapController extends Controller
             abort(404);
         }
 
-        $xml = Cache::remember('sitemap.xml.body.v4', now()->addHour(), function () use ($settings) {
+        $xml = Cache::remember('sitemap.xml.body.v5', now()->addHour(), function () use ($settings) {
             return $this->buildSitemapXml($settings);
         });
 
@@ -44,11 +45,11 @@ class SitemapController extends Controller
             ['loc' => '/blog', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['loc' => '/sss', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['loc' => '/register', 'priority' => '0.95', 'changefreq' => 'monthly'],
-            ['loc' => '/gizlilik-politikasi', 'priority' => '0.4', 'changefreq' => 'yearly'],
-            ['loc' => '/kvkk', 'priority' => '0.4', 'changefreq' => 'yearly'],
-            ['loc' => '/kullanim-kosullari', 'priority' => '0.4', 'changefreq' => 'yearly'],
-            ['loc' => '/sikayet-ve-engelleme', 'priority' => '0.4', 'changefreq' => 'yearly'],
             ['loc' => '/guvenli-tanisma', 'priority' => '0.85', 'changefreq' => 'monthly'],
+            ['loc' => '/gizlilik-politikasi', 'priority' => '0.35', 'changefreq' => 'yearly'],
+            ['loc' => '/kvkk', 'priority' => '0.35', 'changefreq' => 'yearly'],
+            ['loc' => '/kullanim-kosullari', 'priority' => '0.35', 'changefreq' => 'yearly'],
+            ['loc' => '/sikayet-ve-engelleme', 'priority' => '0.35', 'changefreq' => 'yearly'],
         ];
 
         foreach ($staticPages as $page) {
@@ -73,22 +74,15 @@ class SitemapController extends Controller
             ];
         }
 
+        // Yalnızca ilk 20 öncelikli şehir (crawl bütçesi)
         $locations = app(\App\Services\LocationDataService::class);
-        foreach ($locations->seoCitySlugs('Türkiye') as $citySlug) {
+        $cityLinks = array_slice(FeaturedCities::links($locations), 0, 20);
+        foreach ($cityLinks as $link) {
             $urls[] = [
-                'loc' => $baseUrl.'/sehir/'.$citySlug,
+                'loc' => $baseUrl.'/sehir/'.$link['slug'],
                 'lastmod' => now()->toDateString(),
                 'changefreq' => 'weekly',
-                'priority' => '0.8',
-            ];
-        }
-
-        foreach (SeoDistricts::all() as $item) {
-            $urls[] = [
-                'loc' => $baseUrl.'/sehir/'.$item['city_slug'].'/'.$item['district_slug'],
-                'lastmod' => now()->toDateString(),
-                'changefreq' => 'weekly',
-                'priority' => '0.72',
+                'priority' => in_array($link['slug'], ['istanbul', 'ankara', 'izmir'], true) ? '0.9' : '0.8',
             ];
         }
 

@@ -393,9 +393,10 @@ Route::get('/setup/sitemap-ping', function () {
     Cache::forget('sitemap.xml.body.v2');
     Cache::forget('sitemap.xml.body.v3');
     Cache::forget('sitemap.xml.body.v4');
+    Cache::forget('sitemap.xml.body.v5');
 
     $sitemapUrl = 'https://gonulkoprusu.com/sitemap.xml';
-    $lines = ['sitemap-ping', 'sitemap='.$sitemapUrl];
+    $lines = ['sitemap-ping', 'sitemap='.$sitemapUrl, 'mode=slim-v5'];
 
     foreach ([
         'https://www.google.com/ping?sitemap='.rawurlencode($sitemapUrl),
