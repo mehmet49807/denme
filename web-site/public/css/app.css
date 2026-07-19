@@ -3186,10 +3186,141 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
 }
 .profile-hobby-icon { font-size: 0.95rem; line-height: 1; }
 
-/* Premium mavi tik & üyelik rozetleri */
-.profile-verified-tick { display: inline-flex; flex-shrink: 0; vertical-align: middle; line-height: 0; }
-.profile-verified-tick--md svg { width: 1.35rem; height: 1.35rem; }
-.profile-verified-tick--sm svg { width: 1rem; height: 1rem; }
+/* Premium onay tiki — tüm üyeler */
+.profile-verified-tick {
+    --gk-tick-a: #FDE68A;
+    --gk-tick-b: #F59E0B;
+    --gk-tick-c: #FF6B8A;
+    --gk-tick-core-1: #FBBF24;
+    --gk-tick-core-2: #D97706;
+    --gk-tick-glow: rgba(245, 158, 11, 0.55);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    vertical-align: middle;
+    line-height: 0;
+    filter: drop-shadow(0 2px 6px var(--gk-tick-glow));
+}
+
+.profile-verified-tick__glow {
+    position: absolute;
+    inset: -18%;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--gk-tick-glow) 0%, transparent 68%);
+    opacity: 0.85;
+    pointer-events: none;
+    animation: gk-tick-pulse 2.4s ease-in-out infinite;
+}
+
+.profile-verified-tick svg {
+    position: relative;
+    z-index: 1;
+    display: block;
+}
+
+.profile-verified-tick--md svg { width: 1.5rem; height: 1.5rem; }
+.profile-verified-tick--sm svg { width: 1.15rem; height: 1.15rem; }
+
+.profile-verified-tick .gk-tick-stop-a { stop-color: var(--gk-tick-a); }
+.profile-verified-tick .gk-tick-stop-b { stop-color: var(--gk-tick-b); }
+.profile-verified-tick .gk-tick-stop-c { stop-color: var(--gk-tick-c); }
+.profile-verified-tick .gk-tick-core-a { stop-color: var(--gk-tick-core-1); }
+.profile-verified-tick .gk-tick-core-b { stop-color: var(--gk-tick-core-2); }
+
+.profile-verified-tick--premium {
+    --gk-tick-a: #FDE68A;
+    --gk-tick-b: #F59E0B;
+    --gk-tick-c: #FF6B8A;
+    --gk-tick-core-1: #FBBF24;
+    --gk-tick-core-2: #EA580C;
+    --gk-tick-glow: rgba(245, 158, 11, 0.5);
+}
+
+.profile-verified-tick--pro {
+    --gk-tick-a: #A5F3FC;
+    --gk-tick-b: #38BDF8;
+    --gk-tick-c: #6366F1;
+    --gk-tick-core-1: #0EA5E9;
+    --gk-tick-core-2: #0369A1;
+    --gk-tick-glow: rgba(14, 165, 233, 0.5);
+}
+
+.profile-verified-tick--gold {
+    --gk-tick-a: #FEF3C7;
+    --gk-tick-b: #FBBF24;
+    --gk-tick-c: #F59E0B;
+    --gk-tick-core-1: #F59E0B;
+    --gk-tick-core-2: #B45309;
+    --gk-tick-glow: rgba(251, 191, 36, 0.58);
+}
+
+.profile-verified-tick--platinum {
+    --gk-tick-a: #F8FAFC;
+    --gk-tick-b: #CBD5E1;
+    --gk-tick-c: #FBBF24;
+    --gk-tick-core-1: #94A3B8;
+    --gk-tick-core-2: #475569;
+    --gk-tick-glow: rgba(148, 163, 184, 0.55);
+}
+
+@keyframes gk-tick-pulse {
+    0%, 100% { transform: scale(0.92); opacity: 0.55; }
+    50% { transform: scale(1.08); opacity: 0.95; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .profile-verified-tick__glow { animation: none; opacity: 0.65; }
+}
+
+.trust-badge,
+.safety-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    vertical-align: middle;
+    line-height: 0;
+    filter: drop-shadow(0 2px 5px rgba(15, 118, 110, 0.35));
+}
+
+.trust-badge__glow,
+.safety-badge__glow {
+    position: absolute;
+    inset: -16%;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.75;
+    background: radial-gradient(circle, rgba(20, 184, 166, 0.45) 0%, transparent 70%);
+    animation: gk-tick-pulse 2.6s ease-in-out infinite;
+}
+
+.safety-badge {
+    filter: drop-shadow(0 2px 5px rgba(124, 58, 237, 0.35));
+}
+
+.safety-badge__glow {
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.42) 0%, transparent 70%);
+}
+
+.trust-badge svg,
+.safety-badge svg {
+    position: relative;
+    z-index: 1;
+    display: block;
+}
+
+.trust-badge--sm svg,
+.safety-badge--sm svg { width: 1.05rem; height: 1.05rem; }
+.trust-badge--md svg,
+.safety-badge--md svg { width: 1.35rem; height: 1.35rem; }
+
+@media (prefers-reduced-motion: reduce) {
+    .trust-badge__glow,
+    .safety-badge__glow { animation: none; }
+}
 .profile-member-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.35rem 0 0.15rem; }
 .profile-member-badges--compact { margin: 0.2rem 0 0; gap: 0.3rem; }
 .member-badge {

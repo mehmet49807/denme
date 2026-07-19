@@ -42,6 +42,7 @@
                 <span class="rec-card__body">
                     <span class="rec-card__name">
                         {{ $user->username }}
+                        @include('partials.profile-verified-tick', ['user' => $user, 'size' => 'sm'])
                         @if(method_exists($user, 'age') && $user->age())
                             <span class="rec-card__age">{{ $user->age() }}</span>
                         @endif

@@ -201,7 +201,7 @@ return [
 
     'premium' => [
         'member' => 'Premium Member',
-        'verified' => 'Verified premium member',
+        'verified' => 'Verified member',
         'trial' => 'Trial · :days days',
         'trial_active' => 'Trial period active',
         'trial_member' => 'Trial membership',

@@ -33,6 +33,7 @@
         <div class="users-browse-meta">
             <strong class="users-browse-name">
                 {{ $user->username }}
+                @include('partials.profile-verified-tick', ['user' => $user, 'size' => 'sm'])
                 @if($age)
                     <span class="users-browse-age">{{ $age }}</span>
                 @endif

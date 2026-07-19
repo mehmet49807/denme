@@ -201,7 +201,7 @@ return [
 
     'premium' => [
         'member' => 'Premium Üye',
-        'verified' => 'Premium doğrulanmış üye',
+        'verified' => 'Onaylı üye',
         'trial' => 'Deneme · :days gün',
         'trial_active' => 'Deneme süresi devam ediyor',
         'trial_member' => 'Deneme üyeliği',
