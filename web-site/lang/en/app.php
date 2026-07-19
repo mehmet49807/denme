@@ -104,7 +104,7 @@ return [
         'story' => 'Story',
         'trial_banner' => 'Trial:',
         'premium_app_hint' => 'Use the app for Premium.',
-        'story_premium_required' => 'Premium membership or trial is required to add stories.',
+        'story_premium_required' => 'A Gold/Platinum plan or trial is required to add stories.',
         'delete_story' => 'Delete story',
         'story_expires_hint' => 'Video up to 15 seconds · automatically deleted after 24 hours',
         'prev' => 'Previous',
