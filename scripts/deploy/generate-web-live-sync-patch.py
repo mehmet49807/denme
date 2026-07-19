@@ -329,6 +329,36 @@ header('X-LiteSpeed-Purge: *');
 
 echo "Gonul Koprüsü — canlı senkron patch\n";
 
+if (($_GET['export'] ?? '') === '1') {
+    header('Content-Type: text/plain; charset=utf-8');
+    foreach ([
+        'app/Services/NotificationService.php',
+        'app/Services/ConversationService.php',
+        'app/Services/MessageService.php',
+        'app/Services/ChatTypingService.php',
+        'app/Services/AiModerationService.php',
+        'app/Support/ChatMessageHelper.php',
+        'app/Models/Message.php',
+        'app/Models/Block.php',
+        'app/Models/UserNotification.php',
+        'app/Http/Controllers/Web/NotificationPageController.php',
+        'app/Http/Controllers/Web/LiveSyncController.php',
+        'resources/views/web/notifications.blade.php',
+        'resources/views/partials/notification-item.blade.php',
+        'app/Providers/AppServiceProvider.php',
+    ] as $rel) {
+        $path = $webRoot.'/'.$rel;
+        echo "=====FILE:$rel=====\n";
+        if (is_file($path)) {
+            echo file_get_contents($path);
+        } else {
+            echo "MISSING\n";
+        }
+        echo "\n=====END:$rel=====\n";
+    }
+    exit;
+}
+
 if (function_exists('opcache_reset')) {
     @opcache_reset();
     echo "opcache_reset before write\n";
