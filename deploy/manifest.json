@@ -181,6 +181,11 @@
         "file": true
       },
       {
+        "local": "scripts/deploy/assets/admin-lumiere.css",
+        "remote": "css/admin-lumiere.css",
+        "file": true
+      },
+      {
         "local": "scripts/deploy/assets/admin-login-lumiere.css",
         "remote": "css/admin-login-lumiere.css",
         "file": true

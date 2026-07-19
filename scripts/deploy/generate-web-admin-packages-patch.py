@@ -32,6 +32,8 @@ files = {
     "routes/adminlogin.php": ADMIN / "routes/adminlogin.php",
     "public/css/admin.css": ROOT / "scripts/deploy/assets/admin.css",
     "css/admin.css": ROOT / "scripts/deploy/assets/admin.css",
+    "public/css/admin-lumiere.css": ROOT / "scripts/deploy/assets/admin-lumiere.css",
+    "css/admin-lumiere.css": ROOT / "scripts/deploy/assets/admin-lumiere.css",
 }
 
 payload = {
