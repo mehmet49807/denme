@@ -13,6 +13,19 @@
     let busy = false;
     let timer = null;
 
+    function isUsersSearchActive() {
+        const page = document.querySelector('.users-browse-page');
+        if (page && page.getAttribute('data-users-search')) {
+            return true;
+        }
+        const params = new URLSearchParams(window.location.search || '');
+        if ((params.get('q') || '').trim() !== '') {
+            return true;
+        }
+        const input = document.querySelector('#users-search-q, .users-browse-search__input');
+        return !!(input && String(input.value || '').trim() !== '');
+    }
+
     function collectPostIds() {
         const ids = new Set();
         document.querySelectorAll('[data-post-id]').forEach(function (el) {
@@ -42,7 +55,7 @@
         }
 
         const usersGrid = document.querySelector('.users-browse-grid');
-        if ((syncMode === 'users' || syncMode === 'auto') && usersGrid) {
+        if ((syncMode === 'users' || syncMode === 'auto') && usersGrid && !isUsersSearchActive()) {
             params.set('users', '1');
         }
 
@@ -143,7 +156,7 @@
 
     function replaceUsersGrid(html) {
         const root = document.querySelector('.users-browse-grid');
-        if (!root || !html) return;
+        if (!root || !html || isUsersSearchActive()) return;
         root.innerHTML = html;
     }
 

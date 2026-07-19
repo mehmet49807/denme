@@ -5,7 +5,8 @@
 @section('title', __('app.nav.users') . ' — ' . __('app.brand'))
 
 @section('app-content')
-<div class="users-browse-page">
+@php $search = $search ?? ''; @endphp
+<div class="users-browse-page"@if($search !== '') data-users-search="1"@endif>
     <header class="users-browse-hero">
         <div class="users-browse-hero-glow" aria-hidden="true"></div>
         <div class="users-browse-hero-inner">
@@ -41,7 +42,6 @@
                 <span class="users-browse-pkg-legend__item users-browse-pkg-legend__item--gold">Gold</span>
                 <span class="users-browse-pkg-legend__item users-browse-pkg-legend__item--pro">Pro</span>
             </p>
-            @php $search = $search ?? ''; @endphp
             <form class="users-browse-search" method="get" action="{{ route('users.index') }}" role="search">
                 <label class="users-browse-search__label" for="users-search-q">{{ __('app.users.search_label') }}</label>
                 <div class="users-browse-search__row">
