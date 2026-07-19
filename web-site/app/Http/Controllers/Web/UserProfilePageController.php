@@ -26,9 +26,9 @@ class UserProfilePageController extends Controller
     {
         $viewer = $request->user();
 
-        $filter = strtolower((string) $request->query('filter', 'all'));
-        if (! in_array($filter, ['all', 'online', 'city'], true)) {
-            $filter = 'all';
+        $search = trim((string) $request->query('q', ''));
+        if (mb_strlen($search) > 80) {
+            $search = mb_substr($search, 0, 80);
         }
 
         $users = User::where('role', 'user')
@@ -40,17 +40,18 @@ class UserProfilePageController extends Controller
             ->with(['premiumSubscriptions' => fn ($q) => $q->active()->latest('expires_at')])
             ->withCount(['posts' => fn ($q) => $q->where('is_active', true)]);
 
-        if ($filter === 'online') {
-            $users->whereNotNull('last_active_at')
-                ->where('last_active_at', '>=', now()->subMinutes(User::ONLINE_MINUTES));
-        } elseif ($filter === 'city' && filled($viewer->city)) {
-            $users->where('country', $viewer->country ?: 'Türkiye')
-                ->where('city', $viewer->city);
+        if ($search !== '') {
+            $like = '%'.addcslashes($search, '%_\\').'%';
+            $users->where(function ($q) use ($like) {
+                $q->where('username', 'like', $like)
+                    ->orWhere('city', 'like', $like)
+                    ->orWhere('first_name', 'like', $like);
+            });
         }
 
         $users = User::applyDiscoveryRanking($users)->paginate(24)->withQueryString();
 
-        return view('web.users', compact('users', 'viewer', 'filter'));
+        return view('web.users', compact('users', 'viewer', 'search'));
     }
 
     public function show(Request $request, string $username): View|RedirectResponse

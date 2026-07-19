@@ -191,6 +191,12 @@ return [
         'empty_text' => 'No members to display right now. Check back later.',
         'empty' => 'No members to display yet.',
         'posts_label' => 'posts',
+        'search_label' => 'Search members',
+        'search_placeholder' => 'Username or city…',
+        'search_button' => 'Search',
+        'search_clear' => 'Clear',
+        'search_empty_title' => 'No results',
+        'search_empty_text' => 'No members match this search. Try another username or city.',
     ],
 
     'notifications' => [
