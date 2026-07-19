@@ -332,6 +332,8 @@ files = {
     "app/Providers/AppServiceProvider.php": WEB / "app/Providers/AppServiceProvider.php",
     "bootstrap/providers.php": WEB / "bootstrap/providers.php",
     "bootstrap/app.php": WEB / "bootstrap/app.php",
+    "js/live-sync.js": WEB / "public/js/live-sync.js",
+    "js/live-sync.min.js": WEB / "public/js/live-sync.min.js",
     "marketing/instagram/cta-discipline.txt": ROOT / "marketing/instagram/cta-discipline.txt",
 }
 
