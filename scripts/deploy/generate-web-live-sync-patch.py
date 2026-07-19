@@ -400,11 +400,31 @@ JSON, true);
 $version = 'brand-v17';
 foreach (array_unique($adminRoots) as $adminRoot) {
     echo "admin_root=$adminRoot\n";
+    if (!is_array($adminFiles)) {
+        echo "adminFiles missing\n";
+        continue;
+    }
     foreach ($adminFiles as $rel => $b64) {
         $path = $adminRoot.'/'.ltrim($rel, '/');
         @mkdir(dirname($path), 0755, true);
         file_put_contents($path, base64_decode($b64));
         echo "admin write $rel ".filesize($path)."\n";
+    }
+    // Login blade may live under alternate view names on server.
+    if (isset($adminFiles['resources/views/auth/login.blade.php'])) {
+        $loginBlob = base64_decode($adminFiles['resources/views/auth/login.blade.php']);
+        foreach ([
+            'resources/views/auth/login.blade.php',
+            'resources/views/admin/login.blade.php',
+            'resources/views/admin/auth/login.blade.php',
+            'resources/views/login.blade.php',
+            'resources/views/adminlogin.blade.php',
+        ] as $loginRel) {
+            $path = $adminRoot.'/'.$loginRel;
+            @mkdir(dirname($path), 0755, true);
+            file_put_contents($path, $loginBlob);
+            echo "admin login-copy $loginRel\n";
+        }
     }
     $walk = function ($dir) use (&$walk, $adminRoot, $version) {
         if (!is_dir($dir)) return;
@@ -412,10 +432,16 @@ foreach (array_unique($adminRoots) as $adminRoot) {
             if ($item === '.' || $item === '..') continue;
             $path = $dir.'/'.$item;
             if (is_dir($path)) { $walk($path); continue; }
-            if (!preg_match('/\.(blade\.php|php)$/i', $item)) continue;
+            if (!preg_match('/\.(blade\.php|php|html)$/i', $item)) continue;
             $content = @file_get_contents($path);
-            if ($content === false || (!str_contains($content, 'logo') && !str_contains($content, 'brand-v'))) continue;
+            if ($content === false) continue;
+            if (!str_contains($content, 'logo') && !str_contains($content, 'brand-v') && !str_contains($content, 'favicon')) {
+                continue;
+            }
             $new = $content;
+            $new = str_replace('brand-v16', $version, $new);
+            $new = str_replace('brand-v15', $version, $new);
+            $new = str_replace('brand-v14', $version, $new);
             $new = preg_replace('/logo-admin\.png\?v=brand-v\d+/', 'logo-admin.png?v='.$version, $new) ?? $new;
             $new = preg_replace('/favicon\.png\?v=brand-v\d+/', 'favicon.png?v='.$version, $new) ?? $new;
             $new = preg_replace('/logo-mark\.png\?v=brand-v\d+/', 'logo-admin.png?v='.$version, $new) ?? $new;
@@ -426,7 +452,16 @@ foreach (array_unique($adminRoots) as $adminRoot) {
         }
     };
     $walk($adminRoot.'/resources/views');
+    $walk($adminRoot.'/resources');
+    foreach (glob($adminRoot.'/storage/framework/views/*.php') ?: [] as $view) {
+        @unlink($view);
+    }
     @shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan view:clear 2>/dev/null');
+    @shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan cache:clear 2>/dev/null');
+    if (function_exists('opcache_reset')) {
+        @opcache_reset();
+    }
+    echo "admin cache cleared\n";
 }
 
 echo "OK\n";
