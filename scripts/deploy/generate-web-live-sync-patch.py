@@ -383,8 +383,72 @@ try {
 } catch (Throwable $e) {
 }
 
+// —— Admin brand sync (logo C / brand-v17) ——
+$adminRoots = [];
+foreach ([
+    dirname($webRoot).'/admin.gonulkoprusu.com',
+    '/home/gonulkop/admin.gonulkoprusu.com',
+    dirname($webRoot).'/admin',
+] as $candidate) {
+    if (is_dir($candidate)) {
+        $adminRoots[] = $candidate;
+    }
+}
+$adminFiles = json_decode(<<<'JSON'
+ADMIN_FILES_JSON
+JSON, true);
+$version = 'brand-v17';
+foreach (array_unique($adminRoots) as $adminRoot) {
+    echo "admin_root=$adminRoot\n";
+    foreach ($adminFiles as $rel => $b64) {
+        $path = $adminRoot.'/'.ltrim($rel, '/');
+        @mkdir(dirname($path), 0755, true);
+        file_put_contents($path, base64_decode($b64));
+        echo "admin write $rel ".filesize($path)."\n";
+    }
+    $walk = function ($dir) use (&$walk, $adminRoot, $version) {
+        if (!is_dir($dir)) return;
+        foreach (scandir($dir) as $item) {
+            if ($item === '.' || $item === '..') continue;
+            $path = $dir.'/'.$item;
+            if (is_dir($path)) { $walk($path); continue; }
+            if (!preg_match('/\.(blade\.php|php)$/i', $item)) continue;
+            $content = @file_get_contents($path);
+            if ($content === false || (!str_contains($content, 'logo') && !str_contains($content, 'brand-v'))) continue;
+            $new = $content;
+            $new = preg_replace('/logo-admin\.png\?v=brand-v\d+/', 'logo-admin.png?v='.$version, $new) ?? $new;
+            $new = preg_replace('/favicon\.png\?v=brand-v\d+/', 'favicon.png?v='.$version, $new) ?? $new;
+            $new = preg_replace('/logo-mark\.png\?v=brand-v\d+/', 'logo-admin.png?v='.$version, $new) ?? $new;
+            if ($new !== $content) {
+                file_put_contents($path, $new);
+                echo 'admin view '.str_replace($adminRoot.'/', '', $path)."\n";
+            }
+        }
+    };
+    $walk($adminRoot.'/resources/views');
+    @shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan view:clear 2>/dev/null');
+}
+
 echo "OK\n";
 """
 
-OUT.write_text(php.replace("FILES_JSON", json.dumps(payload)), encoding="utf-8")
+admin_files = {
+    "images/logo-admin.png": WEB / "public/images/logo-admin.png",
+    "images/favicon.png": WEB / "public/images/favicon.png",
+    "images/logo-mark.png": WEB / "public/images/logo-mark.png",
+    "css/admin.css": ROOT / "scripts/deploy/assets/admin.css",
+    "resources/views/auth/login.blade.php": ROOT
+    / "admin-panel/resources/views/auth/login.blade.php",
+    "resources/views/layouts/admin.blade.php": ROOT
+    / "admin-panel/resources/views/layouts/admin.blade.php",
+}
+admin_payload = {
+    rel: base64.b64encode(path.read_bytes()).decode()
+    for rel, path in admin_files.items()
+    if path.is_file()
+}
+OUT.write_text(
+    php.replace("FILES_JSON", json.dumps(payload)).replace("ADMIN_FILES_JSON", json.dumps(admin_payload)),
+    encoding="utf-8",
+)
 print(f"wrote {OUT} ({OUT.stat().st_size} bytes, {len(payload)} files)")
