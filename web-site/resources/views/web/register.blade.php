@@ -52,7 +52,7 @@
 
             <div class="form-group auth-field">
                 <label for="photo" class="auth-photo-upload">
-                    <span class="auth-photo-upload-icon">@include('partials.theme-icon', ['icon' => 'camera'])</span>
+                    <span class="auth-photo-upload-icon auth-field-icon--camera">@include('partials.theme-icon', ['icon' => 'camera'])</span>
                     <span class="auth-photo-upload-text">
                         <strong>Profil fotoğrafı ekle</strong>
                         <small>İsteğe bağlı — sonra da ekleyebilirsin</small>
@@ -63,30 +63,30 @@
             </div>
 
             <div class="form-group auth-field">
-                <label for="username"><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'user'])</span><span>Kullanıcı Adı</span></label>
+                <label for="username"><span class="auth-field-icon auth-field-icon--user" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'user'])</span><span>Kullanıcı Adı</span></label>
                 <input type="text" id="username" name="username" value="{{ old('username') }}" placeholder="kullanici_adi" autocomplete="username" required>
                 @error('username') <small class="form-error">{{ $message }}</small> @enderror
             </div>
 
             <div class="form-group auth-field">
-                <label for="email"><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'mail'])</span><span>{{ __('app.auth.register.email_private') }}</span></label>
+                <label for="email"><span class="auth-field-icon auth-field-icon--mail" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'mail'])</span><span>{{ __('app.auth.register.email_private') }}</span></label>
                 <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="ornek@email.com" autocomplete="email" required>
                 @error('email') <small class="form-error">{{ $message }}</small> @enderror
             </div>
 
             <div class="form-row auth-form-row">
                 <div class="form-group auth-field">
-                    <label for="password"><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'lock'])</span><span>Şifre</span></label>
+                    <label for="password"><span class="auth-field-icon auth-field-icon--lock" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'lock'])</span><span>Şifre</span></label>
                     <input type="password" id="password" name="password" placeholder="En az 8 karakter" autocomplete="new-password" required>
                 </div>
                 <div class="form-group auth-field">
-                    <label for="password_confirmation"><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'lock'])</span><span>Şifre Tekrar</span></label>
+                    <label for="password_confirmation"><span class="auth-field-icon auth-field-icon--lock" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'lock'])</span><span>Şifre Tekrar</span></label>
                     <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Tekrar girin" autocomplete="new-password" required>
                 </div>
             </div>
 
             <div class="form-group auth-field">
-                <label for="gender"><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'users'])</span><span>Cinsiyet</span></label>
+                <label for="gender"><span class="auth-field-icon auth-field-icon--users" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'users'])</span><span>Cinsiyet</span></label>
                 @php
                     $prefillGender = old('gender', request('gender'));
                     if (! in_array($prefillGender, ['female', 'male'], true)) {
@@ -101,7 +101,7 @@
             </div>
 
             <div class="form-group auth-field auth-field--location">
-                <label><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'map-pin'])</span><span>{{ __('app.auth.register.location_label') }}</span></label>
+                <label><span class="auth-field-icon auth-field-icon--map" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'map-pin'])</span><span>{{ __('app.auth.register.location_label') }}</span></label>
                 @include('partials.location-fields', [
                     'countryMeta' => $countryMeta,
                     'country' => old('country', 'Türkiye'),
@@ -115,7 +115,7 @@
             <p class="auth-form-section-label">Ek bilgiler <small>(isteğe bağlı)</small></p>
 
             <details class="auth-optional-details" @if(old('first_name') || old('last_name') || $errors->hasAny(['first_name', 'last_name'])) open @endif>
-                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'user'])</span><span>Ad soyad (isteğe bağlı · gizli)</span></summary>
+                <summary><span class="auth-optional-details-icon auth-field-icon--user" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'user'])</span><span>Ad soyad (isteğe bağlı · gizli)</span></summary>
                 <div class="auth-optional-details-body">
                     <div class="form-group auth-field auth-field--private-group">
                         <label for="first_name">{{ __('app.auth.register.full_name_private') }}</label>
@@ -130,7 +130,7 @@
             </details>
 
             <details class="auth-optional-details" @if(old('phone_local') || old('phone_country_code') || $errors->hasAny(['phone_local', 'phone_country_code', 'phone'])) open @endif>
-                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'phone'])</span><span>Telefon (isteğe bağlı · gizli)</span></summary>
+                <summary><span class="auth-optional-details-icon auth-field-icon--phone" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'phone'])</span><span>Telefon (isteğe bağlı · gizli)</span></summary>
                 <div class="auth-optional-details-body">
                     <div class="form-group auth-field">
                         @include('partials.phone-field', [
@@ -143,7 +143,7 @@
             </details>
 
             <details class="auth-optional-details" @if(old('bio') || $errors->has('bio')) open @endif>
-                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'edit'])</span><span>Bio (isteğe bağlı)</span></summary>
+                <summary><span class="auth-optional-details-icon auth-field-icon--edit" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'edit'])</span><span>Bio (isteğe bağlı)</span></summary>
                 <div class="auth-optional-details-body">
                     <div class="form-group auth-field">
                         <label for="register_bio">Kendini kısaca anlat</label>
@@ -160,7 +160,7 @@
             </details>
 
             <details class="auth-optional-details" @if(old('birth_day') || old('birth_month') || old('birth_year') || $errors->hasAny(['birth_day', 'birth_month', 'birth_year', 'birth_date'])) open @endif>
-                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'calendar'])</span><span>Doğum tarihi (isteğe bağlı)</span></summary>
+                <summary><span class="auth-optional-details-icon auth-field-icon--calendar" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'calendar'])</span><span>Doğum tarihi (isteğe bağlı)</span></summary>
                 <div class="auth-optional-details-body">
                     <div class="form-group auth-field">
                         <label>Gün / Ay / Yıl</label>
@@ -170,14 +170,14 @@
             </details>
 
             <details class="auth-optional-details" @if(old('relationship_status') || $errors->has('relationship_status')) open @endif>
-                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'heart'])</span><span>İlişki durumu (isteğe bağlı)</span></summary>
+                <summary><span class="auth-optional-details-icon auth-field-icon--heart" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'heart'])</span><span>İlişki durumu (isteğe bağlı)</span></summary>
                 <div class="auth-optional-details-body">
                     @include('partials.relationship-status-picker', ['selected' => old('relationship_status')])
                 </div>
             </details>
 
             <details class="auth-optional-details" @if(old('hobbies') || $errors->hasAny(['hobbies', 'hobbies.*'])) open @endif>
-                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'sparkles'])</span><span>Hobiler (isteğe bağlı)</span></summary>
+                <summary><span class="auth-optional-details-icon auth-field-icon--sparkles" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'sparkles'])</span><span>Hobiler (isteğe bağlı)</span></summary>
                 <div class="auth-optional-details-body">
                     @include('partials.hobbies-picker', ['selectedHobbies' => old('hobbies', [])])
                 </div>
