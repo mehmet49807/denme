@@ -395,7 +395,7 @@ foreach ([
     }
 }
 $adminFiles = json_decode(<<<'JSON'
-ADMIN_FILES_JSON
+__ADMIN_FILES_JSON__
 JSON, true);
 $version = 'brand-v17';
 foreach (array_unique($adminRoots) as $adminRoot) {
