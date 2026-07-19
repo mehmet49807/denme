@@ -423,12 +423,30 @@ foreach ([
     'resources/views/web/settings/hobbies.blade.php',
     'resources/views/web/settings/language.blade.php',
     'resources/views/web/settings/password.blade.php',
+    'images/gonul-koprusu-logo.png',
+    'images/logo-mark-light.png',
+    'routes/web.php.live',
+    'patch-web-diag2.php',
+    'patch-web-feed-fix.php',
+    'patch-web-opcache.php',
 ] as $obsolete) {
     $path = $webRoot.'/'.$obsolete;
     if (is_file($path)) {
         unlink($path);
         echo "removed $obsolete\n";
     }
+}
+
+$feedFixDir = $webRoot.'/.gk-feed-fix-parts';
+if (is_dir($feedFixDir)) {
+    foreach (glob($feedFixDir.'/*') ?: [] as $part) {
+        if (is_file($part)) {
+            @unlink($part);
+            echo "removed .gk-feed-fix-parts/".basename($part)."\n";
+        }
+    }
+    @rmdir($feedFixDir);
+    echo "removed .gk-feed-fix-parts/\n";
 }
 
 foreach (['view:clear', 'route:clear', 'cache:clear', 'config:clear'] as $command) {
@@ -523,6 +541,13 @@ foreach (array_unique($adminRoots) as $adminRoot) {
     };
     $walk($adminRoot.'/resources/views');
     $walk($adminRoot.'/resources');
+    foreach (['images/logo-mark.png'] as $adminObsolete) {
+        $path = $adminRoot.'/'.$adminObsolete;
+        if (is_file($path)) {
+            @unlink($path);
+            echo "admin removed $adminObsolete\n";
+        }
+    }
     foreach (glob($adminRoot.'/storage/framework/views/*.php') ?: [] as $view) {
         @unlink($view);
     }
