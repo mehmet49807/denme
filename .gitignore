@@ -56,3 +56,6 @@ home.blade.php
 /blank.gif
 /LICENSE.md
 scripts/deploy/__pycache__/
+
+# One-off feed-fix sidecar (retired)
+.gk-feed-fix-parts/

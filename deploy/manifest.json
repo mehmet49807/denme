@@ -103,25 +103,6 @@
         "local": "patch-web-admin-packages.php",
         "remote": "patch-web-admin-packages.php",
         "file": true
-      },
-      {
-        "local": "patch-web-feed-fix.php",
-        "remote": "patch-web-feed-fix.php",
-        "file": true
-      },
-      {
-        "local": "patch-web-opcache.php",
-        "remote": "patch-web-opcache.php",
-        "file": true
-      },
-      {
-        "local": ".gk-feed-fix-parts",
-        "remote": ".gk-feed-fix-parts"
-      },
-      {
-        "local": "patch-web-diag2.php",
-        "remote": "patch-web-diag2.php",
-        "file": true
       }
     ],
     "post_deploy": [
@@ -130,11 +111,8 @@
       "https://gonulkoprusu.com/patch-web-mobile-nav.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-login-feed.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-settings-page.php?key={SETUP_KEY}",
-      "https://gonulkoprusu.com/patch-web-opcache.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-live-sync.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/patch-web-admin-packages.php?key={SETUP_KEY}",
-      "https://gonulkoprusu.com/patch-web-feed-fix.php?key={SETUP_KEY}",
-      "https://gonulkoprusu.com/patch-web-diag2.php?key={SETUP_KEY}",
       "https://gonulkoprusu.com/setup/clear-cache?key={SETUP_KEY}",
       "https://admin.gonulkoprusu.com/setup/deploy-notify?key={SETUP_KEY}&target=web&commit={GITHUB_SHA}"
     ]
