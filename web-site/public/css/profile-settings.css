@@ -413,6 +413,63 @@ body.app-shell-body .site-header-inner {
     margin-bottom: 0.85rem;
 }
 
+.profile-settings-form .form-group > label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+}
+
+.profile-settings-form .auth-field-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 1.4rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 8px;
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.12);
+}
+
+.profile-settings-form .auth-field-icon .theme-icon,
+.profile-settings-form .auth-field-icon .theme-icon svg {
+    width: 0.88rem;
+    height: 0.88rem;
+    display: block;
+}
+
+.profile-settings-form .auth-field-icon--user {
+    background: linear-gradient(145deg, #dbeafe, #bfdbfe);
+    color: #2563eb;
+}
+.profile-settings-form .auth-field-icon--mail {
+    background: linear-gradient(145deg, #ffedd5, #fdba74);
+    color: #ea580c;
+}
+.profile-settings-form .auth-field-icon--phone {
+    background: linear-gradient(145deg, #d1fae5, #6ee7b7);
+    color: #059669;
+}
+.profile-settings-form .auth-field-icon--map {
+    background: linear-gradient(145deg, #fce7f3, #f9a8d4);
+    color: #db2777;
+}
+.profile-settings-form .auth-field-icon--calendar {
+    background: linear-gradient(145deg, #e0e7ff, #a5b4fc);
+    color: #4f46e5;
+}
+
+html[data-theme="dark"] .profile-settings-form .auth-field-icon--user { background: linear-gradient(145deg, rgba(37,99,235,.35), rgba(96,165,250,.28)); color: #93c5fd; }
+html[data-theme="dark"] .profile-settings-form .auth-field-icon--mail { background: linear-gradient(145deg, rgba(234,88,12,.35), rgba(251,146,60,.28)); color: #fdba74; }
+html[data-theme="dark"] .profile-settings-form .auth-field-icon--phone { background: linear-gradient(145deg, rgba(5,150,105,.35), rgba(110,231,183,.28)); color: #6ee7b7; }
+html[data-theme="dark"] .profile-settings-form .auth-field-icon--map { background: linear-gradient(145deg, rgba(219,39,119,.35), rgba(244,114,182,.28)); color: #f9a8d4; }
+html[data-theme="dark"] .profile-settings-form .auth-field-icon--calendar { background: linear-gradient(145deg, rgba(79,70,229,.35), rgba(165,180,252,.28)); color: #c7d2fe; }
+
 .profile-settings-language-list {
     list-style: none;
     margin: 0;
