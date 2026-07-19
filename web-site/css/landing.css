@@ -946,23 +946,20 @@ body.app-shell-body .site-header .site-nav { display: none; }
 }
 
 .site-footer-brand .site-logo {
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.95rem;
 }
 
-.site-footer-brand .site-logo-mark {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+.site-footer-brand .site-logo-brand-img {
+    height: 56px;
+    max-width: min(260px, 70vw);
+    filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.35));
 }
 
-.site-footer-brand .site-logo-name {
-    background: linear-gradient(90deg, #FFB4C8 0%, #FFD4A8 45%, #C4B5FD 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.site-footer-brand .site-logo-tagline {
-    color: rgba(255, 255, 255, 0.62);
-    -webkit-text-fill-color: rgba(255, 255, 255, 0.62);
+@media (max-width: 640px) {
+    .site-footer-brand .site-logo-brand-img {
+        height: 48px;
+        max-width: min(220px, 72vw);
+    }
 }
 
 .site-footer-desc {

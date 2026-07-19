@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'logo_version' => 'brand-v17',
+    'logo_version' => 'brand-v18',
 ];
