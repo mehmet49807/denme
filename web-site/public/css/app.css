@@ -7282,6 +7282,39 @@ body.ig-story-open .app-sidebar {
     }
 }
 
+/* Register: compact trust chips */
+.auth-screen--register .gk-trust-badges {
+    gap: 0.35rem;
+    margin: 0.65rem 0 0.85rem;
+}
+.auth-screen--register .gk-trust-badge {
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.45rem;
+    border-radius: 9px;
+}
+.auth-screen--register .gk-trust-badge-icon {
+    width: 1rem;
+    height: 1rem;
+}
+.auth-screen--register .gk-trust-badge-icon .theme-icon,
+.auth-screen--register .gk-trust-badge-icon .theme-icon svg {
+    width: 13px;
+    height: 13px;
+}
+.auth-screen--register .gk-trust-badge-copy strong {
+    font-size: 0.68rem;
+    line-height: 1.2;
+}
+.auth-screen--register .gk-trust-badge-copy small {
+    display: none;
+}
+@media (max-width: 520px) {
+    .auth-screen--register .gk-trust-badges {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
 .auth-divider {
     display: flex;
     align-items: center;
