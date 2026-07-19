@@ -67,30 +67,30 @@
             </div>
 
             <div class="form-group auth-field">
-                <label for="username">Kullanıcı Adı</label>
+                <label for="username"><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'user'])</span><span>Kullanıcı Adı</span></label>
                 <input type="text" id="username" name="username" value="{{ old('username') }}" placeholder="kullanici_adi" autocomplete="username" required>
                 @error('username') <small class="form-error">{{ $message }}</small> @enderror
             </div>
 
             <div class="form-group auth-field">
-                <label for="email">{{ __('app.auth.register.email_private') }}</label>
+                <label for="email"><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'mail'])</span><span>{{ __('app.auth.register.email_private') }}</span></label>
                 <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="ornek@email.com" autocomplete="email" required>
                 @error('email') <small class="form-error">{{ $message }}</small> @enderror
             </div>
 
             <div class="form-row auth-form-row">
                 <div class="form-group auth-field">
-                    <label for="password">Şifre</label>
+                    <label for="password"><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'lock'])</span><span>Şifre</span></label>
                     <input type="password" id="password" name="password" placeholder="En az 8 karakter" autocomplete="new-password" required>
                 </div>
                 <div class="form-group auth-field">
-                    <label for="password_confirmation">Şifre Tekrar</label>
+                    <label for="password_confirmation"><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'lock'])</span><span>Şifre Tekrar</span></label>
                     <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Tekrar girin" autocomplete="new-password" required>
                 </div>
             </div>
 
             <div class="form-group auth-field">
-                <label for="gender">Cinsiyet</label>
+                <label for="gender"><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'users'])</span><span>Cinsiyet</span></label>
                 <select id="gender" name="gender" required>
                     <option value="">Seçiniz</option>
                     <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Kadın</option>
@@ -99,7 +99,7 @@
             </div>
 
             <div class="form-group auth-field auth-field--location">
-                <label>{{ __('app.auth.register.location_label') }}</label>
+                <label><span class="auth-field-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'map-pin'])</span><span>{{ __('app.auth.register.location_label') }}</span></label>
                 @include('partials.location-fields', [
                     'countryMeta' => $countryMeta,
                     'country' => old('country', 'Türkiye'),

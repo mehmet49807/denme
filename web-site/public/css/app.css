@@ -571,11 +571,35 @@ input[readonly] { background: var(--bg-alt); color: var(--text-muted); }
 .auth-form-footer a:hover { color: var(--coral); }
 
 .auth-form .auth-field label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.02em;
     color: var(--text-muted);
     text-transform: uppercase;
+}
+.auth-form .auth-field label.auth-photo-upload {
+    display: flex;
+}
+.auth-field-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 1.35rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 7px;
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.1);
+    text-transform: none;
+}
+.auth-field-icon .theme-icon,
+.auth-field-icon .theme-icon svg {
+    width: 0.85rem;
+    height: 0.85rem;
+    display: block;
 }
 
 .auth-form .auth-field input,
