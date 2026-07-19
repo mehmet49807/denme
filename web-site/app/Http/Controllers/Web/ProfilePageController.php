@@ -50,7 +50,7 @@ class ProfilePageController extends Controller
         $profileViews = collect();
         if ($user->canAccessWhoViewed()) {
             $profileViews = ProfileView::query()
-                ->with('viewer:id,username,profile_photo_url,city,district,country,gender,is_verified,last_active_at,role')
+                ->with('viewer:id,username,profile_photo_url,city,district,country,gender,is_verified,last_active_at,role,birth_date')
                 ->where('viewed_id', $user->id)
                 ->whereHas('viewer', function ($query) {
                     $query->where(function ($inner) {

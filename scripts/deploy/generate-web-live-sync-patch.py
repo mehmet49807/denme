@@ -49,6 +49,8 @@ files = {
     "css/profile-toolbar-mobile.css": WEB / "public/css/profile-toolbar-mobile.css",
     "css/feed-toolbar.css": WEB / "public/css/feed-toolbar.css",
     "css/profile-premium-sections.css": WEB / "public/css/profile-premium-sections.css",
+    "css/profile-premium-sections.min.css": WEB / "public/css/profile-premium-sections.min.css",
+    "css/profile-page.min.css": WEB / "public/css/profile-page.min.css",
     "css/location-search.css": WEB / "public/css/location-search.css",
     "resources/views/partials/feed-toolbar.blade.php": WEB
     / "resources/views/partials/feed-toolbar.blade.php",
