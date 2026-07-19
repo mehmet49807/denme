@@ -50,28 +50,32 @@
 <dialog id="postDetailDialog" class="post-detail-dialog">
     <div class="post-detail-inner">
         <header class="post-detail-header">
-            <strong id="postDetailUsername">{{ $profileUser->username }}</strong>
+            <strong id="postDetailUsername" class="post-detail-username">{{ $profileUser->username }}</strong>
             <button type="button" class="post-detail-close" data-close-post-detail aria-label="{{ __('app.common.close') }}">×</button>
         </header>
         <div class="post-detail-image-wrap">
-            <img id="postDetailImage" src="" alt="{{ __('app.feed.post_image') }}" decoding="async">
+            <div class="post-detail-image-frame">
+                <img id="postDetailImage" src="" alt="{{ __('app.feed.post_image') }}" decoding="async">
+            </div>
         </div>
         <div class="post-detail-footer" id="postDetailFooter">
+            <p class="post-detail-caption" id="postDetailCaption" hidden></p>
             <div class="post-detail-actions">
-                <button type="button" class="like-btn" id="postDetailLikeBtn" data-like-url="" aria-label="{{ __('app.feed.like') }}">
+                <button type="button" class="like-btn post-detail-like" id="postDetailLikeBtn" data-like-url="" aria-label="{{ __('app.feed.like') }}">
                     <span class="like-icon" aria-hidden="true">♥</span>
                     <span class="like-count" id="postDetailLikeCount">0</span>
                 </button>
                 @if($isOwnProfile)
-                <button type="button" class="post-detail-edit" id="postDetailEditCaption" hidden>{{ __('app.feed.edit_caption') }}</button>
-                <form method="POST" id="postDetailDeleteForm" action="" onsubmit="return confirm(@js(__('app.feed.delete_confirm')))">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="post-detail-delete">{{ __('app.common.delete') }}</button>
-                </form>
+                <div class="post-detail-actions-end">
+                    <button type="button" class="post-detail-edit" id="postDetailEditCaption" hidden>{{ __('app.feed.edit_caption') }}</button>
+                    <form method="POST" id="postDetailDeleteForm" class="post-detail-delete-form" action="" onsubmit="return confirm(@js(__('app.feed.delete_confirm')))">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="post-detail-delete">{{ __('app.common.delete') }}</button>
+                    </form>
+                </div>
                 @endif
             </div>
-            <p class="post-detail-caption" id="postDetailCaption" hidden></p>
         </div>
     </div>
 </dialog>
