@@ -33,12 +33,12 @@ class PremiumPageController extends Controller
     private function packageFeatures(): array
     {
         return [
-            'Hikaye paylaşımı',
-            'Kimler baktı',
-            'Profil galerisi',
-            'Akışta öne çıkma',
-            'Sınırsız beğeni',
-            'Öncelikli görünürlük',
+            __('app.premium.perk_unlimited_messages'),
+            __('app.premium.perk_gallery'),
+            __('app.premium.perk_featured_profile'),
+            __('app.premium.perk_stories'),
+            __('app.premium.perk_who_viewed'),
+            __('app.premium.perk_top_featured'),
         ];
     }
 }

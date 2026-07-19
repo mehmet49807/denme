@@ -55,8 +55,8 @@
     <div class="profile-premium-lock-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'camera'])</div>
     <div class="profile-premium-lock-copy">
         <h2>Galeri</h2>
-        <p>Galeri fotoğraflarını görmek Premium üyelere özeldir.</p>
+        <p>{{ __('app.premium.gallery_lock') }}</p>
     </div>
-    <a href="{{ route('premium') }}" class="btn btn-primary btn-sm">Premium’u incele</a>
+    <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm">Pro’yu incele</a>
 </section>
 @endif

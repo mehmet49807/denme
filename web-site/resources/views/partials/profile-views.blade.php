@@ -1,6 +1,6 @@
 @php
     $profileViews = $profileViews ?? collect();
-    $canAccess = $user->canAccessPremiumProfileFeatures();
+    $canAccess = $user->canAccessWhoViewed();
     $viewsCount = $profileViews->count();
 @endphp
 
@@ -48,12 +48,12 @@
     </div>
 </details>
 @elseif($user->gender === 'male')
-<section class="profile-premium-lock" aria-label="Kimler baktı Premium">
+<section class="profile-premium-lock" aria-label="Kimler baktı Platinum">
     <div class="profile-premium-lock-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'eye'])</div>
     <div class="profile-premium-lock-copy">
         <h2>Kimler baktı</h2>
-        <p>Profiline bakanları görmek Premium üyelere özeldir.</p>
+        <p>{{ __('app.premium.who_viewed_lock') }}</p>
     </div>
-    <a href="{{ route('premium') }}" class="btn btn-primary btn-sm">Premium’u incele</a>
+    <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm">Platinum’u incele</a>
 </section>
 @endif

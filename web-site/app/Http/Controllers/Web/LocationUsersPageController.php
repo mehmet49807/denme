@@ -82,7 +82,7 @@ class LocationUsersPageController extends Controller
 
         $viewer = $request->user();
 
-        $users = User::where('role', 'user')
+        $usersQuery = User::where('role', 'user')
             ->where('is_banned', false)
             ->where('country', $country)
             ->where('city', $city)
@@ -91,8 +91,9 @@ class LocationUsersPageController extends Controller
             ->where(function ($q) use ($viewer) {
                 $this->genderFilter->applyDiscoveryFilters($q, $viewer);
             })
-            ->withCount(['posts' => fn ($q) => $q->where('is_active', true)])
-            ->latest('last_active_at')
+            ->withCount(['posts' => fn ($q) => $q->where('is_active', true)]);
+
+        $users = User::applyDiscoveryRanking($usersQuery)
             ->paginate(24)
             ->withQueryString();
 

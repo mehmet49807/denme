@@ -13,7 +13,7 @@
         <span class="feed-create-label">{{ __('app.feed.story') }}</span>
     </button>
     @elseif($viewer->gender === 'male')
-    <a href="{{ route('premium') }}" class="feed-create-btn feed-create-btn--premium" aria-label="{{ __('app.nav.premium') }}">
+    <a href="{{ route('premium') }}#premium-packages" class="feed-create-btn feed-create-btn--premium" aria-label="{{ __('app.nav.premium') }}">
         <span class="feed-create-icon feed-create-icon--premium" aria-hidden="true">
             @include('partials.theme-icon', ['icon' => 'crown'])
         </span>
@@ -25,11 +25,11 @@
 @if($viewer->isOnTrial())
 <div class="premium-feed-banner premium-feed-banner--trial premium-feed-banner--compact">
     <p><strong>{{ __('app.feed.trial_banner') }}</strong> {{ __('app.common.days_left', ['count' => $viewer->trialDaysRemaining()]) }}</p>
-    <a href="{{ route('premium') }}" class="btn btn-outline btn-sm">{{ __('app.common.packages') }}</a>
+    <a href="{{ route('premium') }}#premium-packages" class="btn btn-outline btn-sm">{{ __('app.common.packages') }}</a>
 </div>
 @elseif($viewer->gender === 'male' && !$viewer->canPostStories())
 <div class="premium-feed-banner premium-feed-banner--compact">
-    <p>{{ __('app.feed.premium_app_hint') }}</p>
-    <a href="{{ route('premium') }}" class="btn btn-primary btn-sm">{{ __('app.common.review') }}</a>
+    <p>{{ __('app.premium.stories_lock') }}</p>
+    <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm">{{ __('app.common.review') }}</a>
 </div>
 @endif

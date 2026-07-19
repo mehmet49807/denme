@@ -32,9 +32,9 @@ class UserProfilePageController extends Controller
             ->where(function ($q) use ($viewer) {
                 $this->genderFilter->applyDiscoveryFilters($q, $viewer);
             })
-            ->withCount(['posts' => fn ($q) => $q->where('is_active', true)])
-            ->latest('last_active_at')
-            ->paginate(24);
+            ->withCount(['posts' => fn ($q) => $q->where('is_active', true)]);
+
+        $users = User::applyDiscoveryRanking($users)->paginate(24);
 
         return view('web.users', compact('users', 'viewer'));
     }

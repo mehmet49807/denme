@@ -106,6 +106,8 @@ files = {
     / "app/Http/Controllers/Web/UserProfilePageController.php",
     "app/Http/Controllers/Web/PremiumPageController.php": WEB
     / "app/Http/Controllers/Web/PremiumPageController.php",
+    "app/Http/Controllers/Web/LocationUsersPageController.php": WEB
+    / "app/Http/Controllers/Web/LocationUsersPageController.php",
     "app/Http/Controllers/Web/SetupController.php": WEB
     / "app/Http/Controllers/Web/SetupController.php",
     "app/Models/User.php": WEB / "app/Models/User.php",

@@ -27,7 +27,7 @@ class PremiumPackagesService
                 'badge_label' => 'Pro',
                 'badge_enabled' => true,
                 'badge_icon' => 'star',
-                'rozet_label' => 'Pro Yıldız',
+                'rozet_label' => 'Pro Yıldız Rozet',
                 'rozet_text' => 'Mor yıldız rozeti — profilinde “Pro” olarak görünür.',
                 'gradient_from' => '#5b21b6',
                 'gradient_to' => '#a78bfa',
@@ -40,7 +40,7 @@ class PremiumPackagesService
                 'badge_label' => 'Gold',
                 'badge_enabled' => true,
                 'badge_icon' => 'crown',
-                'rozet_label' => 'Gold Taç',
+                'rozet_label' => 'Gold Taç Rozet',
                 'rozet_text' => 'Altın taç rozeti — öne çıkan ve popüler profil görünümü.',
                 'gradient_from' => '#92400e',
                 'gradient_to' => '#fbbf24',
@@ -53,7 +53,7 @@ class PremiumPackagesService
                 'badge_label' => 'Platinum',
                 'badge_enabled' => true,
                 'badge_icon' => 'sparkles',
-                'rozet_label' => 'Platinum Işıltı',
+                'rozet_label' => 'Platinum Işıltı Özel Rozet',
                 'rozet_text' => 'Gümüş ışıltı rozeti — en prestijli ve en yüksek görünürlük.',
                 'gradient_from' => '#0f172a',
                 'gradient_to' => '#94a3b8',
@@ -223,9 +223,9 @@ class PremiumPackagesService
     private function upgradeBadgeKit(string $type, array $package, array $defaults): array
     {
         $legacyRozet = [
-            'pro' => ['Pro Rozet', 'Pro'],
-            'gold' => ['Gold Rozet', 'Gold'],
-            'platinum' => ['Platinum Rozet', 'Platinum'],
+            'pro' => ['Pro Rozet', 'Pro', 'Pro Yıldız'],
+            'gold' => ['Gold Rozet', 'Gold', 'Gold Taç'],
+            'platinum' => ['Platinum Rozet', 'Platinum', 'Platinum Işıltı'],
         ];
 
         $rozet = (string) ($package['rozet_label'] ?? '');

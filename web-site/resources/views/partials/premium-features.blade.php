@@ -1,11 +1,11 @@
 @php
     $perkItems = [
-        ['icon' => 'camera', 'title' => __('app.premium.feat_stories_title'), 'desc' => __('app.premium.feat_stories_desc')],
-        ['icon' => 'eye', 'title' => __('app.premium.feat_who_viewed_title'), 'desc' => __('app.premium.feat_who_viewed_desc')],
-        ['icon' => 'post', 'title' => __('app.premium.feat_gallery_title'), 'desc' => __('app.premium.feat_gallery_desc')],
-        ['icon' => 'star', 'title' => __('app.premium.feat_boost_title'), 'desc' => __('app.premium.feat_boost_desc')],
-        ['icon' => 'heart', 'title' => __('app.premium.feat_likes_title'), 'desc' => __('app.premium.feat_likes_desc')],
-        ['icon' => 'bolt', 'title' => __('app.premium.feat_visibility_title'), 'desc' => __('app.premium.feat_visibility_desc')],
+        ['icon' => 'heart', 'title' => __('app.premium.perk_unlimited_messages'), 'desc' => 'Pro, Gold ve Platinum'],
+        ['icon' => 'post', 'title' => __('app.premium.perk_gallery'), 'desc' => 'Pro, Gold ve Platinum'],
+        ['icon' => 'star', 'title' => __('app.premium.perk_featured_profile'), 'desc' => 'Gold ve Platinum'],
+        ['icon' => 'camera', 'title' => __('app.premium.perk_stories'), 'desc' => 'Gold ve Platinum'],
+        ['icon' => 'bolt', 'title' => __('app.premium.perk_top_featured'), 'desc' => 'Platinum'],
+        ['icon' => 'eye', 'title' => __('app.premium.perk_who_viewed'), 'desc' => 'Platinum'],
     ];
 @endphp
 

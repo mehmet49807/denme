@@ -140,13 +140,16 @@
                         @endif
 
                         <ul class="pm-plan__list">
-                            <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_stories') }}</li>
-                            <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_who_viewed') }}</li>
-                            <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_gallery') }}</li>
-                            <li>@include('partials.theme-icon', ['icon' => 'check']) {{ __('app.premium.perk_profile') }}</li>
-                            @if(!empty($pkg['rozet_label']))
-                                <li>@include('partials.theme-icon', ['icon' => 'check']) {{ $pkg['rozet_label'] }}</li>
-                            @endif
+                            @foreach(($pkg['feature_keys'] ?? []) as $featureKey)
+                                <li>
+                                    @include('partials.theme-icon', ['icon' => 'check'])
+                                    @if($featureKey === 'perk_badge')
+                                        {{ $pkg['rozet_label'] ?? $pkg['badge_label'] ?? $pkg['name'] }}
+                                    @else
+                                        {{ __('app.premium.'.$featureKey) }}
+                                    @endif
+                                </li>
+                            @endforeach
                         </ul>
                     </article>
                 @endforeach

@@ -48,7 +48,7 @@ class ProfilePageController extends Controller
             ->all();
 
         $profileViews = collect();
-        if ($user->canAccessPremiumProfileFeatures()) {
+        if ($user->canAccessWhoViewed()) {
             $profileViews = ProfileView::query()
                 ->with('viewer:id,username,profile_photo_url,city,district,country,gender,is_verified,last_active_at,role')
                 ->where('viewed_id', $user->id)
@@ -249,13 +249,18 @@ class ProfilePageController extends Controller
     {
         $user = $request->user();
 
+        if (! $user->canUseProfileBoost()) {
+            return back()->withErrors(['boost' => 'Profil öne çıkarma Gold ve Platinum paketlerine özeldir.']);
+        }
+
         if (! $user->canBoostToday()) {
             return back()->withErrors(['boost' => 'Günlük boost hakkını bugün kullandın. Yarın tekrar dene.']);
         }
 
-        $user->activateDailyBoost(12);
+        $hours = $user->hasPackageAtLeast('platinum') ? 24 : 12;
+        $user->activateDailyBoost($hours);
 
-        return back()->with('success', 'Profilin 12 saat boyunca öne çıkarılacak.');
+        return back()->with('success', "Profilin {$hours} saat boyunca öne çıkarılacak.");
     }
 
     private function persistLocale(Request $request, string $locale): RedirectResponse
