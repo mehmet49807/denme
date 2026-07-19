@@ -1,15 +1,63 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @php
     $isLanding = request()->routeIs('home');
     $appShell = trim($__env->yieldContent('body-class')) === 'app-shell';
     $isContentPage = str_contains(trim($__env->yieldContent('body-class')), 'page-content');
     $isAuthPage = str_contains(trim($__env->yieldContent('body-class')), 'page-auth');
+    $themePreference = auth()->check()
+        ? (string) (auth()->user()->theme_preference ?: 'system')
+        : 'system';
+    if (! in_array($themePreference, ['light', 'dark', 'system'], true)) {
+        $themePreference = 'system';
+    }
 @endphp
+<html
+    lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+    data-theme-pref="{{ $themePreference }}"
+>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script>
+    (function () {
+        try {
+            var root = document.documentElement;
+            var pref = root.getAttribute('data-theme-pref') || 'system';
+            try {
+                var stored = localStorage.getItem('gk_theme');
+                if ((!pref || pref === 'system') && stored && /^(light|dark|system)$/.test(stored)) {
+                    pref = stored;
+                    root.setAttribute('data-theme-pref', pref);
+                } else if (pref && pref !== 'system') {
+                    localStorage.setItem('gk_theme', pref);
+                }
+            } catch (e) {}
+            function resolve(p) {
+                if (p === 'dark' || p === 'light') return p;
+                return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            var resolved = resolve(pref);
+            if (resolved === 'dark') root.setAttribute('data-theme', 'dark');
+            else root.removeAttribute('data-theme');
+            window.__gk_applyTheme = function (next) {
+                var value = /^(light|dark|system)$/.test(next) ? next : 'system';
+                root.setAttribute('data-theme-pref', value);
+                try { localStorage.setItem('gk_theme', value); } catch (e) {}
+                var out = resolve(value);
+                if (out === 'dark') root.setAttribute('data-theme', 'dark');
+                else root.removeAttribute('data-theme');
+            };
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+                    if ((root.getAttribute('data-theme-pref') || 'system') === 'system') {
+                        window.__gk_applyTheme('system');
+                    }
+                });
+            }
+        } catch (e) {}
+    })();
+    </script>
     <title>@yield('title', __('app.brand'))</title>
     @include('partials.seo-head')
     @include('partials.logo-brand-css')

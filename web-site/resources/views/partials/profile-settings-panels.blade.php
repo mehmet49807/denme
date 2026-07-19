@@ -8,6 +8,14 @@
     ];
     $currentLocale = app()->getLocale();
     $hasPassword = ! empty($user->password);
+    $themePreference = old('theme_preference', $user->theme_preference ?: 'system');
+    if (! in_array($themePreference, ['light', 'dark', 'system'], true)) {
+        $themePreference = 'system';
+    }
+    $readReceiptsEnabled = old('read_receipts_enabled', $user->read_receipts_enabled !== false);
+    $quietHoursEnabled = (bool) old('quiet_hours_enabled', $user->quiet_hours_enabled);
+    $quietHoursStart = old('quiet_hours_start', $user->quiet_hours_start ? substr((string) $user->quiet_hours_start, 0, 5) : '22:00');
+    $quietHoursEnd = old('quiet_hours_end', $user->quiet_hours_end ? substr((string) $user->quiet_hours_end, 0, 5) : '08:00');
     $initialPanel = old('settings_panel', session('settings_panel', 'menu'));
     if ($errors->any() && $initialPanel === 'menu') {
         if ($errors->has('current_password') || $errors->has('password')) {
@@ -20,6 +28,10 @@
             $initialPanel = 'relationship';
         } elseif ($errors->has('locale')) {
             $initialPanel = 'language';
+        } elseif ($errors->has('theme_preference')) {
+            $initialPanel = 'appearance';
+        } elseif ($errors->has('read_receipts_enabled') || $errors->has('quiet_hours_enabled') || $errors->has('quiet_hours_start') || $errors->has('quiet_hours_end')) {
+            $initialPanel = 'privacy';
         } else {
             $initialPanel = 'edit';
         }
@@ -79,6 +91,28 @@
             <span class="profile-settings-menu-text">
                 <strong>Dil Seç</strong>
                 <small>Profil ve uygulama dili</small>
+            </span>
+            <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
+        </button>
+
+        <button type="button" class="profile-settings-menu-item" data-open-settings-panel="appearance">
+            <span class="profile-settings-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            </span>
+            <span class="profile-settings-menu-text">
+                <strong>Görünüm / Tema</strong>
+                <small>Açık, koyu veya sistem teması</small>
+            </span>
+            <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
+        </button>
+
+        <button type="button" class="profile-settings-menu-item" data-open-settings-panel="privacy">
+            <span class="profile-settings-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <span class="profile-settings-menu-text">
+                <strong>Gizlilik</strong>
+                <small>Okundu bilgisi ve bildirim sessizliği</small>
             </span>
             <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
         </button>
@@ -261,6 +295,99 @@
             </li>
         @endforeach
     </ul>
+</div>
+
+@php
+    $themeOptions = [
+        'light' => ['label' => 'Açık', 'hint' => 'Parlak arayüz', 'icon' => 'sun'],
+        'dark' => ['label' => 'Koyu', 'hint' => 'Karanlık arayüz', 'icon' => 'moon'],
+        'system' => ['label' => 'Sistem', 'hint' => 'Cihaz ayarını takip et', 'icon' => 'system'],
+    ];
+@endphp
+<div class="profile-settings-sheet-stage" data-settings-panel="appearance" @if($initialPanel !== 'appearance') hidden @endif>
+    <p class="profile-settings-panel-lead">Uygulama temasını seçin. Seçiminiz hemen uygulanır ve hesabınıza kaydedilir.</p>
+    <ul class="profile-settings-language-list" data-theme-options>
+        @foreach($themeOptions as $value => $meta)
+            <li>
+                <form method="POST" action="{{ route('profile.update') }}" class="profile-settings-theme-form">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="settings_panel" value="appearance">
+                    <input type="hidden" name="theme_preference" value="{{ $value }}">
+                    <button
+                        type="submit"
+                        class="profile-settings-language-item {{ $themePreference === $value ? 'profile-settings-language-item--active' : '' }}"
+                        data-theme-choice="{{ $value }}"
+                        @if($themePreference === $value) aria-current="true" @endif
+                    >
+                        <span class="profile-settings-theme-icon" aria-hidden="true">
+                            @if($meta['icon'] === 'sun')
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                            @elseif($meta['icon'] === 'moon')
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a7 7 0 0 0 11.5 11.5z"/></svg>
+                            @else
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                            @endif
+                        </span>
+                        <span class="profile-settings-menu-text">
+                            <strong>{{ $meta['label'] }}</strong>
+                            <small>{{ $meta['hint'] }}</small>
+                        </span>
+                        @if($themePreference === $value)
+                            <span class="profile-settings-language-check" aria-hidden="true">✓</span>
+                        @endif
+                    </button>
+                </form>
+            </li>
+        @endforeach
+    </ul>
+</div>
+
+<div class="profile-settings-sheet-stage" data-settings-panel="privacy" @if($initialPanel !== 'privacy') hidden @endif>
+    <form method="POST" action="{{ route('profile.update') }}" class="profile-settings-form">
+        @csrf
+        @method('PUT')
+        <input type="hidden" name="settings_panel" value="privacy">
+
+        <p class="profile-settings-panel-lead">Mesaj ve bildirim tercihlerinizi buradan yönetin.</p>
+
+        <label class="profile-settings-toggle">
+            <input type="hidden" name="read_receipts_enabled" value="0">
+            <input type="checkbox" name="read_receipts_enabled" value="1" {{ $readReceiptsEnabled ? 'checked' : '' }}>
+            <span class="profile-settings-toggle__ui" aria-hidden="true"></span>
+            <span class="profile-settings-toggle__copy">
+                <strong>Okundu bilgisi</strong>
+                <small>Mesajlarınızın okunduğunu karşı tarafa göster</small>
+            </span>
+        </label>
+
+        <label class="profile-settings-toggle">
+            <input type="hidden" name="quiet_hours_enabled" value="0">
+            <input type="checkbox" name="quiet_hours_enabled" value="1" {{ $quietHoursEnabled ? 'checked' : '' }} data-quiet-hours-toggle>
+            <span class="profile-settings-toggle__ui" aria-hidden="true"></span>
+            <span class="profile-settings-toggle__copy">
+                <strong>Sessiz saatler</strong>
+                <small>Belirlediğiniz saatlerde bildirimleri azalt</small>
+            </span>
+        </label>
+
+        <div class="profile-settings-quiet-fields" data-quiet-hours-fields @if(! $quietHoursEnabled) hidden @endif>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="quiet_hours_start">Başlangıç</label>
+                    <input type="time" id="quiet_hours_start" name="quiet_hours_start" value="{{ $quietHoursStart }}">
+                </div>
+                <div class="form-group">
+                    <label for="quiet_hours_end">Bitiş</label>
+                    <input type="time" id="quiet_hours_end" name="quiet_hours_end" value="{{ $quietHoursEnd }}">
+                </div>
+            </div>
+            @error('quiet_hours_start') <small class="form-error">{{ $message }}</small> @enderror
+            @error('quiet_hours_end') <small class="form-error">{{ $message }}</small> @enderror
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">Gizlilik ayarlarını kaydet</button>
+    </form>
 </div>
 
 <div class="profile-settings-sheet-stage" data-settings-panel="password" @if($initialPanel !== 'password') hidden @endif>

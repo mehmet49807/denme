@@ -278,7 +278,7 @@ body.app-shell-body .site-header-inner {
     padding: 0.8rem 0.85rem;
     border: 1px solid var(--border);
     border-radius: 14px;
-    background: #fff;
+    background: var(--surface, #fff);
     color: inherit;
     font-family: inherit;
     text-align: left;
@@ -401,6 +401,164 @@ body.app-shell-body .site-header-inner {
 .profile-settings-language-check {
     margin-left: auto;
     font-weight: 800;
+}
+
+.profile-settings-theme-form {
+    margin: 0;
+}
+
+.profile-settings-theme-form .profile-settings-language-item {
+    width: 100%;
+    font: inherit;
+    background: var(--surface, #fff);
+    cursor: pointer;
+}
+
+.profile-settings-theme-icon {
+    display: inline-flex;
+    width: 1.35rem;
+    height: 1.35rem;
+    color: var(--violet, #7c3aed);
+    flex-shrink: 0;
+}
+
+.profile-settings-theme-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.profile-settings-theme-form .profile-settings-menu-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+    min-width: 0;
+}
+
+.profile-settings-theme-form .profile-settings-menu-text strong {
+    font-size: 0.92rem;
+}
+
+.profile-settings-theme-form .profile-settings-menu-text small {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.profile-settings-toggle {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 0.75rem;
+    padding: 0.85rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface, #fff);
+    cursor: pointer;
+}
+
+.profile-settings-toggle input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.profile-settings-toggle__ui {
+    width: 2.5rem;
+    height: 1.45rem;
+    border-radius: 999px;
+    background: rgba(124, 58, 237, 0.18);
+    position: relative;
+    transition: background 0.18s ease;
+}
+
+.profile-settings-toggle__ui::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(15, 8, 30, 0.18);
+    transition: transform 0.18s ease;
+}
+
+.profile-settings-toggle input[type="checkbox"]:checked + .profile-settings-toggle__ui {
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+}
+
+.profile-settings-toggle input[type="checkbox"]:checked + .profile-settings-toggle__ui::after {
+    transform: translateX(1.05rem);
+}
+
+.profile-settings-toggle__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.profile-settings-toggle__copy strong {
+    font-size: 0.92rem;
+}
+
+.profile-settings-toggle__copy small {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    line-height: 1.35;
+}
+
+.profile-settings-quiet-fields {
+    margin: 0 0 0.85rem;
+    padding: 0.75rem 0.85rem;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    background: rgba(124, 58, 237, 0.04);
+}
+
+.profile-settings-quiet-fields[hidden] {
+    display: none !important;
+}
+
+html[data-theme="dark"] .profile-settings-sheet-panel {
+    background: var(--surface);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .profile-settings-menu-item,
+html[data-theme="dark"] .profile-settings-language-item,
+html[data-theme="dark"] .profile-settings-toggle,
+html[data-theme="dark"] .profile-settings-theme-form .profile-settings-language-item {
+    background: #221a2d;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+}
+
+html[data-theme="dark"] .profile-settings-menu-item--danger {
+    background: rgba(127, 29, 29, 0.35);
+    border-color: rgba(248, 113, 113, 0.35);
+    color: #fecaca;
+}
+
+html[data-theme="dark"] .profile-settings-sheet-header {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.18), rgba(236, 72, 153, 0.1));
+}
+
+html[data-theme="dark"] .profile-settings-sheet-back,
+html[data-theme="dark"] .profile-settings-sheet-close {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ddd6fe;
+}
+
+html[data-theme="dark"] .profile-settings-form input,
+html[data-theme="dark"] .profile-settings-form textarea,
+html[data-theme="dark"] .profile-settings-form select {
+    background: #1a1422;
+    color: var(--text);
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 body.profile-settings-open {
