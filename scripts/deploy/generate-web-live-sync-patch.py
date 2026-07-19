@@ -334,6 +334,8 @@ files = {
     "bootstrap/app.php": WEB / "bootstrap/app.php",
     "js/live-sync.js": WEB / "public/js/live-sync.js",
     "js/live-sync.min.js": WEB / "public/js/live-sync.min.js",
+    "css/profile-settings.min.css": WEB / "public/css/profile-settings.min.css",
+    "js/profile-settings.min.js": WEB / "public/js/profile-settings.min.js",
     "marketing/instagram/cta-discipline.txt": ROOT / "marketing/instagram/cta-discipline.txt",
 }
 

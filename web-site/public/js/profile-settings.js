@@ -15,6 +15,8 @@
         relationship: 'İlişki Durumu',
         hobbies: 'Hobiler',
         language: 'Dil Seç',
+        appearance: 'Görünüm / Tema',
+        privacy: 'Gizlilik',
         password: 'Şifre Değiştir',
     };
     var currentPanel = 'menu';
@@ -80,6 +82,42 @@
             }
         }
     });
+
+    sheet.querySelectorAll('[data-theme-choice]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var pref = btn.getAttribute('data-theme-choice');
+            if (typeof window.__gk_applyTheme === 'function') {
+                window.__gk_applyTheme(pref);
+            }
+            sheet.querySelectorAll('[data-theme-choice]').forEach(function (other) {
+                var active = other === btn;
+                other.classList.toggle('profile-settings-language-item--active', active);
+                if (active) {
+                    other.setAttribute('aria-current', 'true');
+                } else {
+                    other.removeAttribute('aria-current');
+                }
+                var check = other.querySelector('.profile-settings-language-check');
+                if (active && !check) {
+                    var mark = document.createElement('span');
+                    mark.className = 'profile-settings-language-check';
+                    mark.setAttribute('aria-hidden', 'true');
+                    mark.textContent = '✓';
+                    other.appendChild(mark);
+                } else if (!active && check) {
+                    check.remove();
+                }
+            });
+        });
+    });
+
+    var quietToggle = sheet.querySelector('[data-quiet-hours-toggle]');
+    var quietFields = sheet.querySelector('[data-quiet-hours-fields]');
+    if (quietToggle && quietFields) {
+        quietToggle.addEventListener('change', function () {
+            quietFields.hidden = !quietToggle.checked;
+        });
+    }
 
     var initialPanel = sheet.getAttribute('data-initial-panel');
     if (initialPanel && initialPanel !== 'menu') {

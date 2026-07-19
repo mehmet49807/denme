@@ -8038,27 +8038,80 @@ body.ig-story-open .app-sidebar {
 
 html[data-theme="dark"] {
     color-scheme: dark;
-}
-html[data-theme="dark"] body,
-html[data-theme="dark"] .app-shell-body {
-    background: #121018;
-    color: #f4f1f8;
-}
-html[data-theme="dark"] {
+    --bg: #121018;
+    --bg-alt: #1a1422;
     --surface: #1b1624;
     --text: #f4f1f8;
     --text-muted: #b7adc8;
+    --text-light: #9b92ab;
     --border: rgba(255,255,255,0.1);
+    --border-strong: rgba(236, 72, 153, 0.35);
+    --glass: rgba(27, 22, 36, 0.86);
+    --glass-strong: rgba(27, 22, 36, 0.94);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+html[data-theme="dark"] body,
+html[data-theme="dark"] .app-shell-body {
+    background: var(--bg);
+    color: var(--text);
+}
+html[data-theme="dark"] .site-header,
+html[data-theme="dark"] .app-content,
+html[data-theme="dark"] .users-browse-hero,
+html[data-theme="dark"] .notifications-page,
+html[data-theme="dark"] .dm-inbox,
+html[data-theme="dark"] .dm-thread,
+html[data-theme="dark"] .mobile-bottom-nav,
+html[data-theme="dark"] .profile-settings-sheet-panel {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--border);
+}
+html[data-theme="dark"] .site-header {
+    background: rgba(27, 22, 36, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 html[data-theme="dark"] .for-you-banner,
 html[data-theme="dark"] .profile-completion,
-html[data-theme="dark"] .chat-safety-panel {
-    background: #1b1624;
+html[data-theme="dark"] .chat-safety-panel,
+html[data-theme="dark"] .users-browse-card,
+html[data-theme="dark"] .notification-list li,
+html[data-theme="dark"] .conversation-list li {
+    background: #221a2d;
+    border-color: var(--border);
 }
 html[data-theme="dark"] .chat-greeting-chip {
     background: rgba(255,255,255,0.06);
     border-color: rgba(255,255,255,0.12);
     color: #f4f1f8;
+}
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+    background: #1a1422;
+    color: var(--text);
+    border-color: rgba(255,255,255,0.12);
+}
+html[data-theme="dark"] .users-browse-search__input {
+    background: #221a2d;
+    color: var(--text);
+    border-color: rgba(255,255,255,0.12);
+}
+html[data-theme="dark"] .btn-outline {
+    background: transparent;
+    color: #f4f1f8;
+    border-color: rgba(255,255,255,0.18);
+}
+html[data-theme="dark"] .gk-empty {
+    background: linear-gradient(160deg, rgba(124, 58, 237, 0.16), rgba(255, 107, 138, 0.1));
+    border-color: rgba(236, 72, 153, 0.35);
+}
+html[data-theme="dark"] .site-logo-brand-img--ink { display: none; }
+html[data-theme="dark"] .site-logo-brand-img--light { display: block; }
+html[data-theme="dark"] .site-header .site-logo-brand-img {
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35));
 }
 
 .pwa-install-hint {

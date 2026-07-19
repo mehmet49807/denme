@@ -698,6 +698,11 @@ class SetupController extends Controller
                 'bio' => fn ($table) => $table->text('bio')->nullable(),
                 'birth_date' => fn ($table) => $table->date('birth_date')->nullable(),
                 'relationship_status' => fn ($table) => $table->string('relationship_status', 32)->nullable(),
+                'theme_preference' => fn ($table) => $table->string('theme_preference', 16)->nullable()->default('system'),
+                'read_receipts_enabled' => fn ($table) => $table->boolean('read_receipts_enabled')->nullable()->default(true),
+                'quiet_hours_enabled' => fn ($table) => $table->boolean('quiet_hours_enabled')->nullable()->default(false),
+                'quiet_hours_start' => fn ($table) => $table->time('quiet_hours_start')->nullable(),
+                'quiet_hours_end' => fn ($table) => $table->time('quiet_hours_end')->nullable(),
             ] as $column => $definition) {
                 if (\Illuminate\Support\Facades\Schema::hasColumn('users', $column)) {
                     $lines[] = "users.{$column}: var";
