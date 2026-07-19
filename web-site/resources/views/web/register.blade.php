@@ -113,7 +113,7 @@
             <p class="auth-form-section-label">Ek bilgiler <small>(isteğe bağlı)</small></p>
 
             <details class="auth-optional-details" @if(old('first_name') || old('last_name') || $errors->hasAny(['first_name', 'last_name'])) open @endif>
-                <summary>Ad soyad (isteğe bağlı · gizli)</summary>
+                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'user'])</span><span>Ad soyad (isteğe bağlı · gizli)</span></summary>
                 <div class="auth-optional-details-body">
                     <div class="form-group auth-field auth-field--private-group">
                         <label for="first_name">{{ __('app.auth.register.full_name_private') }}</label>
@@ -128,7 +128,7 @@
             </details>
 
             <details class="auth-optional-details" @if(old('phone_local') || old('phone_country_code') || $errors->hasAny(['phone_local', 'phone_country_code', 'phone'])) open @endif>
-                <summary>Telefon (isteğe bağlı · gizli)</summary>
+                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'phone'])</span><span>Telefon (isteğe bağlı · gizli)</span></summary>
                 <div class="auth-optional-details-body">
                     <div class="form-group auth-field">
                         @include('partials.phone-field', [
@@ -141,7 +141,7 @@
             </details>
 
             <details class="auth-optional-details" @if(old('bio') || $errors->has('bio')) open @endif>
-                <summary>Bio (isteğe bağlı)</summary>
+                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'edit'])</span><span>Bio (isteğe bağlı)</span></summary>
                 <div class="auth-optional-details-body">
                     <div class="form-group auth-field">
                         <label for="register_bio">Kendini kısaca anlat</label>
@@ -158,7 +158,7 @@
             </details>
 
             <details class="auth-optional-details" @if(old('birth_day') || old('birth_month') || old('birth_year') || $errors->hasAny(['birth_day', 'birth_month', 'birth_year', 'birth_date'])) open @endif>
-                <summary>Doğum tarihi (isteğe bağlı)</summary>
+                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'calendar'])</span><span>Doğum tarihi (isteğe bağlı)</span></summary>
                 <div class="auth-optional-details-body">
                     <div class="form-group auth-field">
                         <label>Gün / Ay / Yıl</label>
@@ -168,14 +168,14 @@
             </details>
 
             <details class="auth-optional-details" @if(old('relationship_status') || $errors->has('relationship_status')) open @endif>
-                <summary>İlişki durumu (isteğe bağlı)</summary>
+                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'heart'])</span><span>İlişki durumu (isteğe bağlı)</span></summary>
                 <div class="auth-optional-details-body">
                     @include('partials.relationship-status-picker', ['selected' => old('relationship_status')])
                 </div>
             </details>
 
             <details class="auth-optional-details" @if(old('hobbies') || $errors->hasAny(['hobbies', 'hobbies.*'])) open @endif>
-                <summary>Hobiler (isteğe bağlı)</summary>
+                <summary><span class="auth-optional-details-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'sparkles'])</span><span>Hobiler (isteğe bağlı)</span></summary>
                 <div class="auth-optional-details-body">
                     @include('partials.hobbies-picker', ['selectedHobbies' => old('hobbies', [])])
                 </div>

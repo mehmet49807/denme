@@ -7368,6 +7368,9 @@ body.ig-story-open .app-sidebar {
     margin-top: 0.55rem;
 }
 .auth-optional-details summary {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
     cursor: pointer;
     font-weight: 700;
     font-size: 0.88rem;
@@ -7375,11 +7378,33 @@ body.ig-story-open .app-sidebar {
     list-style: none;
 }
 .auth-optional-details summary::-webkit-details-marker { display: none; }
+.auth-optional-details-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 1.55rem;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 8px;
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.1);
+}
+.auth-optional-details-icon .theme-icon,
+.auth-optional-details-icon .theme-icon svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    display: block;
+}
+.auth-optional-details summary > span:last-of-type {
+    flex: 1 1 auto;
+    min-width: 0;
+}
 .auth-optional-details summary::after {
     content: '▾';
-    float: right;
+    margin-left: auto;
     color: #7c3aed;
     font-weight: 700;
+    flex: 0 0 auto;
 }
 .auth-optional-details[open] summary::after { content: '▴'; }
 .auth-optional-details-body { margin-top: 0.85rem; }
