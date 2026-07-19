@@ -90,6 +90,7 @@
 </div>
 
 @include('partials.feed-compose', ['viewer' => $user])
+@include('partials.post-caption-edit-dialog')
 
 @if($ownStoryGroup)
 <div class="ig-story-viewer" id="igStoryViewer" hidden data-groups="{{ $allStoryGroups->toJson() }}">

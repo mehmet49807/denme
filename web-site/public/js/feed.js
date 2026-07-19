@@ -966,4 +966,169 @@
             menu.hidden = true;
         });
     });
+
+    function applyCaptionToDom(postId, caption) {
+        const card = document.querySelector('.post-card[data-post-id="' + postId + '"]');
+        if (card) {
+            const trigger = card.querySelector('[data-open-feed-post]');
+            if (trigger) trigger.dataset.caption = caption || '';
+
+            card.querySelectorAll('[data-edit-caption]').forEach(function (btn) {
+                btn.dataset.caption = caption || '';
+            });
+
+            let captionBlock = card.querySelector('[data-post-caption]');
+            const footer = card.querySelector('.post-footer');
+            if (caption) {
+                if (captionBlock && captionBlock.classList.contains('post-caption--empty')) {
+                    captionBlock.classList.remove('post-caption--empty');
+                    captionBlock.innerHTML =
+                        '<p class="post-caption-text">' +
+                        '<span class="post-caption-body"></span>' +
+                        '</p>' +
+                        '<button type="button" class="post-caption-more" hidden data-caption-toggle></button>' +
+                        '<button type="button" class="post-caption-edit-btn" data-edit-caption data-post-id="' + postId + '"></button>';
+                    const editBtn = captionBlock.querySelector('[data-edit-caption]');
+                    if (editBtn && trigger) {
+                        editBtn.dataset.updateUrl = trigger.dataset.updateUrl || '';
+                        editBtn.textContent = editBtn.getAttribute('data-edit-label') || 'Düzenle';
+                    }
+                }
+                if (!captionBlock) {
+                    // leave structure; reload not required for menu-driven edits
+                } else {
+                    const body = captionBlock.querySelector('.post-caption-body');
+                    if (body) body.textContent = caption;
+                    const editBtn = captionBlock.querySelector('[data-edit-caption]');
+                    if (editBtn) editBtn.dataset.caption = caption;
+                }
+                if (footer) footer.classList.remove('post-footer--compact');
+            } else if (captionBlock) {
+                const body = captionBlock.querySelector('.post-caption-body');
+                if (body) body.textContent = '';
+            }
+        }
+
+        const detailCaption = document.getElementById('feedPostDetailCaption');
+        if (detailCaption) {
+            if (caption) {
+                detailCaption.textContent = caption;
+                detailCaption.hidden = false;
+            } else {
+                detailCaption.textContent = '';
+                detailCaption.hidden = true;
+            }
+        }
+    }
+
+    function initCaptionEditor() {
+        const dialog = document.getElementById('postCaptionEditDialog');
+        const form = document.getElementById('postCaptionEditForm');
+        const input = document.getElementById('postCaptionEditInput');
+        const countEl = document.getElementById('postCaptionEditCount');
+        const errorEl = document.getElementById('postCaptionEditError');
+        const saveBtn = document.getElementById('postCaptionEditSave');
+        if (!dialog || !form || !input || !csrf) return;
+
+        let activeUrl = '';
+        let activePostId = '';
+
+        function updateCount() {
+            const len = input.value.length;
+            if (countEl) countEl.textContent = len + ' / 500';
+        }
+
+        function openEditor(btn) {
+            activeUrl = btn.dataset.updateUrl || '';
+            activePostId = btn.dataset.postId || '';
+            if (!activeUrl) return;
+            input.value = btn.dataset.caption || '';
+            if (errorEl) {
+                errorEl.hidden = true;
+                errorEl.textContent = '';
+            }
+            updateCount();
+            dialog.showModal();
+            input.focus();
+        }
+
+        window.gkOpenCaptionEditor = openEditor;
+
+        function closeEditor() {
+            if (dialog.open) dialog.close();
+            activeUrl = '';
+            activePostId = '';
+        }
+
+        document.querySelectorAll('[data-edit-caption]').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const menu = btn.closest('.post-menu-dropdown');
+                if (menu) menu.hidden = true;
+                openEditor(btn);
+            });
+        });
+
+        document.querySelectorAll('[data-close-caption-edit]').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                e.preventDefault();
+                closeEditor();
+            });
+        });
+
+        input.addEventListener('input', updateCount);
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            if (!activeUrl || !saveBtn) return;
+            saveBtn.disabled = true;
+            if (errorEl) {
+                errorEl.hidden = true;
+                errorEl.textContent = '';
+            }
+            try {
+                const res = await fetch(activeUrl, {
+                    method: 'PATCH',
+                    headers: {
+                        'X-CSRF-TOKEN': csrf,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({ caption: input.value }),
+                });
+                const data = await res.json().catch(function () { return {}; });
+                if (!res.ok || !data.success) {
+                    const msg = (data && (data.message || (data.errors && data.errors.caption && data.errors.caption[0]))) || 'Açıklama kaydedilemedi.';
+                    if (errorEl) {
+                        errorEl.textContent = msg;
+                        errorEl.hidden = false;
+                    }
+                    return;
+                }
+                const caption = (data.data && data.data.caption) || '';
+                const postId = String(activePostId || (data.data && data.data.id) || '');
+                const hadEmpty = postId && document.querySelector('.post-card[data-post-id="' + postId + '"] .post-caption--empty');
+                applyCaptionToDom(postId, caption);
+                document.querySelectorAll('[data-edit-caption][data-post-id="' + postId + '"]').forEach(function (btn) {
+                    btn.dataset.caption = caption || '';
+                });
+                closeEditor();
+                if (hadEmpty && caption) {
+                    window.location.reload();
+                }
+            } catch (err) {
+                console.error(err);
+                if (errorEl) {
+                    errorEl.textContent = 'Açıklama kaydedilemedi.';
+                    errorEl.hidden = false;
+                }
+            } finally {
+                saveBtn.disabled = false;
+            }
+        });
+    }
+
+    initCaptionEditor();
 })();

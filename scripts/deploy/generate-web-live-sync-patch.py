@@ -112,6 +112,23 @@ files = {
     / "resources/views/partials/feed-recommended-users.blade.php",
     "resources/views/web/users.blade.php": WEB / "resources/views/web/users.blade.php",
     "resources/views/web/feed.blade.php": WEB / "resources/views/web/feed.blade.php",
+    "resources/views/web/profile.blade.php": WEB / "resources/views/web/profile.blade.php",
+    "resources/views/partials/post-detail-dialog.blade.php": WEB
+    / "resources/views/partials/post-detail-dialog.blade.php",
+    "resources/views/partials/post-caption-edit-dialog.blade.php": WEB
+    / "resources/views/partials/post-caption-edit-dialog.blade.php",
+    "resources/views/partials/profile-posts-grid.blade.php": WEB
+    / "resources/views/partials/profile-posts-grid.blade.php",
+    "app/Http/Controllers/Web/PostPageController.php": WEB
+    / "app/Http/Controllers/Web/PostPageController.php",
+    "app/Models/Post.php": WEB / "app/Models/Post.php",
+    "js/feed.js": WEB / "public/js/feed.js",
+    "js/feed.min.js": WEB / "public/js/feed.min.js",
+    "js/feed-page.min.js": WEB / "public/js/feed-page.min.js",
+    "js/profile-posts.js": WEB / "public/js/profile-posts.js",
+    "js/profile-posts.min.js": WEB / "public/js/profile-posts.min.js",
+    "js/profile-page.min.js": WEB / "public/js/profile-page.min.js",
+    "routes/web.php": WEB / "routes/web.php",
     "resources/views/partials/profile-boost.blade.php": WEB
     / "resources/views/partials/profile-boost.blade.php",
     "app/Http/Controllers/Web/ProfilePageController.php": WEB

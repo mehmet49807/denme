@@ -96,7 +96,11 @@
         }
     }
 
+    const editBtn = document.getElementById('postDetailEditCaption');
+    let activeGridBtn = null;
+
     function openPostDetail(btn) {
+        activeGridBtn = btn;
         const imageUrl = btn.dataset.imageUrl;
         const caption = btn.dataset.caption || '';
         const likesCount = btn.dataset.likesCount || '0';
@@ -126,7 +130,81 @@
             deleteForm.action = btn.dataset.destroyUrl;
         }
 
+        if (editBtn) {
+            if (btn.dataset.updateUrl) {
+                editBtn.hidden = false;
+                editBtn.dataset.updateUrl = btn.dataset.updateUrl;
+                editBtn.dataset.postId = btn.dataset.postId || '';
+                editBtn.dataset.caption = caption;
+                editBtn.textContent = caption ? 'Açıklamayı düzenle' : 'Açıklama ekle';
+            } else {
+                editBtn.hidden = true;
+            }
+        }
+
         dialog.showModal();
+    }
+
+    if (editBtn) {
+        editBtn.addEventListener('click', function () {
+            // Prefer shared caption editor from feed.js if present
+            if (typeof window.gkOpenCaptionEditor === 'function') {
+                window.gkOpenCaptionEditor(editBtn);
+                return;
+            }
+            const captionDialog = document.getElementById('postCaptionEditDialog');
+            const input = document.getElementById('postCaptionEditInput');
+            const form = document.getElementById('postCaptionEditForm');
+            const countEl = document.getElementById('postCaptionEditCount');
+            const errorEl = document.getElementById('postCaptionEditError');
+            const saveBtn = document.getElementById('postCaptionEditSave');
+            if (!captionDialog || !input || !form || !csrf) return;
+
+            input.value = editBtn.dataset.caption || '';
+            if (countEl) countEl.textContent = input.value.length + ' / 500';
+            if (errorEl) { errorEl.hidden = true; errorEl.textContent = ''; }
+            captionDialog.showModal();
+            input.focus();
+
+            form.onsubmit = async function (e) {
+                e.preventDefault();
+                const url = editBtn.dataset.updateUrl;
+                if (!url || !saveBtn) return;
+                saveBtn.disabled = true;
+                try {
+                    const res = await fetch(url, {
+                        method: 'PATCH',
+                        headers: {
+                            'X-CSRF-TOKEN': csrf,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify({ caption: input.value }),
+                    });
+                    const data = await res.json().catch(function () { return {}; });
+                    if (!res.ok || !data.success) {
+                        const msg = (data && (data.message || (data.errors && data.errors.caption && data.errors.caption[0]))) || 'Açıklama kaydedilemedi.';
+                        if (errorEl) { errorEl.textContent = msg; errorEl.hidden = false; }
+                        return;
+                    }
+                    const caption = (data.data && data.data.caption) || '';
+                    editBtn.dataset.caption = caption;
+                    editBtn.textContent = caption ? 'Açıklamayı düzenle' : 'Açıklama ekle';
+                    if (captionEl) {
+                        if (caption) { captionEl.textContent = caption; captionEl.hidden = false; }
+                        else { captionEl.textContent = ''; captionEl.hidden = true; }
+                    }
+                    if (activeGridBtn) activeGridBtn.dataset.caption = caption;
+                    captionDialog.close();
+                } catch (err) {
+                    console.error(err);
+                    if (errorEl) { errorEl.textContent = 'Açıklama kaydedilemedi.'; errorEl.hidden = false; }
+                } finally {
+                    saveBtn.disabled = false;
+                }
+            };
+        });
     }
 
     document.querySelectorAll('[data-open-post-detail]').forEach(function (btn) {

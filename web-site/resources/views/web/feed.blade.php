@@ -133,6 +133,14 @@
             <div class="post-menu">
                 <button type="button" class="post-menu-btn" aria-label="{{ __('app.feed.post_menu') }}" aria-haspopup="true" data-post-menu>⋯</button>
                 <div class="post-menu-dropdown" hidden>
+                    <button
+                        type="button"
+                        class="post-menu-edit"
+                        data-edit-caption
+                        data-post-id="{{ $post->id }}"
+                        data-update-url="{{ route('posts.update', $post) }}"
+                        data-caption="{{ e($post->caption ?? '') }}"
+                    >{{ __('app.feed.edit_caption') }}</button>
                     <form method="POST" action="{{ route('posts.destroy', $post) }}" onsubmit="return confirm(@js(__('app.feed.delete_confirm')))">
                         @csrf
                         @method('DELETE')
@@ -149,6 +157,7 @@
                 type="button"
                 class="post-image-trigger"
                 data-open-feed-post
+                data-post-id="{{ $post->id }}"
                 data-image-url="{{ $post->image_url }}"
                 data-caption="{{ e($post->caption ?? '') }}"
                 data-username="{{ $post->user->username }}"
@@ -157,6 +166,7 @@
                 data-like-url="{{ route('posts.like', $post) }}"
                 @if($post->user_id === $viewer->id)
                 data-destroy-url="{{ route('posts.destroy', $post) }}"
+                data-update-url="{{ route('posts.update', $post) }}"
                 @endif
                 aria-label="{{ __('app.feed.zoom_post') }}"
             >
@@ -187,15 +197,36 @@
         </div>
         @endif
 
-        <footer class="post-footer{{ $post->caption ? '' : ' post-footer--compact' }}">
+        <footer class="post-footer{{ $post->caption || $post->user_id === $viewer->id ? '' : ' post-footer--compact' }}">
             <div class="post-footer-row">
                 @if($post->caption)
-                <div class="post-caption" data-post-caption>
+                <div class="post-caption" data-post-caption data-post-id="{{ $post->id }}">
                     <p class="post-caption-text">
                         <a href="{{ route('users.show', $post->user->username) }}" class="post-caption-user">{{ $post->user->username }}</a>
                         <span class="post-caption-body">{{ $post->caption }}</span>
                     </p>
                     <button type="button" class="post-caption-more" hidden data-caption-toggle>{{ __('app.common.more') }}</button>
+                    @if($post->user_id === $viewer->id)
+                    <button
+                        type="button"
+                        class="post-caption-edit-btn"
+                        data-edit-caption
+                        data-post-id="{{ $post->id }}"
+                        data-update-url="{{ route('posts.update', $post) }}"
+                        data-caption="{{ e($post->caption ?? '') }}"
+                    >{{ __('app.common.edit') }}</button>
+                    @endif
+                </div>
+                @elseif($post->user_id === $viewer->id)
+                <div class="post-caption post-caption--empty" data-post-caption data-post-id="{{ $post->id }}">
+                    <button
+                        type="button"
+                        class="post-caption-add-btn"
+                        data-edit-caption
+                        data-post-id="{{ $post->id }}"
+                        data-update-url="{{ route('posts.update', $post) }}"
+                        data-caption=""
+                    >{{ __('app.feed.add_caption') }}</button>
                 </div>
                 @endif
                 <button type="button"

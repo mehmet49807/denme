@@ -2256,7 +2256,128 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
 .post-menu-btn:hover { background: rgba(124, 58, 237, 0.08); color: var(--violet); }
 .post-menu-dropdown { position: absolute; right: 0; top: 100%; z-index: 20; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--glass-shadow); min-width: 120px; }
 .post-menu-dropdown[hidden] { display: none; }
-.post-menu-delete { display: block; width: 100%; padding: 0.55rem 0.85rem; background: none; border: none; font-family: inherit; font-size: 0.82rem; font-weight: 600; color: #DC2626; cursor: pointer; text-align: left; }
+.post-menu-delete,
+.post-menu-edit {
+    display: block;
+    width: 100%;
+    padding: 0.55rem 0.85rem;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+.post-menu-edit { color: var(--text, #1f1520); }
+.post-menu-edit:hover { background: rgba(15, 118, 110, 0.08); color: #0f766e; }
+.post-menu-delete { color: #DC2626; }
+.post-menu-delete:hover { background: rgba(220, 38, 38, 0.06); }
+
+.post-caption-edit-btn,
+.post-caption-add-btn {
+    margin-top: 0.25rem;
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #0f766e;
+    cursor: pointer;
+}
+.post-caption-add-btn {
+    padding: 0.35rem 0;
+}
+.post-caption--empty {
+    flex: 1;
+    min-width: 0;
+}
+
+.post-caption-edit-dialog {
+    width: min(28rem, calc(100vw - 1.5rem));
+    padding: 0;
+    border: none;
+    border-radius: 18px;
+    background: transparent;
+}
+.post-caption-edit-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.45);
+}
+.post-caption-edit-inner {
+    display: grid;
+    gap: 0.65rem;
+    padding: 1rem 1.05rem 1.05rem;
+    border-radius: 18px;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    background: #fff;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+}
+.post-caption-edit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+.post-caption-edit-header h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+}
+.post-caption-edit-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted, #64748b);
+}
+.post-caption-edit-input {
+    width: 100%;
+    min-height: 6.5rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.14);
+    font-family: inherit;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    resize: vertical;
+}
+.post-caption-edit-input:focus {
+    outline: none;
+    border-color: rgba(15, 118, 110, 0.45);
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+.post-caption-edit-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+.post-caption-edit-count {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted, #64748b);
+}
+.post-caption-edit-error {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #dc2626;
+}
+.post-caption-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.45rem;
+}
+.post-detail-edit {
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(15, 118, 110, 0.25);
+    background: rgba(15, 118, 110, 0.08);
+    color: #0f766e;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+}
 
 .post-image {
     position: relative;
