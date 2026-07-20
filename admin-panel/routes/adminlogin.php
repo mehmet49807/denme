@@ -75,6 +75,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');
     Route::post('/github/check', [AdminGithubController::class, 'check'])->name('admin.github.check');
     Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->name('admin.github.clear-cache');
+    Route::post('/github/trigger', [AdminGithubController::class, 'trigger'])->name('admin.github.trigger');
+    Route::post('/github/smoke', [AdminGithubController::class, 'smokeTest'])->name('admin.github.smoke');
+    Route::post('/github/alert/dismiss', [AdminGithubController::class, 'dismissAlert'])->name('admin.github.alert.dismiss');
     Route::get('/reports', [AdminPanelController::class, 'reports'])->name('admin.reports');
     Route::put('/reports/{report}', [AdminPanelController::class, 'updateReport'])->name('admin.reports.update');
     Route::get('/premium', [AdminPanelController::class, 'premium'])->name('admin.premium');

@@ -1761,3 +1761,21 @@ body.admin-theme-lumiere.admin-page--seo {
 .admin-page--ai .admin-users-bulk {
     margin: 0.75rem 0 1rem;
 }
+
+/* === GitHub panel upgrade === */
+.admin-github-alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.admin-github-trigger .btn { margin-right: 0.4rem; margin-top: 0.25rem; }
+.admin-github-steps {
+    margin: 0.75rem 0 1rem 1.1rem;
+    padding: 0;
+    color: #334155;
+    display: grid;
+    gap: 0.35rem;
+}
+.admin-page--seo .admin-ai-topgrid { margin-bottom: 1rem; }

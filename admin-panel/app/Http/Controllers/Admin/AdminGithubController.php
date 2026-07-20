@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\AdminAuditService;
 use App\Services\DeployGithubService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class AdminGithubController extends Controller
@@ -26,6 +26,9 @@ class AdminGithubController extends Controller
             return response()->json([
                 'health' => $data['health'],
                 'workflow' => $data['workflow'],
+                'runs' => $data['runs'],
+                'sync' => $data['sync'],
+                'alert' => $data['alert'],
             ]);
         }
 
@@ -40,11 +43,62 @@ class AdminGithubController extends Controller
         }
 
         $result = $deploy->clearRemoteCache($target);
+        app(AdminAuditService::class)->log('github.cache', $result['message'], 'deploy');
 
         return redirect()->route('admin.github')->with(
             $result['ok'] ? 'success' : 'error',
             $result['message']
         );
+    }
+
+    public function trigger(Request $request, DeployGithubService $deploy): RedirectResponse
+    {
+        $validated = $request->validate([
+            'target' => 'required|in:all,web,admin',
+            'sync_mode' => 'required|in:delta,full',
+        ]);
+
+        $result = $deploy->triggerDeploy($validated['target'], $validated['sync_mode']);
+        app(AdminAuditService::class)->log(
+            'github.trigger',
+            $result['message'],
+            'deploy',
+            null,
+            $validated,
+        );
+
+        return redirect()->route('admin.github')->with(
+            $result['ok'] ? 'success' : 'error',
+            $result['message']
+        );
+    }
+
+    public function smokeTest(DeployGithubService $deploy): RedirectResponse
+    {
+        $result = $deploy->runSmokeTests();
+        app(AdminAuditService::class)->log(
+            'github.smoke',
+            'Smoke test: '.$result['overall'],
+            'deploy',
+            null,
+            ['failed' => collect($result['checks'])->where('ok', false)->count()],
+        );
+
+        return redirect()->route('admin.github')->with(
+            $result['ok'] ? 'success' : 'error',
+            $result['ok']
+                ? 'Smoke test başarılı ('.$result['ran_at'].').'
+                : 'Smoke test başarısız — aşağıdaki sonuçları kontrol edin.'
+        );
+    }
+
+    public function dismissAlert(Request $request, DeployGithubService $deploy): RedirectResponse
+    {
+        $sha = (string) $request->input('sha', '');
+        $deploy->dismissFailureAlert($sha !== '' ? $sha : null);
+        app(AdminAuditService::class)->log('github.alert.dismiss', 'Deploy fail uyarısı kapatıldı', 'deploy');
+
+        return redirect()->route('admin.github')->with('success', 'Uyarı kapatıldı.');
     }
 
     public function deployNotify(Request $request, DeployGithubService $deploy): Response
@@ -69,7 +123,9 @@ class AdminGithubController extends Controller
      */
     private function pageData(DeployGithubService $deploy): array
     {
-        $lastAt = Cache::get('deploy.last_success_at');
+        $lastAt = cache('deploy.last_success_at');
+        $runs = $deploy->listWorkflowRuns(10);
+        $smoke = cache('deploy.last_smoke');
 
         return [
             'config' => [
@@ -79,16 +135,25 @@ class AdminGithubController extends Controller
                 'actions_url' => (string) config('deploy.actions_url'),
                 'compare_url' => (string) config('deploy.compare_url'),
                 'secrets_url' => (string) config('deploy.secrets_url'),
+                'pulls_url' => (string) config('deploy.pulls_url'),
                 'workflow_file' => (string) config('deploy.workflow_file'),
+                'token_ready' => $deploy->hasGithubToken(),
             ],
             'health' => $deploy->formattedHealthChecks(),
             'workflow' => $deploy->latestWorkflowRun(),
+            'runs' => $runs,
+            'sync' => $deploy->commitSyncStatus(),
+            'secrets' => $deploy->secretsStatus(),
+            'pulls' => $deploy->openPullRequests(),
+            'alert' => $deploy->failureAlert(),
+            'rollback' => $deploy->rollbackInfo(),
+            'smoke' => is_array($smoke) ? $smoke : null,
             'lastDeploy' => $lastAt ? [
-                'sha_short' => Cache::get('deploy.last_commit'),
+                'sha_short' => cache('deploy.last_commit'),
                 'deployed_at' => $lastAt,
-                'message' => 'Hedef: '.(Cache::get('deploy.last_target') ?? 'all'),
+                'message' => 'Hedef: '.(cache('deploy.last_target') ?? 'all'),
             ] : null,
-            'secrets' => config('deploy.required_secrets', []),
+            'requiredSecrets' => config('deploy.required_secrets', []),
             'paths' => $deploy->flattenDeployPaths(),
         ];
     }
