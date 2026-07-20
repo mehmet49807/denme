@@ -1,0 +1,45 @@
+name: Emergency Restore htaccess
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'server/RESTORE_HTACCESS'
+  workflow_dispatch:
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: FTP restore web + admin .htaccess
+        env:
+          FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
+          FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
+          FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
+          FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
+        run: |
+          python3 <<'PY'
+          import ftplib, json, os
+          from pathlib import Path
+          from io import BytesIO
+          manifest=json.loads(Path("deploy/manifest.json").read_text())
+          files={
+            "web": Path("web-site/public/.htaccess").read_bytes(),
+            "admin": Path("scripts/deploy/assets/admin.htaccess").read_bytes(),
+          }
+          for target, data in files.items():
+            host=manifest[target]["ftp"]["host"]
+            user=os.environ[f"FTP_{target.upper()}_USER"]
+            password=os.environ[f"FTP_{target.upper()}_PASSWORD"]
+            ftp=ftplib.FTP(); ftp.connect(host,21,timeout=60); ftp.login(user,password); ftp.set_pasv(True)
+            ftp.storbinary("STOR .htaccess", BytesIO(data))
+            print("RESTORED", target, len(data))
+            ftp.quit()
+          PY
+      - name: Smoke
+        run: |
+          sleep 2
+          curl -sS -o /dev/null -w 'web %{http_code}\n' https://gonulkoprusu.com/
+          curl -sS -o /dev/null -w 'admin %{http_code}\n' https://admin.gonulkoprusu.com/login

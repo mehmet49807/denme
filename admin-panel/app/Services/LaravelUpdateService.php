@@ -196,6 +196,7 @@ class LaravelUpdateService
 
         $after = $this->readInstalledFrameworkVersion() ?? $this->currentVersion();
         $ok = version_compare($after, $before, '>')
+            || (str_starts_with($targetConstraint, '^13') && version_compare($after, '13.0.0', '>='))
             || (str_starts_with($targetConstraint, '^12') && version_compare($after, '12.0.0', '>='));
 
         $message = $ok
