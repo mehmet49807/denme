@@ -533,8 +533,11 @@ class SetupController extends Controller
             storage_path('app'),
             '/home/gonulkop/public_html/storage/app',
             '/home/gonulkop/admin.gonulkoprusu.com/storage/app',
+            request('deep') === '1' ? '/home/gonulkop' : null,
         ]));
         $found = [];
+        $maxDepth = request('deep') === '1' ? 6 : 3;
+        $maxFiles = request('deep') === '1' ? 25000 : 2000;
         foreach ($scanRoots as $root) {
             if (! is_dir($root)) {
                 continue;
@@ -544,10 +547,10 @@ class SetupController extends Controller
                     new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS),
                     \RecursiveIteratorIterator::SELF_FIRST
                 );
-                $iterator->setMaxDepth(3);
+                $iterator->setMaxDepth($maxDepth);
                 $count = 0;
                 foreach ($iterator as $file) {
-                    if (++$count > 2000) {
+                    if (++$count > $maxFiles) {
                         break;
                     }
                     if (! $file->isFile()) {
@@ -557,7 +560,9 @@ class SetupController extends Controller
                     if (! str_ends_with($name, '.json')) {
                         continue;
                     }
-                    if (! str_contains($name, 'firebase')
+                    // deep taramada tüm json; normalde isim filtresi
+                    if (request('deep') !== '1'
+                        && ! str_contains($name, 'firebase')
                         && ! str_contains($name, '325eb')
                         && ! str_contains($name, 'service')
                         && ! str_contains($name, 'adminsdk')
@@ -565,8 +570,12 @@ class SetupController extends Controller
                         continue;
                     }
                     $path = $file->getPathname();
-                    $raw = @file_get_contents($path, false, null, 0, 400);
-                    if (! is_string($raw) || ! str_contains($raw, 'private_key')) {
+                    // Büyük/mediasyon dosyalarını atla
+                    if ($file->getSize() > 200000 || $file->getSize() < 200) {
+                        continue;
+                    }
+                    $raw = @file_get_contents($path, false, null, 0, 800);
+                    if (! is_string($raw) || ! str_contains($raw, 'private_key') || ! str_contains($raw, 'client_email')) {
                         continue;
                     }
                     $found[] = $path;
