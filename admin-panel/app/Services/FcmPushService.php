@@ -68,19 +68,18 @@ class FcmPushService
      */
     public function installCredentialsJson(string $json): array
     {
-        $decoded = json_decode($json, true);
-        if (! is_array($decoded)
-            || empty($decoded['private_key'])
-            || empty($decoded['client_email'])
-            || ($decoded['type'] ?? '') !== 'service_account'
-        ) {
+        $parsed = $this->parseServiceAccountJson($json);
+        if (! ($parsed['ok'] ?? false)) {
             return [
                 'ok' => false,
                 'path' => null,
                 'mirrored' => [],
-                'error' => 'Geçersiz service account JSON (type/client_email/private_key gerekli).',
+                'error' => (string) ($parsed['error'] ?? 'Geçersiz service account JSON.'),
             ];
         }
+
+        /** @var array<string, mixed> $decoded */
+        $decoded = $parsed['credentials'];
 
         $projectId = (string) ($decoded['project_id'] ?? config('firebase.project_id', 'gonulkoprusu-325eb'));
         $filename = $projectId !== '' ? $projectId.'.json' : 'gonulkoprusu-325eb.json';
@@ -136,6 +135,146 @@ class FcmPushService
             'mirrored' => $mirrored,
             'error' => $this->isConfigured() ? null : 'Yazıldı ancak okunamadı.',
         ];
+    }
+
+    /**
+     * @return array{ok: bool, credentials?: array<string, mixed>, error?: string}
+     */
+    private function parseServiceAccountJson(string $raw): array
+    {
+        $raw = trim($raw);
+        if ($raw === '') {
+            return ['ok' => false, 'error' => 'JSON boş — Firebase service account dosyasını seçin veya yapıştırın.'];
+        }
+
+        // BOM / markdown fence temizliği
+        $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw) ?? $raw;
+        if (preg_match('/^```(?:json)?\s*(.*?)\s*```$/is', $raw, $m)) {
+            $raw = trim($m[1]);
+        }
+
+        $decoded = $this->decodeJsonFlexible($raw);
+        if (! is_array($decoded)) {
+            return [
+                'ok' => false,
+                'error' => 'JSON okunamadı. Dosyayı bozmadan yükleyin (yapıştırırken private_key satırları kırılmamalı). Firebase Console → Project settings → Service accounts → Generate new private key.',
+            ];
+        }
+
+        // Yanlış dosya: google-services.json / web config
+        if (isset($decoded['client']) || isset($decoded['project_info']) || isset($decoded['apiKey']) || isset($decoded['api_key'])) {
+            return [
+                'ok' => false,
+                'error' => 'Bu dosya istemci (google-services / firebaseConfig) JSON’u. Gerekli olan: Service accounts → Generate new private key (type=service_account, client_email, private_key).',
+            ];
+        }
+
+        $email = trim((string) ($decoded['client_email'] ?? ''));
+        $privateKey = (string) ($decoded['private_key'] ?? '');
+        $type = trim((string) ($decoded['type'] ?? ''));
+
+        // private_key bazen tek satır \\n ile gelir — openssl için gerçek satır sonuna çevir
+        if ($privateKey !== '' && str_contains($privateKey, '\\n') && ! str_contains($privateKey, "\n")) {
+            $privateKey = str_replace('\\n', "\n", $privateKey);
+            $decoded['private_key'] = $privateKey;
+        }
+
+        $missing = [];
+        if ($email === '') {
+            $missing[] = 'client_email';
+        }
+        if ($privateKey === '' || ! str_contains($privateKey, 'PRIVATE KEY')) {
+            $missing[] = 'private_key';
+        }
+
+        if ($missing !== []) {
+            return [
+                'ok' => false,
+                'error' => 'Eksik alan: '.implode(', ', $missing).'. Firebase Console → Project settings → Service accounts → Generate new private key indirin (google-services.json değil).',
+            ];
+        }
+
+        if ($type === '') {
+            $decoded['type'] = 'service_account';
+        } elseif ($type !== 'service_account') {
+            return [
+                'ok' => false,
+                'error' => 'type="'.$type.'" kabul edilmez; type=service_account olmalı (Generate new private key).',
+            ];
+        }
+
+        if ($email !== '' && ! str_contains($email, 'gserviceaccount.com')) {
+            return [
+                'ok' => false,
+                'error' => 'client_email service account değil gibi görünüyor (…@….iam.gserviceaccount.com beklenir).',
+            ];
+        }
+
+        if (empty($decoded['project_id'])) {
+            $decoded['project_id'] = (string) config('firebase.project_id', 'gonulkoprusu-325eb');
+        }
+
+        return ['ok' => true, 'credentials' => $decoded];
+    }
+
+    private function decodeJsonFlexible(string $raw): ?array
+    {
+        $candidates = [$raw];
+
+        // Saf base64 (eyJ... = {" )
+        if (preg_match('/^[A-Za-z0-9\/_+\-=\s]+$/', $raw) && ! str_starts_with(ltrim($raw), '{')) {
+            $decodedB64 = base64_decode(preg_replace('/\s+/', '', $raw) ?? '', true);
+            if (is_string($decodedB64) && $decodedB64 !== '') {
+                $candidates[] = $decodedB64;
+            }
+        }
+
+        foreach ($candidates as $candidate) {
+            $data = json_decode($candidate, true);
+            if (is_string($data)) {
+                $data = json_decode($data, true);
+            }
+            if (is_array($data)) {
+                return $data;
+            }
+
+            // { ... } aralığını çıkar (ön/arka metin varsa)
+            $start = strpos($candidate, '{');
+            $end = strrpos($candidate, '}');
+            if ($start !== false && $end !== false && $end > $start) {
+                $slice = substr($candidate, $start, $end - $start + 1);
+                $data = json_decode($slice, true);
+                if (is_array($data)) {
+                    return $data;
+                }
+            }
+
+            // private_key içinde gerçek satır sonu kırılmış JSON’u toparla
+            $repaired = $this->repairBrokenPrivateKeyJson($candidate);
+            if ($repaired !== null) {
+                return $repaired;
+            }
+        }
+
+        return null;
+    }
+
+    private function repairBrokenPrivateKeyJson(string $raw): ?array
+    {
+        if (! str_contains($raw, 'private_key') || ! str_contains($raw, 'BEGIN')) {
+            return null;
+        }
+
+        if (! preg_match('/"private_key"\s*:\s*"(.*?)"\s*(,|\})/s', $raw, $m)) {
+            return null;
+        }
+
+        $key = $m[1];
+        $normalized = str_replace(["\r\n", "\r", "\n"], '\\n', $key);
+        $fixed = str_replace($m[0], '"private_key": "'.$normalized.'"'.$m[2], $raw);
+        $data = json_decode($fixed, true);
+
+        return is_array($data) ? $data : null;
     }
 
     public function registerToken(User $user, string $token, string $platform = 'android'): void

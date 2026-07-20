@@ -42,19 +42,20 @@
             Hazır · proje {{ $fcm['project_id'] ?? '—' }} · {{ $fcm['device_count'] ?? 0 }} cihaz
             · kaynak {{ $fcm['credentials_source'] ?? '—' }}
         @else
-            Service account JSON eksik. Firebase Console → Project settings → Service accounts → Generate new private key
-            (proje: gonulkoprusu-325eb). Dosya seçin veya JSON yapıştırın — web + admin’e otomatik kopyalanır.
+            Service account JSON eksik. Firebase Console → Project settings → Service accounts →
+            <strong>Generate new private key</strong> (proje: gonulkoprusu-325eb).
+            <code>google-services.json</code> / web apiKey dosyası çalışmaz. Tercihen dosya olarak yükleyin.
         @endif
     </p>
     <form method="post" action="{{ route('admin.system-health.fcm') }}" enctype="multipart/form-data" style="display:grid;gap:.75rem;margin-top:.75rem;max-width:40rem">
         @csrf
         <label style="display:grid;gap:.35rem;font-size:.9rem">
-            <span>JSON dosyası</span>
+            <span>Service account JSON dosyası (önerilir)</span>
             <input type="file" name="credentials" accept=".json,application/json">
         </label>
         <label style="display:grid;gap:.35rem;font-size:.9rem">
-            <span>veya JSON yapıştır</span>
-            <textarea name="json" rows="8" placeholder='{"type":"service_account","project_id":"gonulkoprusu-325eb",...}' style="width:100%;font-family:ui-monospace,monospace;font-size:.8rem"></textarea>
+            <span>veya JSON yapıştır (tüm dosya; private_key satırlarını kırmayın)</span>
+            <textarea name="json" rows="8" placeholder='{"type":"service_account","project_id":"gonulkoprusu-325eb","private_key_id":"...","private_key":"-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n","client_email":"...@....iam.gserviceaccount.com",...}' style="width:100%;font-family:ui-monospace,monospace;font-size:.8rem"></textarea>
         </label>
         <div>
             <button type="submit" class="btn btn-primary">FCM JSON yükle</button>

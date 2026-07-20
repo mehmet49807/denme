@@ -322,17 +322,21 @@ class AdminOpsController extends Controller
     public function uploadFcmCredentials(Request $request, FcmPushService $fcm)
     {
         $request->validate([
-            'credentials' => 'nullable|file|max:512',
-            'json' => 'nullable|string|max:200000',
+            'credentials' => 'nullable|file|max:2048',
+            'json' => 'nullable|string|max:500000',
         ]);
 
-        $json = trim((string) $request->input('json', ''));
-        if ($json === '' && $request->hasFile('credentials')) {
+        // Dosya varsa onu tercih et (yapıştırma private_key satırlarını bozabiliyor).
+        $json = '';
+        if ($request->hasFile('credentials')) {
             $json = (string) file_get_contents($request->file('credentials')->getRealPath());
+        }
+        if (trim($json) === '') {
+            $json = trim((string) $request->input('json', ''));
         }
 
         if ($json === '') {
-            return back()->with('error', 'Service account JSON dosyası seçin veya JSON yapıştırın.');
+            return back()->with('error', 'Service account JSON dosyası seçin veya JSON yapıştırın. google-services.json değil — Service accounts → Generate new private key.');
         }
 
         $result = $fcm->installCredentialsJson($json);
