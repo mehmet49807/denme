@@ -354,9 +354,67 @@ body.app-shell-body .site-header-inner {
     background: linear-gradient(145deg, #d1fae5, #6ee7b7);
     color: #059669;
 }
+.profile-settings-menu-icon--push {
+    background: linear-gradient(145deg, #ede9fe, #c4b5fd);
+    color: #6d28d9;
+}
 .profile-settings-menu-icon--lock {
     background: linear-gradient(145deg, #ede9fe, #c4b5fd);
     color: #7c3aed;
+}
+
+.profile-settings-push-card {
+    margin-top: 0.35rem;
+    padding: 1rem 1.05rem;
+    border-radius: 16px;
+    border: 1px solid rgba(109, 40, 217, 0.16);
+    background: linear-gradient(160deg, rgba(237, 233, 254, 0.75), #fff 55%);
+    box-shadow: 0 8px 22px rgba(91, 33, 182, 0.08);
+}
+.profile-settings-push-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.55rem;
+}
+.profile-settings-push-label {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--text, #1a1523);
+}
+.profile-settings-push-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.55rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+.profile-settings-push-badge[data-tone="ok"] {
+    background: rgba(16, 185, 129, 0.14);
+    color: #047857;
+}
+.profile-settings-push-badge[data-tone="warn"] {
+    background: rgba(245, 158, 11, 0.16);
+    color: #b45309;
+}
+.profile-settings-push-badge[data-tone="bad"] {
+    background: rgba(239, 68, 68, 0.14);
+    color: #b91c1c;
+}
+.profile-settings-push-badge[data-tone="muted"] {
+    background: rgba(100, 116, 139, 0.14);
+    color: #475569;
+}
+.profile-settings-push-hint {
+    margin: 0 0 0.9rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--text-light, #5c5470);
+    font-weight: 600;
 }
 .profile-settings-menu-icon--invite {
     background: linear-gradient(145deg, #cffafe, #67e8f9);
@@ -721,6 +779,7 @@ html[data-theme="dark"] .profile-settings-menu-icon--hobbies { background: linea
 html[data-theme="dark"] .profile-settings-menu-icon--lang { background: linear-gradient(145deg, rgba(79,70,229,.35), rgba(165,180,252,.28)); color: #c7d2fe; }
 html[data-theme="dark"] .profile-settings-menu-icon--theme { background: linear-gradient(145deg, rgba(180,83,9,.35), rgba(196,181,253,.3)); color: #fde68a; }
 html[data-theme="dark"] .profile-settings-menu-icon--privacy { background: linear-gradient(145deg, rgba(5,150,105,.35), rgba(110,231,183,.28)); color: #6ee7b7; }
+html[data-theme="dark"] .profile-settings-menu-icon--push { background: linear-gradient(145deg, rgba(109,40,217,.4), rgba(196,181,253,.3)); color: #ddd6fe; }
 html[data-theme="dark"] .profile-settings-menu-icon--lock { background: linear-gradient(145deg, rgba(124,58,237,.35), rgba(196,181,253,.28)); color: #ddd6fe; }
 html[data-theme="dark"] .profile-settings-menu-icon--invite { background: linear-gradient(145deg, rgba(8,145,178,.35), rgba(103,232,249,.28)); color: #67e8f9; }
 html[data-theme="dark"] .profile-settings-menu-icon--security { background: linear-gradient(145deg, rgba(220,38,38,.35), rgba(252,165,165,.28)); color: #fca5a5; }

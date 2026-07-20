@@ -2,8 +2,10 @@
     'use strict';
 
     var PROMPT_ID = 'gkFcmWebPrompt';
+    var SESSION_KEY = 'gk_fcm_prompt_session';
     var started = false;
     var acknowledged = false;
+    var cachedCfg = null;
 
     function forcePrompt() {
         try {
@@ -13,14 +15,43 @@
         }
     }
 
-    function shouldShowAfterLogin() {
-        return window.__GK_FCM_LOGIN_PROMPT__ === true || forcePrompt();
+    function seenThisBrowserSession() {
+        try {
+            return sessionStorage.getItem(SESSION_KEY) === '1';
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function markBrowserSessionSeen() {
+        try {
+            sessionStorage.setItem(SESSION_KEY, '1');
+        } catch (e) {}
+    }
+
+    function clearBrowserSessionSeen() {
+        try {
+            sessionStorage.removeItem(SESSION_KEY);
+        } catch (e) {}
+    }
+
+    function isNewLoginPrompt() {
+        return window.__GK_FCM_LOGIN_PROMPT__ === true;
+    }
+
+    function shouldAutoPrompt() {
+        if (forcePrompt()) return true;
+        // Her yeni girişte bir kez
+        if (isNewLoginPrompt()) return true;
+        // Aynı girişte yeni tarayıcı oturumu (sekme/yeniden açma)
+        return !seenThisBrowserSession();
     }
 
     function ackPrompt() {
         if (acknowledged) return;
         acknowledged = true;
         window.__GK_FCM_LOGIN_PROMPT__ = false;
+        markBrowserSessionSeen();
         if (window.GkPush && typeof window.GkPush.ackPrompt === 'function') {
             window.GkPush.ackPrompt();
         }
@@ -32,6 +63,15 @@
 
     function hasServiceWorker() {
         return typeof navigator !== 'undefined' && 'serviceWorker' in navigator;
+    }
+
+    function isSupported() {
+        return !!(window.isSecureContext && hasNotificationApi() && hasServiceWorker());
+    }
+
+    function permission() {
+        if (!hasNotificationApi()) return 'unsupported';
+        return Notification.permission || 'default';
     }
 
     function waitForGkPush(timeoutMs) {
@@ -158,7 +198,7 @@
             '</div></div>';
         document.body.appendChild(el);
 
-        // Gösterildiği anda session bayrağını temizle → sonraki sayfalarda tekrar çıkmaz
+        // Gösterildi → bu oturumda / girişte tekrarlama
         ackPrompt();
 
         el.querySelector('[data-fcm-later]').addEventListener('click', function () {
@@ -171,18 +211,108 @@
     }
 
     function enableWeb(cfg) {
+        cfg = cfg || cachedCfg;
+        if (!cfg) {
+            return loadConfig().then(function (c) {
+                cachedCfg = c;
+                return enableWeb(c);
+            });
+        }
         if (!hasNotificationApi()) {
-            return Promise.resolve({ ok: false, reason: 'unsupported' });
+            return Promise.resolve({ ok: false, reason: 'unsupported', permission: 'unsupported' });
         }
         return Notification.requestPermission().then(function (perm) {
+            updateSettingsUi();
             if (perm !== 'granted') {
                 return { ok: false, permission: perm };
             }
             return getToken(cfg).then(function (token) {
                 if (!token) return { ok: false, permission: perm, reason: 'no_token' };
                 return saveToken(token).then(function (res) {
+                    updateSettingsUi();
                     return { ok: !!(res && res.ok), token: token, permission: perm };
                 });
+            });
+        });
+    }
+
+    function statusLabel(perm) {
+        if (!isSupported()) return { text: 'Desteklenmiyor', tone: 'muted', hint: 'Bu tarayıcıda web bildirimleri kullanılamıyor. Chrome veya Edge deneyin.' };
+        if (perm === 'granted') return { text: 'Açık', tone: 'ok', hint: 'Tarayıcı bildirimleri aktif. Yeni mesaj ve duyurularda bildirim alırsınız.' };
+        if (perm === 'denied') return { text: 'Engellendi', tone: 'bad', hint: 'Adres çubuğundaki kilit simgesinden Bildirimler → İzin ver yapın, sonra buradan tekrar deneyin.' };
+        return { text: 'Kapalı', tone: 'warn', hint: 'Mesaj ve duyuruları anında almak için tarayıcı izni verin.' };
+    }
+
+    function updateSettingsUi() {
+        var root = document.querySelector('[data-fcm-settings]');
+        if (!root) return;
+        var perm = permission();
+        var info = statusLabel(perm);
+        var badge = root.querySelector('[data-fcm-status-badge]');
+        var hint = root.querySelector('[data-fcm-status-hint]');
+        var btn = root.querySelector('[data-fcm-enable]');
+        if (badge) {
+            badge.textContent = info.text;
+            badge.dataset.tone = info.tone;
+        }
+        if (hint) hint.textContent = info.hint;
+        if (btn) {
+            if (!isSupported()) {
+                btn.hidden = true;
+            } else if (perm === 'granted') {
+                btn.hidden = false;
+                btn.disabled = true;
+                btn.textContent = 'Bildirimler açık';
+            } else if (perm === 'denied') {
+                btn.hidden = false;
+                btn.disabled = false;
+                btn.textContent = 'Tekrar dene';
+            } else {
+                btn.hidden = false;
+                btn.disabled = false;
+                btn.textContent = 'İzin ver';
+            }
+        }
+    }
+
+    function bindSettingsUi() {
+        var root = document.querySelector('[data-fcm-settings]');
+        if (!root || root.dataset.bound === '1') {
+            updateSettingsUi();
+            return;
+        }
+        root.dataset.bound = '1';
+        var btn = root.querySelector('[data-fcm-enable]');
+        if (btn) {
+            btn.addEventListener('click', function () {
+                btn.disabled = true;
+                btn.textContent = 'İsteniyor…';
+                var run = window.GkPush && window.GkPush.enableWeb
+                    ? window.GkPush.enableWeb()
+                    : enableWeb(cachedCfg);
+                Promise.resolve(run).then(function (res) {
+                    updateSettingsUi();
+                    if (res && res.ok) return;
+                    if (res && res.permission === 'denied') {
+                        btn.disabled = false;
+                        btn.textContent = 'Tekrar dene';
+                    } else {
+                        btn.disabled = false;
+                        btn.textContent = 'İzin ver';
+                    }
+                }).catch(function () {
+                    updateSettingsUi();
+                    btn.disabled = false;
+                    btn.textContent = 'İzin ver';
+                });
+            });
+        }
+        updateSettingsUi();
+
+        // Ayarlar paneli açılınca durumu yenile
+        document.querySelectorAll('[data-open-settings-panel="push"]').forEach(function (el) {
+            el.addEventListener('click', function () {
+                setTimeout(updateSettingsUi, 50);
             });
         });
     }
@@ -194,14 +324,24 @@
         waitForGkPush(3000).then(function (ok) {
             if (!ok) return;
 
-            if (!window.isSecureContext || !hasNotificationApi() || !hasServiceWorker()) {
-                if (shouldShowAfterLogin()) ackPrompt();
+            // Yeni girişte sessionStorage’ı sıfırla ki her oturumda tekrar sorulsun
+            if (isNewLoginPrompt()) {
+                clearBrowserSessionSeen();
+                acknowledged = false;
+            }
+
+            bindSettingsUi();
+
+            if (!isSupported()) {
+                if (shouldAutoPrompt()) ackPrompt();
+                updateSettingsUi();
                 return;
             }
 
             loadConfig().then(function (cfg) {
+                cachedCfg = cfg;
                 if (!cfg || cfg.enabled === false || !cfg.configured) {
-                    if (shouldShowAfterLogin()) ackPrompt();
+                    if (shouldAutoPrompt()) ackPrompt();
                     return;
                 }
 
@@ -211,34 +351,40 @@
                         return { ok: false, error: String(err && err.message || err) };
                     });
                 };
+                window.GkPush.refreshPushSettings = updateSettingsUi;
 
-                // İzin verilmiş → token yenile, banner yok
                 if (Notification.permission === 'granted') {
-                    if (shouldShowAfterLogin()) ackPrompt();
+                    if (shouldAutoPrompt()) ackPrompt();
                     getToken(cfg).then(saveToken).catch(function () {});
+                    updateSettingsUi();
                     return;
                 }
 
-                // Engellenmiş → banner gösterme
                 if (Notification.permission === 'denied') {
-                    if (shouldShowAfterLogin()) ackPrompt();
+                    if (shouldAutoPrompt()) ackPrompt();
+                    updateSettingsUi();
                     return;
                 }
 
-                // Yalnızca yeni girişte (veya ?fcm=1) bir kez sor
-                if (!shouldShowAfterLogin()) return;
+                // default — yeni giriş veya yeni tarayıcı oturumunda bir kez
+                if (!shouldAutoPrompt()) {
+                    updateSettingsUi();
+                    return;
+                }
 
                 setTimeout(function () {
                     if (Notification.permission !== 'default') {
                         ackPrompt();
+                        updateSettingsUi();
                         return;
                     }
                     showPrompt(function () {
-                        window.GkPush.enableWeb();
+                        window.GkPush.enableWeb().then(updateSettingsUi);
                     });
+                    updateSettingsUi();
                 }, 700);
             }).catch(function () {
-                if (shouldShowAfterLogin()) ackPrompt();
+                if (shouldAutoPrompt()) ackPrompt();
             });
         });
     }

@@ -117,6 +117,17 @@
             <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
         </button>
 
+        <button type="button" class="profile-settings-menu-item" data-open-settings-panel="push">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--push" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </span>
+            <span class="profile-settings-menu-text">
+                <strong>Tarayıcı bildirimleri</strong>
+                <small>Mesaj ve duyuru izni ver</small>
+            </span>
+            <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
+        </button>
+
         <button type="button" class="profile-settings-menu-item" data-open-settings-panel="password">
             <span class="profile-settings-menu-icon profile-settings-menu-icon--lock" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -418,6 +429,21 @@
 
         <button type="submit" class="btn btn-primary btn-full">Gizlilik ayarlarını kaydet</button>
     </form>
+</div>
+
+<div class="profile-settings-sheet-stage" data-settings-panel="push" @if($initialPanel !== 'push') hidden @endif>
+    <div class="profile-settings-push" data-fcm-settings>
+        <p class="profile-settings-panel-lead">Tarayıcıdan anlık mesaj ve duyuru almak için bildirim izni verin.</p>
+
+        <div class="profile-settings-push-card">
+            <div class="profile-settings-push-row">
+                <span class="profile-settings-push-label">Durum</span>
+                <span class="profile-settings-push-badge" data-fcm-status-badge data-tone="warn">Kontrol ediliyor…</span>
+            </div>
+            <p class="profile-settings-push-hint" data-fcm-status-hint>Tarayıcı bildirim izni kontrol ediliyor.</p>
+            <button type="button" class="btn btn-primary btn-full" data-fcm-enable>İzin ver</button>
+        </div>
+    </div>
 </div>
 
 <div class="profile-settings-sheet-stage" data-settings-panel="password" @if($initialPanel !== 'password') hidden @endif>

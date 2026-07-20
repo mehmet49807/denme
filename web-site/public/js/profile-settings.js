@@ -17,6 +17,7 @@
         language: 'Dil Seç',
         appearance: 'Görünüm / Tema',
         privacy: 'Gizlilik',
+        push: 'Tarayıcı bildirimleri',
         password: 'Şifre Değiştir',
     };
     var currentPanel = 'menu';
