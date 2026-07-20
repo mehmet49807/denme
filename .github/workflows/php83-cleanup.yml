@@ -1,0 +1,32 @@
+name: PHP 8.3 Cleanup
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - 'server/CLEANUP_PHP83'
+      - 'scripts/deploy/php83_cleanup.py'
+      - '.github/workflows/php83-cleanup.yml'
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove probe helpers from live
+        env:
+          FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
+          FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
+          FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
+          FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
+        run: python3 scripts/deploy/php83_cleanup.py
+      - name: Smoke
+        run: |
+          sleep 2
+          curl -sS -o /dev/null -w 'web %{http_code}\n' https://gonulkoprusu.com/
+          curl -sS -o /dev/null -w 'admin %{http_code}\n' https://admin.gonulkoprusu.com/login
+          curl -sS -o /dev/null -w 'enable %{http_code}\n' 'https://gonulkoprusu.com/php83-enable.php?key=x' || true
+          curl -sS 'https://gonulkoprusu.com/setup/laravel-update?key=gk-laravel-update-2026' || true
+          echo

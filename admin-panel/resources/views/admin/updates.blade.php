@@ -31,6 +31,13 @@
     <div class="admin-ai-flash admin-ai-flash--bad">{{ session('error') }}</div>
 @endif
 
+@if(!$updateAvailable && ($packagist['ok'] ?? false))
+    <div class="admin-ai-flash admin-ai-flash--ok" style="margin-bottom:1rem">
+        Sistem güncel — Laravel {{ $current }} · PHP {{ $local['php'] ?? PHP_VERSION }}
+        (önerilen {{ $recommended ?? $current }}).
+    </div>
+@endif
+
 <div class="admin-stat-grid admin-stat-grid--compact">
     <div class="admin-stat-card {{ $updateAvailable ? 'admin-stat-card--gold' : 'admin-stat-card--emerald' }}">
         <div class="admin-stat-value" style="font-size:1.15rem">{{ $current }}</div>
@@ -99,6 +106,7 @@
     <h3 class="admin-panel-title">Laravel güncelle</h3>
     <p class="admin-ops-meta">
         Hedef: <strong>{{ $local['target_constraint'] ?? '^13.0' }}</strong>
+        · Canlı PHP: <strong>{{ $local['php'] ?? PHP_VERSION }}</strong>
         (Laravel 13 için PHP 8.3+ gerekir).
         @if(empty($shellExec))
             Sunucuda <code>shell_exec</code> kapalı — güncelleme <strong>GitHub Actions</strong> ile Composer + FTP olarak çalışır

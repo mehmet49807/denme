@@ -334,7 +334,7 @@ class LaravelUpdateService
         $version = $this->readInstalledFrameworkVersion() ?? $this->currentVersion();
 
         return [
-            'ok' => version_compare($version, '12.0.0', '>=') || version_compare($version, $this->currentVersion(), '>='),
+            'ok' => version_compare($version, '13.0.0', '>=') || version_compare($version, $this->currentVersion(), '>='),
             'message' => "Vendor açıldı · Laravel {$version}",
             'version' => $version,
         ];
