@@ -1,0 +1,222 @@
+name: PHP 8.3 Probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, cursor/laravel-13-php83-ext-9613]
+    paths:
+      - 'server/PROBE_PHP83'
+      - '.github/workflows/php83-probe.yml'
+      - 'scripts/deploy/assets/php83-probe.php'
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload probe (Files-only PHP 8.3) + try extension ini strategies
+        env:
+          FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
+          FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
+          FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
+          FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import ftplib, json, os, re, time, urllib.request
+          from pathlib import Path
+          from io import BytesIO
+
+          manifest = json.loads(Path("deploy/manifest.json").read_text())
+          probe = Path("scripts/deploy/assets/php83-probe.php").read_bytes()
+
+          # Absolute-path ini candidates (CloudLinux alt-php)
+          ini_variants = {
+              "abs_lib64": b"\n".join([
+                  b"extension_dir=/opt/alt/php83/usr/lib64/php/modules",
+                  b"extension=mbstring.so",
+                  b"extension=pdo.so",
+                  b"extension=pdo_mysql.so",
+                  b"extension=fileinfo.so",
+                  b"extension=zip.so",
+                  b"extension=phar.so",
+                  b"extension=intl.so",
+                  b"extension=bcmath.so",
+                  b"extension=openssl.so",
+                  b"extension=curl.so",
+                  b"",
+              ]),
+              "abs_full": b"\n".join([
+                  b"extension=/opt/alt/php83/usr/lib64/php/modules/mbstring.so",
+                  b"extension=/opt/alt/php83/usr/lib64/php/modules/pdo.so",
+                  b"extension=/opt/alt/php83/usr/lib64/php/modules/pdo_mysql.so",
+                  b"extension=/opt/alt/php83/usr/lib64/php/modules/fileinfo.so",
+                  b"extension=/opt/alt/php83/usr/lib64/php/modules/zip.so",
+                  b"extension=/opt/alt/php83/usr/lib64/php/modules/phar.so",
+                  b"extension=/opt/alt/php83/usr/lib64/php/modules/intl.so",
+                  b"extension=/opt/alt/php83/usr/lib64/php/modules/bcmath.so",
+                  b"",
+              ]),
+              "lib_path": b"\n".join([
+                  b"extension_dir=/opt/alt/php83/usr/lib/php/modules",
+                  b"extension=mbstring",
+                  b"extension=pdo",
+                  b"extension=pdo_mysql",
+                  b"extension=fileinfo",
+                  b"extension=zip",
+                  b"extension=phar",
+                  b"extension=intl",
+                  b"extension=bcmath",
+                  b"",
+              ]),
+          }
+
+          def ftp_connect(target):
+              host = manifest[target]["ftp"]["host"]
+              user = os.environ[f"FTP_{target.upper()}_USER"]
+              password = os.environ[f"FTP_{target.upper()}_PASSWORD"]
+              ftp = ftplib.FTP()
+              ftp.connect(host, 21, timeout=90)
+              ftp.login(user, password)
+              ftp.set_pasv(True)
+              return ftp
+
+          def list_names(ftp):
+              names = []
+              try:
+                  ftp.retrlines("NLST", names.append)
+              except Exception as e:
+                  print("NLST fail", e)
+              return names
+
+          def ensure_probe_htaccess(ftp, base_htaccess: bytes) -> bytes:
+              text = base_htaccess.decode("utf-8", "replace")
+              # Strip previous probe blocks and site-wide alt-php83 (keep site on default PHP)
+              text = re.sub(r"\n?# TEMP probe83 handler.*?# END probe83\n?", "\n", text, flags=re.S)
+              text = re.sub(
+                  r"\n?# CloudLinux alt-php 8\.3.*?# php -- END cPanel-generated handler\n?",
+                  "\n",
+                  text,
+                  flags=re.S,
+              )
+              text = text.rstrip() + """
+
+# TEMP probe83 handler
+<Files "php83-probe.php">
+  <IfModule mime_module>
+    SetHandler application/x-httpd-alt-php83___lsphp
+  </IfModule>
+</Files>
+# END probe83
+"""
+              return text.encode("utf-8")
+
+          bases = {
+              "web": Path("web-site/public/.htaccess").read_bytes(),
+              "admin": Path("scripts/deploy/assets/admin.htaccess").read_bytes(),
+          }
+          urls = {
+              "web": "https://gonulkoprusu.com/php83-probe.php",
+              "admin": "https://admin.gonulkoprusu.com/php83-probe.php",
+          }
+
+          for target in ("web", "admin"):
+              ftp = ftp_connect(target)
+              try:
+                  print("====", target, "FTP PWD", ftp.pwd(), "====")
+                  names = list_names(ftp)
+                  print("NLST sample:", names[:40])
+                  # Try parent / home exploration
+                  for cmd in ("CWD ..", "CWD /", "CWD .."):
+                      try:
+                          print(cmd, "->", ftp.sendcmd(cmd))
+                          print("PWD", ftp.pwd(), "NLST", list_names(ftp)[:30])
+                      except Exception as e:
+                          print(cmd, "fail", e)
+                  # back to start
+                  try:
+                      ftp.cwd("/")
+                  except Exception:
+                      pass
+
+                  # Upload probe + clean htaccess with Files-only handler
+                  ftp.storbinary("STOR php83-probe.php", BytesIO(probe))
+                  ht = ensure_probe_htaccess(ftp, bases[target])
+                  ftp.storbinary("STOR .htaccess", BytesIO(ht))
+
+                  # Also try writing selector-ish files if parent accessible
+                  for path in (
+                      ".cl.selector",
+                      "etc",
+                      "php-selector",
+                  ):
+                      try:
+                          ftp.mkd(path)
+                          print("mkd", path, "ok")
+                      except Exception as e:
+                          print("mkd", path, e)
+              finally:
+                  ftp.quit()
+
+          time.sleep(2)
+
+          def fetch(url):
+              try:
+                  return urllib.request.urlopen(url, timeout=30).read().decode("utf-8", "replace")
+              except Exception as e:
+                  return f"ERROR {e}"
+
+          print("\n==== BASELINE (no custom ini yet beyond whatever remains) ====")
+          for t, u in urls.items():
+              print("---", t, "---")
+              print(fetch(u))
+
+          # Try each ini variant on web only first (safer)
+          for name, ini in ini_variants.items():
+              ftp = ftp_connect("web")
+              try:
+                  ftp.storbinary("STOR php.ini", BytesIO(ini))
+                  ftp.storbinary("STOR .user.ini", BytesIO(ini))
+                  # LiteSpeed sometimes wants .php.ini
+                  ftp.storbinary("STOR .php.ini", BytesIO(ini))
+              finally:
+                  ftp.quit()
+              time.sleep(2)
+              body = fetch(urls["web"])
+              print(f"\n==== WEB after ini={name} ====")
+              print(body)
+              if "ext.mbstring=yes" in body and "ext.pdo=yes" in body:
+                  print("SUCCESS_EXTENSIONS", name)
+                  break
+          else:
+              print("NO_INI_VARIANT_ENABLED_EXTENSIONS")
+          PY
+
+      - name: Cleanup probe handler (restore clean htaccess)
+        if: always()
+        env:
+          FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
+          FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
+          FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
+          FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
+        run: |
+          python3 <<'PY'
+          import ftplib, json, os
+          from pathlib import Path
+          from io import BytesIO
+          manifest=json.loads(Path("deploy/manifest.json").read_text())
+          files={
+            "web": Path("web-site/public/.htaccess").read_bytes(),
+            "admin": Path("scripts/deploy/assets/admin.htaccess").read_bytes(),
+          }
+          for target, data in files.items():
+            host=manifest[target]["ftp"]["host"]
+            user=os.environ[f"FTP_{target.upper()}_USER"]
+            password=os.environ[f"FTP_{target.upper()}_PASSWORD"]
+            ftp=ftplib.FTP(); ftp.connect(host,21,timeout=60); ftp.login(user,password); ftp.set_pasv(True)
+            ftp.storbinary("STOR .htaccess", BytesIO(data))
+            print("RESTORED", target)
+            ftp.quit()
+          PY
