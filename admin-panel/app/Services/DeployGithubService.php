@@ -337,17 +337,25 @@ class DeployGithubService
     }
 
     /**
-     * @return array{configured: bool, token_ready: bool, items: list<array{name: string, present: bool|null, source: string}>}
+     * @return array{
+     *   configured: bool,
+     *   token_ready: bool,
+     *   mode: string,
+     *   hint: string,
+     *   items: list<array{name: string, present: bool|null, label: string, source: string}>
+     * }
      */
     public function secretsStatus(): array
     {
         $required = array_values(config('deploy.required_secrets', []));
         $tokenReady = $this->hasGithubToken();
         $remoteNames = [];
+        $apiChecked = false;
 
         if ($tokenReady) {
             $response = $this->githubApi('GET', '/actions/secrets', ['per_page' => 100]);
             if ($response['ok']) {
+                $apiChecked = true;
                 foreach (($response['json']['secrets'] ?? []) as $secret) {
                     if (is_array($secret) && ! empty($secret['name'])) {
                         $remoteNames[strtoupper((string) $secret['name'])] = true;
@@ -356,30 +364,58 @@ class DeployGithubService
             }
         }
 
+        // Token yoksa: son başarılı deploy, FTP secret'larının tanımlı olduğuna güçlü işaret.
+        $inferredOk = false;
+        if (! $apiChecked) {
+            $latest = $this->latestWorkflowRun();
+            $inferredOk = ($latest['found'] ?? false) && ($latest['conclusion'] ?? null) === 'success';
+        }
+
         $items = [];
         foreach ($required as $name) {
             $key = strtoupper((string) $name);
             $present = null;
             $source = 'unknown';
+            $label = 'Bilinmiyor';
 
-            if ($tokenReady && $remoteNames !== []) {
+            if ($apiChecked) {
                 $present = isset($remoteNames[$key]);
                 $source = 'github';
+                $label = $present ? 'VAR' : 'EKSİK';
             } elseif ($key === 'SETUP_CACHE_KEY') {
                 $present = trim((string) config('deploy.setup_key')) !== '';
                 $source = 'local';
+                $label = $present ? 'VAR (sunucu)' : 'EKSİK (sunucu)';
+            } elseif ($inferredOk) {
+                // Deploy workflow önce check-secrets çalıştırır; success ≈ secret'lar var.
+                $present = true;
+                $source = 'inferred';
+                $label = 'VAR (son deploy OK)';
+            } else {
+                $present = null;
+                $source = 'needs_token';
+                $label = 'Kontrol edilemedi';
             }
 
             $items[] = [
                 'name' => $key,
                 'present' => $present,
+                'label' => $label,
                 'source' => $source,
             ];
         }
 
+        $hint = $apiChecked
+            ? 'GitHub Secrets API ile doğrulandı (değerler gizlidir).'
+            : ($tokenReady
+                ? 'Token var ama Secrets API okunamadı — token yetkisini kontrol edin (repo admin).'
+                : 'GitHub secret değerleri dışarıdan okunamaz. Kesin kontrol için sunucuya DEPLOY_GITHUB_TOKEN ekleyin; şimdilik son başarılı deploy’dan çıkarım yapılıyor.');
+
         return [
             'configured' => $tokenReady,
             'token_ready' => $tokenReady,
+            'mode' => $apiChecked ? 'api' : ($inferredOk ? 'inferred' : 'unknown'),
+            'hint' => $hint,
             'items' => $items,
         ];
     }

@@ -196,7 +196,7 @@
 <div class="admin-ai-topgrid">
     <section class="admin-panel admin-panel--glass">
         <h3 class="admin-panel-title">Secrets Kontrolü</h3>
-        <p class="admin-ops-meta">Değerler gösterilmez — yalnızca tanımlı mı kontrol edilir.</p>
+        <p class="admin-ops-meta">{{ $secrets['hint'] ?? 'Değerler gösterilmez — yalnızca tanımlı mı kontrol edilir.' }}</p>
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
@@ -211,11 +211,11 @@
                             <td><code>{{ $secret['name'] }}</code></td>
                             <td>
                                 @if($secret['present'] === true)
-                                    <span class="admin-badge" style="background:#d1fae5;color:#065f46">VAR</span>
+                                    <span class="admin-badge" style="background:#d1fae5;color:#065f46">{{ $secret['label'] ?? 'VAR' }}</span>
                                 @elseif($secret['present'] === false)
-                                    <span class="admin-badge admin-badge--danger">EKSIK</span>
+                                    <span class="admin-badge admin-badge--danger">{{ $secret['label'] ?? 'EKSİK' }}</span>
                                 @else
-                                    <span class="admin-badge admin-badge--warn">TOKEN GEREKLI</span>
+                                    <span class="admin-badge admin-badge--warn">{{ $secret['label'] ?? 'Kontrol edilemedi' }}</span>
                                 @endif
                             </td>
                         </tr>
@@ -223,7 +223,12 @@
                 </tbody>
             </table>
         </div>
-        <a href="{{ $c['secrets_url'] ?? '#' }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="margin-top:.75rem">GitHub Secrets</a>
+        <div class="admin-quick-actions" style="margin-top:.75rem">
+            <a href="{{ $c['secrets_url'] ?? '#' }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">GitHub Secrets</a>
+            @if(empty($secrets['token_ready']))
+                <span class="admin-ops-meta">Kesin liste için admin `.env` → <code>DEPLOY_GITHUB_TOKEN</code></span>
+            @endif
+        </div>
     </section>
 
     <section class="admin-panel admin-panel--glass">
