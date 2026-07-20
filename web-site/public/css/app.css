@@ -3659,71 +3659,91 @@ a.member-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(
 .profile-action-btn--message { background: var(--gradient-sunset); color: #fff; border-color: transparent; }
 .profile-action-btn--message:hover { color: #fff; opacity: 0.92; }
 
-/* Kilitli mesaj → Premium CTA */
+/* Kilitli mesaj → Premium CTA (renkli sunset) */
 .profile-action-btn--premium-msg {
+    position: relative;
+    overflow: hidden;
     width: 100%;
     justify-content: flex-start;
-    gap: 0.7rem;
-    padding: 0.72rem 0.95rem;
-    border-radius: 16px;
-    border: 1px solid rgba(180, 83, 9, 0.28);
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    border-radius: 18px;
+    border: 1px solid transparent;
     background:
-        radial-gradient(ellipse 90% 120% at 0% 50%, rgba(251, 191, 36, 0.35), transparent 55%),
-        linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 42%, #FDE68A 100%);
-    color: #78350F;
+        linear-gradient(135deg, #7C3AED 0%, #DB2777 38%, #F97316 72%, #FBBF24 100%);
+    color: #fff;
     box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.75) inset,
-        0 8px 22px rgba(180, 83, 9, 0.14);
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+        0 1px 0 rgba(255, 255, 255, 0.22) inset,
+        0 10px 28px rgba(219, 39, 119, 0.28),
+        0 4px 12px rgba(124, 58, 237, 0.18);
+    transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+}
+.profile-action-btn--premium-msg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 12% 30%, rgba(255, 255, 255, 0.28), transparent 42%),
+        radial-gradient(circle at 88% 80%, rgba(251, 191, 36, 0.35), transparent 40%);
+    pointer-events: none;
 }
 .profile-action-btn--premium-msg:hover {
-    color: #78350F;
-    border-color: rgba(180, 83, 9, 0.42);
-    transform: translateY(-1px);
+    color: #fff;
+    transform: translateY(-2px);
+    filter: saturate(1.08);
     box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.85) inset,
-        0 12px 28px rgba(180, 83, 9, 0.2);
+        0 1px 0 rgba(255, 255, 255, 0.28) inset,
+        0 14px 34px rgba(219, 39, 119, 0.34),
+        0 6px 16px rgba(124, 58, 237, 0.22);
 }
 .profile-action-btn--premium-msg:active {
     transform: translateY(0);
+    filter: none;
 }
 .profile-action-icon--premium-msg {
+    position: relative;
+    z-index: 1;
     display: grid;
     place-items: center;
-    width: 2.15rem;
-    height: 2.15rem;
-    border-radius: 12px;
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 13px;
     flex-shrink: 0;
-    color: #92400E;
-    background: linear-gradient(145deg, #FBBF24, #F59E0B);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+    color: #7C3AED;
+    background: linear-gradient(160deg, #fff 0%, #FEF3C7 100%);
+    box-shadow:
+        0 0 0 2px rgba(255, 255, 255, 0.35),
+        0 6px 14px rgba(15, 23, 42, 0.18);
 }
 .profile-action-icon--premium-msg .theme-icon,
 .profile-action-icon--premium-msg svg {
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 1.1rem;
+    height: 1.1rem;
     display: block;
 }
 .profile-action-btn--premium-msg .profile-action-copy {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.1rem;
+    gap: 0.12rem;
     min-width: 0;
     text-align: left;
 }
 .profile-action-btn--premium-msg .profile-action-label {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     font-weight: 800;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
     line-height: 1.25;
-    color: #78350F;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(76, 29, 149, 0.25);
 }
 .profile-action-btn--premium-msg .profile-action-sub {
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 700;
-    color: #B45309;
-    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.92);
+    letter-spacing: 0.01em;
 }
 
 .profile-action-btn--unblock {
