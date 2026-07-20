@@ -158,17 +158,16 @@ def main() -> int:
         print("---", t, "---")
         print(fetch(u))
 
-    print("\n==== ENABLE INFO (filesystem writability) ====")
+    print("\n==== ENABLE INFO ====")
     for t, u in ENABLE_URLS.items():
         print("---", t, "info ---")
         print(fetch(u + "&action=info"))
 
-    print("\n==== SWITCH SELECTOR TO 8.3 ====")
-    # Prefer web (account home owner) for selector defaults.cfg
-    print(fetch(ENABLE_URLS["web"] + "&action=switch83"))
+    print("\n==== FIX PHP83 EXTENSIONS ====")
+    print(fetch(ENABLE_URLS["web"] + "&action=fix"))
 
     time.sleep(3)
-    print("\n==== AFTER SWITCH ====")
+    print("\n==== AFTER FIX ====")
     for t, u in ENABLE_URLS.items():
         print("---", t, "info2 ---")
         print(fetch(u + "&action=info"))
@@ -184,8 +183,8 @@ def main() -> int:
             success = True
 
     if not success:
-        print("SWITCH_FAILED_RESTORING_SELECTOR")
-        print(fetch(ENABLE_URLS["web"] + "&action=restore82"))
+        print("FIX_FAILED_RESTORING")
+        print(fetch(ENABLE_URLS["web"] + "&action=restore"))
         print("NO_INI_VARIANT_ENABLED_EXTENSIONS")
     return 0 if success else 2
 
