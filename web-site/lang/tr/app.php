@@ -71,6 +71,8 @@ return [
         'photo_updated' => 'Profil fotoğrafı güncellendi.',
         'photo_failed' => 'Profil fotoğrafı yüklenemedi. Lütfen tekrar deneyin.',
         'send_message' => 'Mesaj Gönder',
+        'message_locked_cta' => 'Mesaj göndermek için Premium',
+        'message_locked_title' => 'Bu üyeye mesaj göndermek için Premium üyelik veya deneme süresi gerekir',
         'report' => 'Şikayet Et',
         'blocked_notice' => ':name kullanıcısını engellediniz. Mesaj ve keşif listesinde görünmez.',
         'unblock' => 'Engeli Kaldır',

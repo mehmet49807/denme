@@ -71,6 +71,8 @@ return [
         'photo_updated' => 'Profile photo updated.',
         'photo_failed' => 'Could not upload profile photo. Please try again.',
         'send_message' => 'Send message',
+        'message_locked_cta' => 'Premium required to message',
+        'message_locked_title' => 'You need Premium or a trial to message this member',
         'report' => 'Report',
         'blocked_notice' => 'You blocked :name. They are hidden from messages and discovery.',
         'unblock' => 'Unblock',
