@@ -5,6 +5,10 @@
 !.env.deploy.example
 .env.deploy
 
+# Composer binary (sunucuda indirilir)
+**/composer.phar
+composer.phar
+
 /vendor/
 **/vendor/
 /node_modules/

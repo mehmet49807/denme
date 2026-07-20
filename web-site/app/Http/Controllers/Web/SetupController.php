@@ -640,6 +640,44 @@ class SetupController extends Controller
         ]);
     }
 
+    public function laravelUpdate()
+    {
+        $key = (string) config('update.setup_key', 'gk-laravel-update-2026');
+        if (request('key') !== $key && request('key') !== 'gk-cpanel-setup-2026') {
+            abort(403);
+        }
+
+        @set_time_limit(600);
+        @ini_set('max_execution_time', '600');
+
+        try {
+            $updater = app(\App\Services\LaravelUpdateService::class);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'ok' => false,
+                'error' => 'LaravelUpdateService yok: '.$e->getMessage(),
+            ], 500);
+        }
+
+        if (request()->boolean('run') || request('run') === '1') {
+            $mode = (string) request('mode', 'target');
+            if (! in_array($mode, ['target', 'patch'], true)) {
+                $mode = 'target';
+            }
+            $result = $updater->runUpdate($mode);
+
+            return response()->json($result + [
+                'current' => $updater->currentVersion(),
+                'php' => $updater->phpVersion(),
+                'constraint' => $updater->composerConstraint(),
+            ]);
+        }
+
+        $status = $updater->localStatus();
+
+        return response()->json($status + ['ok' => true]);
+    }
+
     public function emailLogs()
     {
         if (request('key') !== 'gk-email-logs-migrate-2026') {

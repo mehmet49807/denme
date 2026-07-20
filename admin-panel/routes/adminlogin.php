@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminEmailController;
 use App\Http\Controllers\Admin\AdminReferralController;
 use App\Http\Controllers\Admin\AdminSupportController;
 use App\Http\Controllers\Admin\AdminGithubController;
+use App\Http\Controllers\Admin\AdminUpdateController;
 use App\Http\Controllers\Admin\AdminPackagesController;
 use App\Http\Controllers\Admin\AdminAppLinksController;
 use App\Http\Controllers\Admin\AdminMarketingController;
@@ -53,6 +54,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/auto-rules', [AdminOpsController::class, 'updateAutoRules'])->name('admin.auto-rules.update');
     Route::get('/system-health', [AdminOpsController::class, 'systemHealth'])->name('admin.system-health');
     Route::post('/system-health/fcm', [AdminOpsController::class, 'uploadFcmCredentials'])->name('admin.system-health.fcm');
+    Route::get('/updates', [AdminUpdateController::class, 'index'])->name('admin.updates');
+    Route::post('/updates/run', [AdminUpdateController::class, 'run'])->name('admin.updates.run');
+    Route::post('/updates/refresh', [AdminUpdateController::class, 'refresh'])->name('admin.updates.refresh');
     Route::get('/staff', [AdminOpsController::class, 'staffRoles'])->name('admin.staff');
     Route::post('/staff', [AdminOpsController::class, 'promoteStaff'])->name('admin.staff.promote');
     Route::post('/staff/{user}', [AdminOpsController::class, 'updateStaffRole'])->name('admin.staff.update');

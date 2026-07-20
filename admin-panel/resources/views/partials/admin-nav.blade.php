@@ -21,6 +21,7 @@
         ['route' => 'admin.seo', 'label' => 'SEO & Google', 'icon' => 'search', 'theme' => 'teal'],
         ['route' => 'admin.audit', 'label' => 'Denetim Kayıtları', 'icon' => 'search', 'theme' => 'indigo'],
         ['route' => 'admin.system-health', 'label' => 'Sistem Sağlığı', 'icon' => 'chart', 'theme' => 'emerald'],
+        ['route' => 'admin.updates', 'label' => 'Güncelleme', 'icon' => 'refresh', 'theme' => 'amber'],
         ['route' => 'admin.staff', 'label' => 'Personel Rolleri', 'icon' => 'users', 'theme' => 'rose'],
         ['route' => 'admin.profile', 'label' => 'Profilim', 'icon' => 'user', 'theme' => 'rose'],
     ];
