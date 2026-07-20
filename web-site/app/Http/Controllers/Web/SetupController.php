@@ -642,6 +642,7 @@ class SetupController extends Controller
         if ($wantsForm) {
             $statusLine = collect($lines)->first(fn ($l) => str_starts_with((string) $l, 'FCM configured:'));
             $configured = is_string($statusLine) && str_contains($statusLine, 'evet');
+            $statusClass = $configured ? 'ok' : 'bad';
             $escaped = e($plain);
             $html = <<<HTML
 <!DOCTYPE html>
@@ -654,7 +655,7 @@ textarea{width:100%;min-height:12rem;font-family:ui-monospace,monospace;font-siz
 .ok{color:#0a7a32}.bad{color:#b42318}button{margin-top:.75rem;padding:.6rem 1rem;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:600;cursor:pointer}
 </style></head><body>
 <h1>FCM service account JSON</h1>
-<p class="{$configured ? 'ok' : 'bad'}"><pre>{$escaped}</pre></p>
+<p class="{$statusClass}"><pre>{$escaped}</pre></p>
 <form method="post" action="?key=gk-fcm-setup-2026&amp;form=1" enctype="multipart/form-data">
 <p><label>JSON dosyası<br><input type="file" name="credentials" accept=".json,application/json"></label></p>
 <p><label>veya JSON yapıştır<br><textarea name="json" placeholder='{"type":"service_account",...}'></textarea></label></p>
