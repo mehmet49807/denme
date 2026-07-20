@@ -27,12 +27,12 @@ on:
 
 concurrency:
   group: laravel-update-gonulkoprusu
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -82,9 +82,8 @@ jobs:
             $j["require"]["laravel/framework"] = $c;
             file_put_contents("composer.json", json_encode($j, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)."\n");
           '
-          # Build klasöründe artisan yok — post-autoload-dump scriptlerini atla
-          composer update laravel/framework --with-all-dependencies --no-interaction --no-progress --prefer-dist --no-scripts
-          composer dump-autoload --no-interaction --no-scripts
+          composer update laravel/framework --with-all-dependencies --no-interaction --no-progress --prefer-dist --no-scripts --no-dev
+          composer dump-autoload --no-interaction --no-scripts -o
           php -r '
             $lock=json_decode(file_get_contents("composer.lock"), true);
             foreach (($lock["packages"] ?? []) as $p) {
@@ -97,43 +96,103 @@ jobs:
             exit(1);
           '
 
-      - name: Sync lock back to server/
+      - name: Pack vendor bundle
+        working-directory: server/build
         run: |
-          cp server/build/composer.json server/composer.json
-          cp server/build/composer.lock server/composer.lock
-          grep -o "VERSION = '[^']*'" server/build/vendor/laravel/framework/src/Illuminate/Foundation/Application.php | head -1
+          set -euo pipefail
+          cp ../composer.json composer.json.bak 2>/dev/null || true
+          zip -qr laravel-vendor.zip composer.json composer.lock vendor
+          ls -lh laravel-vendor.zip
+          cp composer.json ../composer.json
+          cp composer.lock ../composer.lock
 
-      - name: FTP upload vendor (web)
+      - name: Upload extract helper + bundle (web)
         if: github.event_name == 'push' || github.event.inputs.target == 'all' || github.event.inputs.target == 'web'
         env:
           FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
           FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
-          FTP_PARALLEL: "8"
-          LARAVEL_BUILD_DIR: ${{ github.workspace }}/server/build
-        run: python3 scripts/deploy/ftp_vendor_sync.py web
+          LARAVEL_BUNDLE: ${{ github.workspace }}/server/build/laravel-vendor.zip
+        run: |
+          python3 - <<'PY'
+          import ftplib, json, os
+          from pathlib import Path, PurePosixPath
+          manifest=json.loads(Path("deploy/manifest.json").read_text())
+          host=manifest["web"]["ftp"]["host"]
+          user=os.environ["FTP_WEB_USER"]; password=os.environ["FTP_WEB_PASSWORD"]
+          ftp=ftplib.FTP(); ftp.connect(host,21,timeout=120); ftp.login(user,password); ftp.set_pasv(True)
+          def ensure(path):
+            cur=""
+            for p in PurePosixPath(path).parts[:-1]:
+              cur=f"{cur}/{p}" if cur else p
+              try: ftp.mkd(cur)
+              except Exception: pass
+          def put(local, remote):
+            ensure(remote)
+            with open(local,"rb") as fh:
+              ftp.storbinary(f"STOR {remote}", fh, blocksize=256*1024)
+            print("OK", remote, os.path.getsize(local))
+          put("scripts/deploy/assets/laravel-vendor-extract.php", "laravel-vendor-extract.php")
+          put(os.environ["LARAVEL_BUNDLE"], "storage/app/laravel-vendor.zip")
+          ftp.quit()
+          PY
 
-      - name: FTP upload vendor (admin)
+      - name: Upload extract helper + bundle (admin)
         if: github.event_name == 'push' || github.event.inputs.target == 'all' || github.event.inputs.target == 'admin'
         env:
           FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
           FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
-          FTP_PARALLEL: "8"
-          LARAVEL_BUILD_DIR: ${{ github.workspace }}/server/build
-        run: python3 scripts/deploy/ftp_vendor_sync.py admin
+          LARAVEL_BUNDLE: ${{ github.workspace }}/server/build/laravel-vendor.zip
+        run: |
+          python3 - <<'PY'
+          import ftplib, json, os
+          from pathlib import Path, PurePosixPath
+          manifest=json.loads(Path("deploy/manifest.json").read_text())
+          host=manifest["admin"]["ftp"]["host"]
+          user=os.environ["FTP_ADMIN_USER"]; password=os.environ["FTP_ADMIN_PASSWORD"]
+          ftp=ftplib.FTP(); ftp.connect(host,21,timeout=120); ftp.login(user,password); ftp.set_pasv(True)
+          def ensure(path):
+            cur=""
+            for p in PurePosixPath(path).parts[:-1]:
+              cur=f"{cur}/{p}" if cur else p
+              try: ftp.mkd(cur)
+              except Exception: pass
+          def put(local, remote):
+            ensure(remote)
+            with open(local,"rb") as fh:
+              ftp.storbinary(f"STOR {remote}", fh, blocksize=256*1024)
+            print("OK", remote, os.path.getsize(local))
+          put("scripts/deploy/assets/laravel-vendor-extract.php", "laravel-vendor-extract.php")
+          put(os.environ["LARAVEL_BUNDLE"], "storage/app/laravel-vendor.zip")
+          ftp.quit()
+          PY
 
-      - name: Clear remote caches
+      - name: Extract on servers
         env:
           SETUP_CACHE_KEY: ${{ secrets.SETUP_CACHE_KEY }}
+          TARGET: ${{ github.event.inputs.target || 'all' }}
         run: |
-          KEY="${SETUP_CACHE_KEY:-gk-cpanel-setup-2026}"
-          curl -fsS "https://gonulkoprusu.com/setup/clear-cache?key=${KEY}" | head -c 200 || true
-          echo
-          curl -fsS "https://admin.gonulkoprusu.com/setup/cpanel?key=${KEY}" | head -c 200 || true
-          echo
-          echo "WEB:"; curl -fsS "https://gonulkoprusu.com/setup/laravel-update?key=gk-laravel-update-2026" || true
-          echo
-          echo "ADMIN:"; curl -fsS "https://admin.gonulkoprusu.com/setup/laravel-update?key=gk-laravel-update-2026" || true
-          echo
+          set -euo pipefail
+          KEY_UPDATE=gk-laravel-update-2026
+          KEY_CACHE="${SETUP_CACHE_KEY:-gk-cpanel-setup-2026}"
+          extract() {
+            local url="$1"
+            echo "EXTRACT $url"
+            curl -fsS --max-time 560 "$url" | tee /tmp/extract-out.json
+            echo
+            php -r '$j=json_decode(file_get_contents("/tmp/extract-out.json"), true); exit(!empty($j["ok"])?0:1);'
+          }
+          if [ "${TARGET}" = "all" ] || [ "${TARGET}" = "web" ] || [ "${{ github.event_name }}" = "push" ]; then
+            extract "https://gonulkoprusu.com/laravel-vendor-extract.php?key=${KEY_UPDATE}"
+            curl -fsS "https://gonulkoprusu.com/setup/clear-cache?key=${KEY_CACHE}" | head -c 120 || true
+            echo
+          fi
+          if [ "${TARGET}" = "all" ] || [ "${TARGET}" = "admin" ] || [ "${{ github.event_name }}" = "push" ]; then
+            extract "https://admin.gonulkoprusu.com/laravel-vendor-extract.php?key=${KEY_UPDATE}"
+            curl -fsS "https://admin.gonulkoprusu.com/setup/cpanel?key=${KEY_CACHE}" | head -c 120 || true
+            echo
+          fi
+          echo "WEB:"; curl -fsS "https://gonulkoprusu.com/setup/laravel-update?key=${KEY_UPDATE}" || true; echo
+          echo "ADMIN:"; curl -fsS "https://admin.gonulkoprusu.com/setup/laravel-update?key=${KEY_UPDATE}" || true; echo
 
       - name: Commit updated lock
         run: |

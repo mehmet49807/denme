@@ -263,6 +263,82 @@ class LaravelUpdateService
         return is_array($items) ? array_values($items) : [];
     }
 
+    /**
+     * GitHub Actions'ın yüklediği laravel-vendor.tgz arşivini açar.
+     *
+     * @return array{ok: bool, message: string, version: ?string}
+     */
+    public function extractVendorBundle(): array
+    {
+        @set_time_limit(600);
+        @ini_set('max_execution_time', '600');
+        @ini_set('memory_limit', '512M');
+
+        $bundle = storage_path('app/laravel-vendor.tgz');
+        if (! is_file($bundle)) {
+            return [
+                'ok' => false,
+                'message' => 'Bundle yok: storage/app/laravel-vendor.tgz',
+                'version' => $this->currentVersion(),
+            ];
+        }
+
+        $base = base_path();
+        $phar = new \PharData($bundle);
+        try {
+            // Önce composer meta + vendor
+            $phar->extractTo($base, null, true);
+        } catch (\Throwable $e) {
+            // PharData bazen .tgz için sarmalayıcı ister
+            try {
+                $tar = $phar->decompress();
+                $tar->extractTo($base, null, true);
+            } catch (\Throwable $e2) {
+                // Fallback: tar binary
+                if ($this->shellExecEnabled()) {
+                    $cmd = 'tar -xzf '.escapeshellarg($bundle).' -C '.escapeshellarg($base).' 2>&1';
+                    $out = (string) @shell_exec($cmd);
+                    if (! is_dir($base.'/vendor/laravel/framework')) {
+                        return [
+                            'ok' => false,
+                            'message' => 'Extract başarısız: '.$e2->getMessage().' / '.$out,
+                            'version' => $this->currentVersion(),
+                        ];
+                    }
+                } else {
+                    return [
+                        'ok' => false,
+                        'message' => 'Extract başarısız: '.$e->getMessage(),
+                        'version' => $this->currentVersion(),
+                    ];
+                }
+            }
+        }
+
+        if (function_exists('opcache_reset')) {
+            @opcache_reset();
+        }
+
+        try {
+            \Illuminate\Support\Facades\Artisan::call('config:clear');
+            \Illuminate\Support\Facades\Artisan::call('cache:clear');
+            \Illuminate\Support\Facades\Artisan::call('route:clear');
+            \Illuminate\Support\Facades\Artisan::call('view:clear');
+        } catch (\Throwable) {
+            //
+        }
+
+        @unlink($bundle);
+
+        $version = $this->readInstalledFrameworkVersion() ?? $this->currentVersion();
+
+        return [
+            'ok' => version_compare($version, '12.0.0', '>=') || version_compare($version, $this->currentVersion(), '>='),
+            'message' => "Vendor açıldı · Laravel {$version}",
+            'version' => $version,
+        ];
+    }
+
     public function probeRemote(string $target): array
     {
         $base = match ($target) {

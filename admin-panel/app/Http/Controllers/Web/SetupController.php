@@ -166,6 +166,10 @@ class SetupController extends Controller
             ], 500);
         }
 
+        if (request()->boolean('extract') || request('extract') === '1') {
+            return response()->json($updater->extractVendorBundle());
+        }
+
         if (request()->boolean('run') || request('run') === '1') {
             $mode = (string) request('mode', 'target');
             if (! in_array($mode, ['target', 'patch'], true)) {
