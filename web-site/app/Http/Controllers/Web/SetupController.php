@@ -591,12 +591,15 @@ class SetupController extends Controller
             $fcm = app(\App\Services\FcmPushService::class);
 
             if (request()->isMethod('post') || request()->filled('json') || request()->filled('json_b64')) {
-                $payload = (string) request('json', '');
+                $payload = '';
+                if (request()->hasFile('credentials')) {
+                    $payload = (string) file_get_contents(request()->file('credentials')->getRealPath());
+                }
                 if ($payload === '' && request()->filled('json_b64')) {
                     $payload = (string) base64_decode((string) request('json_b64'), true);
                 }
-                if ($payload === '' && request()->hasFile('credentials')) {
-                    $payload = (string) file_get_contents(request()->file('credentials')->getRealPath());
+                if ($payload === '') {
+                    $payload = (string) request('json', '');
                 }
                 $install = $fcm->installCredentialsJson($payload);
                 $lines[] = 'install: '.(($install['ok'] ?? false) ? 'OK' : ('HATA '.($install['error'] ?? '')));
