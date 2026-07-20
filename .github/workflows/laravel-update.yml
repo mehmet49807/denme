@@ -59,48 +59,56 @@ jobs:
           from io import BytesIO
 
           manifest = json.loads(Path("deploy/manifest.json").read_text())
+          php_ini = b"\n".join([
+              b"; Gönül Köprüsü — alt-php83 extensions for Laravel 13",
+              b"extension=zip.so",
+              b"extension=phar.so",
+              b"extension=intl.so",
+              b"extension=mbstring.so",
+              b"extension=bcmath.so",
+              b"extension=pdo_mysql.so",
+              b"",
+          ])
           uploads = {
-              "web": (Path("web-site/public/.htaccess").read_bytes(), "https://gonulkoprusu.com/php-version.php", Path("scripts/deploy/assets/php-version.php")),
-              "admin": (Path("scripts/deploy/assets/admin.htaccess").read_bytes(), "https://admin.gonulkoprusu.com/php-version.php", Path("scripts/deploy/assets/php-version.php")),
+              "web": (Path("web-site/public/.htaccess").read_bytes(), "https://gonulkoprusu.com/php-version.php"),
+              "admin": (Path("scripts/deploy/assets/admin.htaccess").read_bytes(), "https://admin.gonulkoprusu.com/php-version.php"),
           }
-          # clean fallback without AddHandler
-          clean = {
-              "web": re.sub(r"\n?# CloudLinux.*?# php -- END cPanel-generated handler\n?", "\n", uploads["web"][0].decode(), flags=re.S).encode(),
-              "admin": re.sub(r"\n?# CloudLinux.*?# php -- END cPanel-generated handler\n?", "\n", uploads["admin"][0].decode(), flags=re.S).encode(),
-          }
+          # Ensure htaccess has alt-php83
+          def with_handler(raw: bytes) -> bytes:
+              text = raw.decode("utf-8")
+              text = re.sub(r"\n?# CloudLinux.*?# php -- END cPanel-generated handler\n?", "\n", text, flags=re.S)
+              text = text.rstrip() + (
+                  "\n\n# CloudLinux alt-php 8.3 — Laravel 13\n"
+                  "# php -- BEGIN cPanel-generated handler\n"
+                  "<IfModule mime_module>\n"
+                  "  AddHandler application/x-httpd-alt-php83___lsphp .php .php8 .phtml\n"
+                  "</IfModule>\n"
+                  "# php -- END cPanel-generated handler\n"
+              )
+              return text.encode("utf-8")
 
-          for target, (htaccess, url, probe) in uploads.items():
+          probe = Path("scripts/deploy/assets/php-version.php").read_bytes()
+          for target, (htaccess, url) in uploads.items():
               host = manifest[target]["ftp"]["host"]
               user = os.environ[f"FTP_{target.upper()}_USER"]
               password = os.environ[f"FTP_{target.upper()}_PASSWORD"]
               ftp = ftplib.FTP(); ftp.connect(host, 21, timeout=90); ftp.login(user, password); ftp.set_pasv(True)
               try:
-                  ftp.storbinary("STOR php-version.php", BytesIO(probe.read_bytes()))
-                  ftp.storbinary("STOR .htaccess", BytesIO(htaccess))
+                  ftp.storbinary("STOR php-version.php", BytesIO(probe))
+                  ftp.storbinary("STOR php.ini", BytesIO(php_ini))
+                  ftp.storbinary("STOR .user.ini", BytesIO(php_ini))
+                  ftp.storbinary("STOR .htaccess", BytesIO(with_handler(htaccess)))
               finally:
                   ftp.quit()
               time.sleep(2)
-              try:
-                  body = urllib.request.urlopen(url, timeout=20).read().decode("utf-8", "replace")
-              except Exception as e:
-                  # rollback
-                  ftp = ftplib.FTP(); ftp.connect(host, 21, timeout=90); ftp.login(user, password); ftp.set_pasv(True)
-                  try:
-                      ftp.storbinary("STOR .htaccess", BytesIO(clean[target]))
-                  finally:
-                      ftp.quit()
-                  raise SystemExit(f"{target}: PHP probe failed ({e}); htaccess rolled back")
+              body = urllib.request.urlopen(url, timeout=25).read().decode("utf-8", "replace")
+              print("====", target, "====")
+              print(body)
               m = re.search(r"PHP_VERSION=([0-9.]+)", body)
               ver = m.group(1) if m else "?"
-              print(target, "PHP", ver)
               major, minor, *_ = (ver.split(".") + ["0", "0"])[:3]
               if not (int(major) > 8 or (int(major) == 8 and int(minor) >= 3)):
-                  ftp = ftplib.FTP(); ftp.connect(host, 21, timeout=90); ftp.login(user, password); ftp.set_pasv(True)
-                  try:
-                      ftp.storbinary("STOR .htaccess", BytesIO(clean[target]))
-                  finally:
-                      ftp.quit()
-                  raise SystemExit(f"{target}: need PHP 8.3+, got {ver}; htaccess rolled back")
+                  raise SystemExit(f"{target}: need PHP 8.3+, got {ver}")
           print("PHP_8_3_OK")
           PY
 
