@@ -65,6 +65,7 @@
     <link rel="icon" href="{{ asset('images/favicon.png') }}?v={{ config('brand.logo_version') }}" sizes="32x32" type="image/png">
     <link rel="icon" href="{{ asset('images/favicon.svg') }}?v={{ config('brand.logo_version') }}" type="image/svg+xml">
     <link rel="apple-touch-icon" href="{{ asset('images/apple-touch-icon.png') }}?v={{ config('brand.logo_version') }}">
+    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}?v=gk-pwa-1">
     @include('partials.async-fonts')
     @include('partials.critical-ui-css')
     @if($isLanding)

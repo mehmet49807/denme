@@ -416,6 +416,23 @@ body.app-shell-body .site-header-inner {
     color: var(--text-light, #5c5470);
     font-weight: 600;
 }
+.profile-settings-push-steps {
+    margin: 0 0 0.95rem;
+    padding: 0.75rem 0.75rem 0.75rem 1.35rem;
+    border-radius: 12px;
+    background: rgba(124, 58, 237, 0.06);
+    border: 1px solid rgba(124, 58, 237, 0.12);
+    color: var(--text, #1a1523);
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.45;
+}
+.profile-settings-push-steps li + li {
+    margin-top: 0.35rem;
+}
+.profile-settings-push-steps[hidden] {
+    display: none !important;
+}
 .profile-settings-menu-icon--invite {
     background: linear-gradient(145deg, #cffafe, #67e8f9);
     color: #0891b2;

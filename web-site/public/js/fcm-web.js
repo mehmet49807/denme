@@ -65,11 +65,36 @@
         return typeof navigator !== 'undefined' && 'serviceWorker' in navigator;
     }
 
+    function isIos() {
+        var ua = navigator.userAgent || '';
+        if (/iPad|iPhone|iPod/.test(ua)) return true;
+        // iPadOS 13+ desktop UA
+        return navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1;
+    }
+
+    function isStandalone() {
+        try {
+            if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) {
+                return true;
+            }
+        } catch (e) {}
+        return window.navigator.standalone === true;
+    }
+
+    // iPhone/iPad: Web Push yalnızca Ana Ekrana eklenen (standalone) uygulamada çalışır.
+    // Chrome/Edge iOS’ta da WebKit kullandığı için tarayıcı sekmesinde çalışmaz.
+    function needsIosHomeScreen() {
+        return isIos() && !isStandalone();
+    }
+
     function isSupported() {
-        return !!(window.isSecureContext && hasNotificationApi() && hasServiceWorker());
+        if (!window.isSecureContext || !hasServiceWorker()) return false;
+        if (needsIosHomeScreen()) return false;
+        return hasNotificationApi();
     }
 
     function permission() {
+        if (needsIosHomeScreen()) return 'ios-homescreen';
         if (!hasNotificationApi()) return 'unsupported';
         return Notification.permission || 'default';
     }
@@ -178,7 +203,8 @@
         document.head.appendChild(s);
     }
 
-    function showPrompt(onAllow) {
+    function showPrompt(opts) {
+        opts = opts || {};
         if (document.getElementById(PROMPT_ID)) return;
         injectStyles();
         var el = document.createElement('div');
@@ -186,15 +212,17 @@
         el.className = 'gk-fcm-prompt';
         el.setAttribute('role', 'dialog');
         el.setAttribute('aria-label', 'Bildirim izni');
+        var primary = opts.primaryLabel || 'İzin ver';
+        var secondary = opts.secondaryLabel || 'Şimdi değil';
         el.innerHTML =
             '<div class="gk-fcm-prompt__card">' +
             '<div class="gk-fcm-prompt__text">' +
-            '<strong>Tarayıcı bildirimleri</strong>' +
-            '<p>Yeni mesaj ve duyuruları tarayıcıdan anında alın.</p>' +
+            '<strong>' + (opts.title || 'Tarayıcı bildirimleri') + '</strong>' +
+            '<p>' + (opts.body || 'Yeni mesaj ve duyuruları tarayıcıdan anında alın.') + '</p>' +
             '</div>' +
             '<div class="gk-fcm-prompt__actions">' +
-            '<button type="button" class="gk-fcm-prompt__btn gk-fcm-prompt__btn--ghost" data-fcm-later>Şimdi değil</button>' +
-            '<button type="button" class="gk-fcm-prompt__btn gk-fcm-prompt__btn--primary" data-fcm-allow>İzin ver</button>' +
+            '<button type="button" class="gk-fcm-prompt__btn gk-fcm-prompt__btn--ghost" data-fcm-later>' + secondary + '</button>' +
+            (opts.hidePrimary ? '' : '<button type="button" class="gk-fcm-prompt__btn gk-fcm-prompt__btn--primary" data-fcm-allow>' + primary + '</button>') +
             '</div></div>';
         document.body.appendChild(el);
 
@@ -204,10 +232,13 @@
         el.querySelector('[data-fcm-later]').addEventListener('click', function () {
             hidePrompt();
         });
-        el.querySelector('[data-fcm-allow]').addEventListener('click', function () {
-            hidePrompt();
-            if (onAllow) onAllow();
-        });
+        var allow = el.querySelector('[data-fcm-allow]');
+        if (allow) {
+            allow.addEventListener('click', function () {
+                hidePrompt();
+                if (opts.onAllow) opts.onAllow();
+            });
+        }
     }
 
     function enableWeb(cfg) {
@@ -217,6 +248,10 @@
                 cachedCfg = c;
                 return enableWeb(c);
             });
+        }
+        if (needsIosHomeScreen()) {
+            updateSettingsUi();
+            return Promise.resolve({ ok: false, reason: 'ios-homescreen', permission: 'ios-homescreen' });
         }
         if (!hasNotificationApi()) {
             return Promise.resolve({ ok: false, reason: 'unsupported', permission: 'unsupported' });
@@ -237,10 +272,34 @@
     }
 
     function statusLabel(perm) {
-        if (!isSupported()) return { text: 'Desteklenmiyor', tone: 'muted', hint: 'Bu tarayıcıda web bildirimleri kullanılamıyor. Chrome veya Edge deneyin.' };
-        if (perm === 'granted') return { text: 'Açık', tone: 'ok', hint: 'Tarayıcı bildirimleri aktif. Yeni mesaj ve duyurularda bildirim alırsınız.' };
-        if (perm === 'denied') return { text: 'Engellendi', tone: 'bad', hint: 'Adres çubuğundaki kilit simgesinden Bildirimler → İzin ver yapın, sonra buradan tekrar deneyin.' };
-        return { text: 'Kapalı', tone: 'warn', hint: 'Mesaj ve duyuruları anında almak için tarayıcı izni verin.' };
+        if (needsIosHomeScreen()) {
+            return {
+                text: 'Ana Ekran gerekli',
+                tone: 'warn',
+                hint: 'iPhone’da web bildirimleri Safari sekmesinde çalışmaz. Ana Ekrana ekleyip uygulamadan açmanız gerekir. (Chrome/Edge iPhone’da da aynı kısıtı taşır.)',
+                showIosSteps: true
+            };
+        }
+        if (!isSupported()) {
+            return {
+                text: 'Desteklenmiyor',
+                tone: 'muted',
+                hint: 'Bu tarayıcıda web bildirimleri kullanılamıyor. Güncel Safari (iOS 16.4+) veya masaüstünde Chrome/Edge deneyin.',
+                showIosSteps: false
+            };
+        }
+        if (perm === 'granted') {
+            return { text: 'Açık', tone: 'ok', hint: 'Tarayıcı bildirimleri aktif. Yeni mesaj ve duyurularda bildirim alırsınız.', showIosSteps: false };
+        }
+        if (perm === 'denied') {
+            return {
+                text: 'Engellendi',
+                tone: 'bad',
+                hint: 'Ayarlar → Bildirimler bölümünden Gönül Köprüsü için izni açın, sonra buradan tekrar deneyin.',
+                showIosSteps: false
+            };
+        }
+        return { text: 'Kapalı', tone: 'warn', hint: 'Mesaj ve duyuruları anında almak için tarayıcı izni verin.', showIosSteps: false };
     }
 
     function updateSettingsUi() {
@@ -250,14 +309,18 @@
         var info = statusLabel(perm);
         var badge = root.querySelector('[data-fcm-status-badge]');
         var hint = root.querySelector('[data-fcm-status-hint]');
+        var steps = root.querySelector('[data-fcm-ios-steps]');
         var btn = root.querySelector('[data-fcm-enable]');
         if (badge) {
             badge.textContent = info.text;
             badge.dataset.tone = info.tone;
         }
         if (hint) hint.textContent = info.hint;
+        if (steps) steps.hidden = !info.showIosSteps;
         if (btn) {
-            if (!isSupported()) {
+            if (needsIosHomeScreen()) {
+                btn.hidden = true;
+            } else if (!isSupported()) {
                 btn.hidden = true;
             } else if (perm === 'granted') {
                 btn.hidden = false;
@@ -332,6 +395,23 @@
 
             bindSettingsUi();
 
+            // iPhone Safari sekmesi: izin istenemez — Ana Ekran yönergesi göster
+            if (needsIosHomeScreen()) {
+                updateSettingsUi();
+                if (shouldAutoPrompt()) {
+                    setTimeout(function () {
+                        showPrompt({
+                            title: 'iPhone’da bildirimler',
+                            body: 'Safari’de Paylaş → Ana Ekrana Ekle, sonra uygulamayı açıp Ayarlar’dan izin verin.',
+                            primaryLabel: 'Anladım',
+                            secondaryLabel: 'Kapat',
+                            onAllow: function () {}
+                        });
+                    }, 700);
+                }
+                return;
+            }
+
             if (!isSupported()) {
                 if (shouldAutoPrompt()) ackPrompt();
                 updateSettingsUi();
@@ -353,14 +433,15 @@
                 };
                 window.GkPush.refreshPushSettings = updateSettingsUi;
 
-                if (Notification.permission === 'granted') {
+                var perm = permission();
+                if (perm === 'granted') {
                     if (shouldAutoPrompt()) ackPrompt();
                     getToken(cfg).then(saveToken).catch(function () {});
                     updateSettingsUi();
                     return;
                 }
 
-                if (Notification.permission === 'denied') {
+                if (perm === 'denied') {
                     if (shouldAutoPrompt()) ackPrompt();
                     updateSettingsUi();
                     return;
@@ -373,13 +454,15 @@
                 }
 
                 setTimeout(function () {
-                    if (Notification.permission !== 'default') {
+                    if (permission() !== 'default') {
                         ackPrompt();
                         updateSettingsUi();
                         return;
                     }
-                    showPrompt(function () {
-                        window.GkPush.enableWeb().then(updateSettingsUi);
+                    showPrompt({
+                        onAllow: function () {
+                            window.GkPush.enableWeb().then(updateSettingsUi);
+                        }
                     });
                     updateSettingsUi();
                 }, 700);

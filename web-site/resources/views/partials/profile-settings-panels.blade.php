@@ -441,6 +441,12 @@
                 <span class="profile-settings-push-badge" data-fcm-status-badge data-tone="warn">Kontrol ediliyor…</span>
             </div>
             <p class="profile-settings-push-hint" data-fcm-status-hint>Tarayıcı bildirim izni kontrol ediliyor.</p>
+            <ol class="profile-settings-push-steps" data-fcm-ios-steps hidden>
+                <li>Safari’de alttaki <strong>Paylaş</strong> (□↑) düğmesine dokunun</li>
+                <li><strong>Ana Ekrana Ekle</strong> seçeneğine basın</li>
+                <li>Ana ekrandaki <strong>Gönül Köprüsü</strong> ikonundan uygulamayı açın</li>
+                <li>Giriş yapıp burada tekrar <strong>İzin ver</strong>e dokunun</li>
+            </ol>
             <button type="button" class="btn btn-primary btn-full" data-fcm-enable>İzin ver</button>
         </div>
     </div>

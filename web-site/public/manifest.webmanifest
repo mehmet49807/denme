@@ -1,0 +1,32 @@
+{
+  "name": "Gönül Köprüsü",
+  "short_name": "Gönül Köprüsü",
+  "description": "Gönül Köprüsü — tanışma ve sohbet",
+  "start_url": "/feed",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F9F6FF",
+  "theme_color": "#7C3AED",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "/images/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/logo-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/logo-320.png",
+      "sizes": "320x320",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

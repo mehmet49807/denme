@@ -40,6 +40,11 @@
         "file": true
       },
       {
+        "local": "web-site/public/manifest.webmanifest",
+        "remote": "manifest.webmanifest",
+        "file": true
+      },
+      {
         "local": "web-site/robots.txt",
         "remote": "robots.txt",
         "file": true
