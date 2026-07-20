@@ -1,0 +1,142 @@
+name: Laravel Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Güncelleme hedefi
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - web
+          - admin
+      mode:
+        description: Güncelleme modu
+        required: true
+        default: target
+        type: choice
+        options:
+          - target
+          - patch
+
+concurrency:
+  group: laravel-update-gonulkoprusu
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, xml, ctype, json, openssl, tokenizer, fileinfo, curl, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Prepare build
+        run: |
+          rm -rf server/build
+          mkdir -p server/build
+          cp server/composer.json server/build/composer.json
+          if [ -f server/composer.lock ]; then
+            cp server/composer.lock server/build/composer.lock
+          fi
+
+      - name: Composer update (Laravel)
+        working-directory: server/build
+        env:
+          MODE: ${{ github.event.inputs.mode }}
+        run: |
+          set -euo pipefail
+          if [ "$MODE" = "patch" ]; then
+            CONSTRAINT=$(php -r '
+              $lock=@json_decode(@file_get_contents("composer.lock"), true) ?: [];
+              foreach (($lock["packages"] ?? []) as $p) {
+                if (($p["name"] ?? "") === "laravel/framework") {
+                  $v=ltrim($p["version"] ?? "11.0.0", "v");
+                  echo "^".explode(".", $v)[0].".0";
+                  exit;
+                }
+              }
+              echo "^11.0";
+            ')
+          else
+            CONSTRAINT='^12.0'
+          fi
+          echo "Using constraint: $CONSTRAINT"
+          CONSTRAINT="$CONSTRAINT" php -r '
+            $c = getenv("CONSTRAINT") ?: "^12.0";
+            $j = json_decode(file_get_contents("composer.json"), true);
+            $j["require"]["laravel/framework"] = $c;
+            file_put_contents("composer.json", json_encode($j, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)."\n");
+          '
+          composer update laravel/framework --with-all-dependencies --no-interaction --no-progress --prefer-dist
+          php -r '
+            $lock=json_decode(file_get_contents("composer.lock"), true);
+            foreach (($lock["packages"] ?? []) as $p) {
+              if (($p["name"] ?? "") === "laravel/framework") {
+                echo "INSTALLED ".$p["version"].PHP_EOL;
+                exit;
+              }
+            }
+            fwrite(STDERR, "laravel/framework not in lock\n");
+            exit(1);
+          '
+
+      - name: Sync lock back to server/
+        run: |
+          cp server/build/composer.json server/composer.json
+          cp server/build/composer.lock server/composer.lock
+          grep -o "VERSION = '[^']*'" server/build/vendor/laravel/framework/src/Illuminate/Foundation/Application.php | head -1
+
+      - name: FTP upload vendor (web)
+        if: github.event.inputs.target == 'all' || github.event.inputs.target == 'web'
+        env:
+          FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
+          FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
+          FTP_PARALLEL: "8"
+          LARAVEL_BUILD_DIR: ${{ github.workspace }}/server/build
+        run: python3 scripts/deploy/ftp_vendor_sync.py web
+
+      - name: FTP upload vendor (admin)
+        if: github.event.inputs.target == 'all' || github.event.inputs.target == 'admin'
+        env:
+          FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
+          FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
+          FTP_PARALLEL: "8"
+          LARAVEL_BUILD_DIR: ${{ github.workspace }}/server/build
+        run: python3 scripts/deploy/ftp_vendor_sync.py admin
+
+      - name: Clear remote caches
+        env:
+          SETUP_CACHE_KEY: ${{ secrets.SETUP_CACHE_KEY }}
+        run: |
+          KEY="${SETUP_CACHE_KEY:-gk-cpanel-setup-2026}"
+          curl -fsS "https://gonulkoprusu.com/setup/clear-cache?key=${KEY}" | head -c 200 || true
+          echo
+          curl -fsS "https://admin.gonulkoprusu.com/setup/cpanel?key=${KEY}" | head -c 200 || true
+          echo
+          echo "WEB:"; curl -fsS "https://gonulkoprusu.com/setup/laravel-update?key=gk-laravel-update-2026" || true
+          echo
+          echo "ADMIN:"; curl -fsS "https://admin.gonulkoprusu.com/setup/laravel-update?key=gk-laravel-update-2026" || true
+          echo
+
+      - name: Commit updated lock
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add server/composer.json server/composer.lock
+          if git diff --staged --quiet; then
+            echo "No lock changes to commit"
+          else
+            git commit -m "chore: sync Laravel composer.lock after framework update"
+            git push origin HEAD:${{ github.ref_name }}
+          fi

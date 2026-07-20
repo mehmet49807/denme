@@ -9,6 +9,10 @@
 **/composer.phar
 composer.phar
 
+# Laravel update build artifacts
+server/build/
+server/vendor/
+
 /vendor/
 **/vendor/
 /node_modules/

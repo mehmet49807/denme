@@ -292,6 +292,52 @@ class DeployGithubService
     /**
      * @return array{ok: bool, message: string, url?: string}
      */
+    public function triggerLaravelUpdate(string $target = 'all', string $mode = 'target'): array
+    {
+        if (! in_array($target, ['all', 'web', 'admin'], true)) {
+            $target = 'all';
+        }
+        if (! in_array($mode, ['target', 'patch'], true)) {
+            $mode = 'target';
+        }
+
+        if (! $this->hasGithubToken()) {
+            return [
+                'ok' => false,
+                'message' => 'Laravel güncellemesi için DEPLOY_GITHUB_TOKEN (repo + actions:write) tanımlayın. Alternatif: GitHub → Actions → Laravel Update → Run workflow.',
+                'url' => (string) config('deploy.laravel_update_actions_url'),
+            ];
+        }
+
+        $workflow = (string) config('deploy.laravel_update_workflow', 'laravel-update.yml');
+        $branch = (string) config('deploy.branch', 'master');
+
+        $response = $this->githubApi('POST', '/actions/workflows/'.$workflow.'/dispatches', [], [
+            'ref' => $branch,
+            'inputs' => [
+                'target' => $target,
+                'mode' => $mode,
+            ],
+        ]);
+
+        if ($response['status'] === 204 || $response['ok']) {
+            return [
+                'ok' => true,
+                'message' => "Laravel Update workflow tetiklendi ({$target} · {$mode}). Vendor FTP ile yüklenecek.",
+                'url' => (string) config('deploy.laravel_update_actions_url'),
+            ];
+        }
+
+        return [
+            'ok' => false,
+            'message' => 'Laravel Update tetiklenemedi: HTTP '.$response['status'].' · '.substr((string) $response['body'], 0, 180),
+            'url' => (string) config('deploy.laravel_update_actions_url'),
+        ];
+    }
+
+    /**
+     * @return array{ok: bool, message: string, url?: string}
+     */
     public function triggerDeploy(string $target = 'all', string $syncMode = 'delta'): array
     {
         if (! in_array($target, ['all', 'web', 'admin'], true)) {

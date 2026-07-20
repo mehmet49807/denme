@@ -99,8 +99,17 @@
     <h3 class="admin-panel-title">Laravel güncelle</h3>
     <p class="admin-ops-meta">
         Hedef: <strong>{{ $local['target_constraint'] ?? '^12.0' }}</strong>
-        (PHP 8.2 ile Laravel 12 desteklenir; Laravel 13 için PHP 8.3+ gerekir).
-        İşlem 1–5 dakika sürebilir — sayfayı kapatmayın.
+        (PHP 8.2 → Laravel 12; Laravel 13 için PHP 8.3+ gerekir).
+        @if(empty($shellExec))
+            Sunucuda <code>shell_exec</code> kapalı — güncelleme <strong>GitHub Actions</strong> ile Composer + FTP olarak çalışır
+            @if(empty($githubTokenReady))
+                (token yoksa Actions sayfasından manuel Run workflow).
+            @else
+                (Deploy token ile buradan tetiklenir).
+            @endif
+        @else
+            İşlem 1–5 dakika sürebilir — sayfayı kapatmayın.
+        @endif
     </p>
 
     <form method="POST" action="{{ route('admin.updates.run') }}" class="admin-inline-form" style="display:flex;flex-wrap:wrap;gap:.75rem;align-items:end;margin-top:1rem" onsubmit="return confirm('Laravel güncellemesi başlatılsın mı?');">
@@ -121,6 +130,9 @@
             </select>
         </label>
         <button type="submit" class="btn btn-primary">Güncellemeyi başlat</button>
+        @if(!empty($laravelUpdateActionsUrl))
+            <a href="{{ $laravelUpdateActionsUrl }}" target="_blank" rel="noopener" class="btn btn-outline">Actions</a>
+        @endif
     </form>
 </div>
 

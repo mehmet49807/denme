@@ -9,6 +9,11 @@ return [
     'pulls_url' => env('DEPLOY_GITHUB_PULLS_URL', 'https://github.com/mehmet49807/denme/pulls'),
     'repo_slug' => env('DEPLOY_GITHUB_REPO_SLUG', 'mehmet49807/denme'),
     'workflow_file' => env('DEPLOY_GITHUB_WORKFLOW', 'deploy.yml'),
+    'laravel_update_workflow' => env('DEPLOY_LARAVEL_UPDATE_WORKFLOW', 'laravel-update.yml'),
+    'laravel_update_actions_url' => env(
+        'DEPLOY_LARAVEL_UPDATE_ACTIONS_URL',
+        'https://github.com/mehmet49807/denme/actions/workflows/laravel-update.yml'
+    ),
     'github_token' => env('DEPLOY_GITHUB_TOKEN', env('GITHUB_TOKEN', '')),
 
     'web_url' => env('DEPLOY_WEB_URL', 'https://gonulkoprusu.com'),
