@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import time
 import urllib.request
 from io import BytesIO
@@ -24,33 +23,6 @@ URLS = {
     "admin": "https://admin.gonulkoprusu.com",
 }
 
-HANDLER_BLOCK = "\n".join(
-    [
-        "",
-        "# CloudLinux alt-php 8.3 - Laravel 13",
-        "# php -- BEGIN cPanel-generated handler",
-        "<IfModule mime_module>",
-        "  AddHandler application/x-httpd-alt-php83___lsphp .php .php8 .phtml",
-        "</IfModule>",
-        "# php -- END cPanel-generated handler",
-        "",
-    ]
-)
-
-TEMP_ENABLE_BLOCK = "\n".join(
-    [
-        "",
-        "# TEMP php83-enable handler",
-        '<Files "php83-enable.php">',
-        "  <IfModule mime_module>",
-        "    SetHandler application/x-httpd-alt-php83___lsphp",
-        "  </IfModule>",
-        "</Files>",
-        "# END php83-enable",
-        "",
-    ]
-)
-
 
 def ftp_connect(target: str):
     import ftplib
@@ -65,7 +37,7 @@ def ftp_connect(target: str):
     return ftp
 
 
-def fetch(url: str, retries: int = 8) -> str:
+def fetch(url: str, retries: int = 10) -> str:
     last = ""
     for i in range(retries):
         try:
@@ -87,34 +59,6 @@ def fetch(url: str, retries: int = 8) -> str:
     return last
 
 
-def strip_handlers(text: str) -> str:
-    text = re.sub(r"\n?# TEMP php83-enable handler.*?# END php83-enable\n?", "\n", text, flags=re.S)
-    text = re.sub(r"\n?# TEMP probe83 handler.*?# END probe83\n?", "\n", text, flags=re.S)
-    text = re.sub(
-        r"\n?# CloudLinux alt-php 8\.3.*?# php -- END cPanel-generated handler\n?",
-        "\n",
-        text,
-        flags=re.S,
-    )
-    text = re.sub(
-        r"\n?# php -- BEGIN cPanel-generated handler.*?# php -- END cPanel-generated handler\n?",
-        "\n",
-        text,
-        flags=re.S,
-    )
-    return text
-
-
-def with_sitewide(raw: bytes) -> bytes:
-    text = strip_handlers(raw.decode("utf-8", "replace"))
-    return (text.rstrip() + HANDLER_BLOCK).encode("utf-8")
-
-
-def with_temp_enable(raw: bytes) -> bytes:
-    text = strip_handlers(raw.decode("utf-8", "replace"))
-    return (text.rstrip() + TEMP_ENABLE_BLOCK).encode("utf-8")
-
-
 def put(ftp, name: str, data: bytes) -> None:
     ftp.storbinary(f"STOR {name}", BytesIO(data))
     print("OK", name, len(data))
@@ -129,69 +73,66 @@ def extensions_ok(body: str) -> bool:
     )
 
 
-def main() -> int:
-    # 1) Upload helpers + temporary PHP 8.3 handler for enable/probe files
-    temp_block = "\n".join(
-        [
-            "",
-            "# TEMP php83-enable handler",
-            '<FilesMatch "^(php83-enable|php-version)\\.php$">',
-            "  <IfModule mime_module>",
-            "    SetHandler application/x-httpd-alt-php83___lsphp",
-            "  </IfModule>",
-            "</FilesMatch>",
-            "# END php83-enable",
-            "",
-        ]
+def clean_htaccess(raw: bytes) -> bytes:
+    # Emergency restore without PHP 8.3 handler
+    text = raw.decode("utf-8", "replace")
+    # strip handler block if present for restore
+    import re
+
+    text = re.sub(
+        r"\n?# CloudLinux alt-php 8\.3.*?# php -- END cPanel-generated handler\n?",
+        "\n",
+        text,
+        flags=re.S,
     )
+    return text.encode("utf-8")
 
-    def with_temp(raw: bytes) -> bytes:
-        text = strip_handlers(raw.decode("utf-8", "replace"))
-        return (text.rstrip() + "\n" + temp_block).encode("utf-8")
 
-    ftp = ftp_connect("web")
-    try:
-        put(ftp, "php83-enable.php", enable_php)
-        put(ftp, "php-version.php", probe_php)
-        put(ftp, ".htaccess", with_temp(BASES["web"]))
-    finally:
-        ftp.quit()
-
-    time.sleep(3)
-    pre = fetch("https://gonulkoprusu.com/php-version.php")
-    print("==== PRECHECK ====")
-    print(pre)
-
-    if not extensions_ok(pre):
-        fix = fetch("https://gonulkoprusu.com/php83-enable.php?key=gk-laravel-update-2026&action=fix")
-        print("==== FIX ====")
-        print(fix[:4000])
-        if "write_alt_php=ok" not in fix and "mbstring.ini" not in fix:
-            print("ENABLE_FIX_FAILED")
-            return 1
-        time.sleep(8)
-        pre = fetch("https://gonulkoprusu.com/php-version.php")
-        print("==== POSTFIX ====")
-        print(pre)
-        if not extensions_ok(pre):
-            print("EXTENSIONS_STILL_MISSING_AFTER_FIX")
-            return 1
-    else:
-        print("EXTENSIONS_ALREADY_OK")
-
-    # 2) Switch both sites to PHP 8.3 site-wide
+def main() -> int:
+    # Repo htaccess already includes alt-php83 handler (survives Deploy).
     for target in ("web", "admin"):
         ftp = ftp_connect(target)
         try:
             put(ftp, "php-version.php", probe_php)
             put(ftp, "php83-enable.php", enable_php)
-            put(ftp, ".htaccess", with_sitewide(BASES[target]))
+            put(ftp, ".htaccess", BASES[target])
         finally:
             ftp.quit()
 
+    time.sleep(4)
+    body = fetch("https://gonulkoprusu.com/php-version.php")
+    print("==== PRECHECK WEB ====")
+    print(body)
+
+    if "PHP_VERSION=8.3" in body and not extensions_ok(body):
+        print("==== FIX CONF (php83) ====")
+        fix = fetch("https://gonulkoprusu.com/php83-enable.php?key=gk-laravel-update-2026&action=fix")
+        print(fix[:4000])
+        if "write_alt_php=ok" not in fix and "mbstring.ini" not in fix:
+            print("ENABLE_FIX_FAILED")
+            # restore clean to keep site up on 8.2
+            for t in ("web", "admin"):
+                ftp = ftp_connect(t)
+                try:
+                    put(ftp, ".htaccess", clean_htaccess(BASES[t]))
+                finally:
+                    ftp.quit()
+            return 1
+        time.sleep(8)
+        body = fetch("https://gonulkoprusu.com/php-version.php")
+        print("==== POSTFIX ====")
+        print(body)
+
+    # Re-upload htaccess in case Deploy raced
+    for target in ("web", "admin"):
+        ftp = ftp_connect(target)
+        try:
+            put(ftp, ".htaccess", BASES[target])
+            put(ftp, "php-version.php", probe_php)
+        finally:
+            ftp.quit()
     time.sleep(3)
 
-    # 3) Verify site-wide
     for target in ("web", "admin"):
         body = fetch(f"{URLS[target]}/php-version.php")
         print(f"==== {target} ====")
@@ -201,13 +142,31 @@ def main() -> int:
             for t in ("web", "admin"):
                 ftp = ftp_connect(t)
                 try:
-                    put(ftp, ".htaccess", BASES[t])
+                    put(ftp, ".htaccess", clean_htaccess(BASES[t]))
                 finally:
                     ftp.quit()
             return 2
 
+    # Soft check homepage still up
+    for target, path in (("web", "/"), ("admin", "/login")):
+        try:
+            code = urllib.request.urlopen(URLS[target] + path, timeout=30).getcode()
+        except Exception as e:
+            print(target, "HTTP fail", e)
+            code = 0
+        print(target, "http", code)
+        if code not in (200, 301, 302):
+            for t in ("web", "admin"):
+                ftp = ftp_connect(t)
+                try:
+                    put(ftp, ".htaccess", clean_htaccess(BASES[t]))
+                finally:
+                    ftp.quit()
+            return 3
+
     print("PHP_8_3_EXTENSIONS_OK")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())
