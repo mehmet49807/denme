@@ -212,6 +212,20 @@ body.admin-body.admin-theme-lumiere {
     background: rgba(139, 124, 246, 0.06);
 }
 
+.admin-theme-lumiere .admin-nav-group__icon {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+}
+
+.admin-theme-lumiere .admin-nav-group--gold { --group-icon-bg: rgba(251, 191, 36, 0.2); --group-icon-color: #B45309; }
+.admin-theme-lumiere .admin-nav-group--coral { --group-icon-bg: rgba(249, 115, 22, 0.18); --group-icon-color: #C2410C; }
+.admin-theme-lumiere .admin-nav-group--indigo { --group-icon-bg: rgba(99, 102, 241, 0.16); --group-icon-color: #4338CA; }
+.admin-theme-lumiere .admin-nav-group--violet { --group-icon-bg: rgba(139, 92, 246, 0.16); --group-icon-color: #6D28D9; }
+.admin-theme-lumiere .admin-nav-group--lime,
+.admin-theme-lumiere .admin-nav-group--cyan { --group-icon-bg: rgba(6, 182, 212, 0.16); --group-icon-color: #0E7490; }
+.admin-theme-lumiere .admin-nav-group--emerald { --group-icon-bg: rgba(16, 185, 129, 0.16); --group-icon-color: #047857; }
+.admin-theme-lumiere .admin-nav-group--amber { --group-icon-bg: rgba(251, 191, 36, 0.2); --group-icon-color: #B45309; }
+.admin-theme-lumiere .admin-nav-group--rose { --group-icon-bg: rgba(236, 72, 153, 0.16); --group-icon-color: #BE185D; }
+
 .admin-theme-lumiere .admin-nav-group__count {
     color: var(--lum-text-muted);
     background: rgba(139, 124, 246, 0.1);

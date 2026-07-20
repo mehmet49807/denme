@@ -3,6 +3,8 @@
         [
             'id' => 'overview',
             'label' => 'Özet',
+            'icon' => 'grid',
+            'theme' => 'gold',
             'items' => [
                 ['route' => 'admin.dashboard', 'label' => 'Dashboard', 'icon' => 'grid', 'theme' => 'gold'],
             ],
@@ -10,6 +12,8 @@
         [
             'id' => 'moderation',
             'label' => 'Denetim',
+            'icon' => 'shield',
+            'theme' => 'coral',
             'items' => [
                 ['route' => 'admin.moderation', 'label' => 'Denetim Kuyruğu', 'icon' => 'shield', 'theme' => 'coral'],
                 ['route' => 'admin.profile-approvals', 'label' => 'Profil Onay', 'icon' => 'shield', 'theme' => 'emerald'],
@@ -25,6 +29,8 @@
         [
             'id' => 'members',
             'label' => 'Üyeler',
+            'icon' => 'users',
+            'theme' => 'indigo',
             'items' => [
                 ['route' => 'admin.users', 'label' => 'Kullanıcılar', 'icon' => 'users', 'theme' => 'indigo'],
                 ['route' => 'admin.premium', 'label' => 'Premium', 'icon' => 'crown', 'theme' => 'amber'],
@@ -34,6 +40,8 @@
         [
             'id' => 'growth',
             'label' => 'Büyüme',
+            'icon' => 'trend',
+            'theme' => 'violet',
             'items' => [
                 ['route' => 'admin.packages', 'label' => 'Paketler', 'icon' => 'gift', 'theme' => 'gold'],
                 ['route' => 'admin.app-links', 'label' => 'Uygulama', 'icon' => 'external', 'theme' => 'sky'],
@@ -46,6 +54,8 @@
         [
             'id' => 'support',
             'label' => 'Destek',
+            'icon' => 'headset',
+            'theme' => 'cyan',
             'items' => [
                 ['route' => 'admin.support', 'label' => '7/24 Destek', 'icon' => 'headset', 'theme' => 'lime'],
                 ['route' => 'admin.emails', 'label' => 'E-posta', 'icon' => 'mail', 'theme' => 'cyan'],
@@ -54,6 +64,8 @@
         [
             'id' => 'system',
             'label' => 'Sistem',
+            'icon' => 'settings',
+            'theme' => 'emerald',
             'items' => [
                 ['route' => 'admin.audit', 'label' => 'Denetim Kayıtları', 'icon' => 'search', 'theme' => 'indigo'],
                 ['route' => 'admin.system-health', 'label' => 'Sistem Sağlığı', 'icon' => 'chart', 'theme' => 'emerald'],
@@ -83,8 +95,11 @@
             $isOpen = $group['id'] === $activeGroupId;
             $panelId = 'admin-nav-'.$group['id'];
         @endphp
-        <details class="admin-nav-group" data-group="{{ $group['id'] }}" @if($isOpen) open @endif>
+        <details class="admin-nav-group admin-nav-group--{{ $group['theme'] ?? 'gold' }}" data-group="{{ $group['id'] }}" @if($isOpen) open @endif>
             <summary class="admin-nav-group__summary">
+                <span class="admin-nav-group__icon" aria-hidden="true">
+                    @include('partials.admin-icon', ['icon' => $group['icon'] ?? 'grid'])
+                </span>
                 <span class="admin-nav-group__label">{{ $group['label'] }}</span>
                 <span class="admin-nav-group__count" aria-hidden="true">{{ count($group['items']) }}</span>
                 <span class="admin-nav-group__chevron" aria-hidden="true"></span>

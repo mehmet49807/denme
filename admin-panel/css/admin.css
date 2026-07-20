@@ -150,7 +150,7 @@ a:hover { color: var(--magenta); }
     list-style: none;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.55rem;
     padding: 0.65rem 0.8rem;
     cursor: pointer;
     user-select: none;
@@ -167,6 +167,36 @@ a:hover { color: var(--magenta); }
     color: #fff;
     background: rgba(255, 255, 255, 0.04);
 }
+
+.admin-nav-group__icon {
+    --group-icon-bg: rgba(255, 255, 255, 0.1);
+    --group-icon-color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.65rem;
+    height: 1.65rem;
+    border-radius: 9px;
+    background: var(--group-icon-bg);
+    color: var(--group-icon-color);
+    flex-shrink: 0;
+}
+
+.admin-nav-group__icon svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    display: block;
+}
+
+.admin-nav-group--gold { --group-icon-bg: rgba(251, 191, 36, 0.22); --group-icon-color: #FBBF24; }
+.admin-nav-group--coral { --group-icon-bg: rgba(249, 115, 22, 0.22); --group-icon-color: #FB923C; }
+.admin-nav-group--indigo { --group-icon-bg: rgba(99, 102, 241, 0.22); --group-icon-color: #A5B4FC; }
+.admin-nav-group--violet { --group-icon-bg: rgba(139, 92, 246, 0.22); --group-icon-color: #C4B5FD; }
+.admin-nav-group--lime,
+.admin-nav-group--cyan { --group-icon-bg: rgba(6, 182, 212, 0.22); --group-icon-color: #67E8F9; }
+.admin-nav-group--emerald { --group-icon-bg: rgba(16, 185, 129, 0.22); --group-icon-color: #6EE7B7; }
+.admin-nav-group--amber { --group-icon-bg: rgba(251, 191, 36, 0.22); --group-icon-color: #FBBF24; }
+.admin-nav-group--rose { --group-icon-bg: rgba(236, 72, 153, 0.22); --group-icon-color: #F9A8D4; }
 
 .admin-nav-group__label { flex: 1; }
 
