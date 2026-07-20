@@ -644,10 +644,20 @@ a.admin-sidebar-user.is-active {
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1.1;
+    color: #1A1523;
     background: var(--gradient-sunset);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+    .stat-value,
+    .admin-stat-value {
+        background: none;
+        color: #5B21B6;
+        -webkit-text-fill-color: #5B21B6;
+    }
 }
 
 .stat-value small,
@@ -1085,7 +1095,10 @@ a.admin-sidebar-user.is-active {
 }
 
 .admin-stat-grid--compact .admin-stat-card { padding: 0.9rem 1rem; }
-.admin-stat-grid--compact .admin-stat-value { font-size: 1.35rem; }
+.admin-stat-grid--compact .admin-stat-value {
+    font-size: 1.35rem;
+    color: #1A1523;
+}
 
 .admin-users-filter {
     display: flex;
@@ -1111,13 +1124,37 @@ a.admin-sidebar-user.is-active {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted);
+    color: #3F3849;
+}
+
+.admin-users-filter-field input,
+.admin-users-filter-field select,
+.admin-users-filter-select {
+    min-height: 2.65rem;
+    color: #1A1523;
+    background: #fff;
+    border: 1.5px solid rgba(124, 58, 237, 0.22);
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.admin-users-filter-field select option {
+    color: #1A1523;
+    background: #fff;
 }
 
 .admin-users-filter-actions {
     display: flex;
     gap: 0.45rem;
     flex-wrap: wrap;
+    align-items: center;
+}
+
+.admin-users-filter-submit {
+    min-height: 2.65rem;
+    min-width: 5.5rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
 }
 
 .admin-user-cell {
@@ -1160,7 +1197,8 @@ a.admin-sidebar-user.is-active {
     display: block;
     margin-top: 0.1rem;
     font-size: 0.72rem;
-    color: var(--text-light);
+    color: #3F3849;
+    font-weight: 600;
 }
 
 .admin-table-empty {
@@ -1308,27 +1346,29 @@ a.admin-sidebar-user.is-active {
 .admin-users-mobile { display: none; }
 
 .admin-user-card {
-    border: 1px solid rgba(124, 58, 237, 0.14);
+    border: 1px solid rgba(124, 58, 237, 0.16);
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.92);
-    margin-bottom: 0.75rem;
-    box-shadow: 0 4px 18px rgba(124, 58, 237, 0.06);
+    background: #fff;
+    margin-bottom: 0.85rem;
+    box-shadow: 0 4px 18px rgba(124, 58, 237, 0.08);
     overflow: hidden;
+    color: #1A1523;
 }
 
+.admin-user-card--open,
 .admin-user-card[open] {
     border-color: rgba(124, 58, 237, 0.28);
-    box-shadow: 0 6px 22px rgba(124, 58, 237, 0.1);
+    box-shadow: 0 6px 22px rgba(124, 58, 237, 0.12);
 }
 
 .admin-user-card-summary {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
-    padding: 0.85rem 0.9rem;
-    cursor: pointer;
+    gap: 0.7rem;
+    padding: 0.95rem 1rem;
     list-style: none;
     -webkit-tap-highlight-color: transparent;
+    background: linear-gradient(180deg, #faf8ff 0%, #fff 100%);
 }
 
 .admin-user-card-summary::-webkit-details-marker {
@@ -1336,18 +1376,7 @@ a.admin-sidebar-user.is-active {
 }
 
 .admin-user-card-summary::after {
-    content: "›";
-    margin-left: auto;
-    flex-shrink: 0;
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--text-light);
-    transform: rotate(90deg);
-    transition: transform 0.2s ease;
-}
-
-.admin-user-card[open] .admin-user-card-summary::after {
-    transform: rotate(-90deg);
+    display: none;
 }
 
 .admin-user-card-summary-check {
@@ -1379,8 +1408,9 @@ a.admin-sidebar-user.is-active {
 
 .admin-user-card-summary-main .admin-user-meta {
     display: block;
-    font-size: 0.72rem;
-    color: var(--text-muted);
+    font-size: 0.74rem;
+    color: #3F3849;
+    font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1388,9 +1418,10 @@ a.admin-sidebar-user.is-active {
 
 .admin-user-card-summary-email {
     display: block;
-    font-size: 0.72rem;
-    color: var(--violet);
-    font-weight: 600;
+    margin-top: 0.12rem;
+    font-size: 0.74rem;
+    color: #5b21b6;
+    font-weight: 700;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1427,18 +1458,19 @@ a.admin-sidebar-user.is-active {
 
 .admin-user-card-fact-label {
     display: block;
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--text-light);
-    margin-bottom: 0.15rem;
+    color: #5C5470;
+    margin-bottom: 0.2rem;
 }
 
 .admin-user-card-fact-value {
     display: block;
-    font-size: 0.8rem;
-    color: var(--text);
+    font-size: 0.84rem;
+    color: #1A1523;
+    font-weight: 600;
     line-height: 1.35;
     word-break: break-word;
 }
@@ -1446,7 +1478,7 @@ a.admin-sidebar-user.is-active {
 .admin-user-card-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.45rem;
+    gap: 0.5rem;
 }
 
 .admin-user-card-form {
@@ -1461,14 +1493,16 @@ a.admin-sidebar-user.is-active {
 .admin-user-card-actions .btn,
 .admin-user-card-actions .admin-user-card-btn {
     width: 100%;
-    min-height: 2.35rem;
+    min-height: 2.7rem;
     justify-content: center;
     margin: 0;
     background: #fff;
-    color: var(--text);
-    border: 1px solid var(--border);
+    color: #1A1523;
+    border: 1.5px solid rgba(124, 58, 237, 0.2);
     box-shadow: none;
-    border-radius: 10px;
+    border-radius: 12px;
+    font-size: 0.84rem;
+    font-weight: 800;
 }
 
 .admin-user-card-btn--danger {
@@ -1506,9 +1540,9 @@ a.admin-sidebar-user.is-active {
     background: rgba(255, 255, 255, 0.65);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
     .admin-users-desktop { display: none !important; }
-    .admin-users-mobile { display: block; }
+    .admin-users-mobile { display: flex !important; flex-direction: column; gap: 0; }
 
     .admin-users-bulk {
         position: sticky;
@@ -1519,6 +1553,52 @@ a.admin-sidebar-user.is-active {
 
     .admin-stat-grid--compact {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
+    }
+
+    .admin-stat-grid--compact .admin-stat-card {
+        padding: 0.85rem 0.9rem;
+        border-radius: 14px;
+        background: #fff;
+        border: 1px solid rgba(124, 58, 237, 0.14);
+        box-shadow: 0 4px 14px rgba(124, 58, 237, 0.07);
+    }
+
+    .admin-stat-grid--compact .admin-stat-value {
+        font-size: 1.45rem;
+        color: #1A1523;
+        -webkit-text-fill-color: #1A1523;
+        background: none;
+    }
+
+    .admin-stat-grid--compact .admin-stat-label {
+        color: #3F3849;
+        font-size: 0.72rem;
+        text-transform: none;
+        letter-spacing: 0.01em;
+    }
+
+    .admin-users-filter {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.7rem;
+        align-items: end;
+    }
+
+    .admin-users-filter-field--grow,
+    .admin-users-filter-actions {
+        grid-column: 1 / -1;
+    }
+
+    .admin-users-filter-field,
+    .admin-users-filter-field--grow {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .admin-users-filter-actions .btn {
+        flex: 1 1 auto;
+        min-height: 2.7rem;
     }
 
     .admin-dialog {
@@ -1537,6 +1617,27 @@ a.admin-sidebar-user.is-active {
         background: #fff;
         border-top: 1px solid var(--border);
         padding: 0.85rem 1rem;
+    }
+}
+
+/* Desktop table: yatay kaydırma + okunur meta */
+@media (min-width: 1101px) {
+    .admin-users-desktop.admin-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .admin-table--users {
+        min-width: 980px;
+    }
+
+    .admin-table--users td {
+        color: #1A1523;
+    }
+
+    .admin-table--users td:nth-child(3) {
+        color: #5b21b6;
+        font-weight: 600;
     }
 }
 

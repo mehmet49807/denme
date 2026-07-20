@@ -586,11 +586,39 @@ body.admin-body.admin-theme-lumiere {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    color: #1A1523;
 }
 
 .admin-theme-lumiere .admin-stat-grid .admin-stat-card .admin-stat-label {
     font-weight: 800;
     opacity: 0.92;
+}
+
+@media (max-width: 1100px) {
+    .admin-theme-lumiere .admin-stat-grid--compact .admin-stat-card .admin-stat-value,
+    .admin-theme-lumiere.admin-page--users .admin-stat-grid--compact .admin-stat-value {
+        background: none !important;
+        -webkit-text-fill-color: #1A1523 !important;
+        color: #1A1523 !important;
+        -webkit-background-clip: border-box;
+        background-clip: border-box;
+    }
+
+    .admin-theme-lumiere .admin-stat-grid--compact .admin-stat-card--violet .admin-stat-value { color: #5B21B6 !important; -webkit-text-fill-color: #5B21B6 !important; }
+    .admin-theme-lumiere .admin-stat-grid--compact .admin-stat-card--emerald .admin-stat-value { color: #047857 !important; -webkit-text-fill-color: #047857 !important; }
+    .admin-theme-lumiere .admin-stat-grid--compact .admin-stat-card--gold .admin-stat-value { color: #B45309 !important; -webkit-text-fill-color: #B45309 !important; }
+    .admin-theme-lumiere .admin-stat-grid--compact .admin-stat-card--indigo .admin-stat-value { color: #4338CA !important; -webkit-text-fill-color: #4338CA !important; }
+    .admin-theme-lumiere .admin-stat-grid--compact .admin-stat-card--coral .admin-stat-value { color: #BE123C !important; -webkit-text-fill-color: #BE123C !important; }
+    .admin-theme-lumiere .admin-stat-grid--compact .admin-stat-card--blue .admin-stat-value { color: #1D4ED8 !important; -webkit-text-fill-color: #1D4ED8 !important; }
+
+    .admin-theme-lumiere .admin-users-mobile .admin-user-card {
+        background: #fff;
+        border-color: rgba(99, 102, 241, 0.18);
+    }
+
+    .admin-theme-lumiere .admin-users-mobile .admin-user-card-summary-email {
+        color: #4338CA;
+    }
 }
 
 .admin-theme-lumiere .admin-stat-grid .admin-stat-card:hover {

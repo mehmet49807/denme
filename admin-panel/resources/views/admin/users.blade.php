@@ -35,8 +35,8 @@
     </div>
 </div>
 
-<div class="admin-panel admin-panel--glass">
-    <form method="GET" action="{{ route('admin.users') }}" class="admin-users-filter">
+<div class="admin-panel admin-panel--glass admin-panel--users">
+    <form method="GET" action="{{ route('admin.users') }}" class="admin-users-filter" role="search">
         <div class="admin-users-filter-field admin-users-filter-field--grow">
             <label for="user-search">Ara</label>
             <input
@@ -45,27 +45,28 @@
                 name="search"
                 value="{{ request('search') }}"
                 placeholder="Kullanıcı adı, e-posta, ad veya şehir…"
+                autocomplete="off"
             >
         </div>
         <div class="admin-users-filter-field">
             <label for="user-gender">Cinsiyet</label>
-            <select id="user-gender" name="gender">
-                <option value="">Tümü</option>
+            <select id="user-gender" name="gender" class="admin-users-filter-select">
+                <option value="" @selected(! request('gender'))>Tümü</option>
                 <option value="male" @selected(request('gender') === 'male')>Erkek</option>
                 <option value="female" @selected(request('gender') === 'female')>Kadın</option>
             </select>
         </div>
         <div class="admin-users-filter-field">
             <label for="user-status">Durum</label>
-            <select id="user-status" name="status">
-                <option value="">Tümü</option>
+            <select id="user-status" name="status" class="admin-users-filter-select">
+                <option value="" @selected(! request('status'))>Tümü</option>
                 <option value="active" @selected(request('status') === 'active')>Aktif</option>
                 <option value="banned" @selected(request('status') === 'banned')>Banlı</option>
             </select>
         </div>
         <div class="admin-users-filter-actions">
-            <button type="submit" class="btn btn-primary btn-sm">Filtrele</button>
-            @if(request()->hasAny(['search', 'gender', 'status']))
+            <button type="submit" class="btn btn-primary btn-sm admin-users-filter-submit">Ara</button>
+            @if(request()->filled('search') || request()->filled('gender') || request()->filled('status'))
                 <a href="{{ route('admin.users') }}" class="btn btn-outline btn-sm">Temizle</a>
             @endif
         </div>
@@ -184,9 +185,9 @@
             $canGrantPremium = $user->gender === 'male' && !$user->is_banned;
             $inviteCount = $referralsTableReady ? (int) ($user->referrals_made_count ?? 0) : 0;
         @endphp
-        <details class="admin-user-card">
-            <summary class="admin-user-card-summary">
-                <span class="admin-user-card-summary-check" onclick="event.stopPropagation()">
+        <article class="admin-user-card admin-user-card--open">
+            <header class="admin-user-card-summary">
+                <span class="admin-user-card-summary-check">
                     @if($canGrantPremium)
                         <input
                             type="checkbox"
@@ -199,14 +200,14 @@
                 </span>
                 <span class="admin-user-avatar admin-user-avatar--card">
                     @if($user->profile_photo_url)
-                        <img src="{{ $user->profile_photo_url }}" alt="" width="40" height="40" loading="lazy" decoding="async">
+                        <img src="{{ $user->profile_photo_url }}" alt="" width="44" height="44" loading="lazy" decoding="async">
                     @else
                         {{ strtoupper(substr($user->username, 0, 1)) }}
                     @endif
                 </span>
                 <span class="admin-user-card-summary-main">
                     <strong class="admin-user-name">{{ $user->username }}</strong>
-                    <small class="admin-user-meta">{{ $user->first_name }} {{ $user->last_name }} · #{{ $user->id }}</small>
+                    <small class="admin-user-meta">{{ trim(($user->first_name ?? '').' '.($user->last_name ?? '')) ?: '—' }} · #{{ $user->id }}</small>
                     <span class="admin-user-card-summary-email">{{ $user->email }}</span>
                 </span>
                 <span class="admin-user-card-summary-status">
@@ -220,7 +221,7 @@
                         <span class="badge badge-resolved">Aktif</span>
                     @endif
                 </span>
-            </summary>
+            </header>
 
             <div class="admin-user-card-body">
                 <div class="admin-user-card-facts">
@@ -259,7 +260,7 @@
                     'layout' => 'buttons',
                 ])
             </div>
-        </details>
+        </article>
         @empty
         <p class="admin-users-mobile-empty">Arama kriterlerine uygun kullanıcı bulunamadı.</p>
         @endforelse
