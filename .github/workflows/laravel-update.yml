@@ -82,7 +82,9 @@ jobs:
             $j["require"]["laravel/framework"] = $c;
             file_put_contents("composer.json", json_encode($j, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)."\n");
           '
-          composer update laravel/framework --with-all-dependencies --no-interaction --no-progress --prefer-dist
+          # Build klasöründe artisan yok — post-autoload-dump scriptlerini atla
+          composer update laravel/framework --with-all-dependencies --no-interaction --no-progress --prefer-dist --no-scripts
+          composer dump-autoload --no-interaction --no-scripts
           php -r '
             $lock=json_decode(file_get_contents("composer.lock"), true);
             foreach (($lock["packages"] ?? []) as $p) {
