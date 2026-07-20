@@ -1,8 +1,8 @@
 (function () {
     'use strict';
 
-    var DISMISS_KEY = 'gk_fcm_web_dismissed_at';
-    var DISMISS_MS = 12 * 60 * 60 * 1000; // 12 saat
+    // Bir kez kapatıldıysa / izin verildiyse bir daha otomatik gösterme.
+    var DONE_KEY = 'gk_fcm_web_prompt_done';
     var PROMPT_ID = 'gkFcmWebPrompt';
     var started = false;
 
@@ -14,25 +14,22 @@
         }
     }
 
-    function isDismissed() {
+    function isDone() {
         if (forcePrompt()) return false;
         try {
-            var raw = localStorage.getItem(DISMISS_KEY);
-            if (!raw) return false;
-            var at = parseInt(raw, 10);
-            if (!at || isNaN(at)) return false;
-            return (Date.now() - at) < DISMISS_MS;
+            return localStorage.getItem(DONE_KEY) === '1';
         } catch (e) {
             return false;
         }
     }
 
-    function setDismissed() {
-        try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch (e) {}
-    }
-
-    function clearDismissed() {
-        try { localStorage.removeItem(DISMISS_KEY); } catch (e) {}
+    function markDone() {
+        try {
+            localStorage.setItem(DONE_KEY, '1');
+            // Eski anahtarları temizle
+            localStorage.removeItem('gk_fcm_web_dismissed_at');
+            localStorage.removeItem('gk_fcm_web_dismissed');
+        } catch (e) {}
     }
 
     function hasNotificationApi() {
@@ -143,20 +140,19 @@
             '.gk-fcm-prompt__actions{display:flex;gap:.45rem;flex-shrink:0;flex-wrap:wrap}' +
             '.gk-fcm-prompt__btn{border:0;border-radius:999px;padding:.6rem 1rem;font:inherit;font-size:.84rem;font-weight:700;cursor:pointer}' +
             '.gk-fcm-prompt__btn--ghost{background:rgba(124,58,237,.08);color:#5B21B6}' +
-            '.gk-fcm-prompt__btn--primary{background:linear-gradient(135deg,#7C3AED,#EC4899);color:#fff}' +
-            '.gk-fcm-prompt--warn .gk-fcm-prompt__card{border-color:rgba(220,38,38,.25)}';
+            '.gk-fcm-prompt__btn--primary{background:linear-gradient(135deg,#7C3AED,#EC4899);color:#fff}';
         document.head.appendChild(s);
     }
 
     function showPrompt(opts) {
         opts = opts || {};
         if (document.getElementById(PROMPT_ID)) return;
-        if (!opts.force && isDismissed()) return;
+        if (!opts.force && isDone()) return;
 
         injectStyles();
         var el = document.createElement('div');
         el.id = PROMPT_ID;
-        el.className = 'gk-fcm-prompt' + (opts.warn ? ' gk-fcm-prompt--warn' : '');
+        el.className = 'gk-fcm-prompt';
         el.setAttribute('role', 'dialog');
         el.setAttribute('aria-label', 'Bildirim izni');
         el.innerHTML =
@@ -166,38 +162,31 @@
             '<p>' + (opts.body || 'Yeni mesaj ve duyuruları tarayıcıdan anında alın.') + '</p>' +
             '</div>' +
             '<div class="gk-fcm-prompt__actions">' +
-            (opts.hideLater ? '' : '<button type="button" class="gk-fcm-prompt__btn gk-fcm-prompt__btn--ghost" data-fcm-later>Şimdi değil</button>') +
-            (opts.primaryLabel
-                ? '<button type="button" class="gk-fcm-prompt__btn gk-fcm-prompt__btn--primary" data-fcm-allow>' + opts.primaryLabel + '</button>'
-                : '') +
+            '<button type="button" class="gk-fcm-prompt__btn gk-fcm-prompt__btn--ghost" data-fcm-later>Şimdi değil</button>' +
+            '<button type="button" class="gk-fcm-prompt__btn gk-fcm-prompt__btn--primary" data-fcm-allow>İzin ver</button>' +
             '</div></div>';
         document.body.appendChild(el);
 
-        var later = el.querySelector('[data-fcm-later]');
-        if (later) {
-            later.addEventListener('click', function () {
-                setDismissed();
-                hidePrompt();
-            });
-        }
-        var allow = el.querySelector('[data-fcm-allow]');
-        if (allow && opts.onAllow) {
-            allow.addEventListener('click', function () {
-                hidePrompt();
-                opts.onAllow();
-            });
-        }
+        el.querySelector('[data-fcm-later]').addEventListener('click', function () {
+            markDone();
+            hidePrompt();
+        });
+        el.querySelector('[data-fcm-allow]').addEventListener('click', function () {
+            hidePrompt();
+            if (opts.onAllow) opts.onAllow();
+        });
     }
 
     function enableWeb(cfg) {
         if (!hasNotificationApi()) {
+            markDone();
             return Promise.resolve({ ok: false, reason: 'unsupported' });
         }
         return Notification.requestPermission().then(function (perm) {
+            markDone();
             if (perm !== 'granted') {
                 return { ok: false, permission: perm };
             }
-            clearDismissed();
             return getToken(cfg).then(function (token) {
                 if (!token) return { ok: false, permission: perm, reason: 'no_token' };
                 return saveToken(token).then(function (res) {
@@ -212,115 +201,50 @@
         started = true;
 
         waitForGkPush(3000).then(function (ok) {
-            if (!ok) {
-                console.warn('[GkFcm] GkPush yok — giriş gerekli olabilir');
-                return;
-            }
+            if (!ok) return;
 
-            if (!window.isSecureContext) {
-                showPrompt({
-                    force: true,
-                    warn: true,
-                    title: 'Güvenli bağlantı gerekli',
-                    body: 'Bildirimler yalnızca HTTPS üzerinde çalışır.',
-                    hideLater: false,
-                    primaryLabel: ''
-                });
-                return;
-            }
-
-            if (!hasNotificationApi() || !hasServiceWorker()) {
-                showPrompt({
-                    force: true,
-                    warn: true,
-                    title: 'Tarayıcı desteklemiyor',
-                    body: 'Bu tarayıcıda web bildirimleri kapalı. Chrome/Edge deneyin; iPhone’da “Ana Ekrana Ekle” gerekebilir.',
-                    hideLater: false,
-                    primaryLabel: 'Tamam',
-                    onAllow: function () { hidePrompt(); }
-                });
+            if (!window.isSecureContext || !hasNotificationApi() || !hasServiceWorker()) {
+                markDone();
                 return;
             }
 
             loadConfig().then(function (cfg) {
-                if (!cfg || cfg.enabled === false || !cfg.configured) {
-                    console.warn('[GkFcm] config hazır değil', cfg);
-                    return;
-                }
+                if (!cfg || cfg.enabled === false || !cfg.configured) return;
 
                 window.GkPush.enableWeb = function () {
-                    return enableWeb(cfg).then(function (res) {
-                        if (res && res.ok) {
-                            showPrompt({
-                                force: true,
-                                title: 'Bildirimler açık',
-                                body: 'Yeni mesaj geldiğinde tarayıcı bildirimi alacaksınız.',
-                                hideLater: true,
-                                primaryLabel: 'Tamam',
-                                onAllow: function () { hidePrompt(); }
-                            });
-                        } else if (res && res.permission === 'denied') {
-                            showPrompt({
-                                force: true,
-                                warn: true,
-                                title: 'Bildirim izni kapalı',
-                                body: 'Adres çubuğundaki kilit simgesinden Bildirimler → İzin ver yapın, sonra sayfayı yenileyin.',
-                                hideLater: false,
-                                primaryLabel: 'Anladım',
-                                onAllow: function () { hidePrompt(); }
-                            });
-                        }
-                        return res;
-                    }).catch(function (err) {
+                    return enableWeb(cfg).catch(function (err) {
                         console.warn('[GkFcm] enableWeb hata', err);
-                        showPrompt({
-                            force: true,
-                            warn: true,
-                            title: 'Bildirim açılamadı',
-                            body: 'Tekrar deneyin. Sorun sürerse tarayıcı bildirim iznini kontrol edin.',
-                            primaryLabel: 'Tekrar dene',
-                            onAllow: function () { window.GkPush.enableWeb(); }
-                        });
+                        markDone();
                         return { ok: false, error: String(err && err.message || err) };
                     });
                 };
 
+                // İzin zaten verilmiş → arka planda token kaydet, banner yok
                 if (Notification.permission === 'granted') {
-                    getToken(cfg).then(saveToken).catch(function (err) {
-                        console.warn('[GkFcm] token yenileme', err);
-                    });
+                    markDone();
+                    getToken(cfg).then(saveToken).catch(function () {});
                     return;
                 }
 
+                // Tarayıcıda engellenmiş → bir daha sorma
                 if (Notification.permission === 'denied') {
-                    if (forcePrompt() || !isDismissed()) {
-                        showPrompt({
-                            force: true,
-                            warn: true,
-                            title: 'Bildirim izni kapalı',
-                            body: 'Adres çubuğundaki kilit → Bildirimler → İzin ver. Sonra sayfayı yenileyin.',
-                            primaryLabel: 'Anladım',
-                            onAllow: function () { setDismissed(); hidePrompt(); }
-                        });
-                    }
+                    markDone();
                     return;
                 }
 
-                // default — soft prompt
+                // default — yalnızca daha önce kapatılmadıysa bir kez sor
+                if (isDone()) return;
+
                 setTimeout(function () {
+                    if (isDone() || Notification.permission !== 'default') return;
                     showPrompt({
                         force: forcePrompt(),
-                        title: 'Tarayıcı bildirimleri',
-                        body: 'Yeni mesaj ve duyuruları tarayıcıdan anında alın.',
-                        primaryLabel: 'İzin ver',
                         onAllow: function () {
                             window.GkPush.enableWeb();
                         }
                     });
-                }, 600);
-            }).catch(function (err) {
-                console.warn('[GkFcm] config yüklenemedi', err);
-            });
+                }, 800);
+            }).catch(function () {});
         });
     }
 
