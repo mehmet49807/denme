@@ -63,11 +63,11 @@ PROBE_BLOCK = "\n".join(
     [
         "",
         "# TEMP probe83 handler",
-        '<Files "php83-probe.php">',
+        '<FilesMatch "^(php83-probe|php83-enable)\\.php$">',
         "  <IfModule mime_module>",
         "    SetHandler application/x-httpd-alt-php83___lsphp",
         "  </IfModule>",
-        "</Files>",
+        "</FilesMatch>",
         "# END probe83",
         "",
     ]
@@ -168,16 +168,13 @@ def main() -> int:
             ftp.quit()
 
     time.sleep(2)
-    print("\n==== HEAL CONF (php 8.2) ====")
-    print(fetch(ENABLE_URLS["web"] + "&action=restore"))
-    print(fetch(ENABLE_URLS["web"] + "&action=info"))
-
-    print("\n==== BASELINE PROBE (php 8.3 handler) ====")
+    print("\n==== BASELINE PROBE (php 8.3) ====")
     for t, u in URLS.items():
         print("---", t, "---")
         print(fetch(u))
 
-    print("\n==== FIX PHP83 EXTENSIONS (via php 8.2) ====")
+    print("\n==== FIX FROM INSIDE PHP 8.3 CageFS ====")
+    # Must run under alt-php83 so writes hit the same CageFS view PHP 8.3 reads
     print(fetch(ENABLE_URLS["web"] + "&action=fix"))
 
     time.sleep(3)
@@ -188,14 +185,17 @@ def main() -> int:
         print(fetch(u))
 
     success = False
+    bodies = {}
     for t, u in URLS.items():
         body = fetch(u)
+        bodies[t] = body
         if "ext.mbstring=yes" in body and "ext.pdo=yes" in body and "PHP_VERSION=8.3" in body:
             print("SUCCESS_EXTENSIONS", t)
             success = True
 
     if not success:
-        print("FIX_FAILED")
+        print("FIX_FAILED — leaving conf as-is for diagnosis; attempting soft restore")
+        # Restore via PHP 8.3 view as well
         print(fetch(ENABLE_URLS["web"] + "&action=restore"))
         print("NO_INI_VARIANT_ENABLED_EXTENSIONS")
     return 0 if success else 2
