@@ -31,6 +31,15 @@ class AdminMiddleware
                 ->withErrors(['login' => 'Yönetici yetkisi gereklidir.']);
         }
 
+        // One-time schema widen for staff roles (enum user/admin → varchar).
+        try {
+            if (class_exists(\App\Services\AdminAuditService::class)) {
+                app(\App\Services\AdminAuditService::class)->ensureStaffRoleColumn();
+            }
+        } catch (\Throwable) {
+            //
+        }
+
         return $next($request);
     }
 }

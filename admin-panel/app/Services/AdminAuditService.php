@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\AdminAuditLog;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -56,6 +57,53 @@ class AdminAuditService
             }
         } catch (\Throwable) {
             //
+        }
+    }
+
+    /**
+     * Expand users.role beyond legacy enum('user','admin') so moderator/support can be stored.
+     */
+    public function ensureStaffRoleColumn(): void
+    {
+        if (! Schema::hasTable('users') || ! Schema::hasColumn('users', 'role')) {
+            return;
+        }
+
+        try {
+            $column = DB::selectOne("
+                SELECT COLUMN_TYPE, DATA_TYPE
+                FROM information_schema.COLUMNS
+                WHERE TABLE_SCHEMA = DATABASE()
+                  AND TABLE_NAME = 'users'
+                  AND COLUMN_NAME = 'role'
+                LIMIT 1
+            ");
+
+            if (! $column) {
+                return;
+            }
+
+            $type = strtolower((string) ($column->COLUMN_TYPE ?? $column->column_type ?? ''));
+            $dataType = strtolower((string) ($column->DATA_TYPE ?? $column->data_type ?? ''));
+
+            $enumNeedsExpand = $dataType === 'enum'
+                && (! str_contains($type, "'moderator'") || ! str_contains($type, "'support'"));
+
+            $varcharTooShort = in_array($dataType, ['varchar', 'char'], true)
+                && preg_match('/\((\d+)\)/', $type, $m)
+                && (int) $m[1] < 20;
+
+            if (! $enumNeedsExpand && ! $varcharTooShort) {
+                return;
+            }
+
+            DB::statement("ALTER TABLE `users` MODIFY `role` VARCHAR(32) NOT NULL DEFAULT 'user'");
+        } catch (\Throwable) {
+            try {
+                DB::statement("ALTER TABLE `users` MODIFY `role` VARCHAR(32) NOT NULL DEFAULT 'user'");
+            } catch (\Throwable) {
+                //
+            }
         }
     }
 

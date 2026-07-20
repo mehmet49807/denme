@@ -26,6 +26,7 @@ class AdminOpsController extends Controller
     {
         $this->audit->ensureTables();
         $this->audit->ensureBroadcastColumns();
+        $this->audit->ensureStaffRoleColumn();
     }
 
     public function moderationQueue(Request $request): View
@@ -318,9 +319,11 @@ class AdminOpsController extends Controller
 
     public function staffRoles(): View
     {
+        $this->audit->ensureStaffRoleColumn();
+
         $staff = User::query()
             ->whereIn('role', ['admin', 'moderator', 'support'])
-            ->orderByRaw("FIELD(role, 'admin', 'moderator', 'support')")
+            ->orderByRaw("CASE role WHEN 'admin' THEN 1 WHEN 'moderator' THEN 2 WHEN 'support' THEN 3 ELSE 4 END")
             ->orderBy('username')
             ->get();
 
@@ -340,6 +343,8 @@ class AdminOpsController extends Controller
             abort(403);
         }
 
+        $this->audit->ensureStaffRoleColumn();
+
         $validated = $request->validate([
             'role' => 'required|in:admin,moderator,support,user',
         ]);
@@ -349,7 +354,14 @@ class AdminOpsController extends Controller
         }
 
         $previous = $user->role;
-        $user->update(['role' => $validated['role']]);
+
+        try {
+            $user->update(['role' => $validated['role']]);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->withErrors(['role' => 'Rol güncellenemedi. Veritabanı role kolonunu kontrol edin.']);
+        }
 
         $this->audit->log(
             'staff.role',
@@ -368,18 +380,31 @@ class AdminOpsController extends Controller
             abort(403);
         }
 
+        $this->audit->ensureStaffRoleColumn();
+
         $validated = $request->validate([
             'username' => 'required|string|max:50',
             'role' => 'required|in:admin,moderator,support',
         ]);
 
-        $user = User::query()->where('username', $validated['username'])->first();
+        $username = trim($validated['username']);
+        $user = User::query()
+            ->whereRaw('LOWER(username) = ?', [mb_strtolower($username)])
+            ->first();
+
         if (! $user) {
-            return back()->withErrors(['username' => 'Kullanıcı bulunamadı.']);
+            return back()->withErrors(['username' => 'Kullanıcı bulunamadı: '.$username])->withInput();
         }
 
         $previous = $user->role;
-        $user->update(['role' => $validated['role']]);
+
+        try {
+            $user->update(['role' => $validated['role']]);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->withErrors(['username' => 'Rol atanamadı. Lütfen tekrar deneyin.'])->withInput();
+        }
 
         $this->audit->log(
             'staff.promote',
@@ -388,7 +413,7 @@ class AdminOpsController extends Controller
             (int) $user->id,
         );
 
-        return back()->with('success', $user->username.' personel olarak eklendi.');
+        return back()->with('success', $user->username.' personel olarak eklendi ('.$validated['role'].').');
     }
 
     public function exportUsersCsv(): StreamedResponse
