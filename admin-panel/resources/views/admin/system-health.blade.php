@@ -42,13 +42,23 @@
             Hazır · proje {{ $fcm['project_id'] ?? '—' }} · {{ $fcm['device_count'] ?? 0 }} cihaz
             · kaynak {{ $fcm['credentials_source'] ?? '—' }}
         @else
-            Service account JSON eksik. Firebase Console → Project settings → Service accounts → Generate new private key.
+            Service account JSON eksik. Firebase Console → Project settings → Service accounts → Generate new private key
+            (proje: gonulkoprusu-325eb). Dosya seçin veya JSON yapıştırın — web + admin’e otomatik kopyalanır.
         @endif
     </p>
-    <form method="post" action="{{ route('admin.system-health.fcm') }}" enctype="multipart/form-data" class="admin-inline-form" style="display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;margin-top:.75rem">
+    <form method="post" action="{{ route('admin.system-health.fcm') }}" enctype="multipart/form-data" style="display:grid;gap:.75rem;margin-top:.75rem;max-width:40rem">
         @csrf
-        <input type="file" name="credentials" accept=".json,application/json" required>
-        <button type="submit" class="btn btn-primary">JSON yükle</button>
+        <label style="display:grid;gap:.35rem;font-size:.9rem">
+            <span>JSON dosyası</span>
+            <input type="file" name="credentials" accept=".json,application/json">
+        </label>
+        <label style="display:grid;gap:.35rem;font-size:.9rem">
+            <span>veya JSON yapıştır</span>
+            <textarea name="json" rows="8" placeholder='{"type":"service_account","project_id":"gonulkoprusu-325eb",...}' style="width:100%;font-family:ui-monospace,monospace;font-size:.8rem"></textarea>
+        </label>
+        <div>
+            <button type="submit" class="btn btn-primary">FCM JSON yükle</button>
+        </div>
     </form>
 </div>
 

@@ -322,10 +322,19 @@ class AdminOpsController extends Controller
     public function uploadFcmCredentials(Request $request, FcmPushService $fcm)
     {
         $request->validate([
-            'credentials' => 'required|file|max:512',
+            'credentials' => 'nullable|file|max:512',
+            'json' => 'nullable|string|max:200000',
         ]);
 
-        $json = (string) file_get_contents($request->file('credentials')->getRealPath());
+        $json = trim((string) $request->input('json', ''));
+        if ($json === '' && $request->hasFile('credentials')) {
+            $json = (string) file_get_contents($request->file('credentials')->getRealPath());
+        }
+
+        if ($json === '') {
+            return back()->with('error', 'Service account JSON dosyası seçin veya JSON yapıştırın.');
+        }
+
         $result = $fcm->installCredentialsJson($json);
 
         if (! ($result['ok'] ?? false)) {

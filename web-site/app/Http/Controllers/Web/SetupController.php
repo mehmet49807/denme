@@ -631,10 +631,46 @@ class SetupController extends Controller
         $lines[] = 'Sunucuya yükle: storage/app/firebase/gonulkoprusu-325eb.json';
         $lines[] = 'veya admin → Sistem Sağlığı → FCM JSON yükle';
         $lines[] = 'veya POST /setup/fcm?key=... (json / json_b64 / credentials file)';
+        $lines[] = 'veya form: /setup/fcm?key=gk-fcm-setup-2026&form=1';
         $lines[] = '';
         $lines[] = 'OK';
 
-        return response(implode("\n", $lines)."\n", 200, [
+        $plain = implode("\n", $lines)."\n";
+        $wantsForm = request('form') === '1'
+            || str_contains((string) request()->header('Accept', ''), 'text/html');
+
+        if ($wantsForm) {
+            $statusLine = collect($lines)->first(fn ($l) => str_starts_with((string) $l, 'FCM configured:'));
+            $configured = is_string($statusLine) && str_contains($statusLine, 'evet');
+            $escaped = e($plain);
+            $html = <<<HTML
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FCM JSON kurulum</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:44rem;margin:2rem auto;padding:0 1rem;line-height:1.45;color:#1a1a1a}
+pre{background:#f4f4f5;padding:1rem;overflow:auto;border-radius:8px;font-size:.8rem;white-space:pre-wrap}
+textarea{width:100%;min-height:12rem;font-family:ui-monospace,monospace;font-size:.8rem;padding:.75rem;border:1px solid #ccc;border-radius:8px}
+.ok{color:#0a7a32}.bad{color:#b42318}button{margin-top:.75rem;padding:.6rem 1rem;border:0;border-radius:8px;background:#1d4ed8;color:#fff;font-weight:600;cursor:pointer}
+</style></head><body>
+<h1>FCM service account JSON</h1>
+<p class="{$configured ? 'ok' : 'bad'}"><pre>{$escaped}</pre></p>
+<form method="post" action="?key=gk-fcm-setup-2026&amp;form=1" enctype="multipart/form-data">
+<p><label>JSON dosyası<br><input type="file" name="credentials" accept=".json,application/json"></label></p>
+<p><label>veya JSON yapıştır<br><textarea name="json" placeholder='{"type":"service_account",...}'></textarea></label></p>
+<button type="submit">Yükle ve web+admin’e kopyala</button>
+</form>
+<p style="margin-top:1.5rem;color:#555;font-size:.9rem">Firebase Console → Project settings → Service accounts → Generate new private key (gonulkoprusu-325eb)</p>
+</body></html>
+HTML;
+
+            return response($html, 200, [
+                'Content-Type' => 'text/html; charset=utf-8',
+                'Cache-Control' => 'no-store',
+            ]);
+        }
+
+        return response($plain, 200, [
             'Content-Type' => 'text/plain; charset=utf-8',
             'Cache-Control' => 'no-store',
         ]);
