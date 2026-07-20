@@ -65,20 +65,20 @@ def ftp_connect(target: str):
     return ftp
 
 
-def fetch(url: str, retries: int = 5) -> str:
+def fetch(url: str, retries: int = 8) -> str:
     last = ""
     for i in range(retries):
         try:
             req = urllib.request.Request(
                 url,
                 headers={
-                    "User-Agent": "Mozilla/5.0 (compatible; GonulKoprusu-Update/1.0)",
-                    "Accept": "text/plain,*/*",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                    "Accept": "text/plain,text/html;q=0.9,*/*;q=0.8",
                 },
             )
             last = urllib.request.urlopen(req, timeout=45).read().decode("utf-8", "replace")
-            if "<!DOCTYPE html>" in last and "One moment" in last:
-                time.sleep(3 + i)
+            if "<!DOCTYPE html>" in last and ("One moment" in last or "throbber" in last):
+                time.sleep(4 + i * 2)
                 continue
             return last
         except Exception as e:
@@ -130,26 +130,54 @@ def extensions_ok(body: str) -> bool:
 
 
 def main() -> int:
-    # 1) Upload enable helper + temp handler on web (CageFS writes must run as php83)
+    # 1) Upload helpers + temporary PHP 8.3 handler for enable/probe files
+    temp_block = "\n".join(
+        [
+            "",
+            "# TEMP php83-enable handler",
+            '<FilesMatch "^(php83-enable|php-version)\\.php$">',
+            "  <IfModule mime_module>",
+            "    SetHandler application/x-httpd-alt-php83___lsphp",
+            "  </IfModule>",
+            "</FilesMatch>",
+            "# END php83-enable",
+            "",
+        ]
+    )
+
+    def with_temp(raw: bytes) -> bytes:
+        text = strip_handlers(raw.decode("utf-8", "replace"))
+        return (text.rstrip() + "\n" + temp_block).encode("utf-8")
+
     ftp = ftp_connect("web")
     try:
         put(ftp, "php83-enable.php", enable_php)
         put(ftp, "php-version.php", probe_php)
-        put(ftp, ".htaccess", with_temp_enable(BASES["web"]))
+        put(ftp, ".htaccess", with_temp(BASES["web"]))
     finally:
         ftp.quit()
 
-    time.sleep(2)
-    fix = fetch("https://gonulkoprusu.com/php83-enable.php?key=gk-laravel-update-2026&action=fix")
-    print("==== FIX ====")
-    print(fix[:4000])
-    if "write_alt_php=ok" not in fix and "OK" not in fix.splitlines()[-3:]:
-        # still continue if list looks good
-        if "mbstring.ini" not in fix:
+    time.sleep(3)
+    pre = fetch("https://gonulkoprusu.com/php-version.php")
+    print("==== PRECHECK ====")
+    print(pre)
+
+    if not extensions_ok(pre):
+        fix = fetch("https://gonulkoprusu.com/php83-enable.php?key=gk-laravel-update-2026&action=fix")
+        print("==== FIX ====")
+        print(fix[:4000])
+        if "write_alt_php=ok" not in fix and "mbstring.ini" not in fix:
             print("ENABLE_FIX_FAILED")
             return 1
-
-    time.sleep(8)
+        time.sleep(8)
+        pre = fetch("https://gonulkoprusu.com/php-version.php")
+        print("==== POSTFIX ====")
+        print(pre)
+        if not extensions_ok(pre):
+            print("EXTENSIONS_STILL_MISSING_AFTER_FIX")
+            return 1
+    else:
+        print("EXTENSIONS_ALREADY_OK")
 
     # 2) Switch both sites to PHP 8.3 site-wide
     for target in ("web", "admin"):
@@ -163,14 +191,13 @@ def main() -> int:
 
     time.sleep(3)
 
-    # 3) Verify
+    # 3) Verify site-wide
     for target in ("web", "admin"):
         body = fetch(f"{URLS[target]}/php-version.php")
         print(f"==== {target} ====")
         print(body)
         if not extensions_ok(body):
             print(f"{target}: PHP 8.3 extensions missing")
-            # restore clean htaccess
             for t in ("web", "admin"):
                 ftp = ftp_connect(t)
                 try:
@@ -181,7 +208,6 @@ def main() -> int:
 
     print("PHP_8_3_EXTENSIONS_OK")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())
