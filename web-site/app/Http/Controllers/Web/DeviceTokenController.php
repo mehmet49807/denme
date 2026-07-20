@@ -12,7 +12,7 @@ class DeviceTokenController extends Controller
     public function store(Request $request, FcmPushService $fcm): JsonResponse
     {
         $validated = $request->validate([
-            'token' => 'required|string|min:20|max:512',
+            'token' => 'required|string|min:20|max:4096',
             'platform' => 'nullable|string|max:40',
         ]);
 
@@ -33,7 +33,7 @@ class DeviceTokenController extends Controller
     public function destroy(Request $request, FcmPushService $fcm): JsonResponse
     {
         $validated = $request->validate([
-            'token' => 'nullable|string|max:512',
+            'token' => 'nullable|string|max:4096',
         ]);
 
         $fcm->removeToken($request->user(), $validated['token'] ?? null);

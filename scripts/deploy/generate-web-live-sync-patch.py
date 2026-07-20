@@ -180,6 +180,14 @@ files = {
     / "app/Http/Controllers/Web/LocationUsersPageController.php",
     "app/Http/Controllers/Web/SetupController.php": WEB
     / "app/Http/Controllers/Web/SetupController.php",
+    "app/Http/Controllers/Web/FcmWebController.php": WEB
+    / "app/Http/Controllers/Web/FcmWebController.php",
+    "app/Http/Controllers/Web/DeviceTokenController.php": WEB
+    / "app/Http/Controllers/Web/DeviceTokenController.php",
+    "app/Services/FcmWebConfigService.php": WEB / "app/Services/FcmWebConfigService.php",
+    "app/Services/FcmPushService.php": WEB / "app/Services/FcmPushService.php",
+    "config/firebase.php": WEB / "config/firebase.php",
+    "js/fcm-web.js": WEB / "public/js/fcm-web.js",
     "app/Models/User.php": WEB / "app/Models/User.php",
     "app/Models/Story.php": WEB / "app/Models/Story.php",
     "app/Models/ProfileView.php": WEB / "app/Models/ProfileView.php",

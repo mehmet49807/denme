@@ -432,6 +432,22 @@ class FcmPushService
                         'sound' => 'default',
                     ],
                 ],
+                'webpush' => [
+                    'headers' => [
+                        'Urgency' => 'high',
+                    ],
+                    'notification' => [
+                        'title' => $title,
+                        'body' => $body,
+                        'icon' => '/images/logo-180.png',
+                        'badge' => '/images/favicon.png',
+                    ],
+                    'fcm_options' => [
+                        'link' => ($data['type'] ?? '') === 'new_message' && ! empty($data['actor_username'])
+                            ? '/messages/'.$data['actor_username']
+                            : '/notifications',
+                    ],
+                ],
             ],
         ];
 

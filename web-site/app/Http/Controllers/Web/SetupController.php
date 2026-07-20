@@ -680,6 +680,58 @@ HTML;
         ]);
     }
 
+    public function fcmWeb()
+    {
+        if (request('key') !== 'gk-fcm-setup-2026') {
+            abort(403);
+        }
+
+        $lines = ['Gönül Köprüsü — FCM Web Push kurulum', 'base='.base_path(), ''];
+
+        try {
+            $web = app(\App\Services\FcmWebConfigService::class);
+
+            if (request()->isMethod('post') || request()->boolean('sync') || request()->filled('apiKey') || request()->filled('api_key')) {
+                if (request()->filled('apiKey') || request()->filled('api_key')) {
+                    $result = $web->saveManual(request()->all());
+                    $lines[] = 'manual save: '.(($result['ok'] ?? false) ? 'OK' : ('HATA '.($result['error'] ?? '')));
+                } else {
+                    $result = $web->syncFromFirebaseApi();
+                    $lines[] = 'firebase sync: '.(($result['ok'] ?? false) ? 'OK' : ('HATA '.($result['error'] ?? '')));
+                    if (! empty($result['created'])) {
+                        $lines[] = 'web app: yeni oluşturuldu';
+                    }
+                }
+            }
+
+            $cfg = $web->publicConfig();
+            $lines[] = 'web push enabled: '.(! empty($cfg['enabled']) ? 'evet' : 'hayır');
+            $lines[] = 'web push configured: '.(! empty($cfg['configured']) ? 'evet' : 'hayır');
+            $lines[] = 'projectId: '.($cfg['projectId'] ?? '');
+            $lines[] = 'messagingSenderId: '.($cfg['messagingSenderId'] ?? '(yok)');
+            $lines[] = 'appId: '.(! empty($cfg['appId']) ? 'var' : 'yok');
+            $lines[] = 'apiKey: '.(! empty($cfg['apiKey']) ? 'var' : 'yok');
+            $lines[] = 'vapidKey: '.(! empty($cfg['vapidKey']) ? 'var ('.strlen((string) $cfg['vapidKey']).' char)' : 'yok');
+            $lines[] = 'config file: '.(is_readable(storage_path('app/firebase/web-config.json')) ? 'var' : 'yok');
+        } catch (\Throwable $e) {
+            $lines[] = 'HATA: '.$e->getMessage();
+        }
+
+        $lines[] = '';
+        $lines[] = 'Sync: GET/POST /setup/fcm-web?key=gk-fcm-setup-2026&sync=1';
+        $lines[] = 'Manual: POST apiKey + appId + messagingSenderId (+ vapidKey)';
+        $lines[] = 'Client: /firebase-config.json  |  SW: /firebase-messaging-sw.js';
+        $lines[] = 'Firebase Console → Project settings → Authorized domains: gonulkoprusu.com';
+        $lines[] = '';
+        $lines[] = 'OK';
+
+        return response(implode("\n", $lines)."\n", 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-store',
+            'X-LiteSpeed-Purge' => '*',
+        ]);
+    }
+
     public function laravelUpdate()
     {
         $key = (string) config('update.setup_key', 'gk-laravel-update-2026');

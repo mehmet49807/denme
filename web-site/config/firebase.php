@@ -30,4 +30,25 @@ return [
         storage_path('app/firebase/firebase-adminsdk.json'),
     ])),
 
+    /*
+    |--------------------------------------------------------------------------
+    | FCM Web Push (tarayıcı)
+    |--------------------------------------------------------------------------
+    |
+    | VAPID / Web Push certificates key (Firebase Console → Cloud Messaging).
+    | apiKey / appId / messagingSenderId: setup/fcm-web ile API’den çekilir
+    | veya FIREBASE_WEB_* env ile verilir.
+    |
+    */
+    'web' => [
+        'enabled' => env('FIREBASE_WEB_PUSH_ENABLED', true),
+        'vapid_key' => env(
+            'FIREBASE_VAPID_KEY',
+            'BABfPUFug84XcERSekZDFUko8lGgOUyYrPXNdV9wTyzEeZ9wmm52bT0oTFyt1BiNY0dT44EkAdrGR1Ma-gPlfXE'
+        ),
+        'api_key' => env('FIREBASE_WEB_API_KEY'),
+        'app_id' => env('FIREBASE_WEB_APP_ID'),
+        'messaging_sender_id' => env('FIREBASE_MESSAGING_SENDER_ID'),
+    ],
+
 ];

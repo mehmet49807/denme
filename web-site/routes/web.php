@@ -18,6 +18,7 @@ use App\Http\Controllers\Web\ReferralPageController;
 use App\Http\Controllers\Web\MessagePageController;
 use App\Http\Controllers\Web\LiveSyncController;
 use App\Http\Controllers\Web\DeviceTokenController;
+use App\Http\Controllers\Web\FcmWebController;
 use App\Http\Controllers\Web\NotificationPageController;
 use App\Http\Controllers\Web\PremiumPageController;
 use App\Http\Controllers\Web\ProfilePageController;
@@ -103,6 +104,10 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
     });
     Route::get('/setup/notifications', [\App\Http\Controllers\Web\SetupController::class, 'notifications']);
     Route::match(['get', 'post'], '/setup/fcm', [\App\Http\Controllers\Web\SetupController::class, 'fcm'])
+        ->withoutMiddleware([
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        ]);
+    Route::match(['get', 'post'], '/setup/fcm-web', [\App\Http\Controllers\Web\SetupController::class, 'fcmWeb'])
         ->withoutMiddleware([
             \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
         ]);
@@ -389,6 +394,9 @@ Route::get('/ara', [SearchController::class, 'index'])->name('search');
 Route::get('/ara/oneriler', [SearchController::class, 'suggest'])->middleware('throttle:60,1,search-suggest')->name('search.suggest');
 
 // ========== SEO Routes ==========
+Route::get('/firebase-config.json', [FcmWebController::class, 'config'])->name('firebase.config');
+Route::get('/firebase-messaging-sw.js', [FcmWebController::class, 'serviceWorker'])->name('firebase.messaging-sw');
+
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/setup/sitemap-ping', function () {
     if (request('key') !== 'gk-cpanel-setup-2026') {
