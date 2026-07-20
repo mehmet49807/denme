@@ -3658,6 +3658,74 @@ a.member-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(
 }
 .profile-action-btn--message { background: var(--gradient-sunset); color: #fff; border-color: transparent; }
 .profile-action-btn--message:hover { color: #fff; opacity: 0.92; }
+
+/* Kilitli mesaj → Premium CTA */
+.profile-action-btn--premium-msg {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.7rem;
+    padding: 0.72rem 0.95rem;
+    border-radius: 16px;
+    border: 1px solid rgba(180, 83, 9, 0.28);
+    background:
+        radial-gradient(ellipse 90% 120% at 0% 50%, rgba(251, 191, 36, 0.35), transparent 55%),
+        linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 42%, #FDE68A 100%);
+    color: #78350F;
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.75) inset,
+        0 8px 22px rgba(180, 83, 9, 0.14);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.profile-action-btn--premium-msg:hover {
+    color: #78350F;
+    border-color: rgba(180, 83, 9, 0.42);
+    transform: translateY(-1px);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 12px 28px rgba(180, 83, 9, 0.2);
+}
+.profile-action-btn--premium-msg:active {
+    transform: translateY(0);
+}
+.profile-action-icon--premium-msg {
+    display: grid;
+    place-items: center;
+    width: 2.15rem;
+    height: 2.15rem;
+    border-radius: 12px;
+    flex-shrink: 0;
+    color: #92400E;
+    background: linear-gradient(145deg, #FBBF24, #F59E0B);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+}
+.profile-action-icon--premium-msg .theme-icon,
+.profile-action-icon--premium-msg svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    display: block;
+}
+.profile-action-btn--premium-msg .profile-action-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+    min-width: 0;
+    text-align: left;
+}
+.profile-action-btn--premium-msg .profile-action-label {
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    color: #78350F;
+}
+.profile-action-btn--premium-msg .profile-action-sub {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #B45309;
+    opacity: 0.9;
+}
+
 .profile-action-btn--unblock {
     background: linear-gradient(135deg, #059669, #10B981);
     color: #fff;

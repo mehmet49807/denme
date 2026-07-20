@@ -93,14 +93,17 @@
                 @elseif($viewer->gender === 'male')
                 <a
                     href="{{ route('premium') }}"
-                    class="profile-action-btn profile-action-btn--premium"
+                    class="profile-action-btn profile-action-btn--premium-msg"
                     title="{{ __('app.profile.message_locked_title') }}"
                     aria-label="{{ __('app.profile.message_locked_title') }}"
                 >
-                    <span class="profile-action-icon profile-action-icon--premium" aria-hidden="true">
+                    <span class="profile-action-icon profile-action-icon--premium-msg" aria-hidden="true">
                         @include('partials.theme-icon', ['icon' => 'lock'])
                     </span>
-                    <span class="profile-action-label">{{ __('app.profile.message_locked_cta') }}</span>
+                    <span class="profile-action-copy">
+                        <span class="profile-action-label">{{ __('app.profile.message_locked_cta') }}</span>
+                        <span class="profile-action-sub">{{ __('app.profile.message_locked_sub') }}</span>
+                    </span>
                 </a>
                 @endif
 
