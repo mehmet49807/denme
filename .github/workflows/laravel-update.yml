@@ -37,13 +37,137 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup PHP (CI build)
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           extensions: mbstring, xml, ctype, json, openssl, tokenizer, fileinfo, curl, zip
           coverage: none
           tools: composer:v2
+
+      - name: Select PHP 8.3+ on cPanel (web + admin)
+        env:
+          FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
+          FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
+          FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
+          FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import ftplib, json, os, re, time, urllib.request
+          from pathlib import Path, PurePosixPath
+
+          manifest = json.loads(Path("deploy/manifest.json").read_text())
+          handlers = [
+              "application/x-httpd-ea-php84___lsphp",
+              "application/x-httpd-ea-php83___lsphp",
+              "application/x-httpd-ea-php84",
+              "application/x-httpd-ea-php83",
+              "application/x-httpd-alt-php84___lsphp",
+              "application/x-httpd-alt-php83___lsphp",
+              "application/x-httpd-php84",
+              "application/x-httpd-php83",
+          ]
+
+          def connect(target):
+              host = manifest[target]["ftp"]["host"]
+              user = os.environ[f"FTP_{target.upper()}_USER"]
+              password = os.environ[f"FTP_{target.upper()}_PASSWORD"]
+              ftp = ftplib.FTP(); ftp.connect(host, 21, timeout=90); ftp.login(user, password); ftp.set_pasv(True)
+              return ftp
+
+          def put_bytes(ftp, remote, data: bytes):
+              parent = str(PurePosixPath(remote).parent)
+              if parent not in (".", ""):
+                  cur = ""
+                  for part in PurePosixPath(parent).parts:
+                      cur = f"{cur}/{part}" if cur else part
+                      try:
+                          ftp.mkd(cur)
+                      except Exception:
+                          pass
+              from io import BytesIO
+              ftp.storbinary(f"STOR {remote}", BytesIO(data), blocksize=256*1024)
+
+          def put_file(ftp, local, remote):
+              put_bytes(ftp, remote, Path(local).read_bytes())
+
+          def htaccess_for(base_text: str, handler: str) -> bytes:
+              # strip previous handler block
+              cleaned = re.sub(
+                  r"\n?# MultiPHP.*?AddHandler[^\n]+\n(?:</IfModule>\n)?(?:# php -- END[^\n]*\n)?",
+                  "\n",
+                  base_text,
+                  flags=re.S,
+              )
+              cleaned = re.sub(
+                  r"\n?# php -- BEGIN cPanel-generated handler.*?# php -- END cPanel-generated handler\n?",
+                  "\n",
+                  cleaned,
+                  flags=re.S,
+              )
+              block = (
+                  "\n# MultiPHP — Laravel 13 için PHP 8.3+\n"
+                  "# php -- BEGIN cPanel-generated handler\n"
+                  "<IfModule mime_module>\n"
+                  f"  AddHandler {handler} .php .php8 .phtml\n"
+                  "</IfModule>\n"
+                  "# php -- END cPanel-generated handler\n"
+              )
+              return (cleaned.rstrip() + "\n" + block).encode("utf-8")
+
+          web_base = Path("web-site/public/.htaccess").read_text(encoding="utf-8")
+          # remove our committed handler for probing
+          web_base = re.sub(
+              r"\n?# MultiPHP.*?# php -- END cPanel-generated handler\n?",
+              "\n",
+              web_base,
+              flags=re.S,
+          )
+          admin_base = Path("scripts/deploy/assets/admin.htaccess").read_text(encoding="utf-8")
+          admin_base = re.sub(
+              r"\n?# MultiPHP.*?# php -- END cPanel-generated handler\n?",
+              "\n",
+              admin_base,
+              flags=re.S,
+          )
+
+          sites = {
+              "web": ("https://gonulkoprusu.com/php-version.php", web_base),
+              "admin": ("https://admin.gonulkoprusu.com/php-version.php", admin_base),
+          }
+
+          chosen = {}
+          for target, (url, base) in sites.items():
+              ftp = connect(target)
+              try:
+                  put_file(ftp, "scripts/deploy/assets/php-version.php", "php-version.php")
+                  ok_handler = None
+                  for handler in handlers:
+                      put_bytes(ftp, ".htaccess", htaccess_for(base, handler))
+                      time.sleep(1.5)
+                      try:
+                          body = urllib.request.urlopen(url, timeout=20).read().decode("utf-8", "replace")
+                      except Exception as e:
+                          print(target, handler, "fetch-fail", e)
+                          continue
+                      m = re.search(r"PHP_VERSION=([0-9.]+)", body)
+                      ver = m.group(1) if m else "?"
+                      print(target, handler, "=>", ver)
+                      if m:
+                          major, minor, *_ = ver.split(".") + ["0"]
+                          if int(major) > 8 or (int(major) == 8 and int(minor) >= 3):
+                              ok_handler = handler
+                              chosen[target] = ver
+                              break
+                  if not ok_handler:
+                      raise SystemExit(f"{target}: PHP 8.3+ handler bulunamadı. cPanel MultiPHP’de 8.3/8.4 etkinleştirin.")
+              finally:
+                  ftp.quit()
+
+          print("PHP_OK", chosen)
+          Path("/tmp/php-selected.json").write_text(json.dumps(chosen), encoding="utf-8")
+          PY
 
       - name: Prepare build
         run: |
@@ -65,24 +189,26 @@ jobs:
               $lock=@json_decode(@file_get_contents("composer.lock"), true) ?: [];
               foreach (($lock["packages"] ?? []) as $p) {
                 if (($p["name"] ?? "") === "laravel/framework") {
-                  $v=ltrim($p["version"] ?? "11.0.0", "v");
+                  $v=ltrim($p["version"] ?? "13.0.0", "v");
                   echo "^".explode(".", $v)[0].".0";
                   exit;
                 }
               }
-              echo "^11.0";
+              echo "^13.0";
             ')
           else
-            CONSTRAINT='^12.0'
+            CONSTRAINT='^13.0'
           fi
           echo "Using constraint: $CONSTRAINT"
           CONSTRAINT="$CONSTRAINT" php -r '
-            $c = getenv("CONSTRAINT") ?: "^12.0";
+            $c = getenv("CONSTRAINT") ?: "^13.0";
             $j = json_decode(file_get_contents("composer.json"), true);
+            $j["require"]["php"] = "^8.3";
             $j["require"]["laravel/framework"] = $c;
+            $j["require"]["laravel/tinker"] = "^3.0";
             file_put_contents("composer.json", json_encode($j, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)."\n");
           '
-          composer update laravel/framework --with-all-dependencies --no-interaction --no-progress --prefer-dist --no-scripts --no-dev
+          composer update laravel/framework laravel/tinker --with-all-dependencies --no-interaction --no-progress --prefer-dist --no-scripts --no-dev
           composer dump-autoload --no-interaction --no-scripts -o
           php -r '
             $lock=json_decode(file_get_contents("composer.lock"), true);
@@ -100,7 +226,6 @@ jobs:
         working-directory: server/build
         run: |
           set -euo pipefail
-          cp ../composer.json composer.json.bak 2>/dev/null || true
           zip -qr laravel-vendor.zip composer.json composer.lock vendor
           ls -lh laravel-vendor.zip
           cp composer.json ../composer.json
@@ -116,6 +241,7 @@ jobs:
           python3 - <<'PY'
           import ftplib, json, os
           from pathlib import Path, PurePosixPath
+          from io import BytesIO
           manifest=json.loads(Path("deploy/manifest.json").read_text())
           host=manifest["web"]["ftp"]["host"]
           user=os.environ["FTP_WEB_USER"]; password=os.environ["FTP_WEB_PASSWORD"]
@@ -133,6 +259,8 @@ jobs:
             print("OK", remote, os.path.getsize(local))
           put("scripts/deploy/assets/laravel-vendor-extract.php", "laravel-vendor-extract.php")
           put(os.environ["LARAVEL_BUNDLE"], "storage/app/laravel-vendor.zip")
+          # keep PHP 8.3 handler
+          put("web-site/public/.htaccess", ".htaccess")
           ftp.quit()
           PY
 
@@ -163,6 +291,7 @@ jobs:
             print("OK", remote, os.path.getsize(local))
           put("scripts/deploy/assets/laravel-vendor-extract.php", "laravel-vendor-extract.php")
           put(os.environ["LARAVEL_BUNDLE"], "storage/app/laravel-vendor.zip")
+          put("scripts/deploy/assets/admin.htaccess", ".htaccess")
           ftp.quit()
           PY
 
@@ -193,6 +322,8 @@ jobs:
           fi
           echo "WEB:"; curl -fsS "https://gonulkoprusu.com/setup/laravel-update?key=${KEY_UPDATE}" || true; echo
           echo "ADMIN:"; curl -fsS "https://admin.gonulkoprusu.com/setup/laravel-update?key=${KEY_UPDATE}" || true; echo
+          echo "PHP WEB:"; curl -fsS "https://gonulkoprusu.com/php-version.php" || true; echo
+          echo "PHP ADMIN:"; curl -fsS "https://admin.gonulkoprusu.com/php-version.php" || true; echo
 
       - name: Commit updated lock
         run: |

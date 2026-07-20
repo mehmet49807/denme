@@ -102,7 +102,7 @@ class LaravelUpdateService
     {
         $packagist = $this->packagistLatest();
         $current = $this->currentVersion();
-        $targetMajor = (int) config('update.target_major', 12);
+        $targetMajor = (int) config('update.target_major', 13);
         $recommended = $packagist['recommended'] ?? null;
 
         $updateAvailable = false;

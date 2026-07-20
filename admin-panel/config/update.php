@@ -7,12 +7,12 @@ return [
     | Laravel güncelleme hedefleri
     |--------------------------------------------------------------------------
     |
-    | PHP 8.2 → Laravel 12 desteklenir. Laravel 13 için PHP 8.3+ gerekir.
+    | Laravel 13 için PHP 8.3+ gerekir.
     |
     */
 
-    'target_constraint' => env('LARAVEL_TARGET_CONSTRAINT', '^12.0'),
-    'target_major' => (int) env('LARAVEL_TARGET_MAJOR', 12),
+    'target_constraint' => env('LARAVEL_TARGET_CONSTRAINT', '^13.0'),
+    'target_major' => (int) env('LARAVEL_TARGET_MAJOR', 13),
 
     'packagist_url' => 'https://packagist.org/packages/laravel/framework.json',
 

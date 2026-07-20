@@ -108,6 +108,16 @@
         "local": "patch-web-staff-role.php",
         "remote": "patch-web-staff-role.php",
         "file": true
+      },
+      {
+        "local": "scripts/deploy/assets/php-version.php",
+        "remote": "php-version.php",
+        "file": true
+      },
+      {
+        "local": "scripts/deploy/assets/laravel-vendor-extract.php",
+        "remote": "laravel-vendor-extract.php",
+        "file": true
       }
     ],
     "post_deploy": [
@@ -182,6 +192,21 @@
       {
         "local": "admin-panel/public/js/admin-dashboard.js",
         "remote": "js/admin-dashboard.js",
+        "file": true
+      },
+      {
+        "local": "scripts/deploy/assets/admin.htaccess",
+        "remote": ".htaccess",
+        "file": true
+      },
+      {
+        "local": "scripts/deploy/assets/php-version.php",
+        "remote": "php-version.php",
+        "file": true
+      },
+      {
+        "local": "scripts/deploy/assets/laravel-vendor-extract.php",
+        "remote": "laravel-vendor-extract.php",
         "file": true
       }
     ],

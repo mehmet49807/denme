@@ -98,8 +98,8 @@
 <div class="admin-panel admin-panel--glass" style="margin-top:1.25rem">
     <h3 class="admin-panel-title">Laravel güncelle</h3>
     <p class="admin-ops-meta">
-        Hedef: <strong>{{ $local['target_constraint'] ?? '^12.0' }}</strong>
-        (PHP 8.2 → Laravel 12; Laravel 13 için PHP 8.3+ gerekir).
+        Hedef: <strong>{{ $local['target_constraint'] ?? '^13.0' }}</strong>
+        (Laravel 13 için PHP 8.3+ gerekir).
         @if(empty($shellExec))
             Sunucuda <code>shell_exec</code> kapalı — güncelleme <strong>GitHub Actions</strong> ile Composer + FTP olarak çalışır
             @if(empty($githubTokenReady))
@@ -125,8 +125,8 @@
         <label style="display:flex;flex-direction:column;gap:.35rem;font-size:.85rem">
             Mod
             <select name="mode" class="admin-input" style="min-width:12rem">
-                <option value="target" selected>Laravel 12’ye yükselt</option>
-                <option value="patch">Aynı majörde yama (11.x)</option>
+                <option value="target" selected>Laravel 13’e yükselt (son sürüm)</option>
+                <option value="patch">Aynı majörde yama</option>
             </select>
         </label>
         <button type="submit" class="btn btn-primary">Güncellemeyi başlat</button>
