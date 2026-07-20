@@ -1,15 +1,6 @@
 @php
     $groups = [
         [
-            'id' => 'overview',
-            'label' => 'Özet',
-            'icon' => 'grid',
-            'theme' => 'gold',
-            'items' => [
-                ['route' => 'admin.dashboard', 'label' => 'Dashboard', 'icon' => 'grid', 'theme' => 'gold'],
-            ],
-        ],
-        [
             'id' => 'moderation',
             'label' => 'Denetim',
             'icon' => 'shield',
@@ -75,6 +66,7 @@
         ],
     ];
 
+    $dashboardActive = request()->routeIs('admin.dashboard');
     $activeGroupId = null;
     foreach ($groups as $group) {
         foreach ($group['items'] as $item) {
@@ -84,12 +76,16 @@
             }
         }
     }
-    if ($activeGroupId === null) {
-        $activeGroupId = 'overview';
-    }
 @endphp
 
 <nav class="admin-sidebar-nav" aria-label="Admin menü" data-admin-nav>
+    <a href="{{ route('admin.dashboard') }}" class="admin-sidebar-link admin-sidebar-link--gold {{ $dashboardActive ? 'is-active' : '' }}">
+        <span class="admin-sidebar-icon" aria-hidden="true">
+            @include('partials.admin-icon', ['icon' => 'grid'])
+        </span>
+        <span>Dashboard</span>
+    </a>
+
     @foreach($groups as $group)
         @php
             $isOpen = $group['id'] === $activeGroupId;

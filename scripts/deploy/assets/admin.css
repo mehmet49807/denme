@@ -140,6 +140,8 @@ a:hover { color: var(--magenta); }
 }
 
 .admin-nav-group {
+    --group-icon-bg: rgba(255, 255, 255, 0.1);
+    --group-icon-color: #fff;
     border-radius: 14px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -169,8 +171,6 @@ a:hover { color: var(--magenta); }
 }
 
 .admin-nav-group__icon {
-    --group-icon-bg: rgba(255, 255, 255, 0.1);
-    --group-icon-color: #fff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -186,6 +186,7 @@ a:hover { color: var(--magenta); }
     width: 0.95rem;
     height: 0.95rem;
     display: block;
+    stroke: currentColor;
 }
 
 .admin-nav-group--gold { --group-icon-bg: rgba(251, 191, 36, 0.22); --group-icon-color: #FBBF24; }
