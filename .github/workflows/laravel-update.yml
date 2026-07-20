@@ -20,6 +20,10 @@ on:
         options:
           - target
           - patch
+  push:
+    branches: [master]
+    paths:
+      - 'server/RUN_UPDATE'
 
 concurrency:
   group: laravel-update-gonulkoprusu
@@ -53,7 +57,7 @@ jobs:
       - name: Composer update (Laravel)
         working-directory: server/build
         env:
-          MODE: ${{ github.event.inputs.mode }}
+          MODE: ${{ github.event.inputs.mode || 'target' }}
         run: |
           set -euo pipefail
           if [ "$MODE" = "patch" ]; then
@@ -98,7 +102,7 @@ jobs:
           grep -o "VERSION = '[^']*'" server/build/vendor/laravel/framework/src/Illuminate/Foundation/Application.php | head -1
 
       - name: FTP upload vendor (web)
-        if: github.event.inputs.target == 'all' || github.event.inputs.target == 'web'
+        if: github.event_name == 'push' || github.event.inputs.target == 'all' || github.event.inputs.target == 'web'
         env:
           FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
           FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
@@ -107,7 +111,7 @@ jobs:
         run: python3 scripts/deploy/ftp_vendor_sync.py web
 
       - name: FTP upload vendor (admin)
-        if: github.event.inputs.target == 'all' || github.event.inputs.target == 'admin'
+        if: github.event_name == 'push' || github.event.inputs.target == 'all' || github.event.inputs.target == 'admin'
         env:
           FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
           FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}

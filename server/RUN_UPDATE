@@ -1,0 +1,5 @@
+# Bu dosya Laravel Update workflow'unu tetikler (push to master).
+# İçerik değişikliği yeni bir güncelleme başlatır.
+trigger=2026-07-20T08:35Z
+mode=target
+target=all
