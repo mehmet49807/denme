@@ -177,8 +177,9 @@ def main() -> int:
     # Must run under alt-php83 so writes hit the same CageFS view PHP 8.3 reads
     print(fetch(ENABLE_URLS["web"] + "&action=fix"))
 
-    time.sleep(3)
-    print("\n==== AFTER FIX ====")
+    # Wait for lsphp workers to recycle after pkill
+    time.sleep(8)
+    print("\n==== AFTER FIX (post lsphp restart) ====")
     print(fetch(ENABLE_URLS["web"] + "&action=info"))
     for t, u in URLS.items():
         print("---", t, "probe2 ---")

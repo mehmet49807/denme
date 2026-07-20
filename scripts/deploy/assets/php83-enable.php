@@ -129,6 +129,21 @@ if ($action === 'fix') {
     }
 
     line('list.conf83', implode(',', array_values(array_diff(@scandir($conf83) ?: [], ['.', '..']))));
+
+    // LiteSpeed keeps persistent lsphp workers that already scanned the old conf.
+    // Restart this user's workers so the next request reloads extension inis.
+    $restarts = [
+        'pkill -u "$(whoami)" lsphp || true',
+        'killall -u "$(whoami)" lsphp || true',
+        'touch '.escapeshellarg(dirname($_SERVER['DOCUMENT_ROOT'] ?? '/home/gonulkop/public_html').'/.lsphp_restart') .' || true',
+        'touch '.escapeshellarg(($_SERVER['DOCUMENT_ROOT'] ?? '').'/.lsphp_restart').' || true',
+        'touch /home/gonulkop/.lsphp_restart || true',
+    ];
+    foreach ($restarts as $i => $cmd) {
+        [$c, $o] = run($cmd);
+        line('restart'.$i, "code=$c out=".str_replace("\n", ' | ', $o));
+    }
+
     echo "---- alt_php.ini ----\n".$body."\n---- END ----\n";
     echo "OK\n";
     exit;
