@@ -114,7 +114,7 @@ class LaravelUpdateService
             'current' => $current,
             'php' => $this->phpVersion(),
             'constraint' => $this->composerConstraint(),
-            'target_constraint' => (string) config('update.target_constraint', '^12.0'),
+            'target_constraint' => (string) config('update.target_constraint', '^13.0'),
             'target_major' => $targetMajor,
             'update_available' => $updateAvailable,
             'packagist' => $packagist,
@@ -136,8 +136,8 @@ class LaravelUpdateService
         $before = $this->currentVersion();
         $targetConstraint = match ($mode) {
             'patch' => '^'.explode('.', $before)[0].'.0',
-            'target' => (string) config('update.target_constraint', '^12.0'),
-            default => (string) config('update.target_constraint', '^12.0'),
+            'target' => (string) config('update.target_constraint', '^13.0'),
+            default => (string) config('update.target_constraint', '^13.0'),
         };
 
         if (! $this->shellExecEnabled()) {
@@ -196,6 +196,7 @@ class LaravelUpdateService
 
         $after = $this->readInstalledFrameworkVersion() ?? $this->currentVersion();
         $ok = version_compare($after, $before, '>')
+            || (str_starts_with($targetConstraint, '^13') && version_compare($after, '13.0.0', '>='))
             || (str_starts_with($targetConstraint, '^12') && version_compare($after, '12.0.0', '>='));
 
         $message = $ok

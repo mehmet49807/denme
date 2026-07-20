@@ -15,3 +15,10 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# CloudLinux alt-php 8.3 — Laravel 13
+# php -- BEGIN cPanel-generated handler
+<IfModule mime_module>
+  AddHandler application/x-httpd-alt-php83___lsphp .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler
