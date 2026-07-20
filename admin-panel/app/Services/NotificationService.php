@@ -123,6 +123,10 @@ class NotificationService
             return $this->mapModerationNotification($notification);
         }
 
+        if ($notification->type === UserNotification::TYPE_ADMIN_NOTICE) {
+            return $this->mapAdminNoticeNotification($notification);
+        }
+
         return $this->mapLikeNotification($notification);
     }
 
@@ -200,6 +204,32 @@ class NotificationService
             'created_at' => $notification->created_at,
             'is_read' => $notification->read_at !== null,
             'actor_id' => null,
+            'actor_username' => null,
+            'profile_url' => null,
+            'post_id' => null,
+        ];
+    }
+
+    private function mapAdminNoticeNotification(UserNotification $notification): array
+    {
+        $body = trim((string) ($notification->body ?? ''));
+        $title = 'Yönetim bildirimi';
+        $text = $body;
+
+        if (str_contains($body, "\n")) {
+            [$first, $rest] = explode("\n", $body, 2);
+            $title = trim($first) !== '' ? trim($first) : $title;
+            $text = trim($rest);
+        }
+
+        return [
+            'id' => 'admin-'.$notification->id,
+            'type' => UserNotification::TYPE_ADMIN_NOTICE,
+            'title' => $title,
+            'message_text' => $text !== '' ? $text : $body,
+            'created_at' => $notification->created_at,
+            'is_read' => $notification->read_at !== null,
+            'actor_id' => $notification->actor_id,
             'actor_username' => null,
             'profile_url' => null,
             'post_id' => null,
@@ -403,6 +433,113 @@ class NotificationService
         } catch (\Throwable) {
             // Mesaj kaydı başarılı kalsın.
         }
+    }
+
+    public function notifyAdminNotice(User $user, string $title, string $body, array $data = [], ?User $actor = null): void
+    {
+        try {
+            if (! $this->userNotificationsTableExists()) {
+                return;
+            }
+
+            $title = trim($title);
+            $body = trim($body);
+            if ($title === '' && $body === '') {
+                return;
+            }
+
+            $stored = $title !== '' ? ($title.($body !== '' ? "\n".$body : '')) : $body;
+
+            UserNotification::create([
+                'user_id' => $user->id,
+                'actor_id' => $actor?->id,
+                'type' => UserNotification::TYPE_ADMIN_NOTICE,
+                'body' => $stored,
+                'created_at' => now(),
+            ]);
+
+            $this->forgetSidebarBadges($user->id);
+
+            $this->pushToUser(
+                $user,
+                $title !== '' ? $title : 'Yönetim bildirimi',
+                $body !== '' ? $body : $title,
+                array_merge(['type' => UserNotification::TYPE_ADMIN_NOTICE], $data)
+            );
+        } catch (\Throwable) {
+            //
+        }
+    }
+
+    public function notifySupportReply(\App\Models\SupportTicket $ticket, ?User $admin = null): void
+    {
+        try {
+            $user = null;
+            if (! empty($ticket->user_id)) {
+                $user = User::query()->find($ticket->user_id);
+            }
+            if (! $user && ! empty($ticket->email)) {
+                $user = User::query()->where('email', $ticket->email)->first();
+            }
+            if (! $user) {
+                return;
+            }
+
+            $reply = trim((string) ($ticket->admin_reply ?? ''));
+            $this->notifyAdminNotice(
+                $user,
+                'Destek yanıtı',
+                $reply !== '' ? $reply : 'Destek talebinize yanıt verildi.',
+                [
+                    'type' => 'support_reply',
+                    'ticket_id' => (string) $ticket->id,
+                ],
+                $admin
+            );
+        } catch (\Throwable) {
+            //
+        }
+    }
+
+    public function notifyPremiumGranted(User $user, string $packageLabel): void
+    {
+        $this->notifyAdminNotice(
+            $user,
+            'Premium aktif',
+            $packageLabel.' paketiniz hesabınıza tanımlandı.',
+            ['type' => 'premium_granted', 'package' => $packageLabel]
+        );
+    }
+
+    public function notifyPremiumCancelled(User $user): void
+    {
+        $this->notifyAdminNotice(
+            $user,
+            'Premium iptal',
+            'Aktif premium aboneliğiniz sonlandırıldı.',
+            ['type' => 'premium_cancelled']
+        );
+    }
+
+    public function notifyAccountBanned(User $user, ?string $reason = null): void
+    {
+        $body = 'Hesabınız kısıtlandı.';
+        $reason = trim((string) $reason);
+        if ($reason !== '') {
+            $body .= ' Gerekçe: '.$reason;
+        }
+
+        $this->notifyAdminNotice($user, 'Hesap durumu', $body, ['type' => 'account_banned']);
+    }
+
+    public function notifyAccountUnbanned(User $user): void
+    {
+        $this->notifyAdminNotice(
+            $user,
+            'Hesap durumu',
+            'Hesap kısıtlamanız kaldırıldı. Tekrar giriş yapabilirsiniz.',
+            ['type' => 'account_unbanned']
+        );
     }
 
     private function pushToUser(User $user, string $title, string $body, array $data = []): void

@@ -68,4 +68,3 @@ class UserNotification extends Model
         return $query->where('created_at', '>=', now()->subHours(self::TTL_HOURS));
     }
 }
-

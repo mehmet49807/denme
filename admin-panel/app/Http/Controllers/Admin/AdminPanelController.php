@@ -634,8 +634,10 @@ class AdminPanelController extends Controller
             app(AdminAuditService::class)->log('user.ban', $user->username.' banlandı', 'user', (int) $user->id, [
                 'reason' => $request->banned_reason,
             ]);
+            app(NotificationService::class)->notifyAccountBanned($user, $request->banned_reason);
         } elseif (! $isBanned && $wasBanned) {
             app(AdminAuditService::class)->log('user.unban', $user->username.' banı kaldırıldı', 'user', (int) $user->id);
+            app(NotificationService::class)->notifyAccountUnbanned($user);
         } else {
             app(AdminAuditService::class)->log('user.update', $user->username.' güncellendi', 'user', (int) $user->id);
         }
@@ -656,6 +658,7 @@ class AdminPanelController extends Controller
         ]);
 
         app(AdminAuditService::class)->log('user.unban', $user->username.' banı kaldırıldı', 'user', (int) $user->id);
+        app(NotificationService::class)->notifyAccountUnbanned($user);
 
         return redirect()->route('admin.users')->with('success', 'Kullanıcının banı kaldırıldı.');
     }
@@ -709,6 +712,8 @@ class AdminPanelController extends Controller
         $this->ensureProfileApprovalColumns();
         $count = 0;
 
+        $notifications = app(NotificationService::class);
+
         foreach ($users as $user) {
             if ($validated['bulk_action'] === 'ban') {
                 $user->update([
@@ -716,6 +721,7 @@ class AdminPanelController extends Controller
                     'banned_at' => now(),
                     'banned_reason' => $validated['banned_reason'] ?? 'Toplu ban',
                 ]);
+                $notifications->notifyAccountBanned($user, $validated['banned_reason'] ?? 'Toplu ban');
                 $count++;
             } elseif ($validated['bulk_action'] === 'unban') {
                 $user->update([
@@ -723,6 +729,7 @@ class AdminPanelController extends Controller
                     'banned_at' => null,
                     'banned_reason' => null,
                 ]);
+                $notifications->notifyAccountUnbanned($user);
                 $count++;
             } elseif ($validated['bulk_action'] === 'verify') {
                 $user->update([
@@ -784,6 +791,8 @@ class AdminPanelController extends Controller
             }
 
             $this->applyPremiumGrant($user, $validated['package_type'], (int) $request->user()->id);
+            $pkgName = PremiumSubscription::PACKAGES[$validated['package_type']]['name'] ?? $validated['package_type'];
+            app(NotificationService::class)->notifyPremiumGranted($user, $pkgName);
             $granted++;
         }
 
@@ -822,8 +831,12 @@ class AdminPanelController extends Controller
             ->get();
 
         $cancelled = 0;
+        $notifications = app(NotificationService::class);
         foreach ($users as $user) {
             $active = $user->premiumSubscriptions()->active()->get();
+            if ($active->isEmpty()) {
+                continue;
+            }
             foreach ($active as $sub) {
                 $sub->update([
                     'is_active' => false,
@@ -832,6 +845,7 @@ class AdminPanelController extends Controller
                 ]);
                 $cancelled++;
             }
+            $notifications->notifyPremiumCancelled($user);
         }
 
         app(AdminAuditService::class)->log(
@@ -864,6 +878,11 @@ class AdminPanelController extends Controller
             (int) $subscription->id,
             ['user_id' => $subscription->user_id],
         );
+
+        if ($subscription->user) {
+            app(NotificationService::class)->notifyPremiumCancelled($subscription->user);
+        }
+
         $this->forgetDashboardCache();
 
         return back()->with('success', 'Premium abonelik iptal edildi.');
@@ -1021,10 +1040,11 @@ class AdminPanelController extends Controller
         );
 
         if ($request->boolean('ban_reported') && $report->reported && $report->reported->role === 'user') {
+            $banReason = 'Şikayet sonucu: '.Str::limit($report->reason, 200);
             $report->reported->update([
                 'is_banned' => true,
                 'banned_at' => now(),
-                'banned_reason' => 'Şikayet sonucu: '.Str::limit($report->reason, 200),
+                'banned_reason' => $banReason,
             ]);
             app(AdminAuditService::class)->log(
                 'user.ban',
@@ -1033,6 +1053,7 @@ class AdminPanelController extends Controller
                 (int) $report->reported->id,
                 ['report_id' => $report->id],
             );
+            $notifications->notifyAccountBanned($report->reported, $banReason);
         }
 
         app(AdminAuditService::class)->log(

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
+use App\Services\NotificationService;
 use App\Services\SiteSettingsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -53,7 +54,7 @@ class AdminSupportController extends Controller
         return back()->with('success', '7/24 destek ayarları güncellendi.');
     }
 
-    public function reply(Request $request, SupportTicket $ticket): RedirectResponse
+    public function reply(Request $request, SupportTicket $ticket, NotificationService $notifications): RedirectResponse
     {
         $validated = $request->validate([
             'admin_reply' => 'required|string|max:5000',
@@ -66,6 +67,12 @@ class AdminSupportController extends Controller
             'replied_at' => now(),
         ]);
 
-        return back()->with('success', 'Yanıt kaydedildi.');
+        if (in_array($validated['status'], ['answered', 'closed'], true)
+            || trim($validated['admin_reply']) !== ''
+        ) {
+            $notifications->notifySupportReply($ticket->fresh(), $request->user());
+        }
+
+        return back()->with('success', 'Yanıt kaydedildi. Kullanıcıya bildirim gönderildi.');
     }
 }

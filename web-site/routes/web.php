@@ -17,6 +17,7 @@ use App\Http\Controllers\Web\SupportPageController;
 use App\Http\Controllers\Web\ReferralPageController;
 use App\Http\Controllers\Web\MessagePageController;
 use App\Http\Controllers\Web\LiveSyncController;
+use App\Http\Controllers\Web\DeviceTokenController;
 use App\Http\Controllers\Web\NotificationPageController;
 use App\Http\Controllers\Web\PremiumPageController;
 use App\Http\Controllers\Web\ProfilePageController;
@@ -551,6 +552,8 @@ Route::middleware(['auth', 'locale'])->group(function () {
     Route::get('/live/sync', [LiveSyncController::class, 'sync'])->middleware('throttle:120,1,live-sync')->name('live.sync');
     Route::get('/notifications/badge-counts', [NotificationPageController::class, 'badgeCounts'])->middleware('throttle:120,1,notifications-badges')->name('notifications.badge-counts');
     Route::get('/notifications/poll', [NotificationPageController::class, 'poll'])->middleware('throttle:120,1,notifications-poll')->name('notifications.poll');
+    Route::post('/device-token', [DeviceTokenController::class, 'store'])->middleware('throttle:30,1,device-token')->name('device-token.store');
+    Route::delete('/device-token', [DeviceTokenController::class, 'destroy'])->middleware('throttle:30,1,device-token-del')->name('device-token.destroy');
     Route::get('/messages', [MessagePageController::class, 'index'])->name('messages.index');
     Route::get('/messages/inbox/poll', [MessagePageController::class, 'inboxPoll'])->middleware('throttle:120,1,messages-inbox-poll')->name('messages.inbox.poll');
     Route::get('/messages/{username}', [MessagePageController::class, 'show'])->name('messages.show');

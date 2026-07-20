@@ -208,6 +208,53 @@
         }
     @endphp
     @include('partials.asset', ['path' => 'js/core.min.js'])
+    <script>
+    (function () {
+        var csrf = document.querySelector('meta[name="csrf-token"]');
+        var tokenUrl = @json(route('device-token.store'));
+        function headers() {
+            return {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrf ? csrf.getAttribute('content') : '',
+                'X-Requested-With': 'XMLHttpRequest'
+            };
+        }
+        window.GkPush = {
+            register: function (token, platform) {
+                if (!token) return Promise.resolve({ ok: false });
+                return fetch(tokenUrl, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: headers(),
+                    body: JSON.stringify({ token: String(token), platform: platform || 'android' })
+                }).then(function (r) { return r.json().catch(function () { return { ok: false }; }); });
+            },
+            unregister: function (token) {
+                return fetch(tokenUrl, {
+                    method: 'DELETE',
+                    credentials: 'same-origin',
+                    headers: headers(),
+                    body: JSON.stringify(token ? { token: String(token) } : {})
+                }).then(function (r) { return r.json().catch(function () { return { ok: false }; }); });
+            }
+        };
+        try {
+            if (window.GonulNative && typeof window.GonulNative.getFcmToken === 'function') {
+                var nativeToken = window.GonulNative.getFcmToken();
+                if (nativeToken) window.GkPush.register(nativeToken, 'android');
+            }
+        } catch (e) {}
+        document.addEventListener('message', function (ev) {
+            try {
+                var data = typeof ev.data === 'string' ? JSON.parse(ev.data) : ev.data;
+                if (data && data.type === 'fcm_token' && data.token) {
+                    window.GkPush.register(data.token, data.platform || 'android');
+                }
+            } catch (e) {}
+        });
+    })();
+    </script>
     @if($realtimeEnabled)
     <script src="https://js.pusher.com/8.4.0/pusher.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js" crossorigin="anonymous"></script>
