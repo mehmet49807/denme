@@ -1,7 +1,7 @@
 {
     "name": "gonulkoprusu/backend-web",
     "type": "project",
-    "description": "Gönül Köprüsü - Laravel API, Admin Panel & Web Frontend",
+    "description": "G\u00f6n\u00fcl K\u00f6pr\u00fcs\u00fc - Laravel API, Admin Panel & Web Frontend",
     "require": {
         "php": "^8.3",
         "laravel/framework": "^13.0",
