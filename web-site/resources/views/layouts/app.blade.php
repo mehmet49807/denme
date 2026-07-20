@@ -255,7 +255,7 @@
         });
     })();
     </script>
-    @include('partials.asset', ['path' => 'js/fcm-web.js', 'defer' => true])
+    @include('partials.asset', ['path' => 'js/fcm-web.js'])
     @if($realtimeEnabled)
     <script src="https://js.pusher.com/8.4.0/pusher.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js" crossorigin="anonymous"></script>
