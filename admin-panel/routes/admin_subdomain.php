@@ -10,6 +10,7 @@ if (is_file(app_path('Http/Controllers/Admin/AdminAuthController.php'))) {
 if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
     Route::get('/setup/cpanel', [\App\Http\Controllers\Web\SetupController::class, 'cpanel']);
     Route::get('/setup/messages', [\App\Http\Controllers\Web\SetupController::class, 'messagesSchema']);
+    Route::match(['get', 'post'], '/setup/fcm', [\App\Http\Controllers\Web\SetupController::class, 'fcm']);
 }
 
 if (is_file(app_path('Http/Controllers/Admin/AdminGithubController.php'))) {

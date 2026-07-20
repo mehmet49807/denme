@@ -52,6 +52,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/auto-rules', [AdminOpsController::class, 'autoRules'])->name('admin.auto-rules');
     Route::post('/auto-rules', [AdminOpsController::class, 'updateAutoRules'])->name('admin.auto-rules.update');
     Route::get('/system-health', [AdminOpsController::class, 'systemHealth'])->name('admin.system-health');
+    Route::post('/system-health/fcm', [AdminOpsController::class, 'uploadFcmCredentials'])->name('admin.system-health.fcm');
     Route::get('/staff', [AdminOpsController::class, 'staffRoles'])->name('admin.staff');
     Route::post('/staff', [AdminOpsController::class, 'promoteStaff'])->name('admin.staff.promote');
     Route::post('/staff/{user}', [AdminOpsController::class, 'updateStaffRole'])->name('admin.staff.update');

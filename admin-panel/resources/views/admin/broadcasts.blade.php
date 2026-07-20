@@ -7,7 +7,10 @@
 @if(!empty($fcmConfigured))
     <p class="admin-ops-meta" style="margin-bottom:1rem">FCM hazır · {{ $registeredDevices ?? 0 }} kayıtlı cihaz</p>
 @else
-    <p class="admin-ops-meta" style="margin-bottom:1rem">FCM yapılandırması eksik — duyurular uygulama içi olarak kaydedilir.</p>
+    <p class="admin-ops-meta" style="margin-bottom:1rem">
+        FCM yapılandırması eksik — duyurular uygulama içi olarak kaydedilir.
+        <a href="{{ route('admin.system-health') }}">Sistem Sağlığı</a> sayfasından Firebase JSON yükleyin.
+    </p>
 @endif
 
 <div class="admin-panel admin-panel--glass form-card">

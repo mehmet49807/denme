@@ -35,6 +35,24 @@
 </div>
 
 <div class="admin-panel admin-panel--glass" style="margin-top:1.25rem">
+    <h3 class="admin-panel-title">FCM Push yapılandırması</h3>
+    @php $fcm = $fcmStatus ?? []; @endphp
+    <p class="admin-ops-meta">
+        @if(!empty($fcm['configured']))
+            Hazır · proje {{ $fcm['project_id'] ?? '—' }} · {{ $fcm['device_count'] ?? 0 }} cihaz
+            · kaynak {{ $fcm['credentials_source'] ?? '—' }}
+        @else
+            Service account JSON eksik. Firebase Console → Project settings → Service accounts → Generate new private key.
+        @endif
+    </p>
+    <form method="post" action="{{ route('admin.system-health.fcm') }}" enctype="multipart/form-data" class="admin-inline-form" style="display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;margin-top:.75rem">
+        @csrf
+        <input type="file" name="credentials" accept=".json,application/json" required>
+        <button type="submit" class="btn btn-primary">JSON yükle</button>
+    </form>
+</div>
+
+<div class="admin-panel admin-panel--glass" style="margin-top:1.25rem">
     <h3 class="admin-panel-title">Yedek / dışa aktarma</h3>
     <p class="admin-ops-meta">Tam veritabanı geri yükleme yerine güvenli CSV ve ayar dışa aktarımı.</p>
     <div class="admin-quick-actions">

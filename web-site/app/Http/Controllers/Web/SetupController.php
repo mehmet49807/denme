@@ -516,14 +516,103 @@ class SetupController extends Controller
             $lines[] = 'schema kontrol hatası: '.$e->getMessage();
         }
 
-        $credPath = config('firebase.credentials');
-        $lines[] = 'credentials path: '.$credPath;
-        $lines[] = 'credentials readable: '.(is_string($credPath) && is_readable($credPath) ? 'evet' : 'hayır');
+        $firebaseDir = storage_path('app/firebase');
+        if (! is_dir($firebaseDir)) {
+            $lines[] = @mkdir($firebaseDir, 0750, true)
+                ? 'firebase dir: oluşturuldu'
+                : 'firebase dir: oluşturulamadı';
+        } else {
+            $lines[] = 'firebase dir: var';
+        }
+
+        // Kardeş yollarda service account ara (içerik yazılmaz).
+        $scanRoots = array_unique(array_filter([
+            storage_path('app/firebase'),
+            '/home/gonulkop/public_html/storage/app/firebase',
+            '/home/gonulkop/admin.gonulkoprusu.com/storage/app/firebase',
+            storage_path('app'),
+            '/home/gonulkop/public_html/storage/app',
+            '/home/gonulkop/admin.gonulkoprusu.com/storage/app',
+        ]));
+        $found = [];
+        foreach ($scanRoots as $root) {
+            if (! is_dir($root)) {
+                continue;
+            }
+            try {
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS),
+                    \RecursiveIteratorIterator::SELF_FIRST
+                );
+                $iterator->setMaxDepth(3);
+                $count = 0;
+                foreach ($iterator as $file) {
+                    if (++$count > 2000) {
+                        break;
+                    }
+                    if (! $file->isFile()) {
+                        continue;
+                    }
+                    $name = strtolower($file->getFilename());
+                    if (! str_ends_with($name, '.json')) {
+                        continue;
+                    }
+                    if (! str_contains($name, 'firebase')
+                        && ! str_contains($name, '325eb')
+                        && ! str_contains($name, 'service')
+                        && ! str_contains($name, 'adminsdk')
+                    ) {
+                        continue;
+                    }
+                    $path = $file->getPathname();
+                    $raw = @file_get_contents($path, false, null, 0, 400);
+                    if (! is_string($raw) || ! str_contains($raw, 'private_key')) {
+                        continue;
+                    }
+                    $found[] = $path;
+                }
+            } catch (\Throwable) {
+                //
+            }
+        }
+        $found = array_values(array_unique($found));
+        $lines[] = 'scan hits: '.(count($found) ? implode(' | ', $found) : '(yok)');
 
         try {
             $fcm = app(\App\Services\FcmPushService::class);
-            $lines[] = 'FCM configured: '.($fcm->isConfigured() ? 'evet' : 'hayır');
-            $lines[] = 'Kayıtlı cihaz sayısı: '.$fcm->registeredDeviceCount();
+
+            if (request()->isMethod('post') || request()->filled('json') || request()->filled('json_b64')) {
+                $payload = (string) request('json', '');
+                if ($payload === '' && request()->filled('json_b64')) {
+                    $payload = (string) base64_decode((string) request('json_b64'), true);
+                }
+                if ($payload === '' && request()->hasFile('credentials')) {
+                    $payload = (string) file_get_contents(request()->file('credentials')->getRealPath());
+                }
+                $install = $fcm->installCredentialsJson($payload);
+                $lines[] = 'install: '.(($install['ok'] ?? false) ? 'OK' : ('HATA '.($install['error'] ?? '')));
+                if (! empty($install['mirrored'])) {
+                    $lines[] = 'mirrored: '.count($install['mirrored']).' dosya';
+                }
+            } elseif ($found !== [] && ! $fcm->isConfigured()) {
+                $install = $fcm->installCredentialsJson((string) file_get_contents($found[0]));
+                $lines[] = 'auto-copy: '.(($install['ok'] ?? false) ? 'OK from '.$found[0] : ('HATA '.($install['error'] ?? '')));
+            }
+
+            try {
+                Artisan::call('config:clear');
+            } catch (\Throwable) {
+                //
+            }
+
+            $status = $fcm->status();
+            $lines[] = 'credentials path: '.($status['credentials_path'] ?? '(null)');
+            $lines[] = 'credentials source: '.($status['credentials_source'] ?? 'none');
+            $lines[] = 'credentials readable: '.($status['configured'] ? 'evet' : 'hayır');
+            $lines[] = 'FCM configured: '.($status['configured'] ? 'evet' : 'hayır');
+            $lines[] = 'project_id: '.($status['project_id'] ?? '');
+            $lines[] = 'Kayıtlı cihaz sayısı: '.($status['device_count'] ?? 0);
+            $lines[] = 'openssl: '.(($status['openssl'] ?? false) ? 'evet' : 'hayır');
         } catch (\Throwable $e) {
             $lines[] = 'FCM servis hatası: '.$e->getMessage();
         }
@@ -531,6 +620,8 @@ class SetupController extends Controller
         $lines[] = '';
         $lines[] = 'Service account JSON: Firebase Console → Project settings → Service accounts → Generate new private key';
         $lines[] = 'Sunucuya yükle: storage/app/firebase/gonulkoprusu-325eb.json';
+        $lines[] = 'veya admin → Sistem Sağlığı → FCM JSON yükle';
+        $lines[] = 'veya POST /setup/fcm?key=... (json / json_b64 / credentials file)';
         $lines[] = '';
         $lines[] = 'OK';
 

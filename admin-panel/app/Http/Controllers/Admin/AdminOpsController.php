@@ -272,12 +272,13 @@ class AdminOpsController extends Controller
             $checks['cache'] = ['ok' => false, 'label' => 'Önbellek', 'detail' => 'Erişilemedi'];
         }
 
+        $fcmStatus = $fcm->status();
         $checks['fcm'] = [
-            'ok' => $fcm->isConfigured(),
+            'ok' => $fcmStatus['configured'],
             'label' => 'FCM Push',
-            'detail' => $fcm->isConfigured()
-                ? $fcm->registeredDeviceCount().' kayıtlı cihaz'
-                : 'Yapılandırma eksik',
+            'detail' => $fcmStatus['configured']
+                ? $fcmStatus['device_count'].' kayıtlı cihaz · '.$fcmStatus['project_id']
+                : 'Yapılandırma eksik — service account JSON yükleyin',
         ];
 
         $pendingReports = Report::where('status', 'pending')->count();
@@ -311,10 +312,44 @@ class AdminOpsController extends Controller
 
         return view('admin.system-health', [
             'checks' => $checks,
+            'fcmStatus' => $fcmStatus,
             'phpVersion' => PHP_VERSION,
             'laravelVersion' => app()->version(),
             'appEnv' => config('app.env'),
         ]);
+    }
+
+    public function uploadFcmCredentials(Request $request, FcmPushService $fcm)
+    {
+        $request->validate([
+            'credentials' => 'required|file|max:512',
+        ]);
+
+        $json = (string) file_get_contents($request->file('credentials')->getRealPath());
+        $result = $fcm->installCredentialsJson($json);
+
+        if (! ($result['ok'] ?? false)) {
+            return back()->with('error', $result['error'] ?? 'FCM kimlik bilgileri yüklenemedi.');
+        }
+
+        try {
+            \Illuminate\Support\Facades\Artisan::call('config:clear');
+        } catch (\Throwable) {
+            //
+        }
+
+        $this->audit->log(
+            'fcm.credentials_upload',
+            'Firebase service account JSON yüklendi',
+            'settings',
+            null,
+            ['mirrored' => count($result['mirrored'] ?? [])]
+        );
+
+        return back()->with(
+            'success',
+            'FCM yapılandırması tamam · '.$fcm->registeredDeviceCount().' kayıtlı cihaz'
+        );
     }
 
     public function staffRoles(Request $request): View
