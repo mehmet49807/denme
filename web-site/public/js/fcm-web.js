@@ -1,10 +1,9 @@
 (function () {
     'use strict';
 
-    // Bir kez kapatıldıysa / izin verildiyse bir daha otomatik gösterme.
-    var DONE_KEY = 'gk_fcm_web_prompt_done';
     var PROMPT_ID = 'gkFcmWebPrompt';
     var started = false;
+    var acknowledged = false;
 
     function forcePrompt() {
         try {
@@ -14,22 +13,17 @@
         }
     }
 
-    function isDone() {
-        if (forcePrompt()) return false;
-        try {
-            return localStorage.getItem(DONE_KEY) === '1';
-        } catch (e) {
-            return false;
-        }
+    function shouldShowAfterLogin() {
+        return window.__GK_FCM_LOGIN_PROMPT__ === true || forcePrompt();
     }
 
-    function markDone() {
-        try {
-            localStorage.setItem(DONE_KEY, '1');
-            // Eski anahtarları temizle
-            localStorage.removeItem('gk_fcm_web_dismissed_at');
-            localStorage.removeItem('gk_fcm_web_dismissed');
-        } catch (e) {}
+    function ackPrompt() {
+        if (acknowledged) return;
+        acknowledged = true;
+        window.__GK_FCM_LOGIN_PROMPT__ = false;
+        if (window.GkPush && typeof window.GkPush.ackPrompt === 'function') {
+            window.GkPush.ackPrompt();
+        }
     }
 
     function hasNotificationApi() {
@@ -144,11 +138,8 @@
         document.head.appendChild(s);
     }
 
-    function showPrompt(opts) {
-        opts = opts || {};
+    function showPrompt(onAllow) {
         if (document.getElementById(PROMPT_ID)) return;
-        if (!opts.force && isDone()) return;
-
         injectStyles();
         var el = document.createElement('div');
         el.id = PROMPT_ID;
@@ -158,8 +149,8 @@
         el.innerHTML =
             '<div class="gk-fcm-prompt__card">' +
             '<div class="gk-fcm-prompt__text">' +
-            '<strong>' + (opts.title || 'Tarayıcı bildirimleri') + '</strong>' +
-            '<p>' + (opts.body || 'Yeni mesaj ve duyuruları tarayıcıdan anında alın.') + '</p>' +
+            '<strong>Tarayıcı bildirimleri</strong>' +
+            '<p>Yeni mesaj ve duyuruları tarayıcıdan anında alın.</p>' +
             '</div>' +
             '<div class="gk-fcm-prompt__actions">' +
             '<button type="button" class="gk-fcm-prompt__btn gk-fcm-prompt__btn--ghost" data-fcm-later>Şimdi değil</button>' +
@@ -167,23 +158,23 @@
             '</div></div>';
         document.body.appendChild(el);
 
+        // Gösterildiği anda session bayrağını temizle → sonraki sayfalarda tekrar çıkmaz
+        ackPrompt();
+
         el.querySelector('[data-fcm-later]').addEventListener('click', function () {
-            markDone();
             hidePrompt();
         });
         el.querySelector('[data-fcm-allow]').addEventListener('click', function () {
             hidePrompt();
-            if (opts.onAllow) opts.onAllow();
+            if (onAllow) onAllow();
         });
     }
 
     function enableWeb(cfg) {
         if (!hasNotificationApi()) {
-            markDone();
             return Promise.resolve({ ok: false, reason: 'unsupported' });
         }
         return Notification.requestPermission().then(function (perm) {
-            markDone();
             if (perm !== 'granted') {
                 return { ok: false, permission: perm };
             }
@@ -204,47 +195,51 @@
             if (!ok) return;
 
             if (!window.isSecureContext || !hasNotificationApi() || !hasServiceWorker()) {
-                markDone();
+                if (shouldShowAfterLogin()) ackPrompt();
                 return;
             }
 
             loadConfig().then(function (cfg) {
-                if (!cfg || cfg.enabled === false || !cfg.configured) return;
+                if (!cfg || cfg.enabled === false || !cfg.configured) {
+                    if (shouldShowAfterLogin()) ackPrompt();
+                    return;
+                }
 
                 window.GkPush.enableWeb = function () {
                     return enableWeb(cfg).catch(function (err) {
                         console.warn('[GkFcm] enableWeb hata', err);
-                        markDone();
                         return { ok: false, error: String(err && err.message || err) };
                     });
                 };
 
-                // İzin zaten verilmiş → arka planda token kaydet, banner yok
+                // İzin verilmiş → token yenile, banner yok
                 if (Notification.permission === 'granted') {
-                    markDone();
+                    if (shouldShowAfterLogin()) ackPrompt();
                     getToken(cfg).then(saveToken).catch(function () {});
                     return;
                 }
 
-                // Tarayıcıda engellenmiş → bir daha sorma
+                // Engellenmiş → banner gösterme
                 if (Notification.permission === 'denied') {
-                    markDone();
+                    if (shouldShowAfterLogin()) ackPrompt();
                     return;
                 }
 
-                // default — yalnızca daha önce kapatılmadıysa bir kez sor
-                if (isDone()) return;
+                // Yalnızca yeni girişte (veya ?fcm=1) bir kez sor
+                if (!shouldShowAfterLogin()) return;
 
                 setTimeout(function () {
-                    if (isDone() || Notification.permission !== 'default') return;
-                    showPrompt({
-                        force: forcePrompt(),
-                        onAllow: function () {
-                            window.GkPush.enableWeb();
-                        }
+                    if (Notification.permission !== 'default') {
+                        ackPrompt();
+                        return;
+                    }
+                    showPrompt(function () {
+                        window.GkPush.enableWeb();
                     });
-                }, 800);
-            }).catch(function () {});
+                }, 700);
+            }).catch(function () {
+                if (shouldShowAfterLogin()) ackPrompt();
+            });
         });
     }
 

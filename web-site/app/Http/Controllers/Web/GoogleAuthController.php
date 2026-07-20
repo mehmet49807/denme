@@ -166,6 +166,7 @@ class GoogleAuthController extends Controller
 
             session()->forget(['google_signup', 'google_signup_intent']);
             Auth::login($user, true);
+            \App\Support\FcmWebPrompt::arm();
 
             return redirect()->intended(route('feed'));
         }
@@ -279,6 +280,7 @@ class GoogleAuthController extends Controller
 
         session()->forget(['google_signup', 'google_signup_intent']);
         Auth::login($user, true);
+        \App\Support\FcmWebPrompt::arm();
         session([
             'growth_signed_up' => 1,
             'growth_signed_up_method' => 'google',

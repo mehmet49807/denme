@@ -40,4 +40,11 @@ class DeviceTokenController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    public function ackPrompt(Request $request): JsonResponse
+    {
+        \App\Support\FcmWebPrompt::clear();
+
+        return response()->json(['ok' => true]);
+    }
 }

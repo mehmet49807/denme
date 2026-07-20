@@ -192,6 +192,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         }
 
         \Illuminate\Support\Facades\Auth::login($user, true);
+        \App\Support\FcmWebPrompt::arm();
         request()->session()->save();
 
         $cookieName = config('session.cookie');
@@ -562,6 +563,7 @@ Route::middleware(['auth', 'locale'])->group(function () {
     Route::get('/notifications/poll', [NotificationPageController::class, 'poll'])->middleware('throttle:120,1,notifications-poll')->name('notifications.poll');
     Route::post('/device-token', [DeviceTokenController::class, 'store'])->middleware('throttle:30,1,device-token')->name('device-token.store');
     Route::delete('/device-token', [DeviceTokenController::class, 'destroy'])->middleware('throttle:30,1,device-token-del')->name('device-token.destroy');
+    Route::post('/device-token/prompt-seen', [DeviceTokenController::class, 'ackPrompt'])->middleware('throttle:30,1,device-token-prompt')->name('device-token.prompt-seen');
     Route::get('/messages', [MessagePageController::class, 'index'])->name('messages.index');
     Route::get('/messages/inbox/poll', [MessagePageController::class, 'inboxPoll'])->middleware('throttle:120,1,messages-inbox-poll')->name('messages.inbox.poll');
     Route::get('/messages/{username}', [MessagePageController::class, 'show'])->name('messages.show');

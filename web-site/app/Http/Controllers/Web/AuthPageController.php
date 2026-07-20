@@ -148,6 +148,7 @@ class AuthPageController extends Controller
                 $user->update(['profile_photo_url' => $url]);
             } catch (\Throwable) {
                 Auth::login($user);
+                \App\Support\FcmWebPrompt::arm();
 
                 return redirect()->route('feed')
                     ->with('success', 'Kayıt tamamlandı. Profil fotoğrafı yüklenemedi; profil sayfasından tekrar ekleyebilirsiniz.');
@@ -155,6 +156,7 @@ class AuthPageController extends Controller
         }
 
         Auth::login($user);
+        \App\Support\FcmWebPrompt::arm();
         session([
             'growth_signed_up' => 1,
             'growth_signed_up_method' => 'email',
@@ -204,6 +206,7 @@ class AuthPageController extends Controller
             }
 
             Auth::login($user, $request->boolean('remember'));
+            \App\Support\FcmWebPrompt::arm();
 
             if ($user->isAdmin()) {
                 if (\Illuminate\Support\Facades\Route::has('admin.dashboard')) {

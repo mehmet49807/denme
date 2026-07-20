@@ -206,12 +206,14 @@
         } catch (\Throwable) {
             $realtimeEnabled = false;
         }
+        $fcmLoginPrompt = \App\Support\FcmWebPrompt::pending();
     @endphp
     @include('partials.asset', ['path' => 'js/core.min.js'])
     <script>
     (function () {
         var csrf = document.querySelector('meta[name="csrf-token"]');
         var tokenUrl = @json(route('device-token.store'));
+        var promptSeenUrl = @json(route('device-token.prompt-seen'));
         function headers() {
             return {
                 'Content-Type': 'application/json',
@@ -220,6 +222,7 @@
                 'X-Requested-With': 'XMLHttpRequest'
             };
         }
+        window.__GK_FCM_LOGIN_PROMPT__ = @json($fcmLoginPrompt);
         window.GkPush = {
             register: function (token, platform) {
                 if (!token) return Promise.resolve({ ok: false });
@@ -237,6 +240,15 @@
                     headers: headers(),
                     body: JSON.stringify(token ? { token: String(token) } : {})
                 }).then(function (r) { return r.json().catch(function () { return { ok: false }; }); });
+            },
+            ackPrompt: function () {
+                window.__GK_FCM_LOGIN_PROMPT__ = false;
+                return fetch(promptSeenUrl, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: headers(),
+                    body: '{}'
+                }).then(function (r) { return r.json().catch(function () { return { ok: false }; }); }).catch(function () { return { ok: false }; });
             }
         };
         try {
