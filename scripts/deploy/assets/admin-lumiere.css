@@ -1531,3 +1531,176 @@ body.admin-theme-lumiere.admin-page--seo {
 /* admin-topnav-menu removed */
 .admin-theme-lumiere .admin-topnav,
 .admin-theme-lumiere .admin-topnav-menu { display: none !important; }
+
+/* === Admin full controls: logo contrast + ops surfaces === */
+.admin-theme-lumiere .admin-sidebar-brand {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.04), rgba(15, 23, 42, 0.08));
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 16px;
+    padding: 0.65rem 0.75rem;
+    margin: 0 0.65rem 0.85rem;
+}
+.admin-theme-lumiere .admin-sidebar-logo--ink {
+    filter: none;
+    opacity: 1;
+    max-width: 100%;
+    height: auto;
+}
+.admin-theme-lumiere .admin-sidebar-brand-text__title {
+    color: #0f172a;
+}
+.admin-theme-lumiere .admin-sidebar-brand-text small {
+    color: #475569;
+}
+
+.admin-ops-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+@media (max-width: 960px) {
+    .admin-ops-grid { grid-template-columns: 1fr; }
+}
+.admin-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+.admin-ops-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+.admin-ops-row:last-child { border-bottom: 0; }
+.admin-ops-meta {
+    display: block;
+    color: #475569;
+    font-size: 0.82rem;
+    margin-top: 0.15rem;
+}
+.admin-ops-empty {
+    color: #64748b;
+    margin: 0.5rem 0 0;
+}
+.admin-ops-user {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+.admin-ops-user img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.admin-ops-gallery {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+.admin-ops-gallery-item {
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #e2e8f0;
+}
+.admin-ops-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.admin-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+.admin-gallery-card {
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding-bottom: 0.75rem;
+}
+.admin-gallery-card img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    background: #e2e8f0;
+}
+.admin-gallery-card__meta {
+    padding: 0 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+.admin-gallery-card form {
+    padding: 0 0.75rem;
+}
+.admin-health-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.85rem;
+}
+.admin-health-card {
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+.admin-health-card.is-ok { border-color: rgba(16, 185, 129, 0.35); }
+.admin-health-card.is-bad { border-color: rgba(239, 68, 68, 0.35); background: #fff7f7; }
+.admin-health-card em {
+    font-style: normal;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #059669;
+}
+.admin-health-card.is-bad em { color: #dc2626; }
+.admin-rules-list {
+    display: grid;
+    gap: 0.65rem;
+}
+.admin-rule-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+}
+.admin-inline-role-form {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.admin-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.admin-badge--danger { background: #fee2e2; color: #b91c1c; }
+.admin-badge--warn { background: #ffedd5; color: #c2410c; }
+.admin-users-bulk {
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}

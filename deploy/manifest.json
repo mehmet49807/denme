@@ -149,6 +149,11 @@
         "file": true
       },
       {
+        "local": "web-site/public/images/logo-admin-ink.png",
+        "remote": "images/logo-admin-ink.png",
+        "file": true
+      },
+      {
         "local": "web-site/public/images/favicon.png",
         "remote": "images/favicon.png",
         "file": true
@@ -166,6 +171,11 @@
       {
         "local": "scripts/deploy/assets/admin-login-lumiere.css",
         "remote": "css/admin-login-lumiere.css",
+        "file": true
+      },
+      {
+        "local": "admin-panel/public/js/admin-dashboard.js",
+        "remote": "js/admin-dashboard.js",
         "file": true
       }
     ],

@@ -74,9 +74,22 @@
 
     <div class="admin-users-bulk" id="adminUsersBulk" hidden>
         <span class="admin-users-bulk-count"><strong id="adminSelectedCount">0</strong> kullanıcı seçildi</span>
-        <button type="button" class="btn btn-primary btn-sm" id="adminBulkPremiumBtn">Seçilenlere Premium Ekle</button>
+        <button type="button" class="btn btn-primary btn-sm" id="adminBulkPremiumBtn">Premium Ekle</button>
+        <button type="button" class="btn btn-outline btn-sm" id="adminBulkCancelPremiumBtn">Premium İptal</button>
+        <button type="button" class="btn btn-outline btn-sm" id="adminBulkVerifyBtn">Profil Onayla</button>
+        <button type="button" class="btn btn-danger btn-sm" id="adminBulkBanBtn">Banla</button>
+        <button type="button" class="btn btn-outline btn-sm" id="adminBulkUnbanBtn">Ban Kaldır</button>
         <button type="button" class="btn btn-outline btn-sm" id="adminClearSelectionBtn">Seçimi Temizle</button>
     </div>
+
+    <form method="POST" action="{{ route('admin.users.bulk') }}" id="adminBulkActionForm" hidden>
+        @csrf
+        <input type="hidden" name="bulk_action" id="adminBulkActionValue" value="">
+        <input type="hidden" name="banned_reason" id="adminBulkBanReason" value="">
+    </form>
+    <form method="POST" action="{{ route('admin.users.premium.cancel') }}" id="adminBulkCancelPremiumForm" hidden>
+        @csrf
+    </form>
 
     <div class="admin-users-desktop admin-table-wrap admin-table-wrap--dropdown">
         <table class="admin-table admin-table--users">
@@ -105,15 +118,14 @@
                 @endphp
                 <tr>
                     <td class="admin-table-check-col">
-                        @if($canGrantPremium)
-                            <input
-                                type="checkbox"
-                                class="admin-user-select"
-                                value="{{ $user->id }}"
-                                data-username="{{ $user->username }}"
-                                aria-label="{{ $user->username }} seç"
-                            >
-                        @endif
+                        <input
+                            type="checkbox"
+                            class="admin-user-select"
+                            value="{{ $user->id }}"
+                            data-username="{{ $user->username }}"
+                            data-can-premium="{{ $canGrantPremium ? '1' : '0' }}"
+                            aria-label="{{ $user->username }} seç"
+                        >
                     </td>
                     <td>
                         <div class="admin-user-cell">
@@ -188,15 +200,14 @@
         <article class="admin-user-card admin-user-card--open">
             <header class="admin-user-card-summary">
                 <span class="admin-user-card-summary-check">
-                    @if($canGrantPremium)
-                        <input
-                            type="checkbox"
-                            class="admin-user-select"
-                            value="{{ $user->id }}"
-                            data-username="{{ $user->username }}"
-                            aria-label="{{ $user->username }} seç"
-                        >
-                    @endif
+                    <input
+                        type="checkbox"
+                        class="admin-user-select"
+                        value="{{ $user->id }}"
+                        data-username="{{ $user->username }}"
+                        data-can-premium="{{ $canGrantPremium ? '1' : '0' }}"
+                        aria-label="{{ $user->username }} seç"
+                    >
                 </span>
                 <span class="admin-user-avatar admin-user-avatar--card">
                     @if($user->profile_photo_url)
@@ -354,6 +365,11 @@
             <textarea name="banned_reason" id="edit_banned_reason" rows="3"></textarea>
         </div>
 
+        <div class="form-group" id="adminUserNotesBox">
+            <label>Admin notları</label>
+            <div id="adminUserNotesList" class="admin-ops-meta"></div>
+        </div>
+
         <footer class="admin-dialog-footer">
             <button type="button" class="btn btn-outline" data-close-dialog>İptal</button>
             <button type="submit" class="btn btn-primary">Kaydet</button>
@@ -361,8 +377,34 @@
     </form>
 </dialog>
 
+<dialog id="adminUserNoteDialog" class="admin-dialog">
+    <form method="POST" id="adminUserNoteForm" class="admin-dialog-form">
+        @csrf
+        <header class="admin-dialog-header">
+            <h2 id="adminUserNoteTitle">Kullanıcı Notu</h2>
+            <button type="button" class="admin-dialog-close" data-close-note-dialog aria-label="Kapat">×</button>
+        </header>
+        <div class="form-group">
+            <label for="admin_note_text">Not</label>
+            <textarea id="admin_note_text" name="note" rows="4" required maxlength="2000"></textarea>
+        </div>
+        <div class="form-group admin-checkbox-group">
+            <label>
+                <input type="checkbox" name="is_pinned" value="1">
+                Sabitle
+            </label>
+        </div>
+        <footer class="admin-dialog-footer">
+            <button type="button" class="btn btn-outline" data-close-note-dialog>İptal</button>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+        </footer>
+    </form>
+</dialog>
+
 <script>
 window.adminPremiumPackages = @json($premiumPackages);
+window.adminUserNotes = @json($userNotesPayload ?? new \stdClass());
+window.adminNoteStoreUrl = @json(route('admin.users.notes.store', ['user' => '__ID__']));
 
 (function () {
     const dialog = document.getElementById('adminUserEditDialog');
@@ -381,7 +423,36 @@ window.adminPremiumPackages = @json($premiumPackages);
     const selectedCountEl = document.getElementById('adminSelectedCount');
     const selectAll = document.getElementById('adminSelectAllUsers');
     const bulkPremiumBtn = document.getElementById('adminBulkPremiumBtn');
+    const bulkCancelPremiumBtn = document.getElementById('adminBulkCancelPremiumBtn');
+    const bulkVerifyBtn = document.getElementById('adminBulkVerifyBtn');
+    const bulkBanBtn = document.getElementById('adminBulkBanBtn');
+    const bulkUnbanBtn = document.getElementById('adminBulkUnbanBtn');
+    const bulkActionForm = document.getElementById('adminBulkActionForm');
+    const bulkCancelPremiumForm = document.getElementById('adminBulkCancelPremiumForm');
     const clearSelectionBtn = document.getElementById('adminClearSelectionBtn');
+
+    function appendSelectedUserIds(form) {
+        form.querySelectorAll('input[name="user_ids[]"]').forEach(function (el) { el.remove(); });
+        getSelectedCheckboxes().forEach(function (cb) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'user_ids[]';
+            input.value = cb.value;
+            form.appendChild(input);
+        });
+    }
+
+    function submitBulkAction(action) {
+        const selected = getSelectedCheckboxes();
+        if (!selected.length) return;
+        if (action === 'ban') {
+            const reason = window.prompt('Ban nedeni (opsiyonel):', 'Toplu ban') || 'Toplu ban';
+            document.getElementById('adminBulkBanReason').value = reason;
+        }
+        document.getElementById('adminBulkActionValue').value = action;
+        appendSelectedUserIds(bulkActionForm);
+        bulkActionForm.submit();
+    }
 
     function getUserCheckboxes() {
         return Array.from(document.querySelectorAll('.admin-user-select'));
@@ -457,12 +528,48 @@ window.adminPremiumPackages = @json($premiumPackages);
 
     if (bulkPremiumBtn) {
         bulkPremiumBtn.addEventListener('click', function () {
-            const selected = getSelectedCheckboxes();
-            if (!selected.length) return;
+            const selected = getSelectedCheckboxes().filter(function (cb) {
+                return cb.dataset.canPremium === '1';
+            });
+            if (!selected.length) {
+                alert('Premium yalnızca banlı olmayan erkek kullanıcılara verilebilir.');
+                return;
+            }
             openPremiumDialog(
                 selected.map(function (cb) { return cb.value; }),
                 selected.map(function (cb) { return cb.dataset.username; })
             );
+        });
+    }
+
+    if (bulkCancelPremiumBtn) {
+        bulkCancelPremiumBtn.addEventListener('click', function () {
+            const selected = getSelectedCheckboxes();
+            if (!selected.length) return;
+            if (!confirm(selected.length + ' kullanıcının premiumu iptal edilsin mi?')) return;
+            appendSelectedUserIds(bulkCancelPremiumForm);
+            bulkCancelPremiumForm.submit();
+        });
+    }
+
+    if (bulkVerifyBtn) {
+        bulkVerifyBtn.addEventListener('click', function () {
+            if (!confirm('Seçilen kullanıcıların profili onaylansın mı?')) return;
+            submitBulkAction('verify');
+        });
+    }
+
+    if (bulkBanBtn) {
+        bulkBanBtn.addEventListener('click', function () {
+            if (!confirm('Seçilen kullanıcılar banlansın mı?')) return;
+            submitBulkAction('ban');
+        });
+    }
+
+    if (bulkUnbanBtn) {
+        bulkUnbanBtn.addEventListener('click', function () {
+            if (!confirm('Seçilen kullanıcıların banı kaldırılsın mı?')) return;
+            submitBulkAction('unban');
         });
     }
 
@@ -531,10 +638,37 @@ window.adminPremiumPackages = @json($premiumPackages);
 
     bannedCheck.addEventListener('change', toggleBannedReason);
 
+    function renderUserNotes(userId) {
+        const box = document.getElementById('adminUserNotesList');
+        if (!box) return;
+        const notes = (window.adminUserNotes && window.adminUserNotes[userId]) || [];
+        if (!notes.length) {
+            box.innerHTML = 'Henüz not yok. <button type="button" class="btn btn-outline btn-sm" id="adminAddNoteBtn">Not ekle</button>';
+        } else {
+            box.innerHTML = notes.map(function (n) {
+                return '<div class="admin-ops-row"><div><strong>' + (n.pinned ? '📌 ' : '') + n.admin + '</strong><span class="admin-ops-meta">' + n.note + '</span></div><span class="admin-ops-meta">' + (n.at || '') + '</span></div>';
+            }).join('') + '<button type="button" class="btn btn-outline btn-sm" id="adminAddNoteBtn" style="margin-top:.5rem">Not ekle</button>';
+        }
+        const addBtn = document.getElementById('adminAddNoteBtn');
+        if (addBtn) {
+            addBtn.addEventListener('click', function () {
+                const noteDialog = document.getElementById('adminUserNoteDialog');
+                const noteForm = document.getElementById('adminUserNoteForm');
+                noteForm.action = window.adminNoteStoreUrl.replace('__ID__', userId);
+                document.getElementById('adminUserNoteTitle').textContent = btnUsername + ' — Not';
+                document.getElementById('admin_note_text').value = '';
+                noteDialog.showModal();
+            });
+        }
+    }
+
+    let btnUsername = '';
+
     function openEditModal(btn) {
         closeAllDropdowns();
         form.action = updateUrlTemplate.replace('__ID__', btn.dataset.userId);
         title.textContent = btn.dataset.username + ' — Düzenle';
+        btnUsername = btn.dataset.username || '';
         document.getElementById('edit_username').value = btn.dataset.username || '';
         document.getElementById('edit_first_name').value = btn.dataset.firstName || '';
         document.getElementById('edit_last_name').value = btn.dataset.lastName || '';
@@ -546,8 +680,17 @@ window.adminPremiumPackages = @json($premiumPackages);
         bannedCheck.checked = btn.dataset.isBanned === '1';
         document.getElementById('edit_banned_reason').value = btn.dataset.bannedReason || '';
         toggleBannedReason();
+        renderUserNotes(btn.dataset.userId);
         dialog.showModal();
     }
+
+    document.querySelectorAll('[data-close-note-dialog]').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+            e.preventDefault();
+            const noteDialog = document.getElementById('adminUserNoteDialog');
+            if (noteDialog.open) noteDialog.close();
+        });
+    });
 
     document.querySelectorAll('.admin-edit-user-btn').forEach(function (btn) {
         btn.addEventListener('click', function (e) {

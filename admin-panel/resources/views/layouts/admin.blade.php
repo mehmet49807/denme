@@ -8,17 +8,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=admin-users-fix-2">
-    <link rel="stylesheet" href="{{ asset('css/admin-lumiere.css') }}?v=admin-users-fix-2">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=admin-full-controls-1">
+    <link rel="stylesheet" href="{{ asset('css/admin-lumiere.css') }}?v=admin-full-controls-1">
 </head>
 @php
     $adminPageThemes = [
         'admin.dashboard' => 'dashboard',
+        'admin.moderation' => 'reports',
         'admin.users' => 'users',
         'admin.profile-approvals' => 'users',
         'admin.messages' => 'messages',
+        'admin.gallery' => 'content',
         'admin.content' => 'content',
         'admin.ai' => 'ai',
+        'admin.auto-rules' => 'ai',
         'admin.github' => 'seo',
         'admin.reports' => 'reports',
         'admin.premium' => 'premium',
@@ -27,6 +30,9 @@
         'admin.support' => 'support',
         'admin.emails' => 'emails',
         'admin.seo' => 'seo',
+        'admin.audit' => 'seo',
+        'admin.system-health' => 'seo',
+        'admin.staff' => 'users',
         'admin.ops' => 'ai',
         'admin.profile' => 'profile',
     ];
@@ -52,7 +58,7 @@
             </button>
 
             <a href="{{ route('admin.dashboard') }}" class="admin-sidebar-brand">
-                <img src="{{ asset('images/logo-admin.png') }}?v=brand-v17" alt="Gönül Köprüsü" width="220" height="76" class="admin-sidebar-logo">
+                <img src="{{ asset('images/logo-admin-ink.png') }}?v=brand-v18-ink" alt="Gönül Köprüsü" width="220" height="76" class="admin-sidebar-logo admin-sidebar-logo--ink">
                 <span class="admin-sidebar-brand-text">
                     <strong class="admin-sidebar-brand-text__title">Yönetim</strong>
                     <small>Premium panel</small>
