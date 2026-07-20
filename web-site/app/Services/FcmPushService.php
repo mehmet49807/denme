@@ -439,13 +439,15 @@ class FcmPushService
                     'notification' => [
                         'title' => $title,
                         'body' => $body,
-                        'icon' => '/images/logo-180.png',
-                        'badge' => '/images/favicon.png',
+                        'icon' => rtrim((string) config('app.url', 'https://gonulkoprusu.com'), '/').'/images/logo-180.png',
+                        'badge' => rtrim((string) config('app.url', 'https://gonulkoprusu.com'), '/').'/images/favicon.png',
                     ],
                     'fcm_options' => [
-                        'link' => ($data['type'] ?? '') === 'new_message' && ! empty($data['actor_username'])
-                            ? '/messages/'.$data['actor_username']
-                            : '/notifications',
+                        'link' => rtrim((string) config('app.url', 'https://gonulkoprusu.com'), '/').(
+                            ($data['type'] ?? '') === 'new_message' && ! empty($data['actor_username'])
+                                ? '/messages/'.$data['actor_username']
+                                : '/notifications'
+                        ),
                     ],
                 ],
             ],
