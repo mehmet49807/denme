@@ -1779,3 +1779,61 @@ body.admin-theme-lumiere.admin-page--seo {
     gap: 0.35rem;
 }
 .admin-page--seo .admin-ai-topgrid { margin-bottom: 1rem; }
+
+/* === Simple staff roles === */
+.admin-staff-simple { margin-bottom: 1rem; }
+.admin-staff-search {
+    display: flex;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+.admin-staff-search input[type="search"] {
+    flex: 1 1 220px;
+    min-height: 48px;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid rgba(15,23,42,.14);
+    border-radius: 12px;
+    font-size: 1rem;
+}
+.admin-staff-search .btn {
+    min-height: 48px;
+    padding: 0 1.25rem;
+}
+.admin-staff-results { margin-top: 1rem; display: grid; gap: 0.75rem; }
+.admin-staff-card {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(15,23,42,.08);
+    border-radius: 14px;
+    background: #fff;
+}
+.admin-staff-card__who {
+    display: grid;
+    gap: 0.15rem;
+}
+.admin-staff-card__who strong { font-size: 1.05rem; color: #0f172a; }
+.admin-staff-card__who span,
+.admin-staff-card__who em {
+    font-style: normal;
+    color: #64748b;
+    font-size: 0.88rem;
+}
+.admin-staff-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+}
+.admin-staff-actions form { margin: 0; }
+.admin-staff-btn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+}
+.admin-staff-btn.is-current {
+    box-shadow: inset 0 0 0 2px #0f766e;
+    font-weight: 700;
+}
+@media (min-width: 720px) {
+    .admin-staff-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}

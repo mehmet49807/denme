@@ -317,9 +317,16 @@ class AdminOpsController extends Controller
         ]);
     }
 
-    public function staffRoles(): View
+    public function staffRoles(Request $request): View
     {
         $this->audit->ensureStaffRoleColumn();
+
+        $roleLabels = [
+            'admin' => 'Yönetici',
+            'moderator' => 'Moderatör',
+            'support' => 'Destek',
+            'user' => 'Üye',
+        ];
 
         $staff = User::query()
             ->whereIn('role', ['admin', 'moderator', 'support'])
@@ -327,93 +334,113 @@ class AdminOpsController extends Controller
             ->orderBy('username')
             ->get();
 
+        $search = trim((string) $request->get('q', ''));
+        $searchResults = collect();
+
+        if ($search !== '') {
+            $searchResults = User::query()
+                ->where(function ($q) use ($search) {
+                    $q->where('username', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%");
+                })
+                ->orderBy('username')
+                ->limit(20)
+                ->get(['id', 'username', 'email', 'role', 'first_name', 'last_name']);
+        }
+
         return view('admin.staff-roles', [
             'staff' => $staff,
-            'roleLabels' => [
-                'admin' => 'Yönetici',
-                'moderator' => 'Moderatör',
-                'support' => 'Destek',
-            ],
+            'search' => $search,
+            'searchResults' => $searchResults,
+            'roleLabels' => $roleLabels,
+            'canManage' => (bool) $request->user()?->isAdmin(),
         ]);
     }
 
     public function updateStaffRole(Request $request, User $user)
     {
-        if (! $request->user()?->isAdmin()) {
-            abort(403);
-        }
-
-        $this->audit->ensureStaffRoleColumn();
-
-        $validated = $request->validate([
-            'role' => 'required|in:admin,moderator,support,user',
-        ]);
-
-        if ((int) $user->id === (int) $request->user()->id && $validated['role'] !== 'admin') {
-            return back()->withErrors(['role' => 'Kendi yönetici rolünüzü düşüremezsiniz.']);
-        }
-
-        $previous = $user->role;
-
-        try {
-            $user->update(['role' => $validated['role']]);
-        } catch (\Throwable $e) {
-            report($e);
-
-            return back()->withErrors(['role' => 'Rol güncellenemedi. Veritabanı role kolonunu kontrol edin.']);
-        }
-
-        $this->audit->log(
-            'staff.role',
-            $user->username.' rolü '.$previous.' → '.$validated['role'],
-            'user',
-            (int) $user->id,
-            ['from' => $previous, 'to' => $validated['role']],
-        );
-
-        return back()->with('success', 'Rol güncellendi.');
+        return $this->assignStaffRole($request, $user, (string) $request->input('role', ''));
     }
 
     public function promoteStaff(Request $request)
     {
+        $this->audit->ensureStaffRoleColumn();
+
         if (! $request->user()?->isAdmin()) {
-            abort(403);
+            return back()->withErrors(['role' => 'Rol değiştirmek için yönetici olmalısınız.']);
+        }
+
+        $validated = $request->validate([
+            'user_id' => 'nullable|integer|exists:users,id',
+            'username' => 'nullable|string|max:50',
+            'role' => 'required|in:admin,moderator,support,user',
+        ]);
+
+        $user = null;
+        if (! empty($validated['user_id'])) {
+            $user = User::query()->find($validated['user_id']);
+        } elseif (! empty($validated['username'])) {
+            $username = trim($validated['username']);
+            $user = User::query()
+                ->whereRaw('LOWER(username) = ?', [mb_strtolower($username)])
+                ->first();
+            if (! $user) {
+                return back()->withErrors(['username' => 'Kullanıcı bulunamadı: '.$username])->withInput();
+            }
+        } else {
+            return back()->withErrors(['username' => 'Kullanıcı seçin veya kullanıcı adı yazın.'])->withInput();
+        }
+
+        return $this->assignStaffRole($request, $user, $validated['role']);
+    }
+
+    private function assignStaffRole(Request $request, User $user, string $role)
+    {
+        if (! $request->user()?->isAdmin()) {
+            return back()->withErrors(['role' => 'Rol değiştirmek için yönetici olmalısınız.']);
         }
 
         $this->audit->ensureStaffRoleColumn();
 
-        $validated = $request->validate([
-            'username' => 'required|string|max:50',
-            'role' => 'required|in:admin,moderator,support',
-        ]);
+        if (! in_array($role, ['admin', 'moderator', 'support', 'user'], true)) {
+            return back()->withErrors(['role' => 'Geçersiz rol.']);
+        }
 
-        $username = trim($validated['username']);
-        $user = User::query()
-            ->whereRaw('LOWER(username) = ?', [mb_strtolower($username)])
-            ->first();
-
-        if (! $user) {
-            return back()->withErrors(['username' => 'Kullanıcı bulunamadı: '.$username])->withInput();
+        if ((int) $user->id === (int) $request->user()->id && $role !== 'admin') {
+            return back()->withErrors(['role' => 'Kendi yönetici rolünüzü düşüremezsiniz.']);
         }
 
         $previous = $user->role;
+        $labels = [
+            'admin' => 'Yönetici',
+            'moderator' => 'Moderatör',
+            'support' => 'Destek',
+            'user' => 'Üye',
+        ];
 
         try {
-            $user->update(['role' => $validated['role']]);
+            $user->update(['role' => $role]);
         } catch (\Throwable $e) {
             report($e);
 
-            return back()->withErrors(['username' => 'Rol atanamadı. Lütfen tekrar deneyin.'])->withInput();
+            return back()->withErrors(['role' => 'Rol kaydedilemedi. Sayfayı yenileyip tekrar deneyin.']);
         }
 
         $this->audit->log(
-            'staff.promote',
-            $user->username.' '.$previous.' → '.$validated['role'],
+            'staff.role',
+            $user->username.' rolü '.$previous.' → '.$role,
             'user',
             (int) $user->id,
+            ['from' => $previous, 'to' => $role],
         );
 
-        return back()->with('success', $user->username.' personel olarak eklendi ('.$validated['role'].').');
+        $label = $labels[$role] ?? $role;
+
+        return redirect()
+            ->route('admin.staff', ['q' => $user->username])
+            ->with('success', $user->username.' → '.$label);
     }
 
     public function exportUsersCsv(): StreamedResponse

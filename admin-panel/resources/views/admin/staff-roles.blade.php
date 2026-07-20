@@ -1,85 +1,124 @@
 @extends('layouts.admin')
 
 @section('title', 'Personel Rolleri')
-@section('lead', 'Admin, moderatör ve destek rollerini yönetin.')
+@section('lead', 'Kullanıcıyı bul, tek dokunuşla rol ver.')
 
 @section('content')
 @if($errors->any())
-    <div class="admin-panel admin-panel--glass" style="border-color:rgba(239,68,68,.35);margin-bottom:1rem">
-        <ul style="margin:0;padding-left:1.1rem;color:#b91c1c">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+    <div class="admin-ai-flash admin-ai-flash--bad">
+        {{ $errors->first() }}
     </div>
 @endif
 
 @if(session('success'))
-    <div class="admin-panel admin-panel--glass" style="border-color:rgba(16,185,129,.35);margin-bottom:1rem;color:#047857">
-        {{ session('success') }}
+    <div class="admin-ai-flash admin-ai-flash--ok">{{ session('success') }}</div>
+@endif
+
+@if(empty($canManage))
+    <div class="admin-ai-flash admin-ai-flash--bad">
+        Rol değiştirmek için hesabınızın <strong>Yönetici</strong> olması gerekir.
     </div>
 @endif
 
-<div class="admin-panel admin-panel--glass form-card">
-    <h3 class="admin-panel-title">Personel ekle</h3>
-    <p class="admin-ops-meta" style="margin-bottom:0.85rem">Mevcut bir üyenin kullanıcı adını yazın; rolü admin / moderatör / destek yapılır.</p>
-    <form method="POST" action="{{ route('admin.staff.promote') }}" class="admin-users-filter">
-        @csrf
-        <div class="admin-users-filter-field admin-users-filter-field--grow">
-            <label for="staff-username">Kullanıcı adı</label>
-            <input type="text" id="staff-username" name="username" required value="{{ old('username') }}" placeholder="mevcut üye kullanıcı adı" autocomplete="off">
-        </div>
-        <div class="admin-users-filter-field">
-            <label for="staff-role">Rol</label>
-            <select id="staff-role" name="role" class="admin-users-filter-select">
-                <option value="moderator" @selected(old('role', 'moderator') === 'moderator')>Moderatör</option>
-                <option value="support" @selected(old('role') === 'support')>Destek</option>
-                <option value="admin" @selected(old('role') === 'admin')>Yönetici</option>
-            </select>
-        </div>
-        <div class="admin-users-filter-actions">
-            <button type="submit" class="btn btn-primary btn-sm">Ekle</button>
-        </div>
+<section class="admin-panel admin-panel--glass admin-staff-simple">
+    <h3 class="admin-panel-title">1) Kullanıcı bul</h3>
+    <form method="GET" action="{{ route('admin.staff') }}" class="admin-staff-search">
+        <input
+            type="search"
+            name="q"
+            value="{{ $search }}"
+            placeholder="Kullanıcı adı veya e-posta yaz…"
+            autocomplete="off"
+            autofocus
+        >
+        <button type="submit" class="btn btn-primary">Ara</button>
     </form>
-</div>
 
-<div class="admin-panel admin-panel--glass">
-    <div class="admin-table-wrap">
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Kullanıcı</th>
-                    <th>E-posta</th>
-                    <th>Rol</th>
-                    <th>İşlem</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($staff as $member)
-                    <tr>
-                        <td><strong>{{ $member->username }}</strong></td>
-                        <td>{{ $member->email }}</td>
-                        <td>{{ $roleLabels[$member->role] ?? $member->role }}</td>
-                        <td>
-                            <form method="POST" action="{{ route('admin.staff.update', $member) }}" class="admin-inline-role-form">
+    @if($search !== '')
+        <div class="admin-staff-results">
+            @forelse($searchResults as $user)
+                <article class="admin-staff-card">
+                    <div class="admin-staff-card__who">
+                        <strong>{{ $user->username }}</strong>
+                        <span>{{ trim(($user->first_name ?? '').' '.($user->last_name ?? '')) ?: $user->email }}</span>
+                        <em>Şu an: {{ $roleLabels[$user->role] ?? $user->role }}</em>
+                    </div>
+                    @if(!empty($canManage))
+                        <div class="admin-staff-actions">
+                            <form method="POST" action="{{ route('admin.staff.promote') }}">
                                 @csrf
-                                <select name="role">
-                                    @foreach($roleLabels as $value => $label)
-                                        <option value="{{ $value }}" @selected($member->role === $value)>{{ $label }}</option>
-                                    @endforeach
-                                    <option value="user">Üye (kaldır)</option>
-                                </select>
-                                <button type="submit" class="btn btn-outline btn-sm">Kaydet</button>
+                                <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                <input type="hidden" name="role" value="moderator">
+                                <button type="submit" class="btn btn-primary admin-staff-btn {{ $user->role === 'moderator' ? 'is-current' : '' }}">Moderatör</button>
                             </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4">Henüz personel kaydı yok.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
+                            <form method="POST" action="{{ route('admin.staff.promote') }}">
+                                @csrf
+                                <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                <input type="hidden" name="role" value="support">
+                                <button type="submit" class="btn btn-outline admin-staff-btn {{ $user->role === 'support' ? 'is-current' : '' }}">Destek</button>
+                            </form>
+                            <form method="POST" action="{{ route('admin.staff.promote') }}">
+                                @csrf
+                                <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                <input type="hidden" name="role" value="admin">
+                                <button type="submit" class="btn btn-outline admin-staff-btn {{ $user->role === 'admin' ? 'is-current' : '' }}">Yönetici</button>
+                            </form>
+                            @if($user->role !== 'user')
+                                <form method="POST" action="{{ route('admin.staff.promote') }}" onsubmit="return confirm('Personel yetkisi kaldırılsın mı?');">
+                                    @csrf
+                                    <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                    <input type="hidden" name="role" value="user">
+                                    <button type="submit" class="btn btn-danger admin-staff-btn">Kaldır</button>
+                                </form>
+                            @endif
+                        </div>
+                    @endif
+                </article>
+            @empty
+                <p class="admin-ops-empty">“{{ $search }}” için kullanıcı bulunamadı.</p>
+            @endforelse
+        </div>
+    @else
+        <p class="admin-ops-meta" style="margin-top:.85rem">Örnek: abinin kullanıcı adını yazıp Ara’ya bas.</p>
+    @endif
+</section>
+
+<section class="admin-panel admin-panel--glass admin-staff-simple">
+    <h3 class="admin-panel-title">2) Mevcut personel</h3>
+    @forelse($staff as $member)
+        <article class="admin-staff-card">
+            <div class="admin-staff-card__who">
+                <strong>{{ $member->username }}</strong>
+                <span>{{ $member->email }}</span>
+                <em>{{ $roleLabels[$member->role] ?? $member->role }}</em>
+            </div>
+            @if(!empty($canManage))
+                <div class="admin-staff-actions">
+                    <form method="POST" action="{{ route('admin.staff.update', $member) }}">
+                        @csrf
+                        <input type="hidden" name="role" value="moderator">
+                        <button type="submit" class="btn btn-primary admin-staff-btn {{ $member->role === 'moderator' ? 'is-current' : '' }}">Moderatör</button>
+                    </form>
+                    <form method="POST" action="{{ route('admin.staff.update', $member) }}">
+                        @csrf
+                        <input type="hidden" name="role" value="support">
+                        <button type="submit" class="btn btn-outline admin-staff-btn {{ $member->role === 'support' ? 'is-current' : '' }}">Destek</button>
+                    </form>
+                    <form method="POST" action="{{ route('admin.staff.update', $member) }}">
+                        @csrf
+                        <input type="hidden" name="role" value="admin">
+                        <button type="submit" class="btn btn-outline admin-staff-btn {{ $member->role === 'admin' ? 'is-current' : '' }}">Yönetici</button>
+                    </form>
+                    <form method="POST" action="{{ route('admin.staff.update', $member) }}" onsubmit="return confirm('{{ $member->username }} personelden çıkarılsın mı?');">
+                        @csrf
+                        <input type="hidden" name="role" value="user">
+                        <button type="submit" class="btn btn-danger admin-staff-btn">Kaldır</button>
+                    </form>
+                </div>
+            @endif
+        </article>
+    @empty
+        <p class="admin-ops-empty">Henüz personel yok. Yukarıdan kullanıcı ara ve rol ver.</p>
+    @endforelse
+</section>
 @endsection
