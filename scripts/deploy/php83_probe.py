@@ -163,13 +163,12 @@ def main() -> int:
         print("---", t, "info ---")
         print(fetch(u + "&action=info"))
 
-    print("\n==== ENABLE WRITE (link/conf + .cl.selector) ====")
-    for t, u in ENABLE_URLS.items():
-        print("---", t, "enable ---")
-        print(fetch(u + "&action=enable"))
+    print("\n==== SWITCH SELECTOR TO 8.3 ====")
+    # Prefer web (account home owner) for selector defaults.cfg
+    print(fetch(ENABLE_URLS["web"] + "&action=switch83"))
 
-    time.sleep(2)
-    print("\n==== AFTER ENABLE (new request) ====")
+    time.sleep(3)
+    print("\n==== AFTER SWITCH ====")
     for t, u in ENABLE_URLS.items():
         print("---", t, "info2 ---")
         print(fetch(u + "&action=info"))
@@ -180,30 +179,13 @@ def main() -> int:
     success = False
     for t, u in URLS.items():
         body = fetch(u)
-        if "ext.mbstring=yes" in body and "ext.pdo=yes" in body:
+        if "ext.mbstring=yes" in body and "ext.pdo=yes" in body and "PHP_VERSION=8.3" in body:
             print("SUCCESS_EXTENSIONS", t)
             success = True
 
     if not success:
-        # Fallback: document-root php.ini variants (usually ignored)
-        for name, ini in INI_VARIANTS.items():
-            ftp = ftp_connect("web")
-            try:
-                ftp.storbinary("STOR php.ini", BytesIO(ini))
-                ftp.storbinary("STOR .user.ini", BytesIO(ini))
-                ftp.storbinary("STOR .php.ini", BytesIO(ini))
-            finally:
-                ftp.quit()
-            time.sleep(2)
-            body = fetch(URLS["web"])
-            print(f"\n==== WEB after ini={name} ====")
-            print(body)
-            if "ext.mbstring=yes" in body and "ext.pdo=yes" in body:
-                print("SUCCESS_EXTENSIONS", name)
-                success = True
-                break
-
-    if not success:
+        print("SWITCH_FAILED_RESTORING_SELECTOR")
+        print(fetch(ENABLE_URLS["web"] + "&action=restore82"))
         print("NO_INI_VARIANT_ENABLED_EXTENSIONS")
     return 0 if success else 2
 
