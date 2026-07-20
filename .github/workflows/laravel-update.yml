@@ -45,72 +45,13 @@ jobs:
           coverage: none
           tools: composer:v2
 
-      - name: Enable PHP 8.3 on cPanel (alt-php83)
+      - name: Enable PHP 8.3 + extensions on cPanel (alt-php83)
         env:
           FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
           FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
           FTP_ADMIN_USER: ${{ secrets.FTP_ADMIN_USER }}
           FTP_ADMIN_PASSWORD: ${{ secrets.FTP_ADMIN_PASSWORD }}
-        run: |
-          set -euo pipefail
-          python3 <<'PY'
-          import ftplib, json, os, re, time, urllib.request
-          from pathlib import Path
-          from io import BytesIO
-
-          manifest = json.loads(Path("deploy/manifest.json").read_text())
-          php_ini = b"\n".join([
-              b"; alt-php83 extensions for Laravel 13",
-              b"extension=zip.so",
-              b"extension=phar.so",
-              b"extension=intl.so",
-              b"extension=mbstring.so",
-              b"extension=bcmath.so",
-              b"extension=pdo_mysql.so",
-              b"",
-          ])
-          uploads = {
-              "web": (Path("web-site/public/.htaccess").read_bytes(), "https://gonulkoprusu.com/php-version.php"),
-              "admin": (Path("scripts/deploy/assets/admin.htaccess").read_bytes(), "https://admin.gonulkoprusu.com/php-version.php"),
-          }
-          # Ensure htaccess has alt-php83
-          def with_handler(raw: bytes) -> bytes:
-              text = raw.decode("utf-8")
-              text = re.sub(r"\n?# CloudLinux.*?# php -- END cPanel-generated handler\n?", "\n", text, flags=re.S)
-              text = text.rstrip() + (
-                  "\n\n# CloudLinux alt-php 8.3 — Laravel 13\n"
-                  "# php -- BEGIN cPanel-generated handler\n"
-                  "<IfModule mime_module>\n"
-                  "  AddHandler application/x-httpd-alt-php83___lsphp .php .php8 .phtml\n"
-                  "</IfModule>\n"
-                  "# php -- END cPanel-generated handler\n"
-              )
-              return text.encode("utf-8")
-
-          probe = Path("scripts/deploy/assets/php-version.php").read_bytes()
-          for target, (htaccess, url) in uploads.items():
-              host = manifest[target]["ftp"]["host"]
-              user = os.environ[f"FTP_{target.upper()}_USER"]
-              password = os.environ[f"FTP_{target.upper()}_PASSWORD"]
-              ftp = ftplib.FTP(); ftp.connect(host, 21, timeout=90); ftp.login(user, password); ftp.set_pasv(True)
-              try:
-                  ftp.storbinary("STOR php-version.php", BytesIO(probe))
-                  ftp.storbinary("STOR php.ini", BytesIO(php_ini))
-                  ftp.storbinary("STOR .user.ini", BytesIO(php_ini))
-                  ftp.storbinary("STOR .htaccess", BytesIO(with_handler(htaccess)))
-              finally:
-                  ftp.quit()
-              time.sleep(2)
-              body = urllib.request.urlopen(url, timeout=25).read().decode("utf-8", "replace")
-              print("====", target, "====")
-              print(body)
-              m = re.search(r"PHP_VERSION=([0-9.]+)", body)
-              ver = m.group(1) if m else "?"
-              major, minor, *_ = (ver.split(".") + ["0", "0"])[:3]
-              if not (int(major) > 8 or (int(major) == 8 and int(minor) >= 3)):
-                  raise SystemExit(f"{target}: need PHP 8.3+, got {ver}")
-          print("PHP_8_3_OK")
-          PY
+        run: python3 scripts/deploy/php83_enable_live.py
 
       - name: Prepare build
         run: |
@@ -267,6 +208,17 @@ jobs:
           echo "ADMIN:"; curl -fsS "https://admin.gonulkoprusu.com/setup/laravel-update?key=${KEY_UPDATE}" || true; echo
           echo "PHP WEB:"; curl -fsS "https://gonulkoprusu.com/php-version.php" || true; echo
           echo "PHP ADMIN:"; curl -fsS "https://admin.gonulkoprusu.com/php-version.php" || true; echo
+          # Require Laravel 13 + PHP 8.3 on both
+          php -r '
+            foreach (["https://gonulkoprusu.com/setup/laravel-update?key=gk-laravel-update-2026","https://admin.gonulkoprusu.com/setup/laravel-update?key=gk-laravel-update-2026"] as $u) {
+              $j=json_decode(@file_get_contents($u), true);
+              $v=$j["current"] ?? "";
+              $php=$j["php"] ?? "";
+              echo $u," => Laravel ",$v," PHP ",$php,PHP_EOL;
+              if (!preg_match("/^13\\./", $v)) {fwrite(STDERR,"need Laravel 13.x\n"); exit(1);}
+              if (version_compare($php, "8.3.0", "<")) {fwrite(STDERR,"need PHP 8.3+\n"); exit(1);}
+            }
+          '
 
       - name: Commit updated lock
         run: |
