@@ -131,14 +131,14 @@ class FcmWebConfigService
 
             $apps = $list->json('apps') ?? [];
             $created = false;
-            $appName = null;
+            $appId = null;
 
             if (! is_array($apps) || $apps === []) {
                 $create = Http::withToken($accessToken)
                     ->acceptJson()
                     ->timeout(20)
                     ->post($base.'/webApps', [
-                        'displayName' => 'Gönül Köprüsü Web',
+                        'displayName' => 'Gonul Koprusu Web',
                     ]);
 
                 if (! $create->successful()) {
@@ -148,25 +148,38 @@ class FcmWebConfigService
                     ];
                 }
 
-                $appName = (string) ($create->json('name') ?? '');
+                $appId = (string) ($create->json('appId') ?? '');
                 $created = true;
+
+                // Yeni web app config hemen hazır olmayabilir.
+                usleep(800000);
             } else {
-                $appName = (string) ($apps[0]['name'] ?? '');
+                $appId = (string) ($apps[0]['appId'] ?? '');
             }
 
-            if ($appName === '') {
-                return ['ok' => false, 'error' => 'Web app adı boş.'];
+            if ($appId === '') {
+                return ['ok' => false, 'error' => 'Web appId boş.', 'apps_count' => is_array($apps) ? count($apps) : 0];
             }
 
-            $configResp = Http::withToken($accessToken)
-                ->acceptJson()
-                ->timeout(20)
-                ->get('https://firebase.googleapis.com/v1beta1/'.$appName.'/config');
+            // appId içinde ":" var — path segment encode şart.
+            $configUrl = $base.'/webApps/'.rawurlencode($appId).'/config';
+            $configResp = null;
+            for ($attempt = 0; $attempt < 4; $attempt++) {
+                $configResp = Http::withToken($accessToken)
+                    ->acceptJson()
+                    ->timeout(20)
+                    ->get($configUrl);
+                if ($configResp->successful()) {
+                    break;
+                }
+                usleep(700000);
+            }
 
-            if (! $configResp->successful()) {
+            if (! $configResp || ! $configResp->successful()) {
                 return [
                     'ok' => false,
-                    'error' => 'Web config alınamadı: '.($configResp->json('error.message') ?? $configResp->status()),
+                    'error' => 'Web config alınamadı: '.($configResp?->json('error.message') ?? $configResp?->status() ?? 'no response'),
+                    'appId' => $appId,
                 ];
             }
 
@@ -186,7 +199,7 @@ class FcmWebConfigService
                 'vapidKey' => (string) (config('firebase.web.vapid_key') ?: self::DEFAULT_VAPID),
                 'synced_at' => now()->toIso8601String(),
                 'source' => 'firebase_api',
-                'app_name' => $appName,
+                'web_app_id' => $appId,
             ];
 
             if ($payload['apiKey'] === '' || $payload['appId'] === '' || $payload['messagingSenderId'] === '') {

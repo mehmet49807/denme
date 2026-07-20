@@ -701,6 +701,12 @@ HTML;
                     if (! empty($result['created'])) {
                         $lines[] = 'web app: yeni oluşturuldu';
                     }
+                    if (! empty($result['appId'])) {
+                        $lines[] = 'sync appId: '.$result['appId'];
+                    }
+                    if (! empty($result['apps_count'])) {
+                        $lines[] = 'listed apps: '.$result['apps_count'];
+                    }
                 }
             }
 
