@@ -60,7 +60,7 @@ jobs:
 
           manifest = json.loads(Path("deploy/manifest.json").read_text())
           php_ini = b"\n".join([
-              b"; Gönül Köprüsü — alt-php83 extensions for Laravel 13",
+              b"; alt-php83 extensions for Laravel 13",
               b"extension=zip.so",
               b"extension=phar.so",
               b"extension=intl.so",
@@ -203,7 +203,7 @@ jobs:
           put("scripts/deploy/assets/laravel-vendor-extract.php", "laravel-vendor-extract.php")
           put(os.environ["LARAVEL_BUNDLE"], "storage/app/laravel-vendor.zip")
           # keep PHP 8.3 handler
-          put("web-site/public/.htaccess", ".htaccess")
+          # keep PHP 8.3 htaccess from enable step
           ftp.quit()
           PY
 
@@ -234,7 +234,7 @@ jobs:
             print("OK", remote, os.path.getsize(local))
           put("scripts/deploy/assets/laravel-vendor-extract.php", "laravel-vendor-extract.php")
           put(os.environ["LARAVEL_BUNDLE"], "storage/app/laravel-vendor.zip")
-          put("scripts/deploy/assets/admin.htaccess", ".htaccess")
+          # keep PHP 8.3 htaccess from enable step
           ftp.quit()
           PY
 
