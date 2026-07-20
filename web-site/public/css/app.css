@@ -3715,10 +3715,9 @@ a.member-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(
         0 0 0 2px rgba(255, 255, 255, 0.35),
         0 6px 14px rgba(15, 23, 42, 0.18);
 }
-.profile-action-icon--premium-msg .theme-icon,
 .profile-action-icon--premium-msg svg {
-    width: 1.1rem;
-    height: 1.1rem;
+    width: 1.2rem;
+    height: 1.2rem;
     display: block;
 }
 .profile-action-btn--premium-msg .profile-action-copy {

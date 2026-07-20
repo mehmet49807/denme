@@ -98,7 +98,10 @@
                     aria-label="{{ __('app.profile.message_locked_title') }}"
                 >
                     <span class="profile-action-icon profile-action-icon--premium-msg" aria-hidden="true">
-                        @include('partials.theme-icon', ['icon' => 'lock'])
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 7.2A3.2 3.2 0 018.2 4h7.6A3.2 3.2 0 0119 7.2v5.1A3.2 3.2 0 0115.8 15.5H11l-3.8 2.9v-2.9H8.2A3.2 3.2 0 015 12.3V7.2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                            <path d="M16.2 3.2l1.05 1.9 2.1.3-1.5 1.5.35 2.1-1.95-1.05-1.95 1.05.35-2.1-1.5-1.5 2.1-.3 1.05-1.9z" fill="currentColor"/>
+                        </svg>
                     </span>
                     <span class="profile-action-copy">
                         <span class="profile-action-label">{{ __('app.profile.message_locked_cta') }}</span>
