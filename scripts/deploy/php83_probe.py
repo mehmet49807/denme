@@ -63,11 +63,11 @@ PROBE_BLOCK = "\n".join(
     [
         "",
         "# TEMP probe83 handler",
-        '<FilesMatch "^(php83-probe|php83-enable)\\.php$">',
+        '<Files "php83-probe.php">',
         "  <IfModule mime_module>",
         "    SetHandler application/x-httpd-alt-php83___lsphp",
         "  </IfModule>",
-        "</FilesMatch>",
+        "</Files>",
         "# END probe83",
         "",
     ]
@@ -121,11 +121,26 @@ def ensure_probe_htaccess(base_htaccess: bytes) -> bytes:
     return (text.rstrip() + PROBE_BLOCK).encode("utf-8")
 
 
-def fetch(url: str) -> str:
-    try:
-        return urllib.request.urlopen(url, timeout=30).read().decode("utf-8", "replace")
-    except Exception as e:
-        return f"ERROR {e}"
+def fetch(url: str, retries: int = 4) -> str:
+    last = ""
+    for i in range(retries):
+        try:
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (compatible; GonulKoprusu-Probe/1.0)",
+                    "Accept": "text/plain,*/*",
+                },
+            )
+            last = urllib.request.urlopen(req, timeout=45).read().decode("utf-8", "replace")
+            if "<!DOCTYPE html>" in last and "One moment" in last:
+                time.sleep(3 + i)
+                continue
+            return last
+        except Exception as e:
+            last = f"ERROR {e}"
+            time.sleep(2 + i)
+    return last
 
 
 def main() -> int:
@@ -153,24 +168,21 @@ def main() -> int:
             ftp.quit()
 
     time.sleep(2)
-    print("\n==== BASELINE ====")
+    print("\n==== HEAL CONF (php 8.2) ====")
+    print(fetch(ENABLE_URLS["web"] + "&action=restore"))
+    print(fetch(ENABLE_URLS["web"] + "&action=info"))
+
+    print("\n==== BASELINE PROBE (php 8.3 handler) ====")
     for t, u in URLS.items():
         print("---", t, "---")
         print(fetch(u))
 
-    print("\n==== ENABLE INFO ====")
-    for t, u in ENABLE_URLS.items():
-        print("---", t, "info ---")
-        print(fetch(u + "&action=info"))
-
-    print("\n==== FIX PHP83 EXTENSIONS ====")
+    print("\n==== FIX PHP83 EXTENSIONS (via php 8.2) ====")
     print(fetch(ENABLE_URLS["web"] + "&action=fix"))
 
     time.sleep(3)
     print("\n==== AFTER FIX ====")
-    for t, u in ENABLE_URLS.items():
-        print("---", t, "info2 ---")
-        print(fetch(u + "&action=info"))
+    print(fetch(ENABLE_URLS["web"] + "&action=info"))
     for t, u in URLS.items():
         print("---", t, "probe2 ---")
         print(fetch(u))
@@ -183,7 +195,7 @@ def main() -> int:
             success = True
 
     if not success:
-        print("FIX_FAILED_RESTORING")
+        print("FIX_FAILED")
         print(fetch(ENABLE_URLS["web"] + "&action=restore"))
         print("NO_INI_VARIANT_ENABLED_EXTENSIONS")
     return 0 if success else 2
