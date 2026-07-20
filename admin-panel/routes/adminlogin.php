@@ -64,6 +64,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/ai/scan', [AdminAiController::class, 'scan'])->name('admin.ai.scan');
     Route::post('/ai/test', [AdminAiController::class, 'testConnection'])->name('admin.ai.test');
     Route::post('/ai/publish-blog-faq', [AdminAiController::class, 'publishBlogFaq'])->name('admin.ai.publish-blog-faq');
+    Route::post('/ai/settings', [AdminAiController::class, 'updateSettings'])->name('admin.ai.settings');
+    Route::post('/ai/daily-report', [AdminAiController::class, 'dailyReport'])->name('admin.ai.daily-report');
+    Route::post('/ai/flags/bulk', [AdminAiController::class, 'bulkFlags'])->name('admin.ai.flags.bulk');
+    Route::post('/ai/flags/{flag}/quick', [AdminAiController::class, 'quickAction'])->name('admin.ai.flags.quick');
     Route::put('/ai/flags/{flag}', [AdminAiController::class, 'updateFlag'])->name('admin.ai.flags.update');
     Route::post('/ai/users/{user}/scan', [AdminAiController::class, 'scanProfile'])->name('admin.ai.users.scan');
     Route::get('/rapor', fn () => redirect()->route('admin.dashboard'))->name('admin.rapor');

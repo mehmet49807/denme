@@ -37,6 +37,19 @@ class AdminAuditService
                     $table->timestamps();
                 });
             }
+
+            if (! Schema::hasTable('ai_moderation_reports')) {
+                Schema::create('ai_moderation_reports', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('report_type', 40)->index();
+                    $table->string('title', 255);
+                    $table->text('summary')->nullable();
+                    $table->json('details')->nullable();
+                    $table->string('status', 30)->default('published')->index();
+                    $table->unsignedBigInteger('created_by')->nullable()->index();
+                    $table->timestamps();
+                });
+            }
         } catch (\Throwable) {
             //
         }

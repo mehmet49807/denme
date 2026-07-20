@@ -39,6 +39,17 @@ class SiteSettingsService
             'ios_app_url' => '',
             'marketing_notes' => '',
             'marketing_default_campaign' => 'organic',
+            'ai_auto_escalate' => '1',
+            'ai_escalate_threshold' => '3',
+            'ai_escalate_hours' => '24',
+            'ai_escalate_action' => 'ban',
+            'ai_min_confidence' => '0.55',
+            'content_policy_iban' => '1',
+            'content_policy_phone' => '1',
+            'content_policy_social_media' => '1',
+            'content_policy_money_request' => '1',
+            'content_policy_fraud' => '1',
+            'content_policy_custom_patterns' => '',
         ];
     }
 

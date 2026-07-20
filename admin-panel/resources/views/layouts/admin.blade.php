@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=admin-full-controls-1">
-    <link rel="stylesheet" href="{{ asset('css/admin-lumiere.css') }}?v=admin-full-controls-1">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=admin-ai-upgrade-1">
+    <link rel="stylesheet" href="{{ asset('css/admin-lumiere.css') }}?v=admin-ai-upgrade-1">
 </head>
 @php
     $adminPageThemes = [

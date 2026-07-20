@@ -17,6 +17,7 @@ class AiModerationService
         private ContentPolicyService $policy,
         private OpenRouterService $openRouter,
         private NotificationService $notifications,
+        private SiteSettingsService $settings,
     ) {}
 
     public function validateOutgoingText(string $text, string $context = 'content'): void
@@ -45,7 +46,7 @@ class AiModerationService
 
         $ai = $this->analyzeTextWithAi($text, 'private message in a dating app');
 
-        if ($ai && ! empty($ai['violation'])) {
+        if ($ai && ! empty($ai['violation']) && $this->passesConfidence($ai)) {
             $this->recordFlag($user, AiModerationFlag::TYPE_MESSAGE, $message->id, $ai, $text, 'ai');
             if (($ai['severity'] ?? 'medium') !== 'low') {
                 $this->hideMessage($message);
@@ -80,7 +81,7 @@ class AiModerationService
 
             $ai = $this->analyzeTextWithAi($caption, 'post caption on a dating app feed');
 
-            if ($ai && ! empty($ai['violation'])) {
+            if ($ai && ! empty($ai['violation']) && $this->passesConfidence($ai)) {
                 $this->recordFlag($user, AiModerationFlag::TYPE_POST, $post->id, $ai, $caption, 'ai');
                 if (($ai['severity'] ?? 'medium') !== 'low') {
                     $this->deactivatePost($post);
@@ -103,13 +104,27 @@ class AiModerationService
             return;
         }
 
+        $caption = trim((string) ($story->caption ?? $story->text ?? ''));
+        $contextText = $caption !== ''
+            ? $caption
+            : 'Kullanıcı '.$story->media_type.' hikaye yükledi. Dış iletişim / IBAN / telefon / sosyal medya yönlendirmesi riskini değerlendir.';
+
+        if ($caption !== '') {
+            $regexHit = $this->policy->scanText($caption);
+            if ($regexHit) {
+                $this->recordFlag($user, AiModerationFlag::TYPE_STORY, $story->id, $regexHit, $caption, 'regex');
+
+                return;
+            }
+        }
+
         $ai = $this->analyzeTextWithAi(
-            'User uploaded a '.$story->media_type.' story. Check for off-platform contact attempts in metadata context.',
-            'story media upload — flag if likely contains phone/iban/social redirect',
+            $contextText,
+            'story on dating app — flag contact sharing, money requests, scam patterns',
         );
 
-        if ($ai && ! empty($ai['violation']) && ($ai['severity'] ?? 'medium') === 'high') {
-            $this->recordFlag($user, AiModerationFlag::TYPE_STORY, $story->id, $ai, 'Hikaye medyası', 'ai');
+        if ($ai && ! empty($ai['violation']) && $this->passesConfidence($ai) && ($ai['severity'] ?? 'medium') !== 'low') {
+            $this->recordFlag($user, AiModerationFlag::TYPE_STORY, $story->id, $ai, $caption !== '' ? $caption : 'Hikaye medyası', 'ai');
         }
     }
 
@@ -193,9 +208,9 @@ class AiModerationService
             'dating app user profile — detect fake/scam profiles, inconsistent names, spam patterns',
         );
 
-        if ($ai && ! empty($ai['violation'])) {
+        if ($ai && ! empty($ai['violation']) && $this->passesConfidence($ai)) {
             $categories = (array) ($ai['categories'] ?? []);
-            if (in_array('fake_profile', $categories, true) || in_array('fraud', $categories, true)) {
+            if (in_array('fake_profile', $categories, true) || in_array('fraud', $categories, true) || ($ai['severity'] ?? '') === 'high') {
                 $this->recordFlag($user, AiModerationFlag::TYPE_PROFILE, $user->id, $ai, $profileText, 'ai');
             }
         }
@@ -203,6 +218,10 @@ class AiModerationService
 
     public function generateDailyReport(): AiModerationReport
     {
+        if (class_exists(AdminAuditService::class)) {
+            app(AdminAuditService::class)->ensureTables();
+        }
+
         $since = now()->subDay();
         $flags = AiModerationFlag::where('created_at', '>=', $since)->get();
         $pendingReports = Report::where('status', 'pending')->count();
@@ -250,7 +269,8 @@ class AiModerationService
         try {
             $result = $this->openRouter->chat(
                 <<<'PROMPT'
-Sen Gönül Köprüsü tanışma platformu moderasyon AI'sısın. Türkçe içerikleri analiz et.
+Sen Gönül Köprüsü tanışma platformunun moderasyon AI'sısın.
+Ciddi ilişki / evlilik odaklı güvenli topluluk için Türkçe içerik denetle.
 JSON döndür:
 {
   "violation": true/false,
@@ -259,7 +279,8 @@ JSON döndür:
   "reason": "kısa Türkçe açıklama",
   "confidence": 0.0-1.0
 }
-Kurallar: IBAN/para talebi/dış platform yönlendirme/telefon paylaşımı/dolandırıcılık/sahte profil ihlal sayılır.
+Kesin ihlal: IBAN, para/havale/papara talebi, telefon numarası, Instagram/WhatsApp/Telegram yönlendirme, dolandırıcılık, sahte profil.
+Şüpheli ama emin değilsen violation=false veya severity=low + düşük confidence ver.
 PROMPT,
                 "Bağlam: {$context}\n\nİçerik:\n".$text,
                 350,
@@ -323,6 +344,54 @@ PROMPT,
             'ai_reason' => (string) ($hit['reason'] ?? $hit['label'] ?? null),
             'ai_confidence' => isset($hit['confidence']) ? (float) $hit['confidence'] : null,
         ]);
+
+        $this->maybeAutoEscalate($user, $hit);
+    }
+
+    /** @param array<string, mixed> $hit */
+    private function passesConfidence(array $hit): bool
+    {
+        $min = (float) $this->settings->get('ai_min_confidence', 0.55);
+        $confidence = (float) ($hit['confidence'] ?? 0.7);
+
+        return $confidence >= $min;
+    }
+
+    /** @param array<string, mixed> $hit */
+    private function maybeAutoEscalate(User $user, array $hit): void
+    {
+        if (! $this->settings->bool('ai_auto_escalate', true) || $user->is_banned) {
+            return;
+        }
+
+        $threshold = max(2, (int) $this->settings->get('ai_escalate_threshold', 3));
+        $hours = max(6, (int) $this->settings->get('ai_escalate_hours', 24));
+        $action = (string) $this->settings->get('ai_escalate_action', 'ban');
+
+        $recent = AiModerationFlag::query()
+            ->where('user_id', $user->id)
+            ->where('created_at', '>=', now()->subHours($hours))
+            ->count();
+
+        if ($recent < $threshold && ($hit['severity'] ?? '') !== 'critical') {
+            return;
+        }
+
+        if ($action === 'warn') {
+            $this->notifications->notifyModerationViolation(
+                $user,
+                "Tekrarlayan ihlal uyarısı: son {$hours} saatte {$recent} kayıt.",
+                'profile',
+            );
+
+            return;
+        }
+
+        $user->update([
+            'is_banned' => true,
+            'banned_at' => now(),
+            'banned_reason' => "AI otomatik eskalasyon: son {$hours} saatte {$recent} ihlal",
+        ]);
     }
 
     private function hideMessage(Message $message): void
@@ -338,4 +407,3 @@ PROMPT,
         $post->forceFill(['is_active' => false])->saveQuietly();
     }
 }
-
