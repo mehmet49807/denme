@@ -757,6 +757,34 @@ HTML;
         ]);
     }
 
+    public function supportTickets()
+    {
+        if (request('key') !== 'gk-cpanel-setup-2026') {
+            abort(403);
+        }
+
+        $lines = ['Gönül Köprüsü — support_tickets kurulum', 'base='.base_path(), ''];
+
+        try {
+            $ok = \App\Models\SupportTicket::ensureTable();
+            $lines[] = 'ensureTable: '.($ok ? 'OK' : 'HATA');
+            $lines[] = 'support_tickets: '.(\Illuminate\Support\Facades\Schema::hasTable('support_tickets') ? 'var' : 'YOK');
+            if ($ok) {
+                $lines[] = 'pending: '.(string) \App\Models\SupportTicket::where('status', 'pending')->count();
+            }
+        } catch (\Throwable $e) {
+            $lines[] = 'HATA: '.$e->getMessage();
+        }
+
+        $lines[] = '';
+        $lines[] = 'OK';
+
+        return response(implode("\n", $lines)."\n", 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
     public function hobbies()
     {
         if (request('key') !== 'gk-hobbies-migrate-2026') {

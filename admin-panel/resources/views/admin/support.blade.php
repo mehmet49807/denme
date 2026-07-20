@@ -10,7 +10,7 @@
 
 @if(!$tableReady)
 <div class="admin-flash admin-flash--warn">
-    Destek tablosu henüz kurulmadı. Canlıda <code>setup_growth.php</code> migration çalıştırın.
+    Destek tablosu kurulamadı. <code>/setup/support-tickets?key=gk-cpanel-setup-2026</code> çalıştırın veya DB izinlerini kontrol edin.
 </div>
 @endif
 

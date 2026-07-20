@@ -119,7 +119,10 @@
             @include('partials.logo', ['showTagline' => true])
 
             @unless($appShell)
-            <nav class="site-nav" aria-label="{{ __('app.nav.main') }}">
+            <button type="button" class="site-nav-toggle" aria-expanded="false" aria-controls="site-nav-main" aria-label="Menü">
+                <span></span><span></span><span></span>
+            </button>
+            <nav id="site-nav-main" class="site-nav" aria-label="{{ __('app.nav.main') }}">
                 <a href="{{ route('home') }}">{{ __('app.nav.home') }}</a>
                 <a href="{{ route('about') }}">{{ __('app.nav.about') }}</a>
                 <a href="{{ route('safe-meeting') }}">{{ __('app.nav.security') }}</a>
@@ -180,6 +183,20 @@
 
     @unless($appShell || $isAuthPage)
         @include('partials.footer')
+    @endunless
+    @unless($appShell)
+    <script>
+    (function () {
+        var btn = document.querySelector('.site-nav-toggle');
+        var nav = document.getElementById('site-nav-main');
+        if (!btn || !nav) return;
+        btn.addEventListener('click', function () {
+            var open = nav.classList.toggle('is-open');
+            btn.classList.toggle('is-open', open);
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+    })();
+    </script>
     @endunless
     @auth
     @php

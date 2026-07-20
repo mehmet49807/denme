@@ -16,7 +16,7 @@ class AdminSupportController extends Controller
 
     public function index(): View
     {
-        $tableReady = Schema::hasTable('support_tickets');
+        $tableReady = SupportTicket::ensureTable() || Schema::hasTable('support_tickets');
 
         $tickets = $tableReady
             ? SupportTicket::with('user:id,username,email')

@@ -107,6 +107,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         ]);
     Route::match(['get', 'post'], '/setup/laravel-update', [\App\Http\Controllers\Web\SetupController::class, 'laravelUpdate']);
     Route::get('/setup/email-logs', [\App\Http\Controllers\Web\SetupController::class, 'emailLogs']);
+    Route::get('/setup/support-tickets', [\App\Http\Controllers\Web\SetupController::class, 'supportTickets']);
     Route::get('/setup/hobbies', [\App\Http\Controllers\Web\SetupController::class, 'hobbies']);
     Route::get('/setup/locale', [\App\Http\Controllers\Web\SetupController::class, 'locale']);
     Route::get('/setup/profile-fields', [\App\Http\Controllers\Web\SetupController::class, 'profileFields']);

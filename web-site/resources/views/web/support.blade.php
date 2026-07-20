@@ -12,7 +12,7 @@
 
     <p>
         E-posta: <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>
-        · WhatsApp destek hattı yok; yanıtlar e-posta ile gelir.
+        · Formdan gönderdiğiniz talepler destek paneline düşer; yanıtlar e-posta ile gelir.
     </p>
 
     <form method="POST" action="{{ route('support.store') }}" class="support-form">

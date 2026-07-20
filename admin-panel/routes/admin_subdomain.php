@@ -10,6 +10,7 @@ if (is_file(app_path('Http/Controllers/Admin/AdminAuthController.php'))) {
 if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
     Route::get('/setup/cpanel', [\App\Http\Controllers\Web\SetupController::class, 'cpanel']);
     Route::get('/setup/messages', [\App\Http\Controllers\Web\SetupController::class, 'messagesSchema']);
+    Route::get('/setup/support-tickets', [\App\Http\Controllers\Web\SetupController::class, 'supportTickets']);
     Route::match(['get', 'post'], '/setup/fcm', [\App\Http\Controllers\Web\SetupController::class, 'fcm'])
         ->withoutMiddleware([
             \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
