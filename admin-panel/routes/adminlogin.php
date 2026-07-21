@@ -17,11 +17,13 @@ use App\Http\Controllers\Admin\AdminOpsController;
 use App\Http\Controllers\Admin\AdminPanelController;
 use App\Http\Controllers\Admin\AdminSeoController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Middleware\RedirectIfAdminAuthenticated;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AdminAuthController::class, 'index'])->name('admin.home');
 
-Route::middleware('guest')->group(function () {
+// guest kullanma: ana site remember_web_* çerezi personel olmayanı "authenticated" sayıp döngü yaratıyordu.
+Route::middleware(RedirectIfAdminAuthenticated::class)->group(function () {
     Route::get('/login', [AdminAuthController::class, 'loginForm'])->name('admin.login');
     Route::post('/login', [AdminAuthController::class, 'login'])->middleware('throttle:6,1,admin-login');
 });

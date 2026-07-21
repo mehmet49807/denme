@@ -15,6 +15,13 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Admin alt alanıyla paylaşılan .gonulkoprusu.com session/remember çerezlerini kes.
+        // Host-only çerez: gonulkoprusu.com ↔ admin.gonulkoprusu.com sızıntısı olmaz.
+        $sessionDomain = (string) config('session.domain');
+        if ($sessionDomain !== '' && str_contains(ltrim($sessionDomain, '.'), 'gonulkoprusu.com')) {
+            config(['session.domain' => null]);
+        }
+
         View::composer(['partials.app-sidebar', 'layouts.app'], function ($view) {
             $user = auth()->user();
             if (! $user) {

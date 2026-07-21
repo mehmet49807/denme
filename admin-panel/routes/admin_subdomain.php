@@ -1,7 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminGithubController;
+use App\Support\AdminApp;
 use Illuminate\Support\Facades\Route;
+
+// Ana siteyle .gonulkoprusu.com üzerinden çerez paylaşımını kes (host-only session).
+AdminApp::isolateSessionCookieDomain();
 
 if (is_file(app_path('Http/Controllers/Admin/AdminAuthController.php'))) {
     Route::middleware('web')->group(base_path('routes/adminlogin.php'));

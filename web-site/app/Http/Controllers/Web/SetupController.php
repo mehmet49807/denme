@@ -130,6 +130,8 @@ class SetupController extends Controller
                     '/^ADMIN_URL=.*/m' => 'ADMIN_URL=https://admin.gonulkoprusu.com',
                     '/^ASSET_URL=.*/m' => 'ASSET_URL=https://www.gonulkoprusu.com',
                     '/^ADMIN_SUBDOMAIN=.*/m' => 'ADMIN_SUBDOMAIN=false',
+                    // Admin redirect döngüsü: paylaşımlı .gonulkoprusu.com çerezini kapat
+                    '/^SESSION_DOMAIN=.*/m' => 'SESSION_DOMAIN=',
                 ];
                 foreach ($replacements as $pattern => $line) {
                     $content = preg_match($pattern, $content)

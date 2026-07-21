@@ -13,19 +13,15 @@ class AdminMiddleware
     {
         $user = $request->user();
 
-        $allowed = $user && (
-            method_exists($user, 'isStaff')
-                ? $user->isStaff()
-                : $user->isAdmin()
-        );
-
-        if (! $allowed) {
+        if (! AdminApp::userIsStaff($user)) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Bu işlem için yönetici yetkisi gereklidir.',
                 ], 403);
             }
+
+            AdminApp::purgeNonStaffAuth($request);
 
             return redirect(AdminApp::loginPath())
                 ->withErrors(['login' => 'Yönetici yetkisi gereklidir.']);
