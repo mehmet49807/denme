@@ -15,7 +15,9 @@ class Story extends Model
     protected static function booted(): void
     {
         static::created(function (Story $story) {
-            \App\Jobs\RunAiModerationJob::dispatchAfterResponse('story', $story->id);
+            if (class_exists(\App\Jobs\RunAiModerationJob::class)) {
+                \App\Jobs\RunAiModerationJob::dispatchAfterResponse('story', $story->id);
+            }
         });
     }
 

@@ -15,7 +15,9 @@ class Post extends Model
     protected static function booted(): void
     {
         static::created(function (Post $post) {
-            \App\Jobs\RunAiModerationJob::dispatchAfterResponse('post', $post->id);
+            if (class_exists(\App\Jobs\RunAiModerationJob::class)) {
+                \App\Jobs\RunAiModerationJob::dispatchAfterResponse('post', $post->id);
+            }
         });
     }
 

@@ -29,7 +29,9 @@ class Message extends Model
                 //
             }
             app(\App\Services\NotificationService::class)->notifyNewMessage($message);
-            \App\Jobs\RunAiModerationJob::dispatchAfterResponse('message', $message->id);
+            if (class_exists(\App\Jobs\RunAiModerationJob::class)) {
+                \App\Jobs\RunAiModerationJob::dispatchAfterResponse('message', $message->id);
+            }
         });
     }
 

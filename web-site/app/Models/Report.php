@@ -21,7 +21,9 @@ class Report extends Model
     protected static function booted(): void
     {
         static::created(function (Report $report) {
-            \App\Jobs\RunAiModerationJob::dispatchAfterResponse('report', $report->id);
+            if (class_exists(\App\Jobs\RunAiModerationJob::class)) {
+                \App\Jobs\RunAiModerationJob::dispatchAfterResponse('report', $report->id);
+            }
         });
     }
 

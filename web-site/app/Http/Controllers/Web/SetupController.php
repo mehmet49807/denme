@@ -489,7 +489,7 @@ class SetupController extends Controller
             $lines[] = 'paid_utm='.$adsPaid;
             $lines[] = 'trial_bitis_penceresi_erkek='.$trialEnding;
             $lines[] = '';
-            $lines[] = 'GTM event: sign_up, google_complete, google_login_click, invite_share, city_cta_click, instagram_cta, trial_cta_click';
+            $lines[] = 'GTM event: sign_up, google_complete, google_login_click, invite_share, city_cta_click, instagram_cta, trial_cta_click, campaign_landing_view, campaign_funnel_step, sign_up_click';
             $lines[] = 'Instagram bio: https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=bio&utm_campaign=organic';
             $lines[] = 'Ads landing: https://gonulkoprusu.com/kampanya?utm_source=meta&utm_medium=paid&utm_campaign=test1';
             $lines[] = 'Ads şehir: https://gonulkoprusu.com/kampanya?utm_source=meta&utm_medium=paid&utm_campaign=istanbul&city=istanbul';
