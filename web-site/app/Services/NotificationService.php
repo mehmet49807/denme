@@ -352,10 +352,6 @@ class NotificationService
     public function notifyPostLiked(Like $like): void
     {
         try {
-            if (!$this->userNotificationsTableExists()) {
-                return;
-            }
-
             $like->loadMissing(['post', 'user']);
             $post = $like->post;
             $liker = $like->user;
@@ -364,18 +360,23 @@ class NotificationService
                 return;
             }
 
-            UserNotification::create([
-                'user_id' => $post->user_id,
-                'actor_id' => $liker->id,
-                'type' => UserNotification::TYPE_POST_LIKE,
-                'post_id' => $post->id,
-                'like_id' => $like->id,
-                'created_at' => now(),
-            ]);
+            if ($this->userNotificationsTableExists()) {
+                try {
+                    UserNotification::create([
+                        'user_id' => $post->user_id,
+                        'actor_id' => $liker->id,
+                        'type' => UserNotification::TYPE_POST_LIKE,
+                        'post_id' => $post->id,
+                        'like_id' => $like->id,
+                        'created_at' => now(),
+                    ]);
+                    $this->forgetSidebarBadges($post->user_id);
+                } catch (\Throwable) {
+                    // Uygulama içi bildirim olmasa da FCM gitsin.
+                }
+            }
 
-            $this->forgetSidebarBadges($post->user_id);
-
-            $receiver = $post->user;
+            $receiver = $post->user ?? User::query()->find($post->user_id);
             if ($receiver) {
                 $this->pushToUser(
                     $receiver,
@@ -397,10 +398,6 @@ class NotificationService
     public function notifyNewMessage(Message $message): void
     {
         try {
-            if (!$this->userNotificationsTableExists()) {
-                return;
-            }
-
             $message->loadMissing(['sender', 'receiver']);
             $sender = $message->sender;
             $receiver = $message->receiver;
@@ -409,15 +406,20 @@ class NotificationService
                 return;
             }
 
-            UserNotification::create([
-                'user_id' => $receiver->id,
-                'actor_id' => $sender->id,
-                'type' => UserNotification::TYPE_NEW_MESSAGE,
-                'message_id' => $message->id,
-                'created_at' => now(),
-            ]);
-
-            $this->forgetSidebarBadges($receiver->id);
+            if ($this->userNotificationsTableExists()) {
+                try {
+                    UserNotification::create([
+                        'user_id' => $receiver->id,
+                        'actor_id' => $sender->id,
+                        'type' => UserNotification::TYPE_NEW_MESSAGE,
+                        'message_id' => $message->id,
+                        'created_at' => now(),
+                    ]);
+                    $this->forgetSidebarBadges($receiver->id);
+                } catch (\Throwable) {
+                    // Uygulama içi bildirim olmasa da FCM gitsin.
+                }
+            }
 
             $this->pushToUser(
                 $receiver,
@@ -438,27 +440,28 @@ class NotificationService
     public function notifyAdminNotice(User $user, string $title, string $body, array $data = [], ?User $actor = null): void
     {
         try {
-            if (! $this->userNotificationsTableExists()) {
-                return;
-            }
-
             $title = trim($title);
             $body = trim($body);
             if ($title === '' && $body === '') {
                 return;
             }
 
-            $stored = $title !== '' ? ($title.($body !== '' ? "\n".$body : '')) : $body;
+            if ($this->userNotificationsTableExists()) {
+                try {
+                    $stored = $title !== '' ? ($title.($body !== '' ? "\n".$body : '')) : $body;
 
-            UserNotification::create([
-                'user_id' => $user->id,
-                'actor_id' => $actor?->id,
-                'type' => UserNotification::TYPE_ADMIN_NOTICE,
-                'body' => $stored,
-                'created_at' => now(),
-            ]);
-
-            $this->forgetSidebarBadges($user->id);
+                    UserNotification::create([
+                        'user_id' => $user->id,
+                        'actor_id' => $actor?->id,
+                        'type' => UserNotification::TYPE_ADMIN_NOTICE,
+                        'body' => $stored,
+                        'created_at' => now(),
+                    ]);
+                    $this->forgetSidebarBadges($user->id);
+                } catch (\Throwable) {
+                    // Uygulama içi bildirim olmasa da FCM gitsin.
+                }
+            }
 
             $this->pushToUser(
                 $user,

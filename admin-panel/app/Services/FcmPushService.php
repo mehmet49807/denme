@@ -423,6 +423,16 @@ class FcmPushService
         );
         $channelId = ($data['type'] ?? '') === 'new_message' ? 'gonul_messages' : 'gonul_alerts';
 
+        $webBase = rtrim((string) (
+            config('deploy.web_url')
+            ?: config('update.web_url')
+            ?: 'https://gonulkoprusu.com'
+        ), '/');
+        $webLink = $webBase.'/notifications';
+        if (($data['type'] ?? '') === 'new_message' && ! empty($data['actor_username'])) {
+            $webLink = $webBase.'/messages/'.$data['actor_username'];
+        }
+
         $payload = [
             'message' => [
                 'token' => $token,
@@ -436,6 +446,20 @@ class FcmPushService
                     'notification' => [
                         'channel_id' => $channelId,
                         'sound' => 'default',
+                    ],
+                ],
+                'webpush' => [
+                    'headers' => [
+                        'Urgency' => 'high',
+                    ],
+                    'notification' => [
+                        'title' => $title,
+                        'body' => $body,
+                        'icon' => $webBase.'/images/logo-180.png',
+                        'badge' => $webBase.'/images/favicon.png',
+                    ],
+                    'fcm_options' => [
+                        'link' => $webLink,
                     ],
                 ],
             ],

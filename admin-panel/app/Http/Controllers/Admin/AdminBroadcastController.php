@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendBroadcastPushJob;
 use App\Models\AdminBroadcast;
 use App\Models\User;
+use App\Services\FcmPushService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -40,10 +42,20 @@ class AdminBroadcastController extends Controller
             'sent_count' => $sentCount,
         ]);
 
+        $fcm = app(FcmPushService::class);
+        $pushQueued = false;
+        if ($fcm->isConfigured()) {
+            SendBroadcastPushJob::dispatchAfterResponse($broadcast->id);
+            $pushQueued = true;
+        }
+
         return response()->json([
             'success' => true,
-            'message' => "Duyuru {$sentCount} kullanıcıya gönderildi.",
+            'message' => $pushQueued
+                ? "Duyuru {$sentCount} kullanıcıya kaydedildi; FCM push arka planda iletiliyor."
+                : "Duyuru {$sentCount} kullanıcıya gönderildi. (FCM yapılandırması eksik — yalnızca uygulama içi duyuru.)",
             'data' => $broadcast,
+            'fcm_queued' => $pushQueued,
         ], 201);
     }
 }
