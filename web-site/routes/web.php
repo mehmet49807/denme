@@ -88,7 +88,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         if (is_file($log)) {
             $fp = @fopen($log, 'rb');
             if ($fp) {
-                @fseek($fp, max(0, (int) filesize($log) - 8192));
+                @fseek($fp, max(0, (int) filesize($log) - 64000));
                 $lines[] = '--- log ---';
                 $lines[] = trim((string) @stream_get_contents($fp));
                 @fclose($fp);
@@ -102,6 +102,66 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'X-LiteSpeed-Purge' => '*',
         ]);
     });
+
+    Route::get('/setup/diag-msg-notif', function () {
+        if (request('key') !== 'gk-cpanel-setup-2026') {
+            abort(403);
+        }
+
+        $lines = ['diag-msg-notif', 'base='.base_path()];
+        $user = \App\Models\User::query()->where('role', 'user')->where('is_banned', false)->orderByDesc('id')->first();
+        $lines[] = 'user='.($user ? ($user->id.' '.$user->username) : 'none');
+
+        $run = function (string $label, callable $fn) use (&$lines) {
+            try {
+                $result = $fn();
+                $lines[] = $label.': OK '. (is_scalar($result) || $result === null ? var_export($result, true) : get_debug_type($result));
+            } catch (\Throwable $e) {
+                $lines[] = $label.': FAIL '.$e::class.' '.$e->getMessage();
+                $lines[] = '  at '.$e->getFile().':'.$e->getLine();
+            }
+        };
+
+        if ($user) {
+            $notifications = app(\App\Services\NotificationService::class);
+            $conversations = app(\App\Services\ConversationService::class);
+            $run('unreadNotificationsCount', fn () => $notifications->unreadNotificationsCount($user));
+            $run('unreadMessageCount', fn () => $notifications->unreadMessageCount($user));
+            $run('unreadBroadcastCount', fn () => $notifications->unreadBroadcastCount($user));
+            $run('allForUser', fn () => $notifications->allForUser($user)->count());
+            $run('markAllRead', function () use ($notifications, $user) { $notifications->markAllRead($user); return 'done'; });
+            $run('buildConversations', fn () => $conversations->buildConversations($user)->count());
+            $run('view.notifications', fn () => view('web.notifications.index', ['viewer' => $user, 'items' => $notifications->allForUser($user)])->render() ? 'rendered' : 'empty');
+            $run('view.messages', fn () => view('web.messages.index', ['viewer' => $user, 'conversations' => $conversations->buildConversations($user)])->render() ? 'rendered' : 'empty');
+        }
+
+        $log = base_path('storage/logs/laravel.log');
+        if (is_file($log)) {
+            $fp = @fopen($log, 'rb');
+            if ($fp) {
+                @fseek($fp, max(0, (int) filesize($log) - 60000));
+                $chunk = (string) @stream_get_contents($fp);
+                @fclose($fp);
+                if (preg_match_all('/\\.ERROR:.*(?:\\n(?!\\[).*)*/', $chunk, $m)) {
+                    $lines[] = '--- last errors ---';
+                    foreach (array_slice($m[0], -3) as $err) {
+                        $lines[] = substr($err, 0, 2500);
+                        $lines[] = '----';
+                    }
+                } else {
+                    $lines[] = '--- log tail ---';
+                    $lines[] = substr($chunk, -4000);
+                }
+            }
+        }
+
+        $lines[] = 'OK';
+        return response(implode("\n", $lines)."\n", 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-store',
+        ]);
+    });
+
     Route::get('/setup/notifications', [\App\Http\Controllers\Web\SetupController::class, 'notifications']);
     Route::match(['get', 'post'], '/setup/fcm', [\App\Http\Controllers\Web\SetupController::class, 'fcm'])
         ->withoutMiddleware([
