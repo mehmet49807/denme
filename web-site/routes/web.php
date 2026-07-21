@@ -105,7 +105,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Cache-Control' => 'no-store',
             'X-LiteSpeed-Purge' => '*',
         ]);
-    }->middleware('setup:gk-deploy-sync-2026');
+    })->middleware('setup:gk-deploy-sync-2026');
 
     Route::get('/setup/diag-msg-notif', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
@@ -164,7 +164,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Content-Type' => 'text/plain; charset=utf-8',
             'Cache-Control' => 'no-store',
         ]);
-    }->middleware('setup:gk-cpanel-setup-2026');
+    })->middleware('setup:gk-cpanel-setup-2026');
 
     Route::get('/setup/notifications', [\App\Http\Controllers\Web\SetupController::class, 'notifications'])
         ->middleware('setup:gk-notifications-migrate-2026');
@@ -222,7 +222,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Content-Type' => 'text/plain; charset=utf-8',
             'Cache-Control' => 'no-store',
         ]);
-    }->middleware('setup:gk-cpanel-setup-2026');
+    })->middleware('setup:gk-cpanel-setup-2026');
     Route::get('/setup/clear-cache', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
             abort(403);
@@ -256,7 +256,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Cache-Control' => 'no-store',
             'X-LiteSpeed-Purge' => '*',
         ]);
-    }->middleware('setup:gk-cpanel-setup-2026');
+    })->middleware('setup:gk-cpanel-setup-2026');
 
     Route::get('/setup/test-login', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
@@ -298,7 +298,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'cookie_name' => $cookieName,
             'session_cookie' => $cookieName.'='.$sessionId,
         ]);
-    }->middleware('setup:gk-cpanel-setup-2026');
+    })->middleware('setup:gk-cpanel-setup-2026');
     Route::match(['get', 'post'], '/setup/google-oauth', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
             abort(403);
@@ -340,7 +340,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Content-Type' => 'text/plain; charset=utf-8',
             'Cache-Control' => 'no-store',
         ]);
-    }->middleware('setup:gk-cpanel-setup-2026');
+    })->middleware('setup:gk-cpanel-setup-2026');
     Route::get('/setup/profile-toolbar-css', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
             abort(403);
@@ -382,7 +382,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Content-Type' => 'text/plain; charset=utf-8',
             'Cache-Control' => 'no-store',
         ]);
-    }->middleware('setup:gk-cpanel-setup-2026');
+    })->middleware('setup:gk-cpanel-setup-2026');
     Route::get('/setup/diag-blog-sss', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
             abort(403);
@@ -419,7 +419,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         }
 
         return response()->json($checks, 200, ['Cache-Control' => 'no-store']);
-    }->middleware('setup:gk-cpanel-setup-2026');
+    })->middleware('setup:gk-cpanel-setup-2026');
 
 }
 
