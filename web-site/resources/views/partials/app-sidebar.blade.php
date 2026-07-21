@@ -44,7 +44,7 @@
                 @endif
             </a>
         </li>
-        @if($sidebarUser->isAdmin() && \Illuminate\Support\Facades\Route::has('admin.dashboard'))
+        @if($sidebarUser?->isAdmin() && \Illuminate\Support\Facades\Route::has('admin.dashboard'))
             <li class="sidebar-nav-item--extra">
                 <a href="{{ route('admin.dashboard') }}" class="{{ $active === 'admin' ? 'active' : '' }}">
                     @include('partials.sidebar-icon', ['icon' => 'admin'])

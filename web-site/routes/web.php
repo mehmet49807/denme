@@ -214,6 +214,17 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         if (function_exists('opcache_reset')) {
             @opcache_reset();
         }
+        if (function_exists('opcache_invalidate')) {
+            foreach ([
+                app_path('Services/NotificationService.php'),
+                app_path('Services/ConversationService.php'),
+                app_path('Services/FcmPushService.php'),
+            ] as $phpFile) {
+                if (is_file($phpFile)) {
+                    @opcache_invalidate($phpFile, true);
+                }
+            }
+        }
 
         foreach (['route:clear', 'view:clear', 'config:clear', 'cache:clear'] as $command) {
             try {
