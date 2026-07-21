@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gk_ink">#1A1410</color>
+    <color name="gk_rose">#C45C6A</color>
+    <color name="gk_rose_deep">#9E3F4D</color>
+    <color name="gk_sand">#F7EFE8</color>
+    <color name="gk_sand_deep">#E8D5C4</color>
+    <color name="gk_white">#FFFFFF</color>
+    <color name="gk_muted">#6B5E56</color>
+    <color name="gk_error">#B3261E</color>
+    <color name="gk_input_bg">#FFFCF9</color>
+    <color name="gk_stroke">#D9C8BA</color>
+</resources>

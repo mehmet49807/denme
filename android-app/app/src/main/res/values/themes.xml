@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.GonulKoprusu" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/gk_rose</item>
+        <item name="colorPrimaryDark">@color/gk_rose_deep</item>
+        <item name="colorOnPrimary">@color/gk_white</item>
+        <item name="colorSecondary">@color/gk_ink</item>
+        <item name="android:statusBarColor">@color/gk_sand</item>
+        <item name="android:navigationBarColor">@color/gk_sand</item>
+        <item name="android:windowBackground">@color/gk_sand</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>
