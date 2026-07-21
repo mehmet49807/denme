@@ -18,7 +18,11 @@ class Like extends Model
 
             $post = Post::find($like->post_id);
             if ($post) {
-                app(\App\Services\RealtimeBroadcastService::class)->postUpdated($post);
+                try {
+                    app(\App\Services\RealtimeBroadcastService::class)->postUpdated($post);
+                } catch (\Throwable) {
+                    // Realtime opsiyonel; beğeni kaydı bozulmasın.
+                }
             }
         });
 
@@ -27,7 +31,11 @@ class Like extends Model
 
             $post = Post::find($like->post_id);
             if ($post) {
-                app(\App\Services\RealtimeBroadcastService::class)->postUpdated($post);
+                try {
+                    app(\App\Services\RealtimeBroadcastService::class)->postUpdated($post);
+                } catch (\Throwable) {
+                    //
+                }
             }
         });
     }
