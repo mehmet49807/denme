@@ -24,18 +24,18 @@ class FeedPageController extends Controller
     public function index(Request $request): View
     {
         $viewer = $request->user();
-        $visibleUserIds = $this->genderFilter->visibleUserIds($viewer);
+        $visibleQuery = $this->genderFilter->visibleUsersQuery($viewer);
 
-        $posts = $visibleUserIds->isEmpty()
-            ? Post::with('user')->whereRaw('0 = 1')->paginate(20)
-            : User::applyContentRanking(
-                Post::with('user')
-                    ->where('posts.is_active', true)
-                    ->whereIn('posts.user_id', $visibleUserIds)
-            )->paginate(20);
+        $posts = User::applyContentRanking(
+            Post::with(['user.premiumSubscriptions' => function ($q) {
+                $q->active()->latest('expires_at');
+            }])
+                ->where('posts.is_active', true)
+                ->whereIn('posts.user_id', (clone $visibleQuery)->select('users.id'))
+        )->paginate(20);
 
         $ownStoryGroup = $this->storyGroups->loadOwnStoryGroup($viewer);
-        $storyGroups = $this->storyGroups->loadDiscoveryGroups($viewer, $visibleUserIds);
+        $storyGroups = $this->storyGroups->loadDiscoveryGroups($viewer);
 
         $likedPostIds = Like::where('user_id', $viewer->id)
             ->whereIn('post_id', $posts->pluck('id'))
@@ -44,7 +44,7 @@ class FeedPageController extends Controller
 
         // Erkek akışı: gönderi altında kadın öneri kartları. Kadın akışında yok.
         $recommendedUsers = strtolower((string) $viewer->gender) === 'male'
-            ? User::recommendedForMaleFeed($visibleUserIds, $viewer->id, 12)
+            ? User::recommendedForMaleFeed($visibleQuery, $viewer->id, 12)
             : collect();
 
         $onboarding = null;

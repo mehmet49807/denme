@@ -327,7 +327,7 @@
     }
 
     async function pollTypingStatus() {
-        if (!chatConfig.typingStatusUrl) return;
+        if (!chatConfig.typingStatusUrl || document.hidden || !document.hasFocus()) return;
 
         try {
             const res = await fetch(chatConfig.typingStatusUrl, {
@@ -392,7 +392,7 @@
     function startMessagePolling() {
         if (!chatConfig.messagesPollUrl) return;
         pollMessages();
-        messagesPollTimer = window.setInterval(pollMessages, 5000);
+        messagesPollTimer = window.setInterval(pollMessages, 8000);
     }
 
     function scheduleTypingPing() {
@@ -411,7 +411,11 @@
 
     if (chatConfig.typingStatusUrl) {
         pollTypingStatus();
-        typingPollTimer = window.setInterval(pollTypingStatus, 2500);
+        typingPollTimer = window.setInterval(pollTypingStatus, 4000);
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) pollTypingStatus();
+        });
+        window.addEventListener('focus', pollTypingStatus);
     }
 
     startMessagePolling();

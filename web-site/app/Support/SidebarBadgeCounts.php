@@ -8,12 +8,14 @@ use Illuminate\Support\Facades\Cache;
 
 final class SidebarBadgeCounts
 {
+    private const TTL_SECONDS = 20;
+
     /** @return array{notifications: int, messages: int} */
     public static function forUser(User $user): array
     {
         return Cache::remember(
             'sidebar_badges:'.$user->id,
-            now()->addSeconds(8),
+            now()->addSeconds(self::TTL_SECONDS),
             static function () use ($user): array {
                 try {
                     $notifications = app(NotificationService::class);
@@ -38,4 +40,3 @@ final class SidebarBadgeCounts
         }
     }
 }
-

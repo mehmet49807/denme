@@ -119,5 +119,5 @@
 </div>
 @endif
 
-@include('partials.asset', ['path' => 'js/profile-page.min.js'])
+@include('partials.asset', ['path' => 'js/profile-page.min.js', 'defer' => true])
 @endsection

@@ -254,5 +254,5 @@ window.__gk_chat = {!! json_encode([
     }
 })();
 </script>
-@include('partials.asset', ['path' => 'js/chat.min.js'])
+@include('partials.asset', ['path' => 'js/chat.min.js', 'defer' => true])
 @endsection

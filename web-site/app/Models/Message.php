@@ -22,6 +22,12 @@ class Message extends Model
         });
 
         static::created(function (Message $message) {
+            try {
+                app(\App\Services\ConversationService::class)->forgetConversationsCache((int) $message->sender_id);
+                app(\App\Services\ConversationService::class)->forgetConversationsCache((int) $message->receiver_id);
+            } catch (\Throwable) {
+                //
+            }
             app(\App\Services\NotificationService::class)->notifyNewMessage($message);
             \App\Jobs\RunAiModerationJob::dispatchAfterResponse('message', $message->id);
         });

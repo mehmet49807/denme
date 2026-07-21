@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendFcmPushJob;
 use App\Models\AdminBroadcast;
 use App\Models\Like;
 use App\Models\Message;
@@ -31,8 +32,6 @@ class NotificationService
     }
     public function allForUser(User $user): Collection
     {
-        $this->purgeExpiredIfNeeded();
-
         $broadcasts = $this->broadcastsForUser($user)->map(fn ($item) => array_merge($item, [
             'type' => 'broadcast',
             'actor_username' => null,
@@ -51,8 +50,6 @@ class NotificationService
 
     public function broadcastsForUser(User $user): Collection
     {
-        $this->purgeExpiredIfNeeded();
-
         $readMap = UserBroadcastRead::where('user_id', $user->id)
             ->whereNotNull('read_at')
             ->pluck('read_at', 'broadcast_id');
@@ -548,9 +545,13 @@ class NotificationService
     private function pushToUser(User $user, string $title, string $body, array $data = []): void
     {
         try {
-            app(FcmPushService::class)->sendToUser($user, $title, $body, $data);
+            SendFcmPushJob::dispatchAfterResponse($user->id, $title, $body, $data);
         } catch (\Throwable) {
-            //
+            try {
+                app(FcmPushService::class)->sendToUser($user, $title, $body, $data);
+            } catch (\Throwable) {
+                //
+            }
         }
     }
 
@@ -580,8 +581,6 @@ class NotificationService
 
     public function unreadBroadcastCount(User $user): int
     {
-        $this->purgeExpiredIfNeeded();
-
         $broadcastIds = AdminBroadcast::forUser($user)->recent()->pluck('id');
 
         if ($broadcastIds->isEmpty()) {
@@ -677,8 +676,6 @@ class NotificationService
 
     public function itemsSince(User $user, \DateTimeInterface $since): Collection
     {
-        $this->purgeExpiredIfNeeded();
-
         $readMap = UserBroadcastRead::where('user_id', $user->id)
             ->whereNotNull('read_at')
             ->pluck('read_at', 'broadcast_id');

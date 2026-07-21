@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Services\NotificationService;
+use App\Support\SidebarBadgeCounts;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -26,13 +27,13 @@ class NotificationPageController extends Controller
 
     public function badgeCounts(Request $request): JsonResponse
     {
-        $user = $request->user();
+        $counts = SidebarBadgeCounts::forUser($request->user());
 
         return response()->json([
             'success' => true,
             'data' => [
-                'unread_messages' => $this->notifications->unreadMessageCount($user),
-                'unread_notifications' => $this->notifications->unreadNotificationsCount($user),
+                'unread_messages' => $counts['messages'],
+                'unread_notifications' => $counts['notifications'],
             ],
         ]);
     }
@@ -54,11 +55,13 @@ class NotificationPageController extends Controller
             ? $this->notifications->itemsSince($viewer, $since)
             : collect();
 
+        $counts = SidebarBadgeCounts::forUser($viewer);
+
         return response()->json([
             'success' => true,
             'data' => [
-                'unread_messages' => $this->notifications->unreadMessageCount($viewer),
-                'unread_notifications' => $this->notifications->unreadNotificationsCount($viewer),
+                'unread_messages' => $counts['messages'],
+                'unread_notifications' => $counts['notifications'],
                 'html' => $items->isNotEmpty()
                     ? view('web.notifications.partials.list-items', ['items' => $items])->render()
                     : '',
@@ -68,4 +71,3 @@ class NotificationPageController extends Controller
         ]);
     }
 }
-

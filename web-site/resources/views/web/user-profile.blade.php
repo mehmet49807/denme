@@ -263,6 +263,6 @@
     @endif
 })();
 </script>
-@include('partials.asset', ['path' => 'js/feed-page.min.js'])
-@include('partials.asset', ['path' => 'js/profile-posts.min.js'])
+@include('partials.asset', ['path' => 'js/feed-page.min.js', 'defer' => true])
+@include('partials.asset', ['path' => 'js/profile-posts.min.js', 'defer' => true])
 @endsection

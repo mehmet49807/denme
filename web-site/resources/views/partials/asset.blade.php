@@ -24,9 +24,10 @@
     }
 
     if ($absolute) {
-        $version = substr(hash_file('sha256', $absolute), 0, 12);
+        // filemtime is far cheaper than hashing the whole file on every HTML render.
+        $version = (string) (filemtime($absolute) ?: time());
     } else {
-        $version = (string) time();
+        $version = (string) (config('app.asset_version') ?: time());
     }
 
     $url = asset($path).'?v='.$version;

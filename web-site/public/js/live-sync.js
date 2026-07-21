@@ -2,7 +2,7 @@
     const syncUrl = document.querySelector('meta[name="live-sync-url"]')?.content;
     if (!syncUrl) return;
 
-    const POLL_MS = 10000;
+    const POLL_MS = 25000;
     const POLL_MS_PUSHER = 60000;
     let pollIntervalMs = POLL_MS;
     let feedSince = document.querySelector('meta[name="live-sync-feed-since"]')?.content || null;

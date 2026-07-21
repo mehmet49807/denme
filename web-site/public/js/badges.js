@@ -4,7 +4,7 @@
     const notificationsPollUrl = document.querySelector('meta[name="notifications-poll-url"]')?.content;
     let notificationsPollSince = document.querySelector('meta[name="notifications-poll-since"]')?.content || null;
 
-    const POLL_MS = 10000;
+    const POLL_MS = 25000;
     const NOTIFICATION_RETENTION_MS = 24 * 60 * 60 * 1000;
     let badgesTimer = null;
     let inboxTimer = null;

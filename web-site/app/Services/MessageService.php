@@ -25,25 +25,32 @@ class MessageService
 
     public function hideForUser(Message $message, User $viewer): bool
     {
+        $saved = false;
+
         if ((int) $message->sender_id === (int) $viewer->id) {
             if ($message->hidden_for_sender_at) {
                 return true;
             }
             $message->hidden_for_sender_at = now();
-
-            return $message->save();
-        }
-
-        if ((int) $message->receiver_id === (int) $viewer->id) {
+            $saved = $message->save();
+        } elseif ((int) $message->receiver_id === (int) $viewer->id) {
             if ($message->hidden_for_receiver_at) {
                 return true;
             }
             $message->hidden_for_receiver_at = now();
-
-            return $message->save();
+            $saved = $message->save();
         }
 
-        return false;
+        if ($saved) {
+            try {
+                app(ConversationService::class)->forgetConversationsCache((int) $message->sender_id);
+                app(ConversationService::class)->forgetConversationsCache((int) $message->receiver_id);
+            } catch (\Throwable) {
+                //
+            }
+        }
+
+        return $saved;
     }
 
     public function purgeOlderThanRetention(): int

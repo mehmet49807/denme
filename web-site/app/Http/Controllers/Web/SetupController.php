@@ -404,6 +404,13 @@ class SetupController extends Controller
         }
 
         try {
+            $purged = app(\App\Services\NotificationService::class)->purgeExpired();
+            $lines[] = 'notifications.purgeExpired: '.$purged;
+        } catch (\Throwable $e) {
+            $lines[] = 'notifications.purgeExpired HATA: '.$e->getMessage();
+        }
+
+        try {
             $lifecycle = app(\App\Services\GrowthLifecycleService::class)->run(30);
             $lines[] = 'growth-lifecycle: '.json_encode($lifecycle, JSON_UNESCAPED_UNICODE);
         } catch (\Throwable $e) {

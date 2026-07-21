@@ -11,6 +11,10 @@
         "remote": "app"
       },
       {
+        "local": "web-site/database/migrations",
+        "remote": "database/migrations"
+      },
+      {
         "local": "web-site/config",
         "remote": "config"
       },

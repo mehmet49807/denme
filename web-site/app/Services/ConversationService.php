@@ -6,6 +6,7 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class ConversationService
 {
@@ -36,14 +37,45 @@ class ConversationService
 
     public function unreadMessageCount(User $viewer): int
     {
-        return Message::where('receiver_id', $viewer->id)
+        $query = Message::where('receiver_id', $viewer->id)
             ->where('is_read', false)
-            ->whereNull('hidden_for_receiver_at')
-            ->whereIn('sender_id', $this->visiblePartnersQuery($viewer)->select('id'))
-            ->count();
+            ->whereNull('hidden_for_receiver_at');
+
+        $blockedIds = $this->genderFilter->blockedUserIds($viewer);
+        if ($blockedIds->isNotEmpty()) {
+            $query->whereNotIn('sender_id', $blockedIds);
+        }
+
+        return $query->count();
     }
 
-    public function buildConversations(User $viewer): Collection
+    public function buildConversations(User $viewer, bool $useCache = false): Collection
+    {
+        if ($useCache) {
+            try {
+                return Cache::remember(
+                    'conversations:'.$viewer->id,
+                    now()->addSeconds(12),
+                    fn () => $this->buildConversationsUncached($viewer)
+                );
+            } catch (\Throwable) {
+                //
+            }
+        }
+
+        return $this->buildConversationsUncached($viewer);
+    }
+
+    public function forgetConversationsCache(int $userId): void
+    {
+        try {
+            Cache::forget('conversations:'.$userId);
+        } catch (\Throwable) {
+            //
+        }
+    }
+
+    private function buildConversationsUncached(User $viewer): Collection
     {
         $viewerId = $viewer->id;
 

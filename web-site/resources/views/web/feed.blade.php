@@ -301,5 +301,5 @@
 </div>
 @endif
 
-@include('partials.asset', ['path' => 'js/feed-page.min.js'])
+@include('partials.asset', ['path' => 'js/feed-page.min.js', 'defer' => true])
 @endsection

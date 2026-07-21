@@ -209,7 +209,7 @@
         }
         $fcmLoginPrompt = \App\Support\FcmWebPrompt::pending();
     @endphp
-    @include('partials.asset', ['path' => 'js/core.min.js'])
+    @include('partials.asset', ['path' => 'js/core.min.js', 'defer' => true])
     <script>
     (function () {
         var csrf = document.querySelector('meta[name="csrf-token"]');
@@ -268,15 +268,15 @@
         });
     })();
     </script>
-    @include('partials.asset', ['path' => 'js/fcm-web.js'])
+    @include('partials.asset', ['path' => 'js/fcm-web.js', 'defer' => true])
     @if($realtimeEnabled)
-    <script src="https://js.pusher.com/8.4.0/pusher.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js" crossorigin="anonymous"></script>
-    @include('partials.asset', ['path' => 'js/rt-client.min.js'])
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js" crossorigin="anonymous" defer></script>
+    @include('partials.asset', ['path' => 'js/rt-client.min.js', 'defer' => true])
     @endif
     @if($appShell)
         @include('partials.profile-settings-sheet', ['user' => auth()->user()])
-        @include('partials.asset', ['path' => 'js/app-shell.min.js'])
+        @include('partials.asset', ['path' => 'js/app-shell.min.js', 'defer' => true])
     @endif
     @include('partials.toast-host')
     @stack('page-scripts')

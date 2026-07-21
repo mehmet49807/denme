@@ -308,21 +308,15 @@ class User extends Authenticatable
     /**
      * Önerilen üyeler: boost → Platinum → Gold → Pro sırası.
      *
-     * @param  \Illuminate\Support\Collection<int, int>|array<int, int>  $visibleUserIds
+     * @param  \Illuminate\Support\Collection<int, int>|\Illuminate\Database\Eloquent\Builder<\App\Models\User>|array<int, int>  $visible
      * @return \Illuminate\Support\Collection<int, User>
      */
-    public static function recommendedMembers($visibleUserIds, int $excludeUserId, int $limit = 12)
+    public static function recommendedMembers($visible, int $excludeUserId, int $limit = 12)
     {
-        $ids = collect($visibleUserIds)->filter()->values();
-        if ($ids->isEmpty()) {
-            return collect();
-        }
-
         $query = static::query()
             ->where('role', 'user')
             ->where('is_banned', false)
             ->where('id', '!=', $excludeUserId)
-            ->whereIn('id', $ids)
             ->where(function ($q) {
                 $q->where('boost_until', '>', now())
                     ->orWhereHas('premiumSubscriptions', function ($sub) {
@@ -332,7 +326,10 @@ class User extends Authenticatable
                     });
             });
 
+        static::constrainToVisible($query, $visible);
+
         return static::applyDiscoveryRanking($query)
+            ->with(['premiumSubscriptions' => fn ($q) => $q->active()->latest('expires_at')])
             ->limit($limit)
             ->get();
     }
@@ -341,29 +338,50 @@ class User extends Authenticatable
      * Erkek akışı: karşı cins (kadın) önerileri.
      * Paket şartı yok — fotoğraflı / öne çıkan / aktif üyeler.
      *
-     * @param  \Illuminate\Support\Collection<int, int>|array<int, int>  $visibleUserIds
+     * @param  \Illuminate\Support\Collection<int, int>|\Illuminate\Database\Eloquent\Builder<\App\Models\User>|array<int, int>  $visible
      * @return \Illuminate\Support\Collection<int, User>
      */
-    public static function recommendedForMaleFeed($visibleUserIds, int $excludeUserId, int $limit = 12)
+    public static function recommendedForMaleFeed($visible, int $excludeUserId, int $limit = 12)
     {
-        $ids = collect($visibleUserIds)->filter()->values();
-        if ($ids->isEmpty()) {
-            return collect();
-        }
-
         $now = now()->toDateTimeString();
 
-        return static::query()
+        $query = static::query()
             ->where('role', 'user')
             ->where('is_banned', false)
             ->where('gender', 'female')
-            ->where('id', '!=', $excludeUserId)
-            ->whereIn('id', $ids)
+            ->where('id', '!=', $excludeUserId);
+
+        static::constrainToVisible($query, $visible);
+
+        return $query
+            ->with(['premiumSubscriptions' => fn ($q) => $q->active()->latest('expires_at')])
             ->orderByRaw('CASE WHEN boost_until IS NOT NULL AND boost_until > ? THEN 0 ELSE 1 END', [$now])
             ->orderByRaw('CASE WHEN profile_photo_url IS NOT NULL AND profile_photo_url != "" THEN 0 ELSE 1 END')
             ->latest('last_active_at')
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\User>  $query
+     * @param  \Illuminate\Support\Collection<int, int>|\Illuminate\Database\Eloquent\Builder<\App\Models\User>|array<int, int>  $visible
+     */
+    private static function constrainToVisible($query, $visible): void
+    {
+        if ($visible instanceof \Illuminate\Database\Eloquent\Builder) {
+            $query->whereIn('id', (clone $visible)->select('users.id'));
+
+            return;
+        }
+
+        $ids = collect($visible)->filter()->values();
+        if ($ids->isEmpty()) {
+            $query->whereRaw('0 = 1');
+
+            return;
+        }
+
+        $query->whereIn('id', $ids);
     }
 
     /**

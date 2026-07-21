@@ -59,24 +59,30 @@ class GenderFilterService
         );
     }
 
-    public function visibleUserIds(User $viewer): Collection
+    /**
+     * Keşifte görünen kullanıcılar (subquery için — ID listesi materialize etmez).
+     *
+     * @return Builder<\App\Models\User>
+     */
+    public function visibleUsersQuery(User $viewer): Builder
     {
-        if ($viewer->isAdmin()) {
-            return User::query()
-                ->where('role', 'user')
-                ->where('is_banned', false)
-                ->where('id', '!=', $viewer->id)
-                ->pluck('id');
-        }
-
-        return User::query()
+        $query = User::query()
             ->where('role', 'user')
             ->where('is_banned', false)
-            ->where('id', '!=', $viewer->id)
-            ->where(function ($q) use ($viewer) {
-                $this->applyDiscoveryFilters($q, $viewer);
-            })
-            ->pluck('id');
+            ->where('id', '!=', $viewer->id);
+
+        if ($viewer->isAdmin()) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($viewer) {
+            $this->applyDiscoveryFilters($q, $viewer);
+        });
+    }
+
+    public function visibleUserIds(User $viewer): Collection
+    {
+        return $this->visibleUsersQuery($viewer)->pluck('id');
     }
 
     public function forgetVisibleUserIds(?int $userId = null): void

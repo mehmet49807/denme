@@ -211,7 +211,7 @@
 @endsection
 
 @push('auth-scripts')
-@include('partials.asset', ['path' => 'js/register.min.js'])
+@include('partials.asset', ['path' => 'js/register.min.js', 'defer' => true])
 <script>
 (function () {
     var privacy = document.getElementById('privacy_accepted');

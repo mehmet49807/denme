@@ -20,8 +20,6 @@ class StoryGroupService
 
     public function loadUserStoryGroup(User $user): ?array
     {
-        $this->ensureFreshStories();
-
         $stories = Story::active()
             ->where('user_id', $user->id)
             ->latest()
@@ -36,8 +34,6 @@ class StoryGroupService
 
     public function loadOwnStoryGroup(User $viewer): ?array
     {
-        $this->ensureFreshStories();
-
         $ownStories = Story::active()
             ->where('user_id', $viewer->id)
             ->latest()
@@ -55,38 +51,53 @@ class StoryGroupService
 
     public function loadDiscoveryGroups(User $viewer, ?Collection $visibleUserIds = null): Collection
     {
-        $this->ensureFreshStories();
+        $visibleSubquery = $visibleUserIds !== null
+            ? null
+            : $this->genderFilter->visibleUsersQuery($viewer);
 
-        $visibleUserIds ??= $this->genderFilter->visibleUserIds($viewer);
-
-        if ($visibleUserIds->isEmpty()) {
+        if ($visibleUserIds !== null && $visibleUserIds->isEmpty()) {
             return collect();
         }
 
         $now = now()->toDateTimeString();
+        $premiumWith = ['user.premiumSubscriptions' => function ($q) {
+            $q->active()->latest('expires_at');
+        }];
 
         try {
             // Önce paket / boost ile sırala — görüntüleme herkese açık, sıralama sadece öne çıkarma.
-            $stories = Story::active()
-                ->with('user')
+            $query = Story::active()
+                ->with($premiumWith)
                 ->join('users', 'users.id', '=', 'stories.user_id')
                 ->where('stories.user_id', '!=', $viewer->id)
-                ->whereIn('stories.user_id', $visibleUserIds)
                 ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now])
                 ->orderByRaw(User::packageTypeOrderSql('users.id'), [$now])
                 ->orderByDesc('stories.created_at')
                 ->select('stories.*')
-                ->limit(self::DISCOVERY_STORY_LIMIT)
-                ->get();
+                ->limit(self::DISCOVERY_STORY_LIMIT);
+
+            if ($visibleUserIds !== null) {
+                $query->whereIn('stories.user_id', $visibleUserIds);
+            } else {
+                $query->whereIn('stories.user_id', (clone $visibleSubquery)->select('users.id'));
+            }
+
+            $stories = $query->get();
         } catch (\Throwable) {
             // Sıralama sorgusu düşerse paketsiz kullanıcılar yine tüm hikayeleri görsün.
-            $stories = Story::active()
-                ->with('user')
+            $query = Story::active()
+                ->with($premiumWith)
                 ->where('user_id', '!=', $viewer->id)
-                ->whereIn('user_id', $visibleUserIds)
                 ->latest()
-                ->limit(self::DISCOVERY_STORY_LIMIT)
-                ->get();
+                ->limit(self::DISCOVERY_STORY_LIMIT);
+
+            if ($visibleUserIds !== null) {
+                $query->whereIn('user_id', $visibleUserIds);
+            } else {
+                $query->whereIn('user_id', (clone $visibleSubquery)->select('users.id'));
+            }
+
+            $stories = $query->get();
         }
 
         return $stories
@@ -118,14 +129,5 @@ class StoryGroupService
                 'media_type' => $story->is_video ? 'video' : 'image',
             ])->values()->all(),
         ];
-    }
-
-    private function ensureFreshStories(): void
-    {
-        try {
-            $this->stories->purgeExpiredIfNeeded();
-        } catch (\Throwable) {
-            // Hikaye temizliği başarısız olsa da yanıtı kesme.
-        }
     }
 }

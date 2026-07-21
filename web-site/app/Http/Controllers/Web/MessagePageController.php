@@ -36,7 +36,7 @@ class MessagePageController extends Controller
 
         return view('web.messages.index', [
             'viewer' => $viewer,
-            'conversations' => $this->conversations->buildConversations($viewer),
+            'conversations' => $this->conversations->buildConversations($viewer, true),
         ]);
     }
 
@@ -72,7 +72,7 @@ class MessagePageController extends Controller
             'viewer' => $viewer,
             'partner' => $partner,
             'messages' => $messages,
-            'conversations' => $this->conversations->buildConversations($viewer),
+            'conversations' => $this->conversations->buildConversations($viewer, true),
         ]);
     }
 
@@ -173,8 +173,9 @@ class MessagePageController extends Controller
     public function inboxPoll(Request $request): JsonResponse
     {
         $viewer = $request->user();
-        $conversations = $this->conversations->buildConversations($viewer);
+        $conversations = $this->conversations->buildConversations($viewer, true);
         $activeUsername = $request->query('active');
+        $counts = \App\Support\SidebarBadgeCounts::forUser($viewer);
 
         return response()->json([
             'success' => true,
@@ -183,8 +184,8 @@ class MessagePageController extends Controller
                     'conversations' => $conversations,
                     'activeUsername' => $activeUsername,
                 ])->render(),
-                'unread_messages' => $this->notifications->unreadMessageCount($viewer),
-                'unread_notifications' => $this->notifications->unreadNotificationsCount($viewer),
+                'unread_messages' => $counts['messages'],
+                'unread_notifications' => $counts['notifications'],
             ],
         ]);
     }
