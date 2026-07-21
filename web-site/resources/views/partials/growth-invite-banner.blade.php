@@ -6,6 +6,7 @@
     $whatsappUrl = null;
     $inviteUrl = null;
     $shareText = '';
+    $nextMilestone = null;
     if ($showInviteBanner && $viewer) {
         try {
             $referral = app(\App\Services\ReferralService::class);
@@ -14,6 +15,7 @@
                 : 'Gönül Köprüsü\'ne gel, birlikte keşfedelim:';
             $whatsappUrl = $referral->whatsappShareUrl($viewer, $shareText);
             $inviteUrl = $referral->inviteUrl($viewer);
+            $nextMilestone = $referral->nextMilestone($viewer);
         } catch (\Throwable) {
             $whatsappUrl = route('referral');
             $inviteUrl = route('referral');
@@ -41,6 +43,9 @@
                     WhatsApp veya link ile paylaş. Her başarılı davette profilin 24 saat öne çıkar.
                 @else
                     WhatsApp veya link ile paylaş. Kayıt olan her arkadaşın için +{{ $rewardDays }} gün ödül hesabına tanımlanır.
+                @endif
+                @if(!empty($nextMilestone))
+                    Sonraki hedef: {{ $nextMilestone['label'] }} ({{ $nextMilestone['left'] }} kaldı).
                 @endif
             </p>
             <ul class="gib__perks" aria-label="Ödüller">

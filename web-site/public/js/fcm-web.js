@@ -156,7 +156,12 @@
 
     function saveToken(token) {
         if (!window.GkPush || !token) return Promise.resolve({ ok: false });
-        return window.GkPush.register(token, 'web');
+        return window.GkPush.register(token, 'web').then(function (res) {
+            if (res && res.ok) {
+                try { document.dispatchEvent(new CustomEvent('gk:push-ready', { detail: { token: token } })); } catch (e) {}
+            }
+            return res;
+        });
     }
 
     function getToken(cfg) {

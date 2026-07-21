@@ -70,11 +70,26 @@
                            target="_blank" rel="noopener"
                            data-gk-event="instagram_cta" data-gk-event-label="footer">Instagram — @gonulkoprusucom</a>
                     </li>
-                    <li><a href="{{ route('city.seo', 'istanbul') }}">İstanbul tanışma</a></li>
-                    <li><a href="{{ route('city.seo', 'ankara') }}">Ankara tanışma</a></li>
-                    <li><a href="{{ route('city.seo', 'izmir') }}">İzmir tanışma</a></li>
-                    <li><a href="{{ route('city.seo', 'bursa') }}">Bursa tanışma</a></li>
-                    <li><a href="{{ route('city.seo', 'antalya') }}">Antalya tanışma</a></li>
+                    @php
+                        try {
+                            $footerCities = array_slice(\App\Support\FeaturedCities::links(app(\App\Services\LocationDataService::class)), 0, 8);
+                        } catch (\Throwable) {
+                            $footerCities = [
+                                ['slug' => 'istanbul', 'name' => 'İstanbul'],
+                                ['slug' => 'ankara', 'name' => 'Ankara'],
+                                ['slug' => 'izmir', 'name' => 'İzmir'],
+                                ['slug' => 'bursa', 'name' => 'Bursa'],
+                                ['slug' => 'antalya', 'name' => 'Antalya'],
+                            ];
+                        }
+                    @endphp
+                    @foreach($footerCities as $footerCity)
+                        <li>
+                            <a href="{{ route('city.seo', $footerCity['slug']) }}" data-gk-event="city_cta_click" data-gk-event-label="footer_{{ $footerCity['slug'] }}">
+                                {{ $footerCity['name'] }} tanışma
+                            </a>
+                        </li>
+                    @endforeach
                     <li><a href="{{ route('register', ['utm_source' => 'footer', 'utm_medium' => 'cta', 'utm_campaign' => 'organic']) }}" data-gk-event="sign_up_click" data-gk-event-label="footer">Ücretsiz kayıt</a></li>
                 </ul>
                 <p class="site-footer-support-note">

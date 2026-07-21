@@ -166,8 +166,17 @@
             @else
             <div class="chat-compose chat-compose--locked">
                 <div class="premium-feed-banner premium-feed-banner--compact chat-premium-banner">
-                    <p>{{ __('app.messages.premium_hint') }}</p>
-                    <a href="{{ route('premium') }}" class="btn btn-primary btn-sm">{{ __('app.common.review') }}</a>
+                    @if($viewer->isOnTrial())
+                        <p>{{ __('app.messages.premium_hint_trial', ['hours' => $viewer->trialHoursRemaining()]) }}</p>
+                        <a href="{{ route('premium') }}#premium-packages" class="btn btn-outline btn-sm" data-gk-event="trial_cta_click" data-gk-event-label="dm_trial">Paketleri gör</a>
+                    @else
+                        <p>{{ __('app.messages.premium_hint') }}</p>
+                        <ul class="chat-premium-points">
+                            <li>Pro: mesajlaşma</li>
+                            <li>Gold / Platinum: hikâye + öne çıkma</li>
+                        </ul>
+                        <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm" data-gk-event="trial_cta_click" data-gk-event-label="dm_locked">{{ __('app.common.review') }}</a>
+                    @endif
                 </div>
             </div>
             @endif

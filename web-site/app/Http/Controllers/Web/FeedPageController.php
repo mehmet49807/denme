@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\GenderFilterService;
 use App\Services\GrowthOnboardingService;
 use App\Services\StoryGroupService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -21,7 +22,7 @@ class FeedPageController extends Controller
         private GrowthOnboardingService $onboarding,
     ) {}
 
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
         $viewer = $request->user();
         $visibleQuery = $this->genderFilter->visibleUsersQuery($viewer);
@@ -32,15 +33,31 @@ class FeedPageController extends Controller
             }])
                 ->where('posts.is_active', true)
                 ->whereIn('posts.user_id', (clone $visibleQuery)->select('users.id'))
-        )->paginate(20);
-
-        $ownStoryGroup = $this->storyGroups->loadOwnStoryGroup($viewer);
-        $storyGroups = $this->storyGroups->loadDiscoveryGroups($viewer);
+        )->simplePaginate(12)->withQueryString();
 
         $likedPostIds = Like::where('user_id', $viewer->id)
             ->whereIn('post_id', $posts->pluck('id'))
             ->pluck('post_id')
             ->all();
+
+        if ($request->boolean('partial') || $request->expectsJson()) {
+            $html = view('partials.feed-posts-page', [
+                'posts' => $posts,
+                'viewer' => $viewer,
+                'likedPostIds' => $likedPostIds,
+                'recommendedUsers' => collect(),
+                'pageOffset' => ($posts->currentPage() - 1) * $posts->perPage(),
+            ])->render();
+
+            return response()->json([
+                'success' => true,
+                'html' => $html,
+                'next_page_url' => $posts->nextPageUrl(),
+            ]);
+        }
+
+        $ownStoryGroup = $this->storyGroups->loadOwnStoryGroup($viewer);
+        $storyGroups = $this->storyGroups->loadDiscoveryGroups($viewer);
 
         // Erkek akışı: gönderi altında kadın öneri kartları. Kadın akışında yok.
         $recommendedUsers = strtolower((string) $viewer->gender) === 'male'
@@ -66,6 +83,11 @@ class FeedPageController extends Controller
         // Onboarding varken deneme/premium üst şeridini gizle (üst üste binmesin)
         $showFeedPromoBanner = $onboarding === null && ! $showInviteBanner;
 
+        $feedNextPageUrl = $posts->nextPageUrl();
+        if ($feedNextPageUrl) {
+            $feedNextPageUrl .= (str_contains($feedNextPageUrl, '?') ? '&' : '?').'partial=1';
+        }
+
         return view('web.feed', compact(
             'posts',
             'storyGroups',
@@ -76,6 +98,7 @@ class FeedPageController extends Controller
             'onboarding',
             'showInviteBanner',
             'showFeedPromoBanner',
+            'feedNextPageUrl',
         ));
     }
 }

@@ -5,8 +5,12 @@
 @section('title', __('app.nav.users') . ' — ' . __('app.brand'))
 
 @section('app-content')
-@php $search = $search ?? ''; @endphp
-<div class="users-browse-page"@if($search !== '') data-users-search="1"@endif>
+@php
+    $search = $search ?? '';
+    $filters = $filters ?? [];
+    $filtersActive = ! empty($filters['active']);
+@endphp
+<div class="users-browse-page"@if($search !== '' || $filtersActive) data-users-search="1"@endif>
     <header class="users-browse-hero">
         <div class="users-browse-hero-glow" aria-hidden="true"></div>
         <div class="users-browse-hero-inner">
@@ -42,7 +46,7 @@
                 <span class="users-browse-pkg-legend__item users-browse-pkg-legend__item--gold">Gold</span>
                 <span class="users-browse-pkg-legend__item users-browse-pkg-legend__item--pro">Pro</span>
             </p>
-            <form class="users-browse-search" method="get" action="{{ route('users.index') }}" role="search">
+            <form class="users-browse-search users-browse-filters" method="get" action="{{ route('users.index') }}" role="search">
                 <label class="users-browse-search__label" for="users-search-q">{{ __('app.users.search_label') }}</label>
                 <div class="users-browse-search__row">
                     <input
@@ -59,9 +63,48 @@
                     <button type="submit" class="btn btn-primary users-browse-search__btn">
                         {{ __('app.users.search_button') }}
                     </button>
-                    @if($search !== '')
+                    @if($filtersActive)
                         <a href="{{ route('users.index') }}" class="users-browse-search__clear">{{ __('app.users.search_clear') }}</a>
                     @endif
+                </div>
+                <div class="users-browse-filter-grid">
+                    <label>
+                        <span>Yaş min</span>
+                        <input type="number" name="age_min" min="18" max="80" value="{{ $filters['age_min'] ?? '' }}" placeholder="18">
+                    </label>
+                    <label>
+                        <span>Yaş max</span>
+                        <input type="number" name="age_max" min="18" max="80" value="{{ $filters['age_max'] ?? '' }}" placeholder="45">
+                    </label>
+                    <label>
+                        <span>Şehir</span>
+                        <input type="text" name="city" value="{{ $filters['city'] ?? '' }}" placeholder="İstanbul" maxlength="80">
+                    </label>
+                    <label>
+                        <span>İlçe</span>
+                        <input type="text" name="district" value="{{ $filters['district'] ?? '' }}" placeholder="Kadıköy" maxlength="80">
+                    </label>
+                    <label>
+                        <span>İlişki durumu</span>
+                        <select name="relationship_status">
+                            <option value="">Tümü</option>
+                            @foreach(($relationshipStatuses ?? []) as $key => $meta)
+                                <option value="{{ $key }}" @selected(($filters['relationship_status'] ?? '') === $key)>{{ $meta['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                    <label>
+                        <span>Beklenti</span>
+                        <input type="text" name="relationship_expectation" value="{{ $filters['relationship_expectation'] ?? '' }}" placeholder="ciddi ilişki" maxlength="80">
+                    </label>
+                    <label class="users-browse-filter-check">
+                        <input type="checkbox" name="online" value="1" @checked(!empty($filters['online']))>
+                        <span>Çevrimiçi</span>
+                    </label>
+                    <label class="users-browse-filter-check">
+                        <input type="checkbox" name="with_photo" value="1" @checked(!empty($filters['with_photo']))>
+                        <span>Fotoğraflı</span>
+                    </label>
                 </div>
             </form>
         </div>
@@ -79,8 +122,8 @@
     @include('partials.empty-state', [
         'class' => 'users-browse-empty',
         'icon' => 'users',
-        'title' => $search !== '' ? __('app.users.search_empty_title') : __('app.users.empty_title'),
-        'text' => $search !== '' ? __('app.users.search_empty_text') : __('app.users.empty_text'),
+        'title' => $filtersActive ? __('app.users.search_empty_title') : __('app.users.empty_title'),
+        'text' => $filtersActive ? __('app.users.search_empty_text') : __('app.users.empty_text'),
         'ctaUrl' => route('users.index'),
         'ctaLabel' => __('app.users.discover_badge'),
     ])

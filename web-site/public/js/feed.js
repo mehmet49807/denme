@@ -1131,4 +1131,55 @@
     }
 
     initCaptionEditor();
+
+    // Infinite scroll — sonraki sayfaları partial HTML olarak ekler
+    (function initFeedInfinite() {
+        const root = document.querySelector('[data-feed-infinite]');
+        const sentinel = document.querySelector('[data-feed-sentinel]');
+        if (!root || !sentinel || !('IntersectionObserver' in window)) return;
+
+        let nextUrl = root.getAttribute('data-next-page-url') || '';
+        let busy = false;
+
+        async function loadMore() {
+            if (busy || !nextUrl) return;
+            busy = true;
+            try {
+                const res = await fetch(nextUrl, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!data || !data.success || !data.html) {
+                    nextUrl = '';
+                    return;
+                }
+                sentinel.insertAdjacentHTML('beforebegin', data.html);
+                nextUrl = data.next_page_url
+                    ? data.next_page_url + (data.next_page_url.indexOf('?') >= 0 ? '&' : '?') + 'partial=1'
+                    : '';
+                root.setAttribute('data-next-page-url', nextUrl || '');
+                document.dispatchEvent(new CustomEvent('gk:posts-inserted'));
+            } catch (e) {
+                // sessiz
+            } finally {
+                busy = false;
+                if (!nextUrl) {
+                    try { observer.disconnect(); } catch (err) {}
+                }
+            }
+        }
+
+        const observer = new IntersectionObserver(function (entries) {
+            if (entries.some(function (entry) { return entry.isIntersecting; })) {
+                loadMore();
+            }
+        }, { rootMargin: '600px 0px' });
+
+        observer.observe(sentinel);
+    })();
 })();

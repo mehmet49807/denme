@@ -41,6 +41,28 @@
         <a href="{{ route('safe-meeting') }}">Güvenli tanışma</a>
     </p>
 
+    <h2>Popüler şehirlerde tanışma</h2>
+    <ul class="city-seo-links">
+        @php
+            try {
+                $blogCities = array_slice(\App\Support\FeaturedCities::links(app(\App\Services\LocationDataService::class)), 0, 10);
+            } catch (\Throwable) {
+                $blogCities = [
+                    ['slug' => 'istanbul', 'name' => 'İstanbul'],
+                    ['slug' => 'ankara', 'name' => 'Ankara'],
+                    ['slug' => 'izmir', 'name' => 'İzmir'],
+                ];
+            }
+        @endphp
+        @foreach($blogCities as $blogCity)
+            <li>
+                <a href="{{ route('city.seo', $blogCity['slug']) }}" data-gk-event="city_cta_click" data-gk-event-label="blog_{{ $blogCity['slug'] }}">
+                    {{ $blogCity['name'] }} tanışma
+                </a>
+            </li>
+        @endforeach
+    </ul>
+
     <p class="city-seo-cta-wrap">
         <a href="{{ url('/blog') }}" class="btn btn-outline">Tüm blog yazıları</a>
         <a href="{{ route('register', ['utm_source' => 'blog', 'utm_medium' => 'post', 'utm_campaign' => $slug ?? 'seo']) }}" class="btn btn-primary" data-gk-event="sign_up_click" data-gk-event-label="blog_post">Ücretsiz Kayıt Ol</a>

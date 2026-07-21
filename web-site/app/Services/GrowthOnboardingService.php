@@ -12,6 +12,10 @@ final class GrowthOnboardingService
     /** İlk 24 saat aktivasyon penceresi */
     public const WINDOW_HOURS = 24;
 
+    public function __construct(
+        private ProfileCompletenessService $completeness,
+    ) {}
+
     public function isWithinWindow(User $user): bool
     {
         if (! $user->created_at) {
@@ -42,6 +46,7 @@ final class GrowthOnboardingService
         $hasPhoto = filled($user->profile_photo_url);
         $likeCount = 0;
         $messageCount = 0;
+        $profile = $this->completeness->forUser($user);
 
         try {
             $likeCount = Like::query()->where('user_id', $user->id)->count();
@@ -64,6 +69,12 @@ final class GrowthOnboardingService
                 'href' => route('profile'),
             ],
             [
+                'key' => 'profile_score',
+                'label' => 'Profilini %70 tamamla (şu an %'.$profile['percent'].')',
+                'done' => $profile['percent'] >= 70,
+                'href' => route('profile'),
+            ],
+            [
                 'key' => 'like',
                 'label' => '3 gönderiyi beğen',
                 'done' => $likeCount >= 3,
@@ -71,7 +82,7 @@ final class GrowthOnboardingService
             ],
             [
                 'key' => 'message',
-                'label' => '1 kişiye mesaj gönder',
+                'label' => '1 kişiye ilk mesajını gönder',
                 'done' => $messageCount >= 1,
                 'href' => route('users.index'),
             ],
@@ -93,9 +104,15 @@ final class GrowthOnboardingService
         }
 
         if ($user->gender === 'male') {
+            $trialLabel = $user->isOnTrial()
+                ? 'Deneme: '.$user->trialDaysRemaining().' gün / '.$user->trialHoursRemaining().' saat kaldı'
+                : ($user->isPremium()
+                    ? 'Premium aktif — mesaj ve hikâye açık'
+                    : 'Deneme bitti — mesaj için premium gerekli');
+
             array_unshift($items, [
                 'key' => 'trial',
-                'label' => '3 gün deneme: hikâye + mesaj açık',
+                'label' => $trialLabel,
                 'done' => $user->isOnTrial() || $user->isPremium(),
                 'href' => route('premium'),
             ]);
@@ -122,12 +139,18 @@ final class GrowthOnboardingService
         $items = $this->checklist($user);
         $done = collect($items)->where('done', true)->count();
         $total = count($items);
+        $profile = $this->completeness->forUser($user);
 
         return [
             'done' => $done,
             'total' => $total,
             'percent' => $total > 0 ? (int) round(($done / $total) * 100) : 0,
             'items' => $items,
+            'profile' => $profile,
+            'trial_days' => $user->trialDaysRemaining(),
+            'trial_hours' => method_exists($user, 'trialHoursRemaining') ? $user->trialHoursRemaining() : 0,
+            'is_on_trial' => $user->isOnTrial(),
+            'can_message' => $user->canSendMessages(),
         ];
     }
 }

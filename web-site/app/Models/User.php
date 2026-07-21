@@ -490,6 +490,15 @@ class User extends Authenticatable
         return max(0, (int) ceil(now()->diffInSeconds($this->trial_ends_at) / 86400));
     }
 
+    public function trialHoursRemaining(): int
+    {
+        if (! $this->isOnTrial()) {
+            return 0;
+        }
+
+        return max(0, (int) ceil(now()->diffInSeconds($this->trial_ends_at) / 3600));
+    }
+
     public static function trialEndsAtForNewMale(): \Illuminate\Support\Carbon
     {
         return now()->addDays(self::MALE_TRIAL_DAYS);

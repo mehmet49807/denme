@@ -9,8 +9,10 @@ use App\Models\Post;
 use App\Models\ProfileView;
 use App\Models\Report;
 use App\Models\User;
+use App\Services\DiscoveryFilterService;
 use App\Services\GenderFilterService;
 use App\Services\StoryGroupService;
+use App\Support\RelationshipStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -20,16 +22,14 @@ class UserProfilePageController extends Controller
     public function __construct(
         private GenderFilterService $genderFilter,
         private StoryGroupService $storyGroups,
+        private DiscoveryFilterService $discoveryFilters,
     ) {}
 
     public function index(Request $request): View
     {
         $viewer = $request->user();
-
-        $search = trim((string) $request->query('q', ''));
-        if (mb_strlen($search) > 80) {
-            $search = mb_substr($search, 0, 80);
-        }
+        $filters = $this->discoveryFilters->parse($request);
+        $search = $filters['q'];
 
         $users = User::where('role', 'user')
             ->where('is_banned', false)
@@ -40,18 +40,17 @@ class UserProfilePageController extends Controller
             ->with(['premiumSubscriptions' => fn ($q) => $q->active()->latest('expires_at')])
             ->withCount(['posts' => fn ($q) => $q->where('is_active', true)]);
 
-        if ($search !== '') {
-            $like = '%'.addcslashes($search, '%_\\').'%';
-            $users->where(function ($q) use ($like) {
-                $q->where('username', 'like', $like)
-                    ->orWhere('city', 'like', $like)
-                    ->orWhere('first_name', 'like', $like);
-            });
-        }
+        $this->discoveryFilters->apply($users, $filters);
 
         $users = User::applyDiscoveryRanking($users)->paginate(24)->withQueryString();
 
-        return view('web.users', compact('users', 'viewer', 'search'));
+        return view('web.users', [
+            'users' => $users,
+            'viewer' => $viewer,
+            'search' => $search,
+            'filters' => $filters,
+            'relationshipStatuses' => RelationshipStatus::all(),
+        ]);
     }
 
     public function show(Request $request, string $username): View|RedirectResponse

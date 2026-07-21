@@ -19,7 +19,7 @@ class SitemapController extends Controller
             abort(404);
         }
 
-        $xml = Cache::remember('sitemap.xml.body.v5', now()->addHour(), function () use ($settings) {
+        $xml = Cache::remember('sitemap.xml.body.v6', now()->addHour(), function () use ($settings) {
             return $this->buildSitemapXml($settings);
         });
 
@@ -74,9 +74,9 @@ class SitemapController extends Controller
             ];
         }
 
-        // Yalnızca ilk 20 öncelikli şehir (crawl bütçesi)
+        // Öncelikli şehirler (FeaturedCities) — organik şehir SEO funnel
         $locations = app(\App\Services\LocationDataService::class);
-        $cityLinks = array_slice(FeaturedCities::links($locations), 0, 20);
+        $cityLinks = FeaturedCities::links($locations);
         foreach ($cityLinks as $link) {
             $urls[] = [
                 'loc' => $baseUrl.'/sehir/'.$link['slug'],

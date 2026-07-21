@@ -44,6 +44,9 @@
 
     <p class="city-seo-cta-wrap">
         <a href="{{ $registerUrl }}" class="btn btn-primary" data-gk-event="city_cta_click" data-gk-event-label="{{ $slug }}{{ !empty($district) ? '-'.\App\Support\SeoDistricts::slug($district) : '' }}">Ücretsiz Kayıt Ol</a>
+        @if(!empty($campaignUrl))
+            <a href="{{ $campaignUrl }}" class="btn btn-outline" data-gk-event="city_cta_click" data-gk-event-label="campaign_{{ $slug }}">Hızlı kampanya kaydı</a>
+        @endif
         @guest
             <a href="{{ route('login') }}" class="btn btn-outline">Giriş Yap</a>
         @endguest

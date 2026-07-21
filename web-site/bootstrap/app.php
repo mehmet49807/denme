@@ -4,6 +4,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApplyUserLocale;
 use App\Http\Middleware\CaptureGrowthAttribution;
 use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\SetupAccessMiddleware;
 use App\Http\Middleware\TrackLastActive;
 use App\Support\AdminApp;
 use Illuminate\Foundation\Application;
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => AdminMiddleware::class,
             'locale' => ApplyUserLocale::class,
+            'setup' => SetupAccessMiddleware::class,
         ]);
 
         $middleware->encryptCookies(except: [

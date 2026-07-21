@@ -8,7 +8,9 @@ use App\Models\User;
 use App\Services\ReferralService;
 use App\Services\UserAttributionService;
 use App\Support\SeoHelper;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ReferralPageController extends Controller
@@ -19,8 +21,6 @@ class ReferralPageController extends Controller
     public function index(): View
     {
         $user = auth()->user();
-        session(['growth_invite_shared' => 1]);
-        cookie()->queue('gk_invite_shared', '1', 60 * 24 * 30);
         $inviteUrl = $this->referrals->inviteUrl($user);
         $shareText = $user->gender === 'female'
             ? 'Gönül Köprüsü\'nde güvenli ve saygılı tanışma platformuna seni de bekliyorum. Ücretsiz kayıt ol:'
@@ -39,11 +39,24 @@ class ReferralPageController extends Controller
             'user' => $user,
             'inviteUrl' => $inviteUrl,
             'whatsappUrl' => $this->referrals->whatsappShareUrl($user, $shareText),
+            'instagramUrl' => \App\Support\InstagramUrl::withUtm('referral', 'share', 'instagram'),
             'shareText' => $shareText,
             'referralCount' => $referralCount,
             'recentReferrals' => $recentReferrals,
             'rewardDays' => User::REFERRAL_REWARD_DAYS,
+            'milestones' => $this->referrals->milestones($user),
+            'nextMilestone' => $this->referrals->nextMilestone($user),
+            'leaderboard' => $this->referrals->leaderboard(8),
         ]);
+    }
+
+    /** Paylaşım gerçekleşince onboarding davet adımını işaretle */
+    public function markShared(Request $request): JsonResponse
+    {
+        session(['growth_invite_shared' => 1]);
+        cookie()->queue('gk_invite_shared', '1', 60 * 24 * 30);
+
+        return response()->json(['success' => true]);
     }
 
     /** Public: /davet/{code} — misafir davet landing */

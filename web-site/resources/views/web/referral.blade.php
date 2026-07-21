@@ -84,6 +84,21 @@
                     <li>Davetçi rozeti profilinde görünür</li>
                 @endif
             </ul>
+            @if(!empty($nextMilestone))
+                <p class="referral-next-milestone">
+                    Sonraki hedef: <strong>{{ $nextMilestone['label'] }}</strong>
+                    ({{ $nextMilestone['left'] }} davet kaldı)
+                </p>
+            @endif
+            @if(!empty($milestones))
+                <ol class="referral-milestones" aria-label="Davet hedefleri">
+                    @foreach($milestones as $m)
+                        <li class="{{ !empty($m['reached']) ? 'is-reached' : '' }}{{ !empty($m['current']) ? ' is-current' : '' }}">
+                            <span>{{ $m['label'] }}</span>
+                        </li>
+                    @endforeach
+                </ol>
+            @endif
         </section>
     </div>
 
@@ -100,12 +115,48 @@
             </ul>
         </section>
     @endif
+
+    @if(!empty($leaderboard))
+        <section class="glass-card referral-leaderboard">
+            <h2>Bu haftanın davet liderleri</h2>
+            <ol class="referral-leaderboard-list">
+                @foreach($leaderboard as $row)
+                    <li>
+                        <strong>{{ $row['username'] }}</strong>
+                        @if(!empty($row['city']))
+                            <span>{{ $row['city'] }}</span>
+                        @endif
+                        <em>{{ number_format($row['total']) }} davet</em>
+                    </li>
+                @endforeach
+            </ol>
+            <p class="referral-card-hint">
+                Instagram’da hikâyene link yapıştır:
+                <a href="{{ $instagramUrl ?? \App\Support\InstagramUrl::withUtm('referral', 'share', 'instagram') }}" target="_blank" rel="noopener" data-gk-event="instagram_cta" data-gk-event-label="referral_leaderboard">@gonulkoprusucom</a>
+            </p>
+        </section>
+    @endif
 </div>
 @endsection
 
 @push('page-scripts')
 <script>
 (function () {
+    var csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+    function markShared(method) {
+        if (window.gkTrack) window.gkTrack('invite_share', { method: method || 'share', event_category: 'growth' });
+        if (!csrf) return;
+        fetch(@json(route('referral.mark-shared')), {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'X-CSRF-TOKEN': csrf,
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).catch(function () {});
+    }
+
     var btn = document.getElementById('copyInviteBtn');
     var input = document.getElementById('inviteUrl');
     if (btn && input) {
@@ -114,7 +165,7 @@
             input.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(input.value).then(function () {
                 btn.textContent = 'Kopyalandı!';
-                if (window.gkTrack) window.gkTrack('invite_share', { method: 'copy' });
+                markShared('copy');
                 setTimeout(function () { btn.textContent = 'Kopyala'; }, 2000);
             });
         });
@@ -125,6 +176,7 @@
             var url = shareBtn.getAttribute('data-share-url') || '';
             var text = (shareBtn.getAttribute('data-share-text') || '').trim();
             var full = (text ? text + ' ' : '') + url;
+            markShared('native_share');
             if (navigator.share) {
                 navigator.share({ title: 'Gönül Köprüsü', text: text, url: url }).catch(function () {});
                 return;
@@ -136,6 +188,12 @@
             }
         });
     }
+    document.querySelectorAll('[data-gk-event="invite_share"]').forEach(function (el) {
+        if (el.id === 'copyInviteBtn' || el.id === 'nativeShareInviteBtn') return;
+        el.addEventListener('click', function () {
+            markShared(el.getAttribute('data-gk-event-label') || 'share');
+        });
+    });
 })();
 </script>
 @endpush

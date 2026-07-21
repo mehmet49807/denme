@@ -61,9 +61,13 @@ Route::get('/gizlilik-politikasi', [LegalPageController::class, 'privacy'])->nam
 Route::redirect('/gizlilik-sozlesmesi', '/gizlilik-politikasi', 301);
 
 if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
-    Route::get('/setup/cpanel', [\App\Http\Controllers\Web\SetupController::class, 'cpanel']);
-    Route::get('/setup/performance', [\App\Http\Controllers\Web\SetupController::class, 'performance']);
-    Route::get('/setup/deploy-sync', [\App\Http\Controllers\Web\SetupController::class, 'deploySync']);
+    // setup middleware: key VEYA admin personel; deploy hook'ları key ile çalışır
+    Route::get('/setup/cpanel', [\App\Http\Controllers\Web\SetupController::class, 'cpanel'])
+        ->middleware('setup:gk-cpanel-setup-2026');
+    Route::get('/setup/performance', [\App\Http\Controllers\Web\SetupController::class, 'performance'])
+        ->middleware('setup:gk-perf-setup-2026');
+    Route::get('/setup/deploy-sync', [\App\Http\Controllers\Web\SetupController::class, 'deploySync'])
+        ->middleware('setup:gk-deploy-sync-2026');
     // LiteWeight fallback: SetupController opcache stale olsa bile çalışır
     Route::get('/setup/deploy-sync-lite', function () {
         if (request('key') !== 'gk-deploy-sync-2026') {
@@ -101,7 +105,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Cache-Control' => 'no-store',
             'X-LiteSpeed-Purge' => '*',
         ]);
-    });
+    }->middleware('setup:gk-deploy-sync-2026');
 
     Route::get('/setup/diag-msg-notif', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
@@ -160,27 +164,40 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Content-Type' => 'text/plain; charset=utf-8',
             'Cache-Control' => 'no-store',
         ]);
-    });
+    }->middleware('setup:gk-cpanel-setup-2026');
 
-    Route::get('/setup/notifications', [\App\Http\Controllers\Web\SetupController::class, 'notifications']);
+    Route::get('/setup/notifications', [\App\Http\Controllers\Web\SetupController::class, 'notifications'])
+        ->middleware('setup:gk-notifications-migrate-2026');
     Route::match(['get', 'post'], '/setup/fcm', [\App\Http\Controllers\Web\SetupController::class, 'fcm'])
+        ->middleware('setup:gk-fcm-setup-2026')
         ->withoutMiddleware([
             \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
         ]);
     Route::match(['get', 'post'], '/setup/fcm-web', [\App\Http\Controllers\Web\SetupController::class, 'fcmWeb'])
+        ->middleware('setup:gk-fcm-setup-2026')
         ->withoutMiddleware([
             \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
         ]);
-    Route::match(['get', 'post'], '/setup/laravel-update', [\App\Http\Controllers\Web\SetupController::class, 'laravelUpdate']);
-    Route::get('/setup/email-logs', [\App\Http\Controllers\Web\SetupController::class, 'emailLogs']);
-    Route::get('/setup/support-tickets', [\App\Http\Controllers\Web\SetupController::class, 'supportTickets']);
-    Route::get('/setup/hobbies', [\App\Http\Controllers\Web\SetupController::class, 'hobbies']);
-    Route::get('/setup/locale', [\App\Http\Controllers\Web\SetupController::class, 'locale']);
-    Route::get('/setup/profile-fields', [\App\Http\Controllers\Web\SetupController::class, 'profileFields']);
-    Route::get('/setup/delete-users', [\App\Http\Controllers\Web\SetupController::class, 'deleteUsers']);
-    Route::get('/setup/messages', [\App\Http\Controllers\Web\SetupController::class, 'messagesSchema']);
-    Route::get('/setup/cron', [\App\Http\Controllers\Web\SetupController::class, 'cron']);
-    Route::get('/setup/growth', [\App\Http\Controllers\Web\SetupController::class, 'growth']);
+    Route::match(['get', 'post'], '/setup/laravel-update', [\App\Http\Controllers\Web\SetupController::class, 'laravelUpdate'])
+        ->middleware('setup:gk-cpanel-setup-2026');
+    Route::get('/setup/email-logs', [\App\Http\Controllers\Web\SetupController::class, 'emailLogs'])
+        ->middleware('setup:gk-email-logs-migrate-2026');
+    Route::get('/setup/support-tickets', [\App\Http\Controllers\Web\SetupController::class, 'supportTickets'])
+        ->middleware('setup:gk-cpanel-setup-2026');
+    Route::get('/setup/hobbies', [\App\Http\Controllers\Web\SetupController::class, 'hobbies'])
+        ->middleware('setup:gk-hobbies-migrate-2026');
+    Route::get('/setup/locale', [\App\Http\Controllers\Web\SetupController::class, 'locale'])
+        ->middleware('setup:gk-locale-migrate-2026');
+    Route::get('/setup/profile-fields', [\App\Http\Controllers\Web\SetupController::class, 'profileFields'])
+        ->middleware('setup:gk-cpanel-setup-2026');
+    Route::get('/setup/delete-users', [\App\Http\Controllers\Web\SetupController::class, 'deleteUsers'])
+        ->middleware('setup:gk-delete-users-2026');
+    Route::get('/setup/messages', [\App\Http\Controllers\Web\SetupController::class, 'messagesSchema'])
+        ->middleware('setup:gk-messages-migrate-2026');
+    Route::get('/setup/cron', [\App\Http\Controllers\Web\SetupController::class, 'cron'])
+        ->middleware('setup:gk-cron-2026');
+    Route::get('/setup/growth', [\App\Http\Controllers\Web\SetupController::class, 'growth'])
+        ->middleware('setup:gk-cpanel-setup-2026');
     Route::get('/setup/ws-check', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
             abort(403);
@@ -205,11 +222,11 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Content-Type' => 'text/plain; charset=utf-8',
             'Cache-Control' => 'no-store',
         ]);
-    });
+    }->middleware('setup:gk-cpanel-setup-2026');
     Route::get('/setup/clear-cache', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
             abort(403);
-        }
+        } // middleware + inline key: deploy hook uyumu
 
         if (function_exists('opcache_reset')) {
             @opcache_reset();
@@ -239,7 +256,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Cache-Control' => 'no-store',
             'X-LiteSpeed-Purge' => '*',
         ]);
-    });
+    }->middleware('setup:gk-cpanel-setup-2026');
 
     Route::get('/setup/test-login', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
@@ -281,7 +298,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'cookie_name' => $cookieName,
             'session_cookie' => $cookieName.'='.$sessionId,
         ]);
-    });
+    }->middleware('setup:gk-cpanel-setup-2026');
     Route::match(['get', 'post'], '/setup/google-oauth', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
             abort(403);
@@ -323,7 +340,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Content-Type' => 'text/plain; charset=utf-8',
             'Cache-Control' => 'no-store',
         ]);
-    });
+    }->middleware('setup:gk-cpanel-setup-2026');
     Route::get('/setup/profile-toolbar-css', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
             abort(403);
@@ -365,7 +382,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Content-Type' => 'text/plain; charset=utf-8',
             'Cache-Control' => 'no-store',
         ]);
-    });
+    }->middleware('setup:gk-cpanel-setup-2026');
     Route::get('/setup/diag-blog-sss', function () {
         if (request('key') !== 'gk-cpanel-setup-2026') {
             abort(403);
@@ -402,7 +419,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         }
 
         return response()->json($checks, 200, ['Cache-Control' => 'no-store']);
-    });
+    }->middleware('setup:gk-cpanel-setup-2026');
 
 }
 
@@ -480,9 +497,10 @@ Route::get('/setup/sitemap-ping', function () {
     Cache::forget('sitemap.xml.body.v3');
     Cache::forget('sitemap.xml.body.v4');
     Cache::forget('sitemap.xml.body.v5');
+    Cache::forget('sitemap.xml.body.v6');
 
     $sitemapUrl = 'https://gonulkoprusu.com/sitemap.xml';
-    $lines = ['sitemap-ping', 'sitemap='.$sitemapUrl, 'mode=slim-v5'];
+    $lines = ['sitemap-ping', 'sitemap='.$sitemapUrl, 'mode=featured-cities-v6'];
 
     foreach ([
         'https://www.google.com/ping?sitemap='.rawurlencode($sitemapUrl),
@@ -503,7 +521,7 @@ Route::get('/setup/sitemap-ping', function () {
         'Content-Type' => 'text/plain; charset=utf-8',
         'Cache-Control' => 'no-store',
     ]);
-})->name('setup.sitemap-ping');
+})->middleware('setup:gk-cpanel-setup-2026')->name('setup.sitemap-ping');
 Route::get('/robots.txt', function () {
     foreach ([
         base_path('robots.txt'),
@@ -607,6 +625,9 @@ Route::middleware(['auth', 'locale'])->group(function () {
     Route::delete('/stories/{story}', [StoryPageController::class, 'destroy'])->name('stories.destroy');
     Route::get('/profile', [ProfilePageController::class, 'index'])->name('profile');
     Route::get('/davet', [ReferralPageController::class, 'index'])->name('referral');
+    Route::post('/davet/paylasildi', [ReferralPageController::class, 'markShared'])
+        ->middleware('throttle:30,1,referral-share')
+        ->name('referral.mark-shared');
     Route::put('/profile', [ProfilePageController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfilePageController::class, 'updatePassword'])->name('profile.password');
     Route::post('/profile/photo', [ProfilePageController::class, 'uploadPhoto'])->name('profile.photo');

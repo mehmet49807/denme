@@ -150,4 +150,70 @@ final class ReferralService
     {
         return Referral::query()->where('referrer_id', $user->id)->count();
     }
+
+    /**
+     * @return list<array{count:int,label:string,reached:bool,current:bool}>
+     */
+    public function milestones(User $user): array
+    {
+        $count = $this->referralCount($user);
+        $defs = [
+            ['count' => 1, 'label' => 'İlk davet'],
+            ['count' => 3, 'label' => '3 davet'],
+            ['count' => 5, 'label' => '5 davet'],
+            ['count' => 10, 'label' => '10 davet'],
+        ];
+
+        $next = null;
+        foreach ($defs as $def) {
+            if ($count < $def['count']) {
+                $next = $def['count'];
+                break;
+            }
+        }
+
+        return array_map(function (array $def) use ($count, $next) {
+            return [
+                'count' => $def['count'],
+                'label' => $def['label'],
+                'reached' => $count >= $def['count'],
+                'current' => $next !== null && $def['count'] === $next,
+            ];
+        }, $defs);
+    }
+
+    public function nextMilestone(User $user): ?array
+    {
+        foreach ($this->milestones($user) as $milestone) {
+            if (! empty($milestone['current'])) {
+                $left = max(0, $milestone['count'] - $this->referralCount($user));
+
+                return [
+                    'count' => $milestone['count'],
+                    'label' => $milestone['label'],
+                    'left' => $left,
+                ];
+            }
+        }
+
+        return null;
+    }
+
+    public function leaderboard(int $limit = 8): array
+    {
+        return Referral::query()
+            ->selectRaw('referrer_id, COUNT(*) as total')
+            ->groupBy('referrer_id')
+            ->orderByDesc('total')
+            ->limit($limit)
+            ->with('referrer:id,username,profile_photo_url,city,gender')
+            ->get()
+            ->map(fn ($row) => [
+                'username' => $row->referrer?->username ?? 'üye',
+                'city' => $row->referrer?->city,
+                'photo' => $row->referrer?->profile_photo_url,
+                'total' => (int) $row->total,
+            ])
+            ->all();
+    }
 }

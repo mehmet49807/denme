@@ -4,7 +4,8 @@
     const notificationsPollUrl = document.querySelector('meta[name="notifications-poll-url"]')?.content;
     let notificationsPollSince = document.querySelector('meta[name="notifications-poll-since"]')?.content || null;
 
-    const POLL_MS = 25000;
+    let POLL_MS = 25000;
+    const POLL_MS_PUSH = 60000;
     const NOTIFICATION_RETENTION_MS = 24 * 60 * 60 * 1000;
     let badgesTimer = null;
     let inboxTimer = null;
@@ -222,18 +223,25 @@
         pollNotifications();
     }
 
+    function clearTimers() {
+        if (badgesTimer) { clearInterval(badgesTimer); badgesTimer = null; }
+        if (inboxTimer) { clearInterval(inboxTimer); inboxTimer = null; }
+        if (notificationsTimer) { clearInterval(notificationsTimer); notificationsTimer = null; }
+    }
+
     function startPolling() {
+        clearTimers();
         refreshAll();
 
-        if (badgesUrl && !inboxPollUrl && !notificationsPollUrl && !badgesTimer) {
+        if (badgesUrl && !inboxPollUrl && !notificationsPollUrl) {
             badgesTimer = window.setInterval(pollBadges, POLL_MS);
         }
 
-        if (inboxPollUrl && !inboxTimer) {
+        if (inboxPollUrl) {
             inboxTimer = window.setInterval(pollInbox, POLL_MS);
         }
 
-        if (notificationsPollUrl && !notificationsTimer) {
+        if (notificationsPollUrl) {
             notificationsTimer = window.setInterval(pollNotifications, POLL_MS);
             pruneExpiredNotifications();
         }
@@ -244,11 +252,19 @@
         refreshAll();
     }
 
+    function slowDownForPush() {
+        if (POLL_MS >= POLL_MS_PUSH) return;
+        POLL_MS = POLL_MS_PUSH;
+        startPolling();
+    }
+
     window.__gk_refreshBadges = refreshAll;
 
     if (badgesUrl || inboxPollUrl || notificationsPollUrl) {
         startPolling();
         document.addEventListener('visibilitychange', onVisible);
         window.addEventListener('focus', onVisible);
+        document.addEventListener('gk:push-ready', slowDownForPush);
+        document.addEventListener('gk:pusher-ready', slowDownForPush);
     }
 })();
