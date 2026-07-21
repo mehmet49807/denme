@@ -14,29 +14,40 @@ class Like extends Model
     {
         static::created(function (Like $like) {
             $like->post()->increment('likes_count');
-            app(\App\Services\NotificationService::class)->notifyPostLiked($like);
 
-            $post = Post::find($like->post_id);
-            if ($post) {
+            dispatch(function () use ($like) {
                 try {
-                    app(\App\Services\RealtimeBroadcastService::class)->postUpdated($post);
+                    app(\App\Services\NotificationService::class)->notifyPostLiked($like);
                 } catch (\Throwable) {
-                    // Realtime opsiyonel; beğeni kaydı bozulmasın.
+                    //
                 }
-            }
+
+                try {
+                    $post = $like->relationLoaded('post') ? $like->post : Post::find($like->post_id);
+                    if ($post) {
+                        // Refresh likes_count for payload accuracy.
+                        $post->likes_count = (int) $post->likes_count;
+                        app(\App\Services\RealtimeBroadcastService::class)->postUpdated($post);
+                    }
+                } catch (\Throwable) {
+                    // Realtime opsiyonel.
+                }
+            })->afterResponse();
         });
 
         static::deleted(function (Like $like) {
             $like->post()->decrement('likes_count');
 
-            $post = Post::find($like->post_id);
-            if ($post) {
+            dispatch(function () use ($like) {
                 try {
-                    app(\App\Services\RealtimeBroadcastService::class)->postUpdated($post);
+                    $post = Post::find($like->post_id);
+                    if ($post) {
+                        app(\App\Services\RealtimeBroadcastService::class)->postUpdated($post);
+                    }
                 } catch (\Throwable) {
                     //
                 }
-            }
+            })->afterResponse();
         });
     }
 

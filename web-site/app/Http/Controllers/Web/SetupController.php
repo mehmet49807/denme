@@ -269,6 +269,17 @@ class SetupController extends Controller
 
         $output = trim(Artisan::output()) ?: 'Performance migration OK.';
 
+        try {
+            Artisan::call('migrate', [
+                '--force' => true,
+                '--path' => 'database/migrations/2024_06_22_000001_add_perf_pack2_indexes.php',
+            ]);
+            $pack2 = trim(Artisan::output()) ?: 'Pack2 indexes OK.';
+            $output .= "\n".$pack2;
+        } catch (\Throwable $e) {
+            $output .= "\nPack2 migration uyari: ".$e->getMessage();
+        }
+
         return response(
             $output."\n\nOK\n",
             200,

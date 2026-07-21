@@ -174,19 +174,50 @@ class MessagePageController extends Controller
     {
         $viewer = $request->user();
         $conversations = $this->conversations->buildConversations($viewer, true);
-        $activeUsername = $request->query('active');
+        $activeUsername = (string) $request->query('active', '');
         $counts = \App\Support\SidebarBadgeCounts::forUser($viewer);
+
+        $fingerprint = sha1(json_encode([
+            'active' => $activeUsername,
+            'messages' => $counts['messages'],
+            'notifications' => $counts['notifications'],
+            'rows' => $conversations->map(fn ($row) => [
+                'u' => $row['user']->id ?? null,
+                't' => optional($row['last_message_at'])->getTimestamp(),
+                'n' => $row['unread_count'] ?? 0,
+                'm' => mb_substr((string) ($row['last_message'] ?? ''), 0, 40),
+            ])->all(),
+        ], JSON_UNESCAPED_UNICODE));
+
+        $etag = '"'.$fingerprint.'"';
+        if ($request->headers->get('If-None-Match') === $etag) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'unchanged' => true,
+                    'unread_messages' => $counts['messages'],
+                    'unread_notifications' => $counts['notifications'],
+                ],
+            ], 200, [
+                'ETag' => $etag,
+                'Cache-Control' => 'private, no-cache',
+            ]);
+        }
 
         return response()->json([
             'success' => true,
             'data' => [
                 'html' => view('web.messages.partials.inbox-body', [
                     'conversations' => $conversations,
-                    'activeUsername' => $activeUsername,
+                    'activeUsername' => $activeUsername !== '' ? $activeUsername : null,
                 ])->render(),
                 'unread_messages' => $counts['messages'],
                 'unread_notifications' => $counts['notifications'],
+                'etag' => $fingerprint,
             ],
+        ], 200, [
+            'ETag' => $etag,
+            'Cache-Control' => 'private, no-cache',
         ]);
     }
 

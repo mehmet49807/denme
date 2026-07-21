@@ -271,6 +271,9 @@ class User extends Authenticatable
     /**
      * Aktif paket tipine göre SQL sıra ifadesi (0 = en üstte).
      * Bind için bir adet datetime parametresi bekler.
+     *
+     * Prefer applyPackageRankingJoin() on hot paths; this remains for
+     * callers that cannot join.
      */
     public static function packageTypeOrderSql(string $userIdExpression = 'users.id'): string
     {
@@ -290,6 +293,40 @@ class User extends Authenticatable
     }
 
     /**
+     * Left-join the latest active package once, then order by it (cheaper than correlated subquery).
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\User|\App\Models\Post>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\User|\App\Models\Post>
+     */
+    public static function applyPackageRankingJoin($query, string $userIdColumn = 'users.id')
+    {
+        $now = now()->toDateTimeString();
+        $sub = \Illuminate\Support\Facades\DB::table('premium_subscriptions as ps1')
+            ->select('ps1.user_id', 'ps1.package_type')
+            ->where('ps1.is_active', 1)
+            ->where('ps1.expires_at', '>', $now)
+            ->whereRaw('ps1.id = (
+                SELECT ps2.id FROM premium_subscriptions ps2
+                WHERE ps2.user_id = ps1.user_id
+                  AND ps2.is_active = 1
+                  AND ps2.expires_at > ?
+                ORDER BY ps2.expires_at DESC
+                LIMIT 1
+            )', [$now]);
+
+        return $query
+            ->leftJoinSub($sub, 'active_pkg', function ($join) use ($userIdColumn) {
+                $join->on('active_pkg.user_id', '=', $userIdColumn);
+            })
+            ->orderByRaw("CASE COALESCE(active_pkg.package_type, '')
+                WHEN 'platinum' THEN 0
+                WHEN 'gold' THEN 1
+                WHEN 'pro' THEN 2
+                ELSE 3
+            END");
+    }
+
+    /**
      * Keşif / üye listelerinde paket + boost önceliği.
      *
      * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\User>  $query
@@ -299,10 +336,21 @@ class User extends Authenticatable
     {
         $now = now()->toDateTimeString();
 
-        return $query
-            ->orderByRaw('CASE WHEN boost_until IS NOT NULL AND boost_until > ? THEN 0 ELSE 1 END', [$now])
-            ->orderByRaw(self::packageTypeOrderSql('users.id'), [$now])
-            ->latest('last_active_at');
+        if (empty($query->getQuery()->columns)) {
+            $query->select('users.*');
+        }
+
+        $query = $query
+            ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now]);
+
+        try {
+            return static::applyPackageRankingJoin($query, 'users.id')
+                ->latest('users.last_active_at');
+        } catch (\Throwable) {
+            return $query
+                ->orderByRaw(self::packageTypeOrderSql('users.id'), [$now])
+                ->latest('users.last_active_at');
+        }
     }
 
     /**
@@ -394,12 +442,19 @@ class User extends Authenticatable
     {
         $now = now()->toDateTimeString();
 
-        return $query
+        $query = $query
             ->join('users', 'users.id', '=', $postsTable.'.user_id')
             ->select($postsTable.'.*')
-            ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now])
-            ->orderByRaw(self::packageTypeOrderSql('users.id'), [$now])
-            ->orderByDesc($postsTable.'.created_at');
+            ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now]);
+
+        try {
+            return static::applyPackageRankingJoin($query, 'users.id')
+                ->orderByDesc($postsTable.'.created_at');
+        } catch (\Throwable) {
+            return $query
+                ->orderByRaw(self::packageTypeOrderSql('users.id'), [$now])
+                ->orderByDesc($postsTable.'.created_at');
+        }
     }
 
     /** Koleksiyon sıralaması için görünürlük skoru (yüksek = önde). */

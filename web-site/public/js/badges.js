@@ -11,6 +11,7 @@
     let notificationsTimer = null;
     let inboxBusy = false;
     let notificationsBusy = false;
+    let inboxEtag = null;
 
     function setBadge(link, count, badgeClass) {
         let badge = link.querySelector('.' + badgeClass);
@@ -77,18 +78,32 @@
         inboxBusy = true;
 
         try {
+            const headers = {
+                Accept: 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            };
+            if (inboxEtag) {
+                headers['If-None-Match'] = '"' + inboxEtag + '"';
+            }
+
             const res = await fetch(inboxPollUrl, {
                 credentials: 'same-origin',
-                headers: {
-                    Accept: 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
+                headers: headers,
             });
 
             if (!res.ok) return;
 
             const payload = await res.json();
             if (!payload?.success) return;
+
+            if (payload.data?.unchanged) {
+                if (payload.data) updateBadges(payload.data);
+                return;
+            }
+
+            if (payload.data?.etag) {
+                inboxEtag = payload.data.etag;
+            }
 
             if (typeof payload.data?.html === 'string') {
                 root.classList.add('is-refreshing');

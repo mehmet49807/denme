@@ -19,7 +19,14 @@ class MessageConversationService
 
     public function hasHistory(User $viewer, User $partner): bool
     {
-        return $this->messagesBetween($viewer, $partner)->isNotEmpty();
+        return Message::query()
+            ->where(function ($q) use ($viewer, $partner) {
+                $q->where('sender_id', $viewer->id)->where('receiver_id', $partner->id);
+            })
+            ->orWhere(function ($q) use ($viewer, $partner) {
+                $q->where('sender_id', $partner->id)->where('receiver_id', $viewer->id);
+            })
+            ->exists();
     }
 
     public function canOpenChat(User $viewer, User $partner): bool

@@ -11,8 +11,21 @@ class CaptureGrowthAttribution
 {
     public function handle(Request $request, Closure $next): Response
     {
-        app(UserAttributionService::class)->captureFromRequest($request);
+        if ($this->hasAttributionParams($request)) {
+            app(UserAttributionService::class)->captureFromRequest($request);
+        }
 
         return $next($request);
+    }
+
+    private function hasAttributionParams(Request $request): bool
+    {
+        foreach (['ref', 'utm_source', 'utm_medium', 'utm_campaign'] as $key) {
+            if (filled($request->query($key)) || filled($request->input($key))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

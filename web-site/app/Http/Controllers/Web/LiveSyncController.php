@@ -21,6 +21,24 @@ class LiveSyncController extends Controller
 
     public function sync(Request $request): JsonResponse
     {
+        // Empty heartbeat: return quickly without extra queries.
+        if (
+            $request->boolean('heartbeat')
+            && ! $request->filled('post_ids')
+            && ! $request->has('feed_since')
+            && ! $request->boolean('stories')
+            && ! $request->boolean('users')
+            && ! $request->boolean('premium')
+            && ! $request->filled('profile_username')
+        ) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'server_time' => now()->toIso8601String(),
+                ],
+            ]);
+        }
+
         $viewer = $request->user();
         $postIds = $this->parsePostIds($request->query('post_ids'));
 
