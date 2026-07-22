@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Web\GoogleAuthController;
-use App\Http\Controllers\Api\MobileAuthController;
 use App\Http\Controllers\Web\AuthPageController;
 use App\Http\Controllers\Web\FeedPageController;
 use App\Http\Controllers\Web\PostPageController;
@@ -605,12 +604,6 @@ Route::post('/forgot-password', [AuthPageController::class, 'sendPasswordResetLi
 Route::get('/reset-password/{token}', [AuthPageController::class, 'resetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [AuthPageController::class, 'resetPassword'])->middleware('throttle:6,1,password-reset')->name('password.update');
 Route::post('/logout', [AuthPageController::class, 'logout'])->name('logout');
-
-// Android app: one-time session handoff after native login (must use web middleware for cookies)
-Route::get('/mobile/session/consume/{code}', [MobileAuthController::class, 'consume'])
-    ->middleware('throttle:30,1,mobile-handoff')
-    ->where('code', '[A-Za-z0-9]{32,128}')
-    ->name('mobile.session.consume');
 
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
 Route::post('/auth/google/prepare', [GoogleAuthController::class, 'prepare'])->middleware('throttle:20,1,google-prepare')->name('auth.google.prepare');
