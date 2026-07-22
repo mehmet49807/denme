@@ -56,3 +56,21 @@ Handoff kodları cache’te tutulur (migration gerekmez).
 - Oturum çerezleri apex domain içindir: her zaman `https://gonulkoprusu.com` (www değil)
 - Admin paneli (`admin.gonulkoprusu.com`) uygulamada yok
 - Harici linkler Custom Tabs ile açılır; Google OAuth WebView içinde kalır
+
+
+## Emülatör (bu cloud ortamında)
+
+SDK yolu: `/opt/android-sdk`  
+AVD adı: `GonulPhone` (Pixel 6, Android 14)
+
+```bash
+export ANDROID_HOME=/opt/android-sdk
+export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
+bash scripts/android/start-emulator.sh GonulPhone
+adb wait-for-device
+./gradlew assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell am start -n com.gonulkoprusu.app/.LoginActivity
+```
+
+Not: Cloud VM'de `/dev/kvm` yok; emülatör yazılım hızlandırmasıyla (`-accel off`) çalışır ve yavaştır. Günlük geliştirme için kendi bilgisayarında Android Studio emülatörü önerilir.
