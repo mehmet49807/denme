@@ -144,7 +144,8 @@ class ProfileLikeController extends Controller
 
         $incomingCount = (clone $incomingQuery)->count();
 
-        $incomingUsers = $tab === 'incoming'
+        // Premium olmayanlara kimlik sızdırmamak için liste hiç yüklenmez.
+        $incomingUsers = ($tab === 'incoming' && $canRevealIncoming)
             ? $incomingQuery->paginate(24, ['*'], 'incoming_page')->withQueryString()
             : null;
 
