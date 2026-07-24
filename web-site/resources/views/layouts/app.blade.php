@@ -167,7 +167,11 @@
             <div class="site-header-toolbar">
                 @auth
                     @include('partials.header-premium-btn')
-                    @include('partials.profile-settings-open-btn')
+                    @if(request()->routeIs('profile'))
+                        @include('partials.profile-settings-open-btn')
+                    @else
+                        @include('partials.header-matches-btn')
+                    @endif
                 @endauth
                 @stack('header-actions')
             </div>
