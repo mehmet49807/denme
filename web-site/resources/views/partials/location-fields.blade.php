@@ -1,5 +1,6 @@
 @php
-    $country = old('country', $country ?? 'Türkiye');
+    $required = $required ?? true;
+    $country = old('country', $country ?? ($required ? 'Türkiye' : ''));
     $city = old('city', $city ?? '');
     $district = old('district', $district ?? '');
     $showDistrict = $showDistrict ?? true;
@@ -14,13 +15,13 @@
      data-show-district="{{ $showDistrict ? '1' : '0' }}">
     <div class="flagged-select-wrap flagged-select-wrap--country">
         <span class="flagged-select-flag" data-flagged-select-flag aria-hidden="true">
-            <img src="{{ $countryMeta->flagUrl($initialIso) }}" alt="" width="20" height="15" loading="lazy">
+            <img src="{{ $countryMeta->flagUrl($initialIso ?: 'tr') }}" alt="" width="20" height="15" loading="lazy">
         </span>
-        <select name="country" class="loc-country flagged-select" required aria-label="Ülke">
+        <select name="country" class="loc-country flagged-select" @if($required) required @endif aria-label="Ülke">
             <option value="">Ülke</option>
         </select>
     </div>
-    <select name="city" class="loc-city" required disabled>
+    <select name="city" class="loc-city" @if($required) required @endif disabled>
         <option value="">Şehir</option>
     </select>
     @if($showDistrict)

@@ -17,6 +17,7 @@
         'admin.moderation' => 'reports',
         'admin.users' => 'users',
         'admin.profile-approvals' => 'users',
+        'admin.photo-verifications' => 'users',
         'admin.messages' => 'messages',
         'admin.gallery' => 'content',
         'admin.content' => 'content',

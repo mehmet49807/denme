@@ -32,10 +32,17 @@
             $initialPanel = 'appearance';
         } elseif ($errors->has('read_receipts_enabled') || $errors->has('quiet_hours_enabled') || $errors->has('quiet_hours_start') || $errors->has('quiet_hours_end')) {
             $initialPanel = 'privacy';
+        } elseif ($errors->has('verify_selfie')) {
+            $initialPanel = 'verify';
         } else {
             $initialPanel = 'edit';
         }
     }
+    $verifyStatus = class_exists(\App\Support\PhotoVerification::class)
+        ? \App\Support\PhotoVerification::status($user)
+        : null;
+    $isPhotoVerified = class_exists(\App\Support\PhotoVerification::class)
+        && \App\Support\PhotoVerification::isVerified($user);
 @endphp
 
 <div class="profile-settings-sheet-stage" data-settings-panel="menu" @if($initialPanel !== 'menu') hidden @endif>
@@ -124,6 +131,27 @@
             <span class="profile-settings-menu-text">
                 <strong>Tarayıcı bildirimleri</strong>
                 <small>Mesaj ve duyuru izni ver</small>
+            </span>
+            <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
+        </button>
+
+        <button type="button" class="profile-settings-menu-item" data-open-settings-panel="verify">
+            <span class="profile-settings-menu-icon profile-settings-menu-icon--verify" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </span>
+            <span class="profile-settings-menu-text">
+                <strong>Fotoğraf Doğrulama</strong>
+                <small>
+                    @if($isPhotoVerified)
+                        Doğrulandı
+                    @elseif($verifyStatus === 'pending')
+                        İnceleniyor
+                    @elseif($verifyStatus === 'rejected')
+                        Yeniden gönder
+                    @else
+                        Güven rozeti için selfie gönder
+                    @endif
+                </small>
             </span>
             <span class="profile-settings-menu-chevron" aria-hidden="true">›</span>
         </button>
@@ -450,6 +478,42 @@
             <button type="button" class="btn btn-primary btn-full" data-fcm-enable>İzin ver</button>
         </div>
     </div>
+</div>
+
+<div class="profile-settings-sheet-stage" data-settings-panel="verify" @if($initialPanel !== 'verify') hidden @endif>
+    <p class="profile-settings-panel-lead">
+        Profil fotoğrafınıza benzeyen bir selfie yükleyin. Onay sonrası profilinizde doğrulama işareti görünür.
+    </p>
+
+    @if($isPhotoVerified)
+        <div class="profile-verify-status profile-verify-status--ok">
+            <strong>Hesabınız doğrulandı</strong>
+            <p>Profilinizde mavi tik görünür. Güven rozetiniz aktif.</p>
+        </div>
+    @elseif($verifyStatus === 'pending')
+        <div class="profile-verify-status profile-verify-status--pending">
+            <strong>Başvurunuz inceleniyor</strong>
+            <p>Selfie’niz ekibimiz tarafından kontrol ediliyor. Sonuç bildirimi alacaksınız.</p>
+        </div>
+    @else
+        @if($verifyStatus === 'rejected')
+            <div class="profile-verify-status profile-verify-status--rejected">
+                <strong>Başvuru reddedildi</strong>
+                <p>{{ $user->photo_verify_note ?: 'Selfie net değil veya profil fotoğrafıyla eşleşmiyor. Lütfen yeniden gönderin.' }}</p>
+            </div>
+        @endif
+        <form method="POST" action="{{ route('profile.photo-verify') }}" class="profile-settings-form" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="settings_panel" value="verify">
+            <div class="form-group">
+                <label for="verify_selfie">Selfie fotoğrafı</label>
+                <input type="file" id="verify_selfie" name="verify_selfie" accept="image/jpeg,image/png,image/webp" required>
+                <small class="form-hint">Yüzünüz net görünsün · JPG/PNG/WebP · en fazla 5 MB</small>
+                @error('verify_selfie') <small class="form-error">{{ $message }}</small> @enderror
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Doğrulama gönder</button>
+        </form>
+    @endif
 </div>
 
 <div class="profile-settings-sheet-stage" data-settings-panel="password" @if($initialPanel !== 'password') hidden @endif>

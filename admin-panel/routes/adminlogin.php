@@ -38,6 +38,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard/stats', [AdminPanelController::class, 'dashboardStats'])->name('admin.dashboard.stats');
     Route::get('/users', [AdminPanelController::class, 'users'])->name('admin.users');
     Route::get('/profile-approvals', [AdminPanelController::class, 'profileApprovals'])->name('admin.profile-approvals');
+    Route::get('/photo-verifications', [AdminPanelController::class, 'photoVerifications'])->name('admin.photo-verifications');
+    Route::post('/photo-verifications/{user}/approve', [AdminPanelController::class, 'approvePhotoVerification'])->name('admin.photo-verifications.approve');
+    Route::post('/photo-verifications/{user}/reject', [AdminPanelController::class, 'rejectPhotoVerification'])->name('admin.photo-verifications.reject');
     Route::post('/profile-approvals/bulk-approve', [AdminPanelController::class, 'bulkApproveProfiles'])->name('admin.profile-approvals.bulk');
     Route::post('/profile-approvals/{user}/approve', [AdminPanelController::class, 'approveProfile'])->name('admin.profile-approvals.approve');
     Route::put('/users/{user}', [AdminPanelController::class, 'updateUser'])->name('admin.users.update');

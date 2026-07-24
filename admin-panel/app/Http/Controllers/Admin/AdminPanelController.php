@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Support\PhotoVerification;
+
 use App\Http\Controllers\Controller;
 use App\Jobs\SendBroadcastPushJob;
 use App\Models\AdminBroadcast;
@@ -405,6 +407,9 @@ class AdminPanelController extends Controller
             'profile_verified_at' => now(),
             'profile_verified_by' => $request->user()->id,
             'profile_verification_note' => Str::limit((string) $request->input('note', 'Admin profil onayı'), 250, ''),
+            'is_verified' => true,
+            'photo_verify_status' => PhotoVerification::STATUS_APPROVED,
+            'photo_verify_reviewed_at' => now(),
         ])->save();
 
         return back()->with('success', $user->username.' profili doğrulandı.');
@@ -1075,4 +1080,98 @@ class AdminPanelController extends Controller
         Cache::forget('admin_dashboard_full');
         Cache::forget('admin_dashboard_online');
     }
+    public function photoVerifications(Request $request): View
+    {
+        PhotoVerification::ensureColumns();
+
+        $status = $request->get('status', 'pending');
+        $query = User::query()->where('role', 'user')->where('is_banned', false);
+
+        if ($status === 'approved') {
+            $query->where('photo_verify_status', PhotoVerification::STATUS_APPROVED);
+        } elseif ($status === 'rejected') {
+            $query->where('photo_verify_status', PhotoVerification::STATUS_REJECTED);
+        } else {
+            $status = 'pending';
+            $query->where('photo_verify_status', PhotoVerification::STATUS_PENDING);
+        }
+
+        if ($search = trim((string) $request->get('search'))) {
+            $query->where(function ($inner) use ($search) {
+                $inner->where('username', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $stats = [
+            'pending' => User::where('role', 'user')->where('photo_verify_status', 'pending')->count(),
+            'approved' => User::where('role', 'user')->where('photo_verify_status', 'approved')->count(),
+            'rejected' => User::where('role', 'user')->where('photo_verify_status', 'rejected')->count(),
+        ];
+
+        $users = $query->orderByDesc('photo_verify_submitted_at')->paginate(24)->withQueryString();
+
+        return view('admin.photo-verifications', ['users' => $users, 'stats' => $stats, 'status' => $status, 'search' => $search ?? '']);
+    }
+
+    public function approvePhotoVerification(Request $request, User $user)
+    {
+        PhotoVerification::ensureColumns();
+        $this->ensureProfileApprovalColumns();
+        if ($user->role !== 'user') {
+            abort(404);
+        }
+
+        $user->forceFill([
+            'photo_verify_status' => PhotoVerification::STATUS_APPROVED,
+            'photo_verify_reviewed_at' => now(),
+            'photo_verify_note' => Str::limit((string) $request->input('note', 'Fotoğraf doğrulama onaylandı'), 250, ''),
+            'is_verified' => true,
+            'profile_verified_at' => now(),
+            'profile_verified_by' => $request->user()->id,
+            'profile_verification_note' => 'Fotoğraf doğrulama',
+        ])->save();
+
+        try {
+            app(\App\Services\NotificationService::class)->notifyAdminNotice(
+                $user,
+                'Fotoğraf doğrulama onaylandı',
+                'Hesabınız doğrulandı. Profilinizde doğrulama işareti görünür.'
+            );
+        } catch (\Throwable) {
+            //
+        }
+
+        return back()->with('success', $user->username.' fotoğraf doğrulaması onaylandı.');
+    }
+
+    public function rejectPhotoVerification(Request $request, User $user)
+    {
+        PhotoVerification::ensureColumns();
+        if ($user->role !== 'user') {
+            abort(404);
+        }
+
+        $note = Str::limit((string) $request->input('note', 'Selfie net değil veya eşleşmiyor'), 250, '');
+        $user->forceFill([
+            'photo_verify_status' => PhotoVerification::STATUS_REJECTED,
+            'photo_verify_reviewed_at' => now(),
+            'photo_verify_note' => $note,
+            'is_verified' => false,
+        ])->save();
+
+        try {
+            app(\App\Services\NotificationService::class)->notifyAdminNotice(
+                $user,
+                'Fotoğraf doğrulama reddedildi',
+                'Başvurunuz reddedildi: '.$note.' Profil ayarlarından yeniden gönderebilirsiniz.'
+            );
+        } catch (\Throwable) {
+            //
+        }
+
+        return back()->with('success', $user->username.' fotoğraf doğrulaması reddedildi.');
+    }
+
+
 }

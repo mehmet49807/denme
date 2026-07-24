@@ -110,6 +110,38 @@
                 </a>
                 @endif
 
+                <form
+                    method="POST"
+                    action="{{ route('users.like', $user->username) }}"
+                    class="profile-like-form"
+                    data-profile-like
+                    data-liked="{{ !empty($viewerLiked) ? '1' : '0' }}"
+                    data-matched="{{ !empty($isMatched) ? '1' : '0' }}"
+                >
+                    @csrf
+                    <button
+                        type="submit"
+                        class="profile-action-btn profile-action-btn--like {{ !empty($viewerLiked) ? 'is-liked' : '' }} {{ !empty($isMatched) ? 'is-matched' : '' }}"
+                        data-like-btn
+                        aria-pressed="{{ !empty($viewerLiked) ? 'true' : 'false' }}"
+                    >
+                        <span class="profile-action-icon profile-action-icon--like" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 20.5s-7.2-4.7-9.2-8.8C1.2 8.2 3.4 5 6.8 5c1.8 0 3.2.9 4 2.1.8-1.2 2.2-2.1 4-2.1 3.4 0 5.6 3.2 4 6.7-2 4.1-9.2 8.8-9.2 8.8z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        <span class="profile-action-label" data-like-label>
+                            @if(!empty($isMatched))
+                                {{ __('app.profile.matched') }}
+                            @elseif(!empty($viewerLiked))
+                                {{ __('app.profile.liked') }}
+                            @else
+                                {{ __('app.profile.like') }}
+                            @endif
+                        </span>
+                    </button>
+                </form>
+
                 <button type="button" class="profile-action-btn profile-action-btn--report" id="openReportDialog" aria-haspopup="dialog">
                     <span class="profile-action-icon profile-action-icon--report" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -76,14 +76,16 @@
                         <span>Yaş max</span>
                         <input type="number" name="age_max" min="18" max="80" value="{{ $filters['age_max'] ?? '' }}" placeholder="45">
                     </label>
-                    <label>
-                        <span>Şehir</span>
-                        <input type="text" name="city" value="{{ $filters['city'] ?? '' }}" placeholder="İstanbul" maxlength="80">
-                    </label>
-                    <label>
-                        <span>İlçe</span>
-                        <input type="text" name="district" value="{{ $filters['district'] ?? '' }}" placeholder="Kadıköy" maxlength="80">
-                    </label>
+                    <div class="users-browse-filter-location">
+                        <span class="users-browse-filter-location__label">Konum</span>
+                        @include('partials.location-fields', [
+                            'country' => $filters['country'] ?? '',
+                            'city' => $filters['city'] ?? '',
+                            'district' => $filters['district'] ?? '',
+                            'showDistrict' => true,
+                            'required' => false,
+                        ])
+                    </div>
                     <label>
                         <span>İlişki durumu</span>
                         <select name="relationship_status">
@@ -109,6 +111,15 @@
             </form>
         </div>
     </header>
+
+    <nav class="users-seo-cities" aria-label="Şehir keşif">
+        <a href="{{ route('city.seo', 'istanbul') }}">İstanbul tanışma</a>
+        <a href="{{ route('city.seo', 'ankara') }}">Ankara tanışma</a>
+        <a href="{{ route('city.seo', 'izmir') }}">İzmir tanışma</a>
+        <a href="{{ route('city.seo', 'bursa') }}">Bursa tanışma</a>
+        <a href="{{ route('city.seo', 'antalya') }}">Antalya tanışma</a>
+        <a href="{{ route('matches.index') }}">{{ __('app.nav.matches') }}</a>
+    </nav>
 
     @if($users->isNotEmpty())
     <div class="users-browse-grid">

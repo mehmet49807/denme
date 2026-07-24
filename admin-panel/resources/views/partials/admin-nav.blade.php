@@ -8,6 +8,7 @@
             'items' => [
                 ['route' => 'admin.moderation', 'label' => 'Denetim Kuyruğu', 'icon' => 'shield', 'theme' => 'coral'],
                 ['route' => 'admin.profile-approvals', 'label' => 'Profil Onay', 'icon' => 'shield', 'theme' => 'emerald'],
+                ['route' => 'admin.photo-verifications', 'label' => 'Foto Doğrulama', 'icon' => 'shield', 'theme' => 'violet'],
                 ['route' => 'admin.messages', 'label' => 'Mesajlar', 'icon' => 'messages', 'theme' => 'sky'],
                 ['route' => 'admin.gallery', 'label' => 'Galeri', 'icon' => 'image', 'theme' => 'violet'],
                 ['route' => 'admin.content', 'label' => 'İçerik', 'icon' => 'image', 'theme' => 'violet'],

@@ -19,6 +19,7 @@
         privacy: 'Gizlilik',
         push: 'Tarayıcı bildirimleri',
         password: 'Şifre Değiştir',
+        verify: 'Fotoğraf Doğrulama',
     };
     var currentPanel = 'menu';
 

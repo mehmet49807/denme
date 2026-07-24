@@ -177,6 +177,10 @@
 }
 
 .rec-strip__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
     margin-bottom: 0.65rem;
 }
 
@@ -188,7 +192,23 @@
     color: var(--rec-ink);
 }
 
-.rec-strip__sub { display: none; }
+.rec-strip__sub {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--rec-muted);
+    line-height: 1.35;
+}
+
+.rec-strip__link {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #9d174d;
+    text-decoration: none;
+    padding: 0.3rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(236, 72, 153, 0.1);
+}
 
 .rec-strip--members { display: none; }
 
@@ -206,7 +226,7 @@
 .rec-card {
     position: relative;
     flex: 0 0 auto;
-    width: 8.4rem;
+    width: 9.2rem;
     display: flex;
     flex-direction: column;
     gap: 0.45rem;
@@ -221,10 +241,52 @@
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+.rec-card__main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    text-decoration: none;
+    color: inherit;
+}
+
 .rec-card:hover,
-.rec-card:focus-visible {
+.rec-card:focus-within {
     transform: translateY(-2px);
     box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
+}
+
+.rec-card__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.3rem;
+}
+.rec-card__like-form { margin: 0; }
+.rec-card__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1.85rem;
+    padding: 0.25rem 0.35rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+.rec-card__btn--like {
+    background: linear-gradient(135deg, #db2777, #f97316);
+    color: #fff;
+}
+.rec-card__btn--like.is-liked,
+.rec-card__btn--like.is-matched {
+    background: linear-gradient(135deg, #059669, #10b981);
+}
+.rec-card__btn--view {
+    background: rgba(15, 23, 42, 0.05);
+    color: #334155;
+    border-color: rgba(15, 23, 42, 0.08);
 }
 
 .rec-card__frame {

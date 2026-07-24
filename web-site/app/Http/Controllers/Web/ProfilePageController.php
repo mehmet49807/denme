@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Support\PhotoVerification;
+
 use App\Http\Controllers\Controller;
 use App\Http\Concerns\ValidatesHobbies;
 use App\Http\Concerns\ValidatesLocation;
@@ -327,4 +329,53 @@ class ProfilePageController extends Controller
 
         return ['birth_date' => $date->toDateString()];
     }
+    public function submitPhotoVerification(Request $request): RedirectResponse
+    {
+        PhotoVerification::ensureColumns();
+
+        $user = $request->user();
+        $status = PhotoVerification::status($user);
+        if ($status === PhotoVerification::STATUS_PENDING) {
+            return redirect()->route('profile')
+                ->with('success', 'Doğrulama başvurunuz inceleniyor.')
+                ->with('settings_panel', 'verify');
+        }
+        if ($status === PhotoVerification::STATUS_APPROVED || PhotoVerification::isVerified($user)) {
+            return redirect()->route('profile')
+                ->with('success', 'Hesabınız zaten doğrulanmış.')
+                ->with('settings_panel', 'verify');
+        }
+
+        $request->validate([
+            'verify_selfie' => 'required|image|mimes:jpeg,jpg,png,webp|max:5120',
+        ], [
+            'verify_selfie.required' => 'Lütfen selfie fotoğrafı yükleyin.',
+            'verify_selfie.image' => 'Geçerli bir görsel yükleyin.',
+            'verify_selfie.max' => 'Selfie en fazla 5 MB olabilir.',
+        ]);
+
+        try {
+            $url = $this->mediaUpload->uploadProfilePhoto($request->file('verify_selfie'));
+            if ($user->photo_verify_selfie_url) {
+                $this->mediaUpload->deleteByUrl($user->photo_verify_selfie_url);
+            }
+            $user->forceFill([
+                'photo_verify_status' => PhotoVerification::STATUS_PENDING,
+                'photo_verify_selfie_url' => $url,
+                'photo_verify_submitted_at' => now(),
+                'photo_verify_reviewed_at' => null,
+                'photo_verify_note' => null,
+            ])->save();
+        } catch (\Throwable) {
+            return back()
+                ->withErrors(['verify_selfie' => 'Selfie yüklenemedi. Tekrar deneyin.'])
+                ->with('settings_panel', 'verify');
+        }
+
+        return redirect()->route('profile')
+            ->with('success', 'Fotoğraf doğrulama başvurunuz alındı. İnceleme sonrası bildirim gelecek.')
+            ->with('settings_panel', 'verify');
+    }
+
+
 }

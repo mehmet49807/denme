@@ -93,7 +93,27 @@ class UserProfilePageController extends Controller
             ->pluck('post_id')
             ->all();
 
-        return view('web.user-profile', compact('user', 'posts', 'viewer', 'targetStoryGroup', 'likedPostIds', 'viewerHasBlocked'));
+        $viewerLiked = false;
+        $isMatched = false;
+        if (! $viewerHasBlocked && class_exists(\App\Models\ProfileLike::class)) {
+            \App\Models\ProfileLike::ensureTable();
+            $viewerLiked = \App\Models\ProfileLike::query()
+                ->where('liker_id', $viewer->id)
+                ->where('liked_id', $user->id)
+                ->exists();
+            $isMatched = $viewerLiked && \App\Models\ProfileLike::isMutual((int) $viewer->id, (int) $user->id);
+        }
+
+        return view('web.user-profile', compact(
+            'user',
+            'posts',
+            'viewer',
+            'targetStoryGroup',
+            'likedPostIds',
+            'viewerHasBlocked',
+            'viewerLiked',
+            'isMatched'
+        ));
     }
 
     public function block(Request $request, string $username): RedirectResponse
