@@ -201,7 +201,7 @@ class NotificationService
             'title' => 'Profiliniz beğenildi',
             'message_text' => $canReveal
                 ? $actorName.' sizi beğendi. Karşılık verirseniz eşleşirsiniz.'
-                : 'Bir üye sizi beğendi. Kim olduğunu görmek için Premium.',
+                : 'Bir üye sizi beğendi. Kim olduğunu görmek için Premium gerekli.',
             'created_at' => $notification->created_at,
             'is_read' => $notification->read_at !== null,
             'actor_id' => $canReveal ? $notification->actor_id : null,
@@ -443,7 +443,7 @@ class NotificationService
 
             $pushBody = $canReveal
                 ? $liker->username.' sizi beğendi. Karşılık verirseniz eşleşirsiniz.'
-                : 'Bir üye sizi beğendi. Kim olduğunu görmek için Premium veya deneme gerekli.';
+                : 'Bir üye sizi beğendi. Kim olduğunu görmek için Premium gerekli.';
 
             $this->pushToUser(
                 $liked,
