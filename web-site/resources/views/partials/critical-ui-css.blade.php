@@ -3,10 +3,11 @@
 .theme-icon{display:inline-flex;align-items:center;justify-content:center;line-height:0;flex-shrink:0;width:1em;height:1em;max-width:2.5rem;max-height:2.5rem;overflow:hidden;vertical-align:middle}
 .theme-icon svg{display:block;width:1em!important;height:1em!important;max-width:100%;max-height:100%}
 .site-header-toolbar{display:flex;align-items:center;gap:.45rem;flex-shrink:0;margin-left:auto}
-.header-premium-btn,.profile-settings-open-btn{display:inline-flex;align-items:center;gap:.4rem;min-height:2.4rem;padding:.45rem .8rem;border-radius:999px;font:inherit;font-size:.84rem;font-weight:700;text-decoration:none;cursor:pointer;white-space:nowrap;border:2px solid #f59e0b73;background:linear-gradient(135deg,#fbbf2429,#fff);color:#b45309}
+.header-premium-btn,.profile-settings-open-btn,.header-matches-btn{display:inline-flex;align-items:center;gap:.4rem;min-height:2.4rem;padding:.45rem .8rem;border-radius:999px;font:inherit;font-size:.84rem;font-weight:700;text-decoration:none;cursor:pointer;white-space:nowrap;border:2px solid #f59e0b73;background:linear-gradient(135deg,#fbbf2429,#fff);color:#b45309}
 .profile-settings-open-btn{border-color:#7c3aed59;background:#fffc;color:#7c3aed}
-.header-premium-btn-icon,.profile-settings-open-btn-icon{display:inline-flex;width:1.15rem;height:1.15rem;flex-shrink:0}
-.header-premium-btn svg,.profile-settings-open-btn svg,.header-premium-btn-icon svg,.profile-settings-open-btn-icon svg{display:block;width:20px!important;height:20px!important;max-width:20px;max-height:20px}
+.header-matches-btn{border-color:#db277759;background:#fffc;color:#be185d}
+.header-premium-btn-icon,.profile-settings-open-btn-icon,.header-matches-btn-icon{display:inline-flex;width:1.15rem;height:1.15rem;flex-shrink:0}
+.header-premium-btn svg,.profile-settings-open-btn svg,.header-matches-btn svg,.header-premium-btn-icon svg,.profile-settings-open-btn-icon svg,.header-matches-btn-icon svg{display:block;width:20px!important;height:20px!important;max-width:20px;max-height:20px}
 .app-sidebar-nav ul{list-style:none;padding:0;margin:0}
 .app-sidebar-nav a,.app-sidebar-nav button{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:inherit;font:inherit}
 .sidebar-nav-icon{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:1.15rem;height:1.15rem;line-height:0;color:#7c3aed}

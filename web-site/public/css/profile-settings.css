@@ -1,4 +1,4 @@
-/* App header — Logo (sol), Premium + Ayarlar (sağ) */
+/* App header — Logo (sol), Premium + Ayarlar/Eşleşme (sağ) */
 body.app-shell-body .site-header-inner {
     flex-direction: row;
     justify-content: space-between;
@@ -112,6 +112,62 @@ body.app-shell-body .site-header-inner {
 }
 
 .profile-settings-open-label {
+    display: inline;
+}
+
+.header-matches-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    border: 2px solid color-mix(in srgb, #db2777 35%, var(--border));
+    background: rgba(255, 255, 255, 0.92);
+    color: #be185d;
+    font-family: inherit;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(219, 39, 119, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.header-matches-btn:hover {
+    border-color: #db2777;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(219, 39, 119, 0.16);
+    color: #9d174d;
+}
+
+.header-matches-btn--active {
+    border-color: transparent;
+    background: linear-gradient(135deg, #db2777, #f97316);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(219, 39, 119, 0.28);
+}
+
+.header-matches-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    flex-shrink: 0;
+}
+
+.header-matches-btn-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.header-matches-btn--active .header-matches-btn-icon {
+    color: #fff;
+}
+
+.header-matches-btn-label {
     display: inline;
 }
 
@@ -833,14 +889,16 @@ body.profile-settings-open {
 
 @media (max-width: 520px) {
     .header-premium-btn,
-    .profile-settings-open-btn {
+    .profile-settings-open-btn,
+    .header-matches-btn {
         min-height: 2.35rem;
         padding-left: 0.65rem;
         padding-right: 0.65rem;
     }
 
     .header-premium-btn-label,
-    .profile-settings-open-label {
+    .profile-settings-open-label,
+    .header-matches-btn-label {
         display: inline;
         font-size: 0.8rem;
     }
