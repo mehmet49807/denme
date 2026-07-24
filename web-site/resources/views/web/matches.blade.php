@@ -32,15 +32,38 @@
                     Eşleşmeler
                     <span class="matches-tab__count">{{ $matchesCount }}</span>
                 </a>
-                <a
-                    href="{{ route('matches.index', ['tab' => 'incoming']) }}"
-                    class="matches-tab {{ $tab === 'incoming' ? 'is-active' : '' }}"
-                >
-                    Kim Beğendi
-                    @if($incomingCount > 0)
-                        <span class="matches-tab__count matches-tab__count--hot">{{ $incomingCount > 99 ? '99+' : $incomingCount }}</span>
-                    @endif
-                </a>
+                @if($canRevealIncoming)
+                    <a
+                        href="{{ route('matches.index', ['tab' => 'incoming']) }}"
+                        class="matches-tab {{ $tab === 'incoming' ? 'is-active' : '' }}"
+                    >
+                        Kim Beğendi
+                        @if($incomingCount > 0)
+                            <span class="matches-tab__count matches-tab__count--hot">{{ $incomingCount > 99 ? '99+' : $incomingCount }}</span>
+                        @endif
+                    </a>
+                @else
+                    <a
+                        href="{{ route('matches.index', ['tab' => 'incoming']) }}"
+                        class="matches-tab matches-tab--locked {{ $tab === 'incoming' ? 'is-active' : '' }}"
+                        aria-label="Kim Beğendi — Premium gerekli"
+                        data-gk-event="incoming_likes_tab_lock"
+                    >
+                        <span class="matches-tab__blur" aria-hidden="true">
+                            <span class="matches-tab__label">Kim Beğendi</span>
+                            @if($incomingCount > 0)
+                                <span class="matches-tab__count matches-tab__count--hot">{{ $incomingCount > 99 ? '99+' : $incomingCount }}</span>
+                            @endif
+                        </span>
+                        <span class="matches-tab__lock" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="5" y="11" width="14" height="10" rx="2"/>
+                                <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+                            </svg>
+                            Premium
+                        </span>
+                    </a>
+                @endif
             </nav>
 
             <div class="matches-hero-actions">
@@ -51,11 +74,17 @@
     </header>
 
     @if($tab === 'incoming')
-        @if(!$canRevealIncoming && $incomingCount > 0)
+        @if(!$canRevealIncoming)
             <div class="matches-lock-banner" data-gk-event="incoming_likes_lock_view">
                 <div>
-                    <strong>{{ $incomingCount }} kişi sizi beğendi</strong>
-                    <p>Kim olduklarını görmek ve eşleşmek için deneme veya premium gerekli.</p>
+                    <strong>
+                        @if($incomingCount > 0)
+                            {{ $incomingCount }} kişi sizi beğendi
+                        @else
+                            Kim Beğendi Premium
+                        @endif
+                    </strong>
+                    <p>Kimlerin sizi beğendiğini görmek yalnızca Premium üyelere açıktır.</p>
                 </div>
                 <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm" data-gk-event="trial_cta_click" data-gk-event-label="incoming_likes_lock">Paketleri incele</a>
             </div>
