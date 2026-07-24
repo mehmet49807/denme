@@ -82,8 +82,12 @@
         </p>
         @if(($item['type'] ?? '') === 'post_like')
         <a href="{{ route('profile') }}" class="notification-action-link">{{ __('app.notifications.go_posts') }}</a>
-        @elseif(($item['type'] ?? '') === 'profile_like' && !empty($item['profile_url']))
-        <a href="{{ $item['profile_url'] }}" class="notification-action-link">{{ __('app.notifications.view_profile') }}</a>
+        @elseif(($item['type'] ?? '') === 'profile_like')
+            @if(!empty($item['reveal_actor']) && !empty($item['profile_url']))
+            <a href="{{ $item['profile_url'] }}" class="notification-action-link">{{ __('app.notifications.view_profile') }}</a>
+            @elseif(!empty($item['matches_url']))
+            <a href="{{ $item['matches_url'] }}" class="notification-action-link">{{ __('app.notifications.view_likes') }}</a>
+            @endif
         @elseif(($item['type'] ?? '') === 'match')
             @if(!empty($item['messages_url']))
             <a href="{{ $item['messages_url'] }}" class="notification-action-link">{{ __('app.notifications.open_message') }}</a>

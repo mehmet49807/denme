@@ -129,8 +129,19 @@ class LiveSyncController extends Controller
                 ))->values()->all(),
                 'total' => $users->count(),
             ];
+            $likedUserIds = [];
+            if (class_exists(\App\Models\ProfileLike::class)) {
+                \App\Models\ProfileLike::ensureTable();
+                $likedUserIds = \App\Models\ProfileLike::query()
+                    ->where('liker_id', $viewer->id)
+                    ->whereIn('liked_id', $users->pluck('id'))
+                    ->pluck('liked_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+            }
             $data['users_html'] = view('partials.users-browse-grid-items', [
                 'users' => $users,
+                'likedUserIds' => $likedUserIds,
             ])->render();
         }
 

@@ -128,6 +128,8 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
 
     Route::get('/setup/messages', [\App\Http\Controllers\Web\SetupController::class, 'messagesSchema'])
         ->middleware('setup:gk-messages-migrate-2026');
+    Route::get('/setup/likes-verify', [\App\Http\Controllers\Web\SetupController::class, 'likesVerifySchema'])
+        ->middleware('setup:gk-likes-verify-migrate-2026');
     Route::get('/setup/cron', [\App\Http\Controllers\Web\SetupController::class, 'cron'])
         ->middleware('setup:gk-cron-2026');
     Route::get('/setup/growth', [\App\Http\Controllers\Web\SetupController::class, 'growth'])

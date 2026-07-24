@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\ProfileLike;
 use App\Models\User;
 use App\Services\GenderFilterService;
 use App\Services\LocationDataService;
@@ -98,6 +99,17 @@ class LocationUsersPageController extends Controller
             ->paginate(24)
             ->withQueryString();
 
+        $likedUserIds = [];
+        if (class_exists(ProfileLike::class)) {
+            ProfileLike::ensureTable();
+            $likedUserIds = ProfileLike::query()
+                ->where('liker_id', $viewer->id)
+                ->whereIn('liked_id', $users->getCollection()->pluck('id'))
+                ->pluck('liked_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+        }
+
         $locationLabel = $this->locations->formatLabel($country, $city, $district ?: null);
 
         return view('web.location-users', [
@@ -105,6 +117,7 @@ class LocationUsersPageController extends Controller
             'city' => $city,
             'district' => $district,
             'users' => $users,
+            'likedUserIds' => $likedUserIds,
             'locationLabel' => $locationLabel,
             'showResults' => true,
         ]);

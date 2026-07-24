@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\ProfileLike;
 use App\Models\User;
 use App\Services\GenderFilterService;
 use App\Support\SeoHelper;
@@ -44,9 +45,22 @@ class SearchController extends Controller
             }
         }
 
+        $likedUserIds = [];
+        $viewer = $request->user();
+        if ($viewer && $users && class_exists(ProfileLike::class)) {
+            ProfileLike::ensureTable();
+            $likedUserIds = ProfileLike::query()
+                ->where('liker_id', $viewer->id)
+                ->whereIn('liked_id', $users->getCollection()->pluck('id'))
+                ->pluck('liked_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+        }
+
         return view('web.search', [
             'q' => $q,
             'users' => $users,
+            'likedUserIds' => $likedUserIds,
             'emptyMessage' => $emptyMessage,
             'suggestUrl' => route('search.suggest'),
         ]);

@@ -72,7 +72,7 @@ class NotificationService
 
     public function userNotificationsForUser(User $user): Collection
     {
-        return UserNotification::with(['actor', 'post', 'message'])
+        return UserNotification::with(['user', 'actor', 'post', 'message'])
             ->where('user_id', $user->id)
             ->recent()
             ->latest('created_at')
@@ -184,24 +184,33 @@ class NotificationService
 
     private function mapProfileLikeNotification(UserNotification $notification): array
     {
-        $actorName = $notification->actor?->username ?? 'Bir üye';
-        $profileUrl = $notification->actor?->username
+        $receiver = $notification->user;
+        $canReveal = $receiver && method_exists($receiver, 'canAccessIncomingLikes')
+            ? $receiver->canAccessIncomingLikes()
+            : true;
+        $actorName = $canReveal
+            ? ($notification->actor?->username ?? 'Bir üye')
+            : 'Bir üye';
+        $profileUrl = ($canReveal && $notification->actor?->username)
             ? url('/users/'.$notification->actor->username)
-            : null;
+            : route('matches.index', ['tab' => 'incoming']);
 
         return [
             'id' => 'profile-like-'.$notification->id,
             'type' => UserNotification::TYPE_PROFILE_LIKE,
             'title' => 'Profiliniz beğenildi',
-            'message_text' => $actorName.' sizi beğendi. Karşılık verirseniz eşleşirsiniz.',
+            'message_text' => $canReveal
+                ? $actorName.' sizi beğendi. Karşılık verirseniz eşleşirsiniz.'
+                : 'Bir üye sizi beğendi. Kim olduğunu görmek için Premium.',
             'created_at' => $notification->created_at,
             'is_read' => $notification->read_at !== null,
-            'actor_id' => $notification->actor_id,
-            'actor_username' => $notification->actor?->username,
+            'actor_id' => $canReveal ? $notification->actor_id : null,
+            'actor_username' => $canReveal ? $notification->actor?->username : null,
             'profile_url' => $profileUrl,
             'post_id' => null,
             'messages_url' => null,
-            'matches_url' => route('matches.index'),
+            'matches_url' => route('matches.index', ['tab' => 'incoming']),
+            'reveal_actor' => $canReveal,
         ];
     }
 
@@ -410,13 +419,20 @@ class NotificationService
                 return;
             }
 
+            $canReveal = method_exists($liked, 'canAccessIncomingLikes')
+                ? $liked->canAccessIncomingLikes()
+                : true;
+            $body = $canReveal
+                ? $liker->username.' profilinizi beğendi.'
+                : 'Bir üye profilinizi beğendi. Kim olduğunu görmek için Premium.';
+
             if ($this->userNotificationsTableExists()) {
                 try {
                     UserNotification::create([
                         'user_id' => $liked->id,
                         'actor_id' => $liker->id,
                         'type' => UserNotification::TYPE_PROFILE_LIKE,
-                        'body' => $liker->username.' profilinizi beğendi.',
+                        'body' => $body,
                         'created_at' => now(),
                     ]);
                     $this->forgetSidebarBadges($liked->id);
@@ -425,14 +441,19 @@ class NotificationService
                 }
             }
 
+            $pushBody = $canReveal
+                ? $liker->username.' sizi beğendi. Karşılık verirseniz eşleşirsiniz.'
+                : 'Bir üye sizi beğendi. Kim olduğunu görmek için Premium veya deneme gerekli.';
+
             $this->pushToUser(
                 $liked,
                 'Profiliniz beğenildi',
-                $liker->username.' sizi beğendi. Karşılık verirseniz eşleşirsiniz.',
+                $pushBody,
                 [
                     'type' => UserNotification::TYPE_PROFILE_LIKE,
                     'actor_id' => (string) $liker->id,
-                    'actor_username' => (string) $liker->username,
+                    'actor_username' => $canReveal ? (string) $liker->username : '',
+                    'url' => '/eslesmeler?tab=incoming',
                 ]
             );
         } catch (\Throwable) {
@@ -459,6 +480,10 @@ class NotificationService
                     }
                 }
 
+                $messagePath = method_exists($receiver, 'canSendMessages') && $receiver->canSendMessages()
+                    ? '/messages/'.$actor->username
+                    : '/eslesmeler';
+
                 $this->pushToUser(
                     $receiver,
                     'Karşılıklı beğeni!',
@@ -467,6 +492,7 @@ class NotificationService
                         'type' => UserNotification::TYPE_MATCH,
                         'actor_id' => (string) $actor->id,
                         'actor_username' => (string) $actor->username,
+                        'url' => $messagePath,
                     ]
                 );
             }

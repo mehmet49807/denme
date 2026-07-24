@@ -239,6 +239,12 @@ class User extends Authenticatable
         return $this->hasPackageAtLeast('platinum');
     }
 
+    /** Deneme/premium: Kim beğendi kimliğini görme */
+    public function canAccessIncomingLikes(): bool
+    {
+        return $this->canUseMalePremiumFeatures();
+    }
+
     /**
      * Başkasının galeri fotoğraflarını görme:
      * kadınlar ve adminler her zaman, erkeklerde Pro+.

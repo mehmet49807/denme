@@ -443,11 +443,7 @@ class FcmPushService
                         'badge' => rtrim((string) config('app.url', 'https://gonulkoprusu.com'), '/').'/images/favicon.png',
                     ],
                     'fcm_options' => [
-                        'link' => rtrim((string) config('app.url', 'https://gonulkoprusu.com'), '/').(
-                            ($data['type'] ?? '') === 'new_message' && ! empty($data['actor_username'])
-                                ? '/messages/'.$data['actor_username']
-                                : '/notifications'
-                        ),
+                        'link' => rtrim((string) config('app.url', 'https://gonulkoprusu.com'), '/').$this->pushLinkPath($data),
                     ],
                 ],
             ],
@@ -493,6 +489,34 @@ class FcmPushService
         }
 
         return $out;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function pushLinkPath(array $data): string
+    {
+        $explicit = trim((string) ($data['url'] ?? ''));
+        if ($explicit !== '') {
+            return str_starts_with($explicit, '/') ? $explicit : '/'.$explicit;
+        }
+
+        $type = (string) ($data['type'] ?? '');
+        $actor = trim((string) ($data['actor_username'] ?? ''));
+
+        if ($type === 'new_message' && $actor !== '') {
+            return '/messages/'.$actor;
+        }
+
+        if ($type === 'match') {
+            return $actor !== '' ? '/messages/'.$actor : '/eslesmeler';
+        }
+
+        if ($type === 'profile_like') {
+            return '/eslesmeler?tab=incoming';
+        }
+
+        return '/notifications';
     }
 
     private function getAccessToken(): ?string
