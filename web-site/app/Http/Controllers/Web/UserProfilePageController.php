@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Block;
 use App\Models\Like;
 use App\Models\Post;
+use App\Models\ProfileLike;
 use App\Models\ProfileView;
 use App\Models\Report;
 use App\Models\User;
@@ -44,12 +45,24 @@ class UserProfilePageController extends Controller
 
         $users = User::applyDiscoveryRanking($users)->paginate(24)->withQueryString();
 
+        $likedUserIds = [];
+        if (class_exists(ProfileLike::class)) {
+            ProfileLike::ensureTable();
+            $likedUserIds = ProfileLike::query()
+                ->where('liker_id', $viewer->id)
+                ->whereIn('liked_id', $users->getCollection()->pluck('id'))
+                ->pluck('liked_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+        }
+
         return view('web.users', [
             'users' => $users,
             'viewer' => $viewer,
             'search' => $search,
             'filters' => $filters,
             'relationshipStatuses' => RelationshipStatus::all(),
+            'likedUserIds' => $likedUserIds,
         ]);
     }
 

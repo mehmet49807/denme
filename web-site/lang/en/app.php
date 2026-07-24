@@ -229,6 +229,7 @@ return [
         'open_message' => 'Open message',
         'view_profile' => 'View profile',
         'view_matches' => 'View matches',
+        'view_likes' => 'See who liked you',
         'empty' => 'You have no notifications yet.',
         'empty_hint' => 'When someone likes your post or profile, you match, receive a message, your report is reviewed, or an admin announcement is posted, it will appear here.',
     ],

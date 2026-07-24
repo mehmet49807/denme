@@ -54,7 +54,7 @@
     @if($showResults && $users)
         @if($users->isNotEmpty())
         <div class="users-browse-grid">
-            @include('partials.users-browse-grid-items', ['users' => $users])
+            @include('partials.users-browse-grid-items', ['users' => $users, 'likedUserIds' => $likedUserIds ?? []])
         </div>
 
         <div class="users-browse-pagination">

@@ -929,6 +929,51 @@ HTML;
         ]);
     }
 
+    public function likesVerifySchema()
+    {
+        if (! SetupKey::matches(request('key'), 'gk-likes-verify-migrate-2026')) {
+            abort(403);
+        }
+
+        $lines = ['Gönül Köprüsü — beğeni/eşleşme + foto doğrulama migration', 'base='.base_path(), ''];
+
+        try {
+            Artisan::call('migrate', [
+                '--force' => true,
+                '--path' => 'database/migrations/2026_07_24_000001_create_profile_likes_and_photo_verify.php',
+            ]);
+            $output = trim(Artisan::output());
+            $lines[] = 'migration: '.($output !== '' ? $output : 'OK');
+        } catch (\Throwable $e) {
+            $lines[] = 'migration HATA: '.$e->getMessage();
+        }
+
+        try {
+            if (class_exists(\App\Models\ProfileLike::class)) {
+                $ok = \App\Models\ProfileLike::ensureTable();
+                $lines[] = 'profile_likes ensureTable: '.($ok ? 'OK' : 'HATA');
+            }
+            if (class_exists(\App\Support\PhotoVerification::class)) {
+                \App\Support\PhotoVerification::ensureColumns();
+                $lines[] = 'photo_verify columns: ensureColumns çağrıldı';
+            }
+            $lines[] = 'profile_likes: '.(\Illuminate\Support\Facades\Schema::hasTable('profile_likes') ? 'var' : 'YOK');
+            foreach (['photo_verify_status', 'photo_verify_selfie_url', 'profile_verified_at'] as $column) {
+                $lines[] = "users.{$column}: ".(\Illuminate\Support\Facades\Schema::hasColumn('users', $column) ? 'var' : 'YOK');
+            }
+        } catch (\Throwable $e) {
+            $lines[] = 'schema kontrol hatası: '.$e->getMessage();
+        }
+
+        $lines[] = '';
+        $lines[] = 'OK';
+
+        return response(implode("\n", $lines)."\n", 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
     public function profileFields()
     {
         if (! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026')) {

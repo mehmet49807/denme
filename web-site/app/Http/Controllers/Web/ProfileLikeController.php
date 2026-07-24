@@ -105,6 +105,8 @@ class ProfileLikeController extends Controller
         ProfileLike::ensureTable();
 
         $viewer = $request->user();
+        $tab = $request->query('tab') === 'incoming' ? 'incoming' : 'matches';
+        $canRevealIncoming = $viewer->canAccessIncomingLikes();
 
         $likedIds = ProfileLike::query()
             ->where('liker_id', $viewer->id)
@@ -123,17 +125,37 @@ class ProfileLikeController extends Controller
                 $this->genderFilter->applyDiscoveryFilters($q, $viewer);
             })
             ->latest('last_active_at')
-            ->paginate(24);
+            ->paginate(24, ['*'], 'matches_page')
+            ->withQueryString();
 
-        $incomingCount = ProfileLike::query()
-            ->where('liked_id', $viewer->id)
-            ->whereNotIn('liker_id', $likedIds)
-            ->count();
+        $incomingQuery = User::query()
+            ->where('role', 'user')
+            ->where('is_banned', false)
+            ->whereIn('id', function ($q) use ($viewer, $likedIds) {
+                $q->select('liker_id')
+                    ->from('profile_likes')
+                    ->where('liked_id', $viewer->id)
+                    ->whereNotIn('liker_id', $likedIds);
+            })
+            ->where(function ($q) use ($viewer) {
+                $this->genderFilter->applyDiscoveryFilters($q, $viewer);
+            })
+            ->latest('last_active_at');
+
+        $incomingCount = (clone $incomingQuery)->count();
+
+        $incomingUsers = $tab === 'incoming'
+            ? $incomingQuery->paginate(24, ['*'], 'incoming_page')->withQueryString()
+            : null;
 
         return view('web.matches', [
             'matchedUsers' => $matchedUsers,
+            'incomingUsers' => $incomingUsers,
             'incomingCount' => $incomingCount,
+            'matchesCount' => $matchedUsers->total(),
             'viewer' => $viewer,
+            'tab' => $tab,
+            'canRevealIncoming' => $canRevealIncoming,
         ]);
     }
 }

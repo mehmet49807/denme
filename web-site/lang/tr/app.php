@@ -229,6 +229,7 @@ return [
         'open_message' => 'Mesajı aç',
         'view_profile' => 'Profili gör',
         'view_matches' => 'Eşleşmelere git',
+        'view_likes' => 'Kim Beğendi’ye git',
         'empty' => 'Henüz bildiriminiz yok.',
         'empty_hint' => 'Gönderileriniz beğenildiğinde, eşleşme olduğunda, size mesaj geldiğinde, şikayetiniz incelendiğinde veya yönetim duyurusu paylaşıldığında burada görünecek.',
     ],
