@@ -3,20 +3,21 @@
 namespace App\Http\Middleware;
 
 use App\Support\AdminApp;
+use App\Support\SetupKey;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Setup endpoint erişimi: geçerli key VEYA admin alt alanında personel oturumu.
- * Deploy hook'ları key ile çalışmaya devam eder.
+ * Deploy hook'ları SETUP_CACHE_KEY (veya legacy route key) ile çalışmaya devam eder.
  */
 class SetupAccessMiddleware
 {
-    public function handle(Request $request, Closure $next, string $expectedKey = 'gk-cpanel-setup-2026'): Response
+    public function handle(Request $request, Closure $next, string $expectedKey = ''): Response
     {
         $provided = (string) $request->query('key', $request->input('key', ''));
-        $keyOk = $provided !== '' && hash_equals($expectedKey, $provided);
+        $keyOk = SetupKey::matches($provided, $expectedKey !== '' ? $expectedKey : null);
 
         $staffOk = false;
         if (AdminApp::isSubdomainRequest()) {

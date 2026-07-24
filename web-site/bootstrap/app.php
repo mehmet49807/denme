@@ -3,6 +3,8 @@
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApplyUserLocale;
 use App\Http\Middleware\CaptureGrowthAttribution;
+use App\Http\Middleware\RequireSuperAdmin;
+use App\Http\Middleware\SecurityHeadersMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\SetupAccessMiddleware;
 use App\Http\Middleware\TrackLastActive;
@@ -24,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'admin' => AdminMiddleware::class,
+            'admin.super' => RequireSuperAdmin::class,
             'locale' => ApplyUserLocale::class,
             'setup' => SetupAccessMiddleware::class,
         ]);
@@ -32,7 +35,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'gk_locale',
         ]);
 
-        $middleware->appendToGroup('web', [CaptureGrowthAttribution::class]);
+        $middleware->appendToGroup('web', [
+            SecurityHeadersMiddleware::class,
+            CaptureGrowthAttribution::class,
+        ]);
 
         if (class_exists(SetLocale::class)) {
             $middleware->appendToGroup('web', [SetLocale::class]);

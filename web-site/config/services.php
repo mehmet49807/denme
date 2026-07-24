@@ -43,7 +43,7 @@ return [
     ],
 
     'seo' => [
-        'sync_key' => env('SEO_SYNC_KEY', 'gk-seo-sync-2026'),
+        'sync_key' => env('SEO_SYNC_KEY'),
         'frontend_storage_path' => env('SEO_FRONTEND_STORAGE_PATH'),
     ],
 

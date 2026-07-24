@@ -186,7 +186,7 @@ jobs:
         run: |
           set -euo pipefail
           KEY_UPDATE=gk-laravel-update-2026
-          KEY_CACHE="${SETUP_CACHE_KEY:-gk-cpanel-setup-2026}"
+          KEY_CACHE="${SETUP_CACHE_KEY:?SETUP_CACHE_KEY secret required}"
           extract() {
             local url="$1"
             echo "EXTRACT $url"
@@ -210,7 +210,7 @@ jobs:
           echo "PHP ADMIN:"; curl -fsS "https://admin.gonulkoprusu.com/php-version.php" || true; echo
           # Require Laravel 13 + PHP 8.3 on both
           php -r '
-            foreach (["https://gonulkoprusu.com/setup/laravel-update?key=gk-laravel-update-2026","https://admin.gonulkoprusu.com/setup/laravel-update?key=gk-laravel-update-2026"] as $u) {
+            foreach (["https://gonulkoprusu.com/setup/laravel-update?key=" . urlencode(getenv("SETUP_CACHE_KEY") ?: "") . "","https://admin.gonulkoprusu.com/setup/laravel-update?key=" . urlencode(getenv("SETUP_CACHE_KEY") ?: "") . ""] as $u) {
               $j=json_decode(@file_get_contents($u), true);
               $v=$j["current"] ?? "";
               $php=$j["php"] ?? "";

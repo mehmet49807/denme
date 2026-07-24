@@ -60,7 +60,7 @@
     action="{{ route('admin.users.destroy', $user) }}"
     class="admin-action-form"
     role="none"
-    onsubmit="return confirm('{{ $user->username }} kullanıcısını ve tüm içeriğini (gönderi, hikaye, mesaj vb.) kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz.');"
+    onsubmit="return confirm(@json($user->username.' kullanıcısını ve tüm içeriğini (gönderi, hikaye, mesaj vb.) kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz.'));"
 >
     @csrf
     @method('DELETE')

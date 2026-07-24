@@ -469,7 +469,7 @@ class AdminOpsController extends Controller
         ];
 
         try {
-            $user->update(['role' => $role]);
+            $user->forceFill(['role' => $role])->save();
         } catch (\Throwable $e) {
             report($e);
 

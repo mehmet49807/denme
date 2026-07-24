@@ -73,7 +73,7 @@
         method="POST"
         action="{{ route('admin.users.destroy', $user) }}"
         class="admin-user-card-form admin-user-card-form--danger"
-        onsubmit="return confirm('{{ $user->username }} kullanıcısını ve tüm içeriğini kalıcı olarak silmek istediğinize emin misiniz?');"
+        onsubmit="return confirm(@json($user->username.' kullanıcısını ve tüm içeriğini kalıcı olarak silmek istediğinize emin misiniz?'));"
     >
         @csrf
         @method('DELETE')

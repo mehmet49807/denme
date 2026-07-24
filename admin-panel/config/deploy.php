@@ -18,7 +18,7 @@ return [
 
     'web_url' => env('DEPLOY_WEB_URL', 'https://gonulkoprusu.com'),
     'admin_url' => env('DEPLOY_ADMIN_URL', 'https://admin.gonulkoprusu.com'),
-    'setup_key' => env('SETUP_CACHE_KEY', 'gk-cpanel-setup-2026'),
+    'setup_key' => env('SETUP_CACHE_KEY'),
 
     'alert_email' => env('DEPLOY_ALERT_EMAIL', env('MAIL_FROM_ADDRESS', 'destek@gonulkoprusu.com')),
 

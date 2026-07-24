@@ -387,11 +387,11 @@ PROMPT,
             return;
         }
 
-        $user->update([
+        $user->forceFill([
             'is_banned' => true,
             'banned_at' => now(),
             'banned_reason' => "AI otomatik eskalasyon: son {$hours} saatte {$recent} ihlal",
-        ]);
+        ])->save();
     }
 
     private function hideMessage(Message $message): void

@@ -24,10 +24,11 @@ class User extends Authenticatable
         'phone', 'gender', 'country', 'city', 'district', 'profile_photo_url', 'hobbies', 'google_id',
         'bio', 'relationship_status', 'relationship_expectation', 'birth_date', 'gallery_photos',
         'is_verified', 'visibility', 'quiet_hours_enabled', 'quiet_hours_start', 'quiet_hours_end',
-        'read_receipts_enabled', 'theme_preference', 'boost_until', 'last_boost_at', 'fake_score',
-        'role', 'is_banned', 'banned_at', 'banned_reason', 'trial_ends_at', 'locale',
+        'read_receipts_enabled', 'theme_preference', 'boost_until', 'last_boost_at',
+        'trial_ends_at', 'locale',
         'referral_code', 'referred_by_user_id', 'utm_source', 'utm_medium', 'utm_campaign',
         'registration_source', 'last_lifecycle_email_at',
+        // role / is_banned / banned_* / fake_score are NOT fillable — use forceFill in admin/system code.
     ];
 
     protected $hidden = [

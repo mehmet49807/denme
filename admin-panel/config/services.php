@@ -36,14 +36,14 @@ return [
     ],
 
     'openrouter' => [
-        'api_key' => env('OPENROUTER_API_KEY', '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'),
+        'api_key' => env('OPENROUTER_API_KEY'),
         'model' => env('OPENROUTER_MODEL', 'openrouter/free'),
         'base_url' => env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
         'timeout' => env('OPENROUTER_TIMEOUT', 90),
     ],
 
     'seo' => [
-        'sync_key' => env('SEO_SYNC_KEY', 'gk-seo-sync-2026'),
+        'sync_key' => env('SEO_SYNC_KEY'),
         'frontend_storage_path' => env('SEO_FRONTEND_STORAGE_PATH'),
     ],
 

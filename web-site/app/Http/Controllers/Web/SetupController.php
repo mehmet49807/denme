@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Support\SetupKey;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 
@@ -9,7 +11,7 @@ class SetupController extends Controller
 {
     public function cpanel()
     {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026')) {
             abort(403);
         }
 
@@ -122,33 +124,7 @@ class SetupController extends Controller
         }
 
         if (request('fix_env') === '1') {
-            $envPath = base_path('.env');
-            if (is_file($envPath) && is_writable($envPath)) {
-                $content = (string) file_get_contents($envPath);
-                $replacements = [
-                    '/^APP_URL=.*/m' => 'APP_URL=https://www.gonulkoprusu.com',
-                    '/^ADMIN_URL=.*/m' => 'ADMIN_URL=https://admin.gonulkoprusu.com',
-                    '/^ASSET_URL=.*/m' => 'ASSET_URL=https://www.gonulkoprusu.com',
-                    '/^ADMIN_SUBDOMAIN=.*/m' => 'ADMIN_SUBDOMAIN=false',
-                    // Admin redirect döngüsü: paylaşımlı .gonulkoprusu.com çerezini kapat
-                    '/^SESSION_DOMAIN=.*/m' => 'SESSION_DOMAIN=',
-                ];
-                foreach ($replacements as $pattern => $line) {
-                    $content = preg_match($pattern, $content)
-                        ? (string) preg_replace($pattern, $line, $content)
-                        : $content."\n".$line;
-                }
-                file_put_contents($envPath, rtrim($content)."\n");
-                $lines[] = '.env duzeltildi (APP_URL, ADMIN_URL, ADMIN_SUBDOMAIN)';
-                try {
-                    Artisan::call('config:clear');
-                    $lines[] = 'config cache temizlendi (.env sonrasi)';
-                } catch (\Throwable $e) {
-                    $lines[] = 'config clear uyari: '.$e->getMessage();
-                }
-            } else {
-                $lines[] = '.env duzeltilemedi (yok veya yazilamaz)';
-            }
+            $lines[] = 'fix_env disabled for security';
         }
 
         if (request('purge_all') === '1') {
@@ -252,7 +228,7 @@ class SetupController extends Controller
 
     public function performance()
     {
-        if (request('key') !== 'gk-perf-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-perf-setup-2026')) {
             abort(403);
         }
 
@@ -291,7 +267,7 @@ class SetupController extends Controller
 
     public function deploySync()
     {
-        if (request('key') !== 'gk-deploy-sync-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-deploy-sync-2026')) {
             abort(403);
         }
 
@@ -325,26 +301,6 @@ class SetupController extends Controller
         $lines[] = 'PremiumPackagesService.php: '.(is_file($serviceFile) ? 'var' : 'YOK');
         $lines[] = 'User::packageBadge: '.(method_exists(\App\Models\User::class, 'packageBadge') ? 'var' : 'YOK');
 
-        $logFile = $base.'/storage/logs/laravel.log';
-        if (is_file($logFile) && is_readable($logFile)) {
-            $lines[] = '';
-            $lines[] = '--- laravel.log (tail) ---';
-            $size = (int) @filesize($logFile);
-            $fp = @fopen($logFile, 'rb');
-            if ($fp) {
-                @fseek($fp, max(0, $size - 12288));
-                $chunk = trim((string) @stream_get_contents($fp));
-                @fclose($fp);
-                $logLines = preg_split("/\r\n|\n|\r/", $chunk) ?: [];
-                foreach (array_slice($logLines, -30) as $line) {
-                    $lines[] = $line;
-                }
-            } else {
-                $lines[] = '(log okunamadı)';
-            }
-        }
-
-        $lines[] = '';
         $lines[] = 'OK';
 
         return response(implode("\n", $lines)."\n", 200, [
@@ -356,7 +312,7 @@ class SetupController extends Controller
 
     public function notifications()
     {
-        if (request('key') !== 'gk-notifications-migrate-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-notifications-migrate-2026')) {
             abort(403);
         }
 
@@ -400,7 +356,7 @@ class SetupController extends Controller
 
     public function cron()
     {
-        if (request('key') !== 'gk-cron-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-cron-2026')) {
             abort(403);
         }
 
@@ -442,7 +398,7 @@ class SetupController extends Controller
     /** Haftalık büyüme metrikleri — /setup/growth?key=gk-cpanel-setup-2026 */
     public function growth()
     {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026')) {
             abort(403);
         }
 
@@ -509,7 +465,7 @@ class SetupController extends Controller
 
     public function fcm()
     {
-        if (request('key') !== 'gk-fcm-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-fcm-setup-2026')) {
             abort(403);
         }
 
@@ -702,7 +658,7 @@ HTML;
 
     public function fcmWeb()
     {
-        if (request('key') !== 'gk-fcm-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-fcm-setup-2026')) {
             abort(403);
         }
 
@@ -761,7 +717,7 @@ HTML;
     public function laravelUpdate()
     {
         $key = (string) config('update.setup_key', 'gk-laravel-update-2026');
-        if (request('key') !== $key && request('key') !== 'gk-cpanel-setup-2026') {
+        if (! SetupKey::matches(request('key'), $key) && ! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026') && ! SetupKey::matches(request('key'), 'gk-laravel-update-2026')) {
             abort(403);
         }
 
@@ -802,7 +758,7 @@ HTML;
 
     public function emailLogs()
     {
-        if (request('key') !== 'gk-email-logs-migrate-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-email-logs-migrate-2026')) {
             abort(403);
         }
 
@@ -840,7 +796,7 @@ HTML;
 
     public function supportTickets()
     {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026')) {
             abort(403);
         }
 
@@ -868,7 +824,7 @@ HTML;
 
     public function hobbies()
     {
-        if (request('key') !== 'gk-hobbies-migrate-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-hobbies-migrate-2026')) {
             abort(403);
         }
 
@@ -903,7 +859,7 @@ HTML;
 
     public function locale()
     {
-        if (request('key') !== 'gk-locale-migrate-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-locale-migrate-2026')) {
             abort(403);
         }
 
@@ -938,7 +894,7 @@ HTML;
 
     public function messagesSchema()
     {
-        if (request('key') !== 'gk-messages-migrate-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-messages-migrate-2026')) {
             abort(403);
         }
 
@@ -975,7 +931,7 @@ HTML;
 
     public function profileFields()
     {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026')) {
             abort(403);
         }
 
@@ -1017,62 +973,6 @@ HTML;
 
     public function deleteUsers()
     {
-        if (request('key') !== 'gk-delete-users-2026') {
-            abort(403);
-        }
-
-        $names = array_values(array_filter(array_map(
-            static fn ($name) => trim($name),
-            explode(',', (string) request('users', ''))
-        )));
-
-        if ($names === []) {
-            return response("users parametresi gerekli (ör. users=rida453,murat)\n", 400, [
-                'Content-Type' => 'text/plain; charset=utf-8',
-            ]);
-        }
-
-        $lines = ['Gönül Köprüsü — kullanıcı silme', 'base='.base_path(), ''];
-
-        foreach ($names as $name) {
-            $user = \App\Models\User::query()
-                ->where('role', 'user')
-                ->whereRaw('LOWER(username) = ?', [mb_strtolower($name)])
-                ->first();
-
-            if (! $user) {
-                $similar = \App\Models\User::query()
-                    ->where('role', 'user')
-                    ->where('username', 'like', '%'.str_replace(['%', '_'], '', $name).'%')
-                    ->orderBy('username')
-                    ->limit(10)
-                    ->pluck('username');
-
-                $lines[] = $name.': bulunamadı'.($similar->isNotEmpty() ? ' (benzer: '.$similar->implode(', ').')' : '');
-                continue;
-            }
-
-            if ($user->isAdmin()) {
-                $lines[] = "{$user->username}: yönetici — silinmedi";
-                continue;
-            }
-
-            try {
-                $id = $user->id;
-                $username = $user->username;
-                $user->delete();
-                $lines[] = "{$username} (id={$id}): silindi";
-            } catch (\Throwable $e) {
-                $lines[] = "{$user->username}: HATA — ".$e->getMessage();
-            }
-        }
-
-        $lines[] = '';
-        $lines[] = 'OK';
-
-        return response(implode("\n", $lines)."\n", 200, [
-            'Content-Type' => 'text/plain; charset=utf-8',
-            'Cache-Control' => 'no-store',
-        ]);
+        abort(404);
     }
 }

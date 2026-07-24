@@ -18,10 +18,9 @@ class User extends Authenticatable
     protected $fillable = [
         'username', 'first_name', 'last_name', 'email', 'password',
         'phone', 'gender', 'country', 'city', 'district', 'profile_photo_url',
-        'role', 'is_banned', 'banned_at', 'banned_reason', 'trial_ends_at',
         'referral_code', 'referred_by_user_id', 'utm_source', 'utm_medium', 'utm_campaign',
         'registration_source', 'last_lifecycle_email_at',
-        'profile_verified_at', 'profile_verified_by', 'profile_verification_note',
+        // Privilege / moderation fields are NOT mass-assignable.
     ];
 
     protected $hidden = [

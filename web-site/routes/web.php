@@ -27,6 +27,7 @@ use App\Http\Controllers\Web\UserProfilePageController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Cache;
+use App\Support\SetupKey;
 use Illuminate\Support\Facades\Route;
 
 $gkHttpHost = strtolower(preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? '')));
@@ -70,7 +71,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         ->middleware('setup:gk-deploy-sync-2026');
     // LiteWeight fallback: SetupController opcache stale olsa bile çalışır
     Route::get('/setup/deploy-sync-lite', function () {
-        if (request('key') !== 'gk-deploy-sync-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-deploy-sync-2026')) {
             abort(403);
         }
         if (function_exists('opcache_reset')) {
@@ -86,18 +87,8 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             } catch (\Throwable $e) {
             }
         }
-        $lines = ['deploy-sync-lite', 'base='.$base];
-        $lines[] = 'SetupController bytes='.(is_file($base.'/app/Http/Controllers/Web/SetupController.php') ? filesize($base.'/app/Http/Controllers/Web/SetupController.php') : 0);
-        $log = $base.'/storage/logs/laravel.log';
-        if (is_file($log)) {
-            $fp = @fopen($log, 'rb');
-            if ($fp) {
-                @fseek($fp, max(0, (int) filesize($log) - 64000));
-                $lines[] = '--- log ---';
-                $lines[] = trim((string) @stream_get_contents($fp));
-                @fclose($fp);
-            }
-        }
+        $lines = ['deploy-sync-lite', 'ok=1'];
+        $lines[] = 'SetupController='.(is_file($base.'/app/Http/Controllers/Web/SetupController.php') ? 'yes' : 'no');
         $lines[] = 'OK';
 
         return response(implode("\n", $lines)."\n", 200, [
@@ -107,64 +98,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         ]);
     })->middleware('setup:gk-deploy-sync-2026');
 
-    Route::get('/setup/diag-msg-notif', function () {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
-            abort(403);
-        }
 
-        $lines = ['diag-msg-notif', 'base='.base_path()];
-        $user = \App\Models\User::query()->where('role', 'user')->where('is_banned', false)->orderByDesc('id')->first();
-        $lines[] = 'user='.($user ? ($user->id.' '.$user->username) : 'none');
-
-        $run = function (string $label, callable $fn) use (&$lines) {
-            try {
-                $result = $fn();
-                $lines[] = $label.': OK '. (is_scalar($result) || $result === null ? var_export($result, true) : get_debug_type($result));
-            } catch (\Throwable $e) {
-                $lines[] = $label.': FAIL '.$e::class.' '.$e->getMessage();
-                $lines[] = '  at '.$e->getFile().':'.$e->getLine();
-            }
-        };
-
-        if ($user) {
-            $notifications = app(\App\Services\NotificationService::class);
-            $conversations = app(\App\Services\ConversationService::class);
-            $run('unreadNotificationsCount', fn () => $notifications->unreadNotificationsCount($user));
-            $run('unreadMessageCount', fn () => $notifications->unreadMessageCount($user));
-            $run('unreadBroadcastCount', fn () => $notifications->unreadBroadcastCount($user));
-            $run('allForUser', fn () => $notifications->allForUser($user)->count());
-            $run('markAllRead', function () use ($notifications, $user) { $notifications->markAllRead($user); return 'done'; });
-            $run('buildConversations', fn () => $conversations->buildConversations($user)->count());
-            $run('view.notifications', fn () => view('web.notifications.index', ['viewer' => $user, 'items' => $notifications->allForUser($user)])->render() ? 'rendered' : 'empty');
-            $run('view.messages', fn () => view('web.messages.index', ['viewer' => $user, 'conversations' => $conversations->buildConversations($user)])->render() ? 'rendered' : 'empty');
-        }
-
-        $log = base_path('storage/logs/laravel.log');
-        if (is_file($log)) {
-            $fp = @fopen($log, 'rb');
-            if ($fp) {
-                @fseek($fp, max(0, (int) filesize($log) - 60000));
-                $chunk = (string) @stream_get_contents($fp);
-                @fclose($fp);
-                if (preg_match_all('/\\.ERROR:.*(?:\\n(?!\\[).*)*/', $chunk, $m)) {
-                    $lines[] = '--- last errors ---';
-                    foreach (array_slice($m[0], -3) as $err) {
-                        $lines[] = substr($err, 0, 2500);
-                        $lines[] = '----';
-                    }
-                } else {
-                    $lines[] = '--- log tail ---';
-                    $lines[] = substr($chunk, -4000);
-                }
-            }
-        }
-
-        $lines[] = 'OK';
-        return response(implode("\n", $lines)."\n", 200, [
-            'Content-Type' => 'text/plain; charset=utf-8',
-            'Cache-Control' => 'no-store',
-        ]);
-    })->middleware('setup:gk-cpanel-setup-2026');
 
     Route::get('/setup/notifications', [\App\Http\Controllers\Web\SetupController::class, 'notifications'])
         ->middleware('setup:gk-notifications-migrate-2026');
@@ -190,8 +124,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         ->middleware('setup:gk-locale-migrate-2026');
     Route::get('/setup/profile-fields', [\App\Http\Controllers\Web\SetupController::class, 'profileFields'])
         ->middleware('setup:gk-cpanel-setup-2026');
-    Route::get('/setup/delete-users', [\App\Http\Controllers\Web\SetupController::class, 'deleteUsers'])
-        ->middleware('setup:gk-delete-users-2026');
+
     Route::get('/setup/messages', [\App\Http\Controllers\Web\SetupController::class, 'messagesSchema'])
         ->middleware('setup:gk-messages-migrate-2026');
     Route::get('/setup/cron', [\App\Http\Controllers\Web\SetupController::class, 'cron'])
@@ -199,7 +132,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
     Route::get('/setup/growth', [\App\Http\Controllers\Web\SetupController::class, 'growth'])
         ->middleware('setup:gk-cpanel-setup-2026');
     Route::get('/setup/ws-check', function () {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026')) {
             abort(403);
         }
 
@@ -224,7 +157,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         ]);
     })->middleware('setup:gk-cpanel-setup-2026');
     Route::get('/setup/clear-cache', function () {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026')) {
             abort(403);
         } // middleware + inline key: deploy hook uyumu
 
@@ -258,91 +191,10 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
         ]);
     })->middleware('setup:gk-cpanel-setup-2026');
 
-    Route::get('/setup/test-login', function () {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
-            abort(403);
-        }
 
-        $as = (string) request('as', 'user');
-        $query = \App\Models\User::query()->where('is_banned', false);
 
-        if ($as === 'admin') {
-            $query->where('role', 'admin');
-        } elseif ($as === 'premium') {
-            $query->where('role', 'user')->where('gender', 'male');
-        } else {
-            $query->where('role', 'user');
-        }
-
-        $user = $query->orderByDesc('id')->first();
-        if (! $user) {
-            return response("no user\n", 404, ['Content-Type' => 'text/plain; charset=utf-8']);
-        }
-
-        \Illuminate\Support\Facades\Auth::login($user, true);
-        \App\Support\FcmWebPrompt::arm();
-        request()->session()->save();
-
-        $cookieName = config('session.cookie');
-        $sessionId = request()->session()->getId();
-
-        if (request()->boolean('redirect')) {
-            return redirect('/feed');
-        }
-
-        return response()->json([
-            'ok' => true,
-            'id' => $user->id,
-            'username' => $user->username,
-            'gender' => $user->gender,
-            'cookie_name' => $cookieName,
-            'session_cookie' => $cookieName.'='.$sessionId,
-        ]);
-    })->middleware('setup:gk-cpanel-setup-2026');
-    Route::match(['get', 'post'], '/setup/google-oauth', function () {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
-            abort(403);
-        }
-
-        $envPath = base_path('.env');
-        $clientId = trim((string) request('client_id', ''));
-        $clientSecret = trim((string) request('client_secret', ''));
-
-        if ($clientId !== '' && $clientSecret !== '' && is_writable($envPath)) {
-            $env = is_file($envPath) ? file_get_contents($envPath) : '';
-            $env = preg_replace('/^GOOGLE_CLIENT_ID=.*$/m', '', $env) ?? $env;
-            $env = preg_replace('/^GOOGLE_CLIENT_SECRET=.*$/m', '', $env) ?? $env;
-            $env = preg_replace('/^GOOGLE_REDIRECT_URI=.*$/m', '', $env) ?? $env;
-            $env = rtrim($env)."\n\nGOOGLE_CLIENT_ID={$clientId}\nGOOGLE_CLIENT_SECRET={$clientSecret}\nGOOGLE_REDIRECT_URI=https://gonulkoprusu.com/auth/google/callback\n";
-            file_put_contents($envPath, $env);
-
-            foreach (['config:clear', 'cache:clear'] as $command) {
-                try {
-                    Artisan::call($command);
-                } catch (\Throwable) {
-                }
-            }
-        }
-
-        $configured = trim((string) config('services.google.client_id', '')) !== '';
-        $envConfigured = trim((string) env('GOOGLE_CLIENT_ID', '')) !== '';
-
-        $lines = [
-            'Google OAuth durumu',
-            'config_client_id: '.($configured ? 'tanimli' : 'bos'),
-            'env_client_id: '.($envConfigured ? 'tanimli' : 'bos'),
-            'redirect_uri: '.(config('services.google.redirect') ?: route('auth.google.callback', absolute: true)),
-            '',
-            $configured ? "OK\n" : "Eksik: client_id ve client_secret ile ?key=...&client_id=...&client_secret=...\n",
-        ];
-
-        return response(implode("\n", $lines), 200, [
-            'Content-Type' => 'text/plain; charset=utf-8',
-            'Cache-Control' => 'no-store',
-        ]);
-    })->middleware('setup:gk-cpanel-setup-2026');
     Route::get('/setup/profile-toolbar-css', function () {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026')) {
             abort(403);
         }
 
@@ -383,43 +235,7 @@ if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
             'Cache-Control' => 'no-store',
         ]);
     })->middleware('setup:gk-cpanel-setup-2026');
-    Route::get('/setup/diag-blog-sss', function () {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
-            abort(403);
-        }
 
-        $checks = [
-            'routes' => [
-                'blog' => \Illuminate\Support\Facades\Route::has('blog'),
-                'sss' => \Illuminate\Support\Facades\Route::has('sss'),
-                'blog.show' => \Illuminate\Support\Facades\Route::has('blog.show'),
-            ],
-            'views' => [
-                'blog' => view()->exists('web.blog'),
-                'sss' => view()->exists('web.sss'),
-                'legal-nav' => view()->exists('partials.legal-nav'),
-            ],
-            'render' => [],
-        ];
-
-        $legalData = [
-            'lastUpdated' => '5 Haziran 2026',
-            'contactEmail' => 'destek@gonulkoprusu.com',
-            'faqItems' => [],
-            'posts' => [],
-        ];
-
-        foreach (['partials.legal-nav' => ['active' => 'sss'], 'web.sss' => $legalData, 'web.blog' => array_merge($legalData, ['posts' => []])] as $view => $data) {
-            try {
-                view($view, $data)->render();
-                $checks['render'][$view] = 'ok';
-            } catch (\Throwable $e) {
-                $checks['render'][$view] = $e->getMessage();
-            }
-        }
-
-        return response()->json($checks, 200, ['Cache-Control' => 'no-store']);
-    })->middleware('setup:gk-cpanel-setup-2026');
 
 }
 
@@ -448,7 +264,7 @@ Route::get('/blog', [LegalPageController::class, 'blog'])->name('blog');
 Route::get('/blog/{slug}', [LegalPageController::class, 'blogShow'])->name('blog.show')->where('slug', '[a-z0-9\-]+');
 Route::get('/sss', [LegalPageController::class, 'sss'])->name('sss');
 Route::post('/setup/seo-blog-faq-sync', function () {
-    if (! hash_equals((string) config('services.seo.sync_key', env('SEO_SYNC_KEY', 'gk-seo-sync-2026')), (string) request('key', ''))) {
+    if (! SetupKey::seoMatches(request('key'))) {
         abort(403);
     }
 

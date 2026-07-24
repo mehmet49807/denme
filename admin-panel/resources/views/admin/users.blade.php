@@ -646,7 +646,15 @@ window.adminNoteStoreUrl = @json(route('admin.users.notes.store', ['user' => '__
             box.innerHTML = 'Henüz not yok. <button type="button" class="btn btn-outline btn-sm" id="adminAddNoteBtn">Not ekle</button>';
         } else {
             box.innerHTML = notes.map(function (n) {
-                return '<div class="admin-ops-row"><div><strong>' + (n.pinned ? '📌 ' : '') + n.admin + '</strong><span class="admin-ops-meta">' + n.note + '</span></div><span class="admin-ops-meta">' + (n.at || '') + '</span></div>';
+                function esc(v) {
+                    return String(v == null ? '' : v)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
+                }
+                return '<div class="admin-ops-row"><div><strong>' + (n.pinned ? '📌 ' : '') + esc(n.admin) + '</strong><span class="admin-ops-meta">' + esc(n.note) + '</span></div><span class="admin-ops-meta">' + esc(n.at || '') + '</span></div>';
             }).join('') + '<button type="button" class="btn btn-outline btn-sm" id="adminAddNoteBtn" style="margin-top:.5rem">Not ekle</button>';
         }
         const addBtn = document.getElementById('adminAddNoteBtn');

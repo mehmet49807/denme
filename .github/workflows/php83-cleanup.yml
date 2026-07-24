@@ -28,5 +28,5 @@ jobs:
           curl -sS -o /dev/null -w 'web %{http_code}\n' https://gonulkoprusu.com/
           curl -sS -o /dev/null -w 'admin %{http_code}\n' https://admin.gonulkoprusu.com/login
           curl -sS -o /dev/null -w 'enable %{http_code}\n' 'https://gonulkoprusu.com/php83-enable.php?key=x' || true
-          curl -sS 'https://gonulkoprusu.com/setup/laravel-update?key=gk-laravel-update-2026' || true
+          curl -sS "https://gonulkoprusu.com/setup/laravel-update?key=${{ secrets.SETUP_CACHE_KEY }}" || true
           echo

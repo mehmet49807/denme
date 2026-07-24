@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Support\SetupKey;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 
@@ -9,7 +11,7 @@ class SetupController extends Controller
 {
     public function cpanel()
     {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026')) {
             abort(403);
         }
 
@@ -22,24 +24,8 @@ class SetupController extends Controller
         $cleared = function_exists('gk_clear_bootstrap_cache') ? gk_clear_bootstrap_cache(base_path()) : [];
         $envNotes = [];
 
-        // Admin ↔ web redirect döngüsünü önlemek: SESSION_DOMAIN boş = host-only çerez.
-        $envPath = base_path('.env');
-        if (is_file($envPath) && is_writable($envPath)) {
-            $env = (string) file_get_contents($envPath);
-            $target = 'SESSION_DOMAIN=';
-            if (preg_match('/^SESSION_DOMAIN=.*$/m', $env)) {
-                $updated = preg_replace('/^SESSION_DOMAIN=.*$/m', $target, $env, 1);
-                if (is_string($updated) && $updated !== $env) {
-                    file_put_contents($envPath, $updated);
-                    $envNotes[] = 'SESSION_DOMAIN cleared (host-only)';
-                } else {
-                    $envNotes[] = 'SESSION_DOMAIN already host-only';
-                }
-            } else {
-                file_put_contents($envPath, rtrim($env)."\n{$target}\n");
-                $envNotes[] = 'SESSION_DOMAIN added empty';
-            }
-        }
+        // .env rewrite disabled for security. Keep SESSION_DOMAIN empty via hosting panel.
+        $envNotes[] = 'env_rewrite=disabled (set SESSION_DOMAIN= in hosting .env)';
 
         foreach (glob(storage_path('framework/views/*.php')) ?: [] as $file) {
             if (@unlink($file)) {
@@ -102,7 +88,7 @@ class SetupController extends Controller
 
     public function supportTickets()
     {
-        if (request('key') !== 'gk-cpanel-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026')) {
             abort(403);
         }
 
@@ -130,7 +116,7 @@ class SetupController extends Controller
 
     public function fcm()
     {
-        if (request('key') !== 'gk-fcm-setup-2026') {
+        if (! SetupKey::matches(request('key'), 'gk-fcm-setup-2026')) {
             abort(403);
         }
 
@@ -238,7 +224,7 @@ HTML;
     public function laravelUpdate()
     {
         $key = (string) config('update.setup_key', 'gk-laravel-update-2026');
-        if (request('key') !== $key && request('key') !== 'gk-cpanel-setup-2026') {
+        if (! SetupKey::matches(request('key'), $key) && ! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026') && ! SetupKey::matches(request('key'), 'gk-laravel-update-2026')) {
             abort(403);
         }
 

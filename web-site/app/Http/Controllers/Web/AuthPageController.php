@@ -238,13 +238,8 @@ class AuthPageController extends Controller
 
         $status = Password::sendResetLink($request->only('email'));
 
-        if ($status === Password::RESET_LINK_SENT) {
-            return back()->with('status', 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.');
-        }
-
-        return back()
-            ->withInput($request->only('email'))
-            ->withErrors(['email' => 'Bu e-posta adresiyle kayıtlı bir hesap bulunamadı.']);
+        // Same response whether the email exists or not (anti-enumeration).
+        return back()->with('status', 'Eğer bu e-posta ile bir hesap varsa, şifre sıfırlama bağlantısı gönderildi.');
     }
 
     public function resetPasswordForm(Request $request, string $token): View
@@ -288,6 +283,9 @@ class AuthPageController extends Controller
     public function logout(): RedirectResponse
     {
         Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
         return redirect()->route('home');
     }
 

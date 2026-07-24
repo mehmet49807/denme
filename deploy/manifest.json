@@ -44,6 +44,16 @@
         "file": true
       },
       {
+        "local": "web-site/public/uploads/.htaccess",
+        "remote": "uploads/.htaccess",
+        "file": true
+      },
+      {
+        "local": "web-site/bootstrap/app.php",
+        "remote": "bootstrap/app.php",
+        "file": true
+      },
+      {
         "local": "web-site/public/manifest.webmanifest",
         "remote": "manifest.webmanifest",
         "file": true
