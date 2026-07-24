@@ -29,10 +29,13 @@
             <a href="{{ route('users.index') }}" class="btn btn-primary btn-sm" data-gk-event="trial_first_message_cta">İlk mesajını gönder</a>
         </div>
     @elseif($viewer->gender === 'male' && empty($onboarding['can_message']))
-        <div class="growth-trial-countdown growth-trial-countdown--ended">
-            <strong>Deneme bitti</strong>
-            <span>Mesaj ve hikâye için premium paket gerekli.</span>
-            <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm" data-gk-event="trial_cta_click" data-gk-event-label="ended">Paketleri incele</a>
+        <div class="growth-trial-countdown growth-trial-countdown--ended" data-gk-event="trial_ended_banner_view">
+            <strong>{{ __('app.feed.trial_ended_title') }}</strong>
+            <span>{{ __('app.feed.trial_ended_lead') }}</span>
+            <div class="growth-trial-countdown__actions">
+                <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm" data-gk-event="trial_cta_click" data-gk-event-label="ended">Paketleri incele</a>
+                <a href="{{ route('users.index') }}" class="btn btn-outline btn-sm">Üyeleri keşfet</a>
+            </div>
         </div>
     @endif
 

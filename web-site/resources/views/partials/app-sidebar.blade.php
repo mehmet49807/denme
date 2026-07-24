@@ -15,6 +15,12 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('matches.index') }}" class="{{ $active === 'matches' ? 'active' : '' }}">
+                @include('partials.sidebar-icon', ['icon' => 'heart'])
+                <span class="sidebar-nav-label">{{ __('app.nav.matches') }}</span>
+            </a>
+        </li>
+        <li>
             <a href="{{ route('profile') }}" class="{{ $active === 'profile' ? 'active' : '' }}">
                 @include('partials.sidebar-icon', ['icon' => 'profile'])
                 <span class="sidebar-nav-label">{{ __('app.nav.profile') }}</span>

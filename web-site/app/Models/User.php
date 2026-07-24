@@ -46,6 +46,9 @@ class User extends Authenticatable
             'birth_date' => 'date',
             'boost_until' => 'datetime',
             'last_boost_at' => 'datetime',
+            'photo_verify_submitted_at' => 'datetime',
+            'photo_verify_reviewed_at' => 'datetime',
+            'profile_verified_at' => 'datetime',
             'is_banned' => 'boolean',
             'is_verified' => 'boolean',
             'quiet_hours_enabled' => 'boolean',
@@ -535,6 +538,10 @@ class User extends Authenticatable
             return true;
         }
 
+        if (class_exists(\App\Support\PhotoVerification::class)) {
+            return \App\Support\PhotoVerification::isVerified($this);
+        }
+
         return (bool) $this->is_verified;
     }
 
@@ -556,6 +563,10 @@ class User extends Authenticatable
     /** Güven rozeti — doğrulanmış üye */
     public function showsTrustBadge(): bool
     {
+        if (class_exists(\App\Support\PhotoVerification::class)) {
+            return \App\Support\PhotoVerification::isVerified($this);
+        }
+
         return (bool) $this->is_verified;
     }
 

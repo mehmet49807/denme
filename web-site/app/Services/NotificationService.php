@@ -124,6 +124,14 @@ class NotificationService
             return $this->mapAdminNoticeNotification($notification);
         }
 
+        if ($notification->type === UserNotification::TYPE_PROFILE_LIKE) {
+            return $this->mapProfileLikeNotification($notification);
+        }
+
+        if ($notification->type === UserNotification::TYPE_MATCH) {
+            return $this->mapMatchNotification($notification);
+        }
+
         return $this->mapLikeNotification($notification);
     }
 
@@ -171,6 +179,55 @@ class NotificationService
             'actor_username' => $notification->actor?->username,
             'profile_url' => $profileUrl,
             'post_id' => $notification->post_id,
+        ];
+    }
+
+    private function mapProfileLikeNotification(UserNotification $notification): array
+    {
+        $actorName = $notification->actor?->username ?? 'Bir üye';
+        $profileUrl = $notification->actor?->username
+            ? url('/users/'.$notification->actor->username)
+            : null;
+
+        return [
+            'id' => 'profile-like-'.$notification->id,
+            'type' => UserNotification::TYPE_PROFILE_LIKE,
+            'title' => 'Profiliniz beğenildi',
+            'message_text' => $actorName.' sizi beğendi. Karşılık verirseniz eşleşirsiniz.',
+            'created_at' => $notification->created_at,
+            'is_read' => $notification->read_at !== null,
+            'actor_id' => $notification->actor_id,
+            'actor_username' => $notification->actor?->username,
+            'profile_url' => $profileUrl,
+            'post_id' => null,
+            'messages_url' => null,
+            'matches_url' => route('matches.index'),
+        ];
+    }
+
+    private function mapMatchNotification(UserNotification $notification): array
+    {
+        $actorName = $notification->actor?->username ?? 'Bir üye';
+        $profileUrl = $notification->actor?->username
+            ? url('/users/'.$notification->actor->username)
+            : null;
+        $messagesUrl = $notification->actor?->username
+            ? route('messages.show', $notification->actor->username)
+            : route('messages.index');
+
+        return [
+            'id' => 'match-'.$notification->id,
+            'type' => UserNotification::TYPE_MATCH,
+            'title' => 'Karşılıklı beğeni!',
+            'message_text' => $actorName.' ile eşleştiniz.',
+            'created_at' => $notification->created_at,
+            'is_read' => $notification->read_at !== null,
+            'actor_id' => $notification->actor_id,
+            'actor_username' => $notification->actor?->username,
+            'profile_url' => $profileUrl,
+            'messages_url' => $messagesUrl,
+            'matches_url' => route('matches.index'),
+            'post_id' => null,
         ];
     }
 
@@ -344,6 +401,78 @@ class NotificationService
         }
 
         return 0;
+    }
+
+    public function notifyProfileLiked(User $liker, User $liked): void
+    {
+        try {
+            if ($liker->id === $liked->id) {
+                return;
+            }
+
+            if ($this->userNotificationsTableExists()) {
+                try {
+                    UserNotification::create([
+                        'user_id' => $liked->id,
+                        'actor_id' => $liker->id,
+                        'type' => UserNotification::TYPE_PROFILE_LIKE,
+                        'body' => $liker->username.' profilinizi beğendi.',
+                        'created_at' => now(),
+                    ]);
+                    $this->forgetSidebarBadges($liked->id);
+                } catch (\Throwable) {
+                    //
+                }
+            }
+
+            $this->pushToUser(
+                $liked,
+                'Profiliniz beğenildi',
+                $liker->username.' sizi beğendi. Karşılık verirseniz eşleşirsiniz.',
+                [
+                    'type' => UserNotification::TYPE_PROFILE_LIKE,
+                    'actor_id' => (string) $liker->id,
+                    'actor_username' => (string) $liker->username,
+                ]
+            );
+        } catch (\Throwable) {
+            //
+        }
+    }
+
+    public function notifyMatch(User $a, User $b): void
+    {
+        try {
+            foreach ([[$a, $b], [$b, $a]] as [$receiver, $actor]) {
+                if ($this->userNotificationsTableExists()) {
+                    try {
+                        UserNotification::create([
+                            'user_id' => $receiver->id,
+                            'actor_id' => $actor->id,
+                            'type' => UserNotification::TYPE_MATCH,
+                            'body' => $actor->username.' ile karşılıklı beğeni!',
+                            'created_at' => now(),
+                        ]);
+                        $this->forgetSidebarBadges($receiver->id);
+                    } catch (\Throwable) {
+                        //
+                    }
+                }
+
+                $this->pushToUser(
+                    $receiver,
+                    'Karşılıklı beğeni!',
+                    $actor->username.' ile eşleştiniz. Hemen mesajlaşın.',
+                    [
+                        'type' => UserNotification::TYPE_MATCH,
+                        'actor_id' => (string) $actor->id,
+                        'actor_username' => (string) $actor->username,
+                    ]
+                );
+            }
+        } catch (\Throwable) {
+            //
+        }
     }
 
     public function notifyPostLiked(Like $like): void

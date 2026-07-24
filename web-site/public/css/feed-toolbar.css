@@ -171,6 +171,31 @@
     border-color: rgba(251, 191, 36, 0.2);
 }
 
+.premium-feed-banner--ended.premium-feed-banner--compact {
+    align-items: stretch;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(236, 72, 153, 0.12));
+    border-color: rgba(219, 39, 119, 0.22);
+}
+
+.premium-feed-banner--ended .premium-feed-banner__copy {
+    flex: 1 1 12rem;
+}
+
+.premium-feed-banner--ended .premium-feed-banner__copy p {
+    margin: 0.15rem 0 0;
+    color: var(--text-muted, #64748b);
+}
+
+.premium-feed-banner__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.premium-feed-banner--urgent {
+    border-color: rgba(217, 119, 6, 0.4);
+}
+
 @media (max-width: 380px) {
     .feed-toolbar--premium .feed-create-btn {
         gap: 0.38rem;

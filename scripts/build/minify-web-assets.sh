@@ -143,6 +143,7 @@ for f in \
   hobbies-picker.js \
   mobile-bottom-nav.js \
   profile-settings.js \
+  profile-like.js \
   flagged-select.js \
   chat.js
 do
@@ -159,7 +160,9 @@ echo "== app-shell JS bundle =="
 bundle_js "$JS_DIR/app-shell.min.js" \
   "$JS_DIR/profile-settings.js" \
   "$JS_DIR/hobbies-picker.js" \
+  "$JS_DIR/flagged-select.js" \
   "$JS_DIR/locations.js" \
+  "$JS_DIR/profile-like.js" \
   "$JS_DIR/mobile-bottom-nav.js"
 
 echo "== feed-page JS bundle =="

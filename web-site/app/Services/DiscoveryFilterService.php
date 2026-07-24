@@ -13,6 +13,7 @@ final class DiscoveryFilterService
      *   q: string,
      *   age_min: ?int,
      *   age_max: ?int,
+     *   country: string,
      *   city: string,
      *   district: string,
      *   online: bool,
@@ -52,6 +53,11 @@ final class DiscoveryFilterService
             $q = mb_substr($q, 0, 80);
         }
 
+        $country = trim((string) $request->query('country', ''));
+        if (mb_strlen($country) > 80) {
+            $country = mb_substr($country, 0, 80);
+        }
+
         $city = trim((string) $request->query('city', ''));
         if (mb_strlen($city) > 80) {
             $city = mb_substr($city, 0, 80);
@@ -66,6 +72,7 @@ final class DiscoveryFilterService
             'q' => $q,
             'age_min' => $ageMin,
             'age_max' => $ageMax,
+            'country' => $country,
             'city' => $city,
             'district' => $district,
             'online' => $request->boolean('online'),
@@ -75,6 +82,7 @@ final class DiscoveryFilterService
             'active' => $q !== ''
                 || $ageMin !== null
                 || $ageMax !== null
+                || $country !== ''
                 || $city !== ''
                 || $district !== ''
                 || $request->boolean('online')
@@ -100,6 +108,11 @@ final class DiscoveryFilterService
                     ->orWhere('district', 'like', $like)
                     ->orWhere('first_name', 'like', $like);
             });
+        }
+
+        $country = trim((string) ($filters['country'] ?? ''));
+        if ($country !== '') {
+            $query->where('country', $country);
         }
 
         $city = trim((string) ($filters['city'] ?? ''));

@@ -4,13 +4,14 @@
     $createdTs = $createdAt instanceof \DateTimeInterface ? $createdAt->getTimestamp() : 0;
     $type = $item['type'] ?? 'broadcast';
     $iconClass = match ($type) {
-        'post_like' => 'notification-icon--like',
+        'post_like', 'profile_like', 'match' => 'notification-icon--like',
         'new_message' => 'notification-icon--message',
         'report_update' => 'notification-icon--report',
         default => 'notification-icon--broadcast',
     };
     $tagClass = match ($type) {
-        'post_like' => 'notification-tag--like',
+        'post_like', 'profile_like' => 'notification-tag--like',
+        'match' => 'notification-tag--match',
         'new_message' => 'notification-tag--message',
         'report_update' => 'notification-tag--report',
         default => 'notification-tag--broadcast',
@@ -18,7 +19,7 @@
 @endphp
 <li class="notification-item notification-item--{{ $type === 'broadcast' ? 'broadcast' : $type }} {{ $item['is_read'] ? '' : 'notification-item--unread' }}" data-notification-ts="{{ $createdTs }}" data-notification-type="{{ $type }}">
     <div class="notification-icon {{ $iconClass }}" aria-hidden="true">
-        @if(($item['type'] ?? '') === 'post_like')
+        @if(in_array(($item['type'] ?? ''), ['post_like', 'profile_like', 'match'], true))
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 20.5s-7.2-4.7-9.2-8.8C1.2 8.2 3.4 5 6.8 5c1.8 0 3.2.9 4 2.1.8-1.2 2.2-2.1 4-2.1 3.4 0 5.6 3.2 4 6.7-2 4.1-9.2 8.8-9.2 8.8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
         </svg>
@@ -43,6 +44,10 @@
             <span class="notification-tag {{ $tagClass }}">
                 @if($type === 'post_like')
                     {{ __('app.notifications.like') }}
+                @elseif($type === 'profile_like')
+                    {{ __('app.notifications.profile_like') }}
+                @elseif($type === 'match')
+                    {{ __('app.notifications.match') }}
                 @elseif($type === 'new_message')
                     {{ __('app.notifications.message') }}
                 @elseif($type === 'report_update')
@@ -62,6 +67,12 @@
             @if(($item['type'] ?? '') === 'post_like' && !empty($item['actor_username']) && !empty($item['profile_url']))
                 <a href="{{ $item['profile_url'] }}" class="notification-actor-link">{{ $item['actor_username'] }}</a>
                 {{ __('app.notifications.liked_post') }}
+            @elseif(($item['type'] ?? '') === 'profile_like' && !empty($item['actor_username']))
+                <a href="{{ $item['profile_url'] ?? '#' }}" class="notification-actor-link">{{ $item['actor_username'] }}</a>
+                {{ __('app.notifications.liked_profile') }}
+            @elseif(($item['type'] ?? '') === 'match' && !empty($item['actor_username']))
+                <a href="{{ $item['profile_url'] ?? '#' }}" class="notification-actor-link">{{ $item['actor_username'] }}</a>
+                {{ __('app.notifications.matched_with') }}
             @elseif(($item['type'] ?? '') === 'new_message' && !empty($item['actor_username']))
                 <a href="{{ $item['profile_url'] ?? '#' }}" class="notification-actor-link">{{ $item['actor_username'] }}</a>
                 {{ __('app.notifications.sent_message') }}
@@ -71,10 +82,17 @@
         </p>
         @if(($item['type'] ?? '') === 'post_like')
         <a href="{{ route('profile') }}" class="notification-action-link">{{ __('app.notifications.go_posts') }}</a>
+        @elseif(($item['type'] ?? '') === 'profile_like' && !empty($item['profile_url']))
+        <a href="{{ $item['profile_url'] }}" class="notification-action-link">{{ __('app.notifications.view_profile') }}</a>
+        @elseif(($item['type'] ?? '') === 'match')
+            @if(!empty($item['messages_url']))
+            <a href="{{ $item['messages_url'] }}" class="notification-action-link">{{ __('app.notifications.open_message') }}</a>
+            @elseif(!empty($item['matches_url']))
+            <a href="{{ $item['matches_url'] }}" class="notification-action-link">{{ __('app.notifications.view_matches') }}</a>
+            @endif
         @elseif(($item['type'] ?? '') === 'new_message' && !empty($item['messages_url']))
         <a href="{{ $item['messages_url'] }}" class="notification-action-link">{{ __('app.notifications.open_message') }}</a>
         @endif
     </div>
 </li>
 @endforeach
-

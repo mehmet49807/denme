@@ -24,6 +24,7 @@ use App\Http\Controllers\Web\PremiumPageController;
 use App\Http\Controllers\Web\ProfilePageController;
 use App\Http\Controllers\Web\StoryPageController;
 use App\Http\Controllers\Web\UserProfilePageController;
+use App\Http\Controllers\Web\ProfileLikeController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Cache;
@@ -456,6 +457,9 @@ Route::middleware(['auth', 'locale'])->group(function () {
     Route::post('/profile/locale', [ProfilePageController::class, 'updateLocale'])->name('profile.locale.post');
     Route::get('/users', [UserProfilePageController::class, 'index'])->name('users.index');
     Route::get('/users/{username}', [UserProfilePageController::class, 'show'])->name('users.show');
+    Route::post('/users/{username}/like', [ProfileLikeController::class, 'toggle'])->middleware('throttle:60,1,profile-like')->name('users.like');
+    Route::get('/eslesmeler', [ProfileLikeController::class, 'matches'])->name('matches.index');
+    Route::post('/profile/photo-verify', [ProfilePageController::class, 'submitPhotoVerification'])->middleware('throttle:10,1,photo-verify')->name('profile.photo-verify');
     Route::post('/users/{username}/report', [UserProfilePageController::class, 'report'])->middleware('throttle:10,1,users-report')->name('users.report');
     Route::post('/users/{username}/block', [UserProfilePageController::class, 'block'])->middleware('throttle:30,1,users-block')->name('users.block');
     Route::delete('/users/{username}/block', [UserProfilePageController::class, 'unblock'])->middleware('throttle:30,1,users-unblock')->name('users.unblock');
