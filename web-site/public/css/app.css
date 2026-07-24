@@ -9082,6 +9082,90 @@ html[data-theme="dark"] .btn-primary:disabled {
     font-size: 0.88rem;
     color: var(--text-muted);
 }
+.matches-full-lock {
+    position: relative;
+    overflow: hidden;
+    margin: 0.25rem 0 1.25rem;
+    padding: 2rem 1.25rem 1.5rem;
+    border-radius: 22px;
+    border: 1px solid rgba(219, 39, 119, 0.22);
+    background:
+        radial-gradient(ellipse 80% 70% at 50% 0%, rgba(251, 191, 36, 0.18), transparent 55%),
+        linear-gradient(160deg, #fff 0%, #fdf2f8 55%, #fff7ed 100%);
+    text-align: center;
+    box-shadow: 0 16px 36px rgba(157, 23, 77, 0.08);
+}
+.matches-full-lock__glow {
+    position: absolute;
+    inset: auto 10% -40% 10%;
+    height: 55%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.18), transparent 70%);
+    pointer-events: none;
+}
+.matches-full-lock__icon {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    margin: 0 auto 0.85rem;
+    border-radius: 1rem;
+    color: #9d174d;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.22), rgba(236, 72, 153, 0.16));
+    border: 1px solid rgba(219, 39, 119, 0.2);
+}
+.matches-full-lock h2 {
+    position: relative;
+    margin: 0 0 0.45rem;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #1f1520;
+}
+.matches-full-lock p {
+    position: relative;
+    margin: 0 auto 1.1rem;
+    max-width: 28rem;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--text-muted, #64748b);
+}
+.matches-full-lock__actions {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.55rem;
+    margin-bottom: 1.25rem;
+}
+.matches-full-lock__ghost {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+    filter: blur(5px);
+    opacity: 0.45;
+    pointer-events: none;
+    user-select: none;
+}
+.matches-full-lock__ghost-card {
+    display: block;
+    min-height: 7.5rem;
+    border-radius: 16px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(253, 242, 248, 0.95));
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+@media (min-width: 640px) {
+    .matches-full-lock__ghost {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .matches-full-lock__ghost-card {
+        min-height: 8.5rem;
+    }
+}
 .matches-card__actions {
     display: flex;
     flex-wrap: wrap;

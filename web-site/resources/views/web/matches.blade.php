@@ -10,14 +10,17 @@
     $incomingCount = (int) ($incomingCount ?? 0);
     $matchesCount = (int) ($matchesCount ?? ($matchedUsers->total() ?? 0));
     $canRevealIncoming = (bool) ($canRevealIncoming ?? false);
+    $incomingLocked = $tab === 'incoming' && ! $canRevealIncoming;
 @endphp
-<div class="matches-page users-browse-page">
+<div class="matches-page users-browse-page {{ $incomingLocked ? 'matches-page--locked' : '' }}">
     <header class="users-browse-hero">
         <div class="users-browse-hero-inner">
             <span class="users-browse-badge">{{ $tab === 'incoming' ? 'Bekleyen beğeni' : 'Karşılıklı beğeni' }}</span>
             <h1>{{ $tab === 'incoming' ? 'Kim Beğendi' : 'Eşleşmelerim' }}</h1>
             <p class="users-browse-hero-lead">
-                @if($tab === 'incoming')
+                @if($incomingLocked)
+                    Bu alan yalnızca Premium üyelere açıktır.
+                @elseif($tab === 'incoming')
                     Sizi beğenen üyeler burada. Karşılık verirseniz eşleşirsiniz.
                 @else
                     Karşılıklı beğendiğiniz üyeler burada. Hemen mesajlaşmaya başlayın.
@@ -66,76 +69,71 @@
                 @endif
             </nav>
 
+            @unless($incomingLocked)
             <div class="matches-hero-actions">
                 <a href="{{ route('users.index') }}" class="btn btn-primary btn-sm">Keşfet</a>
                 <a href="{{ route('feed') }}" class="btn btn-outline btn-sm">Önerilenler</a>
             </div>
+            @endunless
         </div>
     </header>
 
-    @if($tab === 'incoming')
-        @if(!$canRevealIncoming)
-            <div class="matches-lock-banner" data-gk-event="incoming_likes_lock_view">
-                <div>
-                    <strong>
-                        @if($incomingCount > 0)
-                            {{ $incomingCount }} kişi sizi beğendi
-                        @else
-                            Kim Beğendi Premium
-                        @endif
-                    </strong>
-                    <p>Kimlerin sizi beğendiğini görmek yalnızca Premium üyelere açıktır.</p>
-                </div>
-                <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm" data-gk-event="trial_cta_click" data-gk-event-label="incoming_likes_lock">Paketleri incele</a>
+    @if($incomingLocked)
+        <section class="matches-full-lock" data-gk-event="incoming_likes_full_lock_view" aria-label="Kim Beğendi kilitli">
+            <div class="matches-full-lock__glow" aria-hidden="true"></div>
+            <div class="matches-full-lock__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="5" y="11" width="14" height="10" rx="2"/>
+                    <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+                </svg>
             </div>
-        @endif
-
+            <h2>Kim Beğendi kilitli</h2>
+            <p>
+                @if($incomingCount > 0)
+                    <strong>{{ $incomingCount }}</strong> kişi sizi beğendi.
+                    Kim olduklarını görmek ve eşleşmek için Premium gerekli.
+                @else
+                    Kimlerin sizi beğendiğini görmek yalnızca Premium üyelere açıktır.
+                @endif
+            </p>
+            <div class="matches-full-lock__actions">
+                <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary" data-gk-event="trial_cta_click" data-gk-event-label="incoming_full_lock">Premium’a geç</a>
+                <a href="{{ route('matches.index') }}" class="btn btn-outline">Eşleşmelerime dön</a>
+            </div>
+            <div class="matches-full-lock__ghost" aria-hidden="true">
+                @for($i = 0; $i < 6; $i++)
+                    <span class="matches-full-lock__ghost-card"></span>
+                @endfor
+            </div>
+        </section>
+    @elseif($tab === 'incoming')
         <div class="users-browse-grid matches-grid">
             @forelse(($incomingUsers ?? collect()) as $user)
-                <article class="users-browse-card matches-card {{ $canRevealIncoming ? '' : 'matches-card--locked' }}">
-                    @if($canRevealIncoming)
-                        <a href="{{ route('users.show', $user->username) }}" class="users-browse-card__link">
-                            <span class="users-browse-card__photo">
-                                @if($user->profile_photo_url)
-                                    <img src="{{ $user->profile_photo_url }}" alt="" loading="lazy" width="160" height="160">
-                                @else
-                                    <span class="users-browse-card__initial">{{ strtoupper(substr($user->username, 0, 1)) }}</span>
-                                @endif
-                                @include('partials.online-status-badge', ['user' => $user, 'size' => 'sm'])
+                <article class="users-browse-card matches-card">
+                    <a href="{{ route('users.show', $user->username) }}" class="users-browse-card__link">
+                        <span class="users-browse-card__photo">
+                            @if($user->profile_photo_url)
+                                <img src="{{ $user->profile_photo_url }}" alt="" loading="lazy" width="160" height="160">
+                            @else
+                                <span class="users-browse-card__initial">{{ strtoupper(substr($user->username, 0, 1)) }}</span>
+                            @endif
+                            @include('partials.online-status-badge', ['user' => $user, 'size' => 'sm'])
+                        </span>
+                        <span class="users-browse-card__body">
+                            <span class="users-browse-card__name">
+                                {{ $user->username }}
+                                @include('partials.profile-verified-tick', ['user' => $user, 'size' => 'sm'])
                             </span>
-                            <span class="users-browse-card__body">
-                                <span class="users-browse-card__name">
-                                    {{ $user->username }}
-                                    @include('partials.profile-verified-tick', ['user' => $user, 'size' => 'sm'])
-                                </span>
-                                <span class="users-browse-card__meta">{{ $user->city ?: 'Türkiye' }}</span>
-                            </span>
-                        </a>
-                        <div class="matches-card__actions">
-                            <form method="POST" action="{{ route('users.like', $user->username) }}" data-profile-like>
-                                @csrf
-                                <button type="submit" class="btn btn-primary btn-sm" data-like-btn>Beğen · Eşleş</button>
-                            </form>
-                            <a href="{{ route('users.show', $user->username) }}" class="btn btn-outline btn-sm">Profil</a>
-                        </div>
-                    @else
-                        <div class="users-browse-card__link matches-card__locked-link" aria-hidden="true">
-                            <span class="users-browse-card__photo matches-card__photo--blur">
-                                @if($user->profile_photo_url)
-                                    <img src="{{ $user->profile_photo_url }}" alt="" loading="lazy" width="160" height="160">
-                                @else
-                                    <span class="users-browse-card__initial">?</span>
-                                @endif
-                            </span>
-                            <span class="users-browse-card__body">
-                                <span class="users-browse-card__name">Gizli üye</span>
-                                <span class="users-browse-card__meta">Premium ile gör</span>
-                            </span>
-                        </div>
-                        <div class="matches-card__actions">
-                            <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm" data-gk-event="trial_cta_click" data-gk-event-label="incoming_card">Kim olduğunu gör</a>
-                        </div>
-                    @endif
+                            <span class="users-browse-card__meta">{{ $user->city ?: 'Türkiye' }}</span>
+                        </span>
+                    </a>
+                    <div class="matches-card__actions">
+                        <form method="POST" action="{{ route('users.like', $user->username) }}" data-profile-like>
+                            @csrf
+                            <button type="submit" class="btn btn-primary btn-sm" data-like-btn>Beğen · Eşleş</button>
+                        </form>
+                        <a href="{{ route('users.show', $user->username) }}" class="btn btn-outline btn-sm">Profil</a>
+                    </div>
                 </article>
             @empty
                 <div class="admin-panel" style="grid-column:1/-1;padding:1.5rem;">
