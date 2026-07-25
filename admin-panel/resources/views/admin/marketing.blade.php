@@ -4,7 +4,7 @@
 @section('lead', 'Reklam videoları, kampanya linkleri, Instagram / Ads UTM’leri ve son 7 gün büyüme metrikleri.')
 
 @section('header-actions')
-    <a href="{{ $frontendUrl }}/marketing/ads/" class="btn btn-outline" target="_blank" rel="noopener">Video klasörü</a>
+    <a href="{{ $frontendUrl }}/images/ads/" class="btn btn-outline" target="_blank" rel="noopener">Video klasörü</a>
     <a href="{{ $frontendUrl }}/kampanya?utm_source=meta&utm_medium=paid&utm_campaign=test1" class="btn btn-outline" target="_blank" rel="noopener">Ads Landing</a>
     <a href="{{ route('admin.seo') }}" class="btn btn-primary">SEO Ayarları</a>
 @endsection
@@ -109,7 +109,7 @@
             @endforeach
         </div>
     @empty
-        <p class="admin-package-card__sub">Henüz reklam videosu yok. Deploy sonrası <code>/marketing/ads</code> klasörünü kontrol edin.</p>
+        <p class="admin-package-card__sub">Henüz reklam videosu yok. Deploy sonrası <code>/images/ads</code> klasörünü kontrol edin.</p>
     @endforelse
 
     <p class="admin-package-card__sub admin-ad-videos__hint">

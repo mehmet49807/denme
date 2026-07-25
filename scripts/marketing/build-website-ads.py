@@ -14,7 +14,10 @@ ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "marketing" / "instagram"
 STORIES_DIR = SRC / "stories"
 OUT = ROOT / "marketing" / "website-ads"
-PUBLIC = ROOT / "web-site" / "public" / "marketing" / "ads"
+# Deploy manifest maps web-site/public/images → images (document root)
+PUBLIC = ROOT / "web-site" / "public" / "images" / "ads"
+# Keep a mirror under /marketing/ads for local tooling / robots-disallowed path
+PUBLIC_MIRROR = ROOT / "web-site" / "public" / "marketing" / "ads"
 ART = Path("/opt/cursor/artifacts/website-ads")
 LOGO = ROOT / "web-site" / "public" / "images" / "logo-320.png"
 
@@ -116,6 +119,7 @@ VERTICAL = [
 def ensure_dirs() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     PUBLIC.mkdir(parents=True, exist_ok=True)
+    PUBLIC_MIRROR.mkdir(parents=True, exist_ok=True)
     ART.mkdir(parents=True, exist_ok=True)
 
 
@@ -263,6 +267,8 @@ def concat_videos(parts: list[Path], out: Path) -> None:
 def publish(src: Path, name: str | None = None) -> Path:
     dest = PUBLIC / (name or src.name)
     shutil.copy2(src, dest)
+    mirror = PUBLIC_MIRROR / dest.name
+    shutil.copy2(src, mirror)
     art = ART / dest.name
     shutil.copy2(src, art)
     return dest
@@ -360,7 +366,8 @@ def main() -> None:
         "16:9 (1920×1080): YouTube Ads, Display, site içi, landing",
         "9:16 (1080×1920): Instagram Story / Reels / TikTok",
         "",
-        "Canlı klasör: web-site/public/marketing/ads/",
+        "Canlı klasör: web-site/public/images/ads/ → https://gonulkoprusu.com/images/ads/",
+        "Ayna: web-site/public/marketing/ads/",
         "Admin: Pazarlama menüsü → Reklam Videoları",
         "",
     ]

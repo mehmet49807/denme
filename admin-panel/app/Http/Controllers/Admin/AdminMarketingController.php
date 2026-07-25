@@ -121,7 +121,7 @@ class AdminMarketingController extends Controller
      */
     private function adVideos(string $frontend): array
     {
-        $base = $frontend.'/marketing/ads';
+        $base = $frontend.'/images/ads';
         $items = [
             [
                 'id' => 'web-01-ciddi-iliski',
