@@ -6,8 +6,15 @@
 .header-premium-btn,.profile-settings-open-btn,.header-matches-btn{display:inline-flex;align-items:center;gap:.4rem;min-height:2.4rem;padding:.45rem .8rem;border-radius:999px;font:inherit;font-size:.84rem;font-weight:700;text-decoration:none;cursor:pointer;white-space:nowrap;border:2px solid #f59e0b73;background:linear-gradient(135deg,#fbbf2429,#fff);color:#b45309}
 .profile-settings-open-btn{border-color:#7c3aed59;background:#fffc;color:#7c3aed}
 .header-matches-btn{border-color:#db277759;background:#fffc;color:#be185d}
-.header-premium-btn-icon,.profile-settings-open-btn-icon,.header-matches-btn-icon{display:inline-flex;width:1.15rem;height:1.15rem;flex-shrink:0}
+.header-premium-btn-icon,.profile-settings-open-btn-icon,.header-matches-btn-icon{display:inline-flex;width:1.15rem;height:1.15rem;flex-shrink:0;will-change:transform}
+.header-premium-btn-icon{animation:headerPremiumIconPulse 2.2s ease-in-out infinite}
+.profile-settings-open-btn-icon{animation:headerSettingsIconSpin 3.6s linear infinite}
+.header-matches-btn-icon{animation:headerMatchesIconBeat 1.4s ease-in-out infinite}
 .header-premium-btn svg,.profile-settings-open-btn svg,.header-matches-btn svg,.header-premium-btn-icon svg,.profile-settings-open-btn-icon svg,.header-matches-btn-icon svg{display:block;width:20px!important;height:20px!important;max-width:20px;max-height:20px}
+@keyframes headerPremiumIconPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14) translateY(-1px)}}
+@keyframes headerSettingsIconSpin{to{transform:rotate(360deg)}}
+@keyframes headerMatchesIconBeat{0%,100%{transform:scale(1)}18%{transform:scale(1.22)}32%{transform:scale(.96)}48%{transform:scale(1.16)}}
+@media(prefers-reduced-motion:reduce){.header-premium-btn-icon,.profile-settings-open-btn-icon,.header-matches-btn-icon{animation:none!important}}
 .app-sidebar-nav ul{list-style:none;padding:0;margin:0}
 .app-sidebar-nav a,.app-sidebar-nav button{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:inherit;font:inherit}
 .sidebar-nav-icon{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:1.15rem;height:1.15rem;line-height:0;color:#7c3aed}
