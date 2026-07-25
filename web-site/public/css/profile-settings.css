@@ -668,6 +668,14 @@ body.app-shell-body .site-header-inner {
     font-size: 0.925rem;
     transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
+
+/* Genel select padding’i bayraklı ülke/telefon alanını ezmesin */
+.profile-settings-form--authlike .auth-field .flagged-select,
+.profile-settings-form--authlike .auth-field select.loc-country,
+.profile-settings-form--authlike .auth-field .phone-country-select {
+    padding: 0.72rem 2.15rem 0.72rem 3.35rem;
+    text-indent: 0.15rem;
+}
 .profile-settings-form--authlike .auth-field input::placeholder,
 .profile-settings-form--authlike .auth-field textarea::placeholder {
     color: var(--text-light);
