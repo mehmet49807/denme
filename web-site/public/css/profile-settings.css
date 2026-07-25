@@ -58,7 +58,7 @@ body.app-shell-body .site-header-inner {
     width: 1.2rem;
     height: 1.2rem;
     flex-shrink: 0;
-    will-change: transform;
+    will-change: transform, filter;
 }
 
 .header-premium-btn-icon svg,
@@ -67,6 +67,19 @@ body.app-shell-body .site-header-inner {
     width: 100%;
     height: 100%;
     display: block;
+    overflow: visible;
+}
+
+/* Dolu ↔ boş + parlaklık: stroke her zaman, fill yanıp söner */
+.header-premium-btn-icon svg path,
+.header-matches-btn-icon svg path,
+.profile-settings-open-btn-icon svg path {
+    fill: currentColor;
+    fill-opacity: 0;
+}
+
+.profile-settings-open-btn-icon svg circle {
+    fill: none;
 }
 
 .header-premium-btn-icon {
@@ -74,9 +87,17 @@ body.app-shell-body .site-header-inner {
     animation: headerPremiumIconPulse 2.2s ease-in-out infinite;
 }
 
+.header-premium-btn-icon svg path {
+    animation: headerPremiumIconFill 2.2s ease-in-out infinite;
+}
+
 .header-premium-btn--active .header-premium-btn-icon {
     animation: headerPremiumIconPulse 1.6s ease-in-out infinite;
     color: #fff;
+}
+
+.header-premium-btn--active .header-premium-btn-icon svg path {
+    animation-duration: 1.6s;
 }
 
 .profile-settings-open-btn-icon {
@@ -84,64 +105,102 @@ body.app-shell-body .site-header-inner {
     animation: headerSettingsIconSpin 3.6s linear infinite;
 }
 
+.profile-settings-open-btn-icon svg path {
+    animation: headerSettingsIconFill 3.6s ease-in-out infinite;
+}
+
 .header-matches-btn-icon {
     color: #db2777;
-    animation: headerMatchesIconBeat 1.4s ease-in-out infinite;
+    animation: headerMatchesIconBeat 1.6s ease-in-out infinite;
+}
+
+.header-matches-btn-icon svg path {
+    animation: headerMatchesIconFill 1.6s ease-in-out infinite;
 }
 
 .header-matches-btn--active .header-matches-btn-icon {
     color: #fff;
-    animation: headerMatchesIconBeat 1.1s ease-in-out infinite;
+    animation: headerMatchesIconBeat 1.2s ease-in-out infinite;
+}
+
+.header-matches-btn--active .header-matches-btn-icon svg path {
+    animation-duration: 1.2s;
 }
 
 @keyframes headerPremiumIconPulse {
     0%, 100% {
         transform: scale(1) translateY(0) rotate(0deg);
-        filter: drop-shadow(0 0 0 rgba(251, 191, 36, 0));
+        filter: drop-shadow(0 0 0 rgba(251, 191, 36, 0)) brightness(1);
     }
     50% {
         transform: scale(1.14) translateY(-1px) rotate(-4deg);
-        filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.75));
+        filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.95)) drop-shadow(0 0 18px rgba(251, 191, 36, 0.55)) brightness(1.35);
     }
+}
+
+@keyframes headerPremiumIconFill {
+    0%, 100% { fill-opacity: 0; }
+    45%, 55% { fill-opacity: 1; }
 }
 
 @keyframes headerSettingsIconSpin {
     0% {
         transform: rotate(0deg) scale(1);
-        filter: drop-shadow(0 0 0 rgba(124, 58, 237, 0));
+        filter: drop-shadow(0 0 0 rgba(124, 58, 237, 0)) brightness(1);
     }
-    35% {
-        transform: rotate(120deg) scale(1.08);
-        filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.45));
+    25% {
+        transform: rotate(90deg) scale(1.06);
+        filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.85)) drop-shadow(0 0 14px rgba(124, 58, 237, 0.45)) brightness(1.3);
     }
-    70% {
-        transform: rotate(240deg) scale(1.02);
+    50% {
+        transform: rotate(180deg) scale(1.02);
+        filter: drop-shadow(0 0 4px rgba(124, 58, 237, 0.35)) brightness(1.1);
+    }
+    75% {
+        transform: rotate(270deg) scale(1.06);
+        filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.85)) drop-shadow(0 0 14px rgba(124, 58, 237, 0.45)) brightness(1.3);
     }
     100% {
         transform: rotate(360deg) scale(1);
-        filter: drop-shadow(0 0 0 rgba(124, 58, 237, 0));
+        filter: drop-shadow(0 0 0 rgba(124, 58, 237, 0)) brightness(1);
     }
+}
+
+@keyframes headerSettingsIconFill {
+    0%, 100% { fill-opacity: 0; }
+    20%, 30% { fill-opacity: 1; }
+    45%, 55% { fill-opacity: 0; }
+    70%, 80% { fill-opacity: 1; }
 }
 
 @keyframes headerMatchesIconBeat {
     0%, 100% {
         transform: scale(1);
-        filter: drop-shadow(0 0 0 rgba(219, 39, 119, 0));
+        filter: drop-shadow(0 0 0 rgba(219, 39, 119, 0)) brightness(1);
     }
     18% {
         transform: scale(1.22);
-        filter: drop-shadow(0 0 7px rgba(219, 39, 119, 0.55));
+        filter: drop-shadow(0 0 9px rgba(244, 63, 94, 0.9)) drop-shadow(0 0 16px rgba(219, 39, 119, 0.55)) brightness(1.4);
     }
     32% {
         transform: scale(0.96);
+        filter: drop-shadow(0 0 2px rgba(219, 39, 119, 0.25)) brightness(1.05);
     }
     48% {
         transform: scale(1.16);
-        filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.4));
+        filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.65)) drop-shadow(0 0 14px rgba(244, 63, 94, 0.4)) brightness(1.3);
     }
     64% {
         transform: scale(1);
+        filter: drop-shadow(0 0 0 rgba(219, 39, 119, 0)) brightness(1);
     }
+}
+
+@keyframes headerMatchesIconFill {
+    0%, 100% { fill-opacity: 0; }
+    12%, 28% { fill-opacity: 1; }
+    36%, 42% { fill-opacity: 0; }
+    48%, 60% { fill-opacity: 1; }
 }
 
 .header-premium-btn-label {
@@ -221,10 +280,19 @@ body.app-shell-body .site-header-inner {
     .profile-settings-open-btn-icon,
     .header-matches-btn-icon,
     .header-premium-btn--active .header-premium-btn-icon,
-    .header-matches-btn--active .header-matches-btn-icon {
+    .header-matches-btn--active .header-matches-btn-icon,
+    .header-premium-btn-icon svg path,
+    .profile-settings-open-btn-icon svg path,
+    .header-matches-btn-icon svg path {
         animation: none !important;
         filter: none !important;
         transform: none !important;
+    }
+
+    .header-premium-btn-icon svg path,
+    .profile-settings-open-btn-icon svg path,
+    .header-matches-btn-icon svg path {
+        fill-opacity: 0.85;
     }
 }
 
