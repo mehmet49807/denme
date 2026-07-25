@@ -3914,6 +3914,57 @@ body.admin-post-viewer-open {
 .admin-ad-videos__hint {
     margin-top: 0.85rem;
 }
+.admin-ad-video-card__badge--rx {
+    left: auto;
+    right: 0.5rem;
+    background: rgba(190, 38, 78, 0.92);
+}
+.admin-ad-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.85rem;
+}
+.admin-ad-photo-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px;
+    border: 1px solid rgba(124, 58, 237, 0.14);
+    background: rgba(255, 255, 255, 0.78);
+    overflow: hidden;
+}
+.admin-ad-photo-card__link {
+    display: block;
+    background: #120816;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+}
+.admin-ad-photo-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.admin-ad-photo-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.65rem 0.75rem 0.8rem;
+}
+.admin-ad-photo-card__body strong {
+    font-size: 0.82rem;
+    line-height: 1.25;
+    word-break: break-word;
+}
+.admin-ad-photo-card__body > span {
+    font-size: 0.72rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+}
+.admin-ads-research {
+    margin-bottom: 1rem;
+}
 .admin-form-actions {
     display: flex;
     flex-wrap: wrap;

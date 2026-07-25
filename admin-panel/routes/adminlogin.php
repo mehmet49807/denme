@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\AdminUpdateController;
 use App\Http\Controllers\Admin\AdminPackagesController;
 use App\Http\Controllers\Admin\AdminAppLinksController;
 use App\Http\Controllers\Admin\AdminMarketingController;
+use App\Http\Controllers\Admin\AdminAdsController;
 use App\Http\Controllers\Admin\AdminOpsController;
 use App\Http\Controllers\Admin\AdminPanelController;
 use App\Http\Controllers\Admin\AdminSeoController;
@@ -99,6 +100,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/app-links', [AdminAppLinksController::class, 'update'])->name('admin.app-links.update');
     Route::get('/marketing', [AdminMarketingController::class, 'index'])->name('admin.marketing');
     Route::post('/marketing', [AdminMarketingController::class, 'update'])->name('admin.marketing.update');
+    Route::get('/ads', [AdminAdsController::class, 'index'])->name('admin.ads');
     Route::get('/broadcasts', [AdminPanelController::class, 'broadcasts'])->name('admin.broadcasts');
     Route::post('/broadcasts', [AdminPanelController::class, 'sendBroadcast'])->name('admin.broadcasts.send');
     Route::get('/emails', [AdminEmailController::class, 'index'])->name('admin.emails');

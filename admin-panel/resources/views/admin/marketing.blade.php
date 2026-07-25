@@ -1,10 +1,10 @@
 @extends('layouts.admin')
 
-@section('title', 'Pazarlama & Reklam')
-@section('lead', 'Reklam videoları, kampanya linkleri, Instagram / Ads UTM’leri ve son 7 gün büyüme metrikleri.')
+@section('title', 'Pazarlama')
+@section('lead', 'Kampanya linkleri, Instagram / Ads UTM’leri ve son 7 gün büyüme metrikleri.')
 
 @section('header-actions')
-    <a href="{{ $frontendUrl }}/images/ads/" class="btn btn-outline" target="_blank" rel="noopener">Video klasörü</a>
+    <a href="{{ route('admin.ads') }}" class="btn btn-outline">Reklam medya</a>
     <a href="{{ $frontendUrl }}/kampanya?utm_source=meta&utm_medium=paid&utm_campaign=test1" class="btn btn-outline" target="_blank" rel="noopener">Ads Landing</a>
     <a href="{{ route('admin.seo') }}" class="btn btn-primary">SEO Ayarları</a>
 @endsection
@@ -64,58 +64,17 @@
     <div class="admin-flash admin-flash--error">Metrikler okunamadı: {{ $m['error'] }}</div>
 @endif
 
-<section class="admin-panel admin-panel--glass admin-ad-videos" id="reklam-videolari">
+<section class="admin-panel admin-panel--glass">
     <header class="admin-package-card__head">
         <div>
-            <h3 class="admin-panel-title">Reklam videoları</h3>
+            <h3 class="admin-panel-title">Reklam medya kütüphanesi</h3>
             <p class="admin-package-card__sub">
-                Hazır marka videoları — izle, indir, Meta / Google / Instagram’a yükle.
-                16:9 web &amp; YouTube · 9:16 Story / Reels. Türkçe seslendirme dahil.
+                Gerçekçi stok görüntülü videolar, klasik paket ve tüm fotoğraflar artık
+                <strong>Büyüme → Reklam</strong> menüsünde.
             </p>
         </div>
+        <a href="{{ route('admin.ads') }}" class="btn btn-primary">Reklam’a git</a>
     </header>
-
-    @php
-        $adGroups = collect($adVideos ?? [])->groupBy('group');
-    @endphp
-
-    @forelse($adGroups as $group => $videos)
-        <h4 class="admin-marketing-group">{{ $group }}</h4>
-        <div class="admin-ad-video-grid">
-            @foreach($videos as $video)
-                <article class="admin-ad-video-card" data-format="{{ $video['format'] }}">
-                    <div class="admin-ad-video-card__media">
-                        <video
-                            class="admin-ad-video-card__player"
-                            controls
-                            playsinline
-                            preload="metadata"
-                            poster="{{ $video['poster_url'] }}"
-                            src="{{ $video['video_url'] }}"
-                        ></video>
-                        <span class="admin-ad-video-card__badge">{{ $video['format'] }}</span>
-                    </div>
-                    <div class="admin-ad-video-card__body">
-                        <strong>{{ $video['title'] }}</strong>
-                        <span>{{ $video['subtitle'] }}</span>
-                        <span class="admin-ad-video-card__meta">{{ $video['channel'] }} · {{ $video['duration_hint'] }}</span>
-                        <div class="admin-ad-video-card__actions">
-                            <a class="btn btn-primary btn-sm" href="{{ $video['download_url'] }}" download target="_blank" rel="noopener">İndir</a>
-                            <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $video['video_url'] }}">Video URL</button>
-                            <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $video['cta_url'] }}">CTA link</button>
-                        </div>
-                    </div>
-                </article>
-            @endforeach
-        </div>
-    @empty
-        <p class="admin-package-card__sub">Henüz reklam videosu yok. Deploy sonrası <code>/images/ads</code> klasörünü kontrol edin.</p>
-    @endforelse
-
-    <p class="admin-package-card__sub admin-ad-videos__hint">
-        Yayın: Story/Reels için dikey MP4 + link sticker; YouTube/Display için yatay MP4 + kampanya landing.
-        Yeniden üretmek: <code>python3 scripts/marketing/build-website-ads.py</code>
-    </p>
 </section>
 
 <section class="admin-panel admin-panel--glass admin-marketing-links">

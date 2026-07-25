@@ -21,12 +21,18 @@ files = {
     / "app/Http/Controllers/Admin/AdminAppLinksController.php",
     "app/Http/Controllers/Admin/AdminMarketingController.php": ADMIN
     / "app/Http/Controllers/Admin/AdminMarketingController.php",
+    "app/Http/Controllers/Admin/AdminAdsController.php": ADMIN
+    / "app/Http/Controllers/Admin/AdminAdsController.php",
     "resources/views/admin/packages.blade.php": ADMIN
     / "resources/views/admin/packages.blade.php",
     "resources/views/admin/app-links.blade.php": ADMIN
     / "resources/views/admin/app-links.blade.php",
     "resources/views/admin/marketing.blade.php": ADMIN
     / "resources/views/admin/marketing.blade.php",
+    "resources/views/admin/ads.blade.php": ADMIN
+    / "resources/views/admin/ads.blade.php",
+    "resources/data/ads-manifest.json": ADMIN
+    / "resources/data/ads-manifest.json",
     "resources/views/partials/admin-nav.blade.php": ADMIN
     / "resources/views/partials/admin-nav.blade.php",
     "resources/views/layouts/admin.blade.php": ADMIN

@@ -67,3 +67,8 @@ scripts/deploy/__pycache__/
 
 # One-off feed-fix sidecar (retired)
 .gk-feed-fix-parts/
+
+# Marketing build intermediates (rebuild with scripts/marketing/*.py)
+marketing/stock/mixkit/*.mp4
+marketing/realistic-ads/
+marketing/website-ads/

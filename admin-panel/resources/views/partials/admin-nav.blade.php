@@ -37,6 +37,7 @@
             'items' => [
                 ['route' => 'admin.packages', 'label' => 'Paketler', 'icon' => 'gift', 'theme' => 'gold'],
                 ['route' => 'admin.app-links', 'label' => 'Uygulama', 'icon' => 'external', 'theme' => 'sky'],
+                ['route' => 'admin.ads', 'label' => 'Reklam', 'icon' => 'image', 'theme' => 'coral'],
                 ['route' => 'admin.marketing', 'label' => 'Pazarlama', 'icon' => 'chart', 'theme' => 'violet'],
                 ['route' => 'admin.broadcasts', 'label' => 'Duyurular', 'icon' => 'broadcast', 'theme' => 'emerald'],
                 ['route' => 'admin.referrals', 'label' => 'Davet / Referans', 'icon' => 'gift', 'theme' => 'pink'],
