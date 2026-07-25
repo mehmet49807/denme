@@ -670,11 +670,24 @@ body.app-shell-body .site-header-inner {
 }
 
 /* Genel select padding’i bayraklı ülke/telefon alanını ezmesin */
-.profile-settings-form--authlike .auth-field .flagged-select,
-.profile-settings-form--authlike .auth-field select.loc-country,
 .profile-settings-form--authlike .auth-field .phone-country-select {
     padding: 0.72rem 2.15rem 0.72rem 3.35rem;
     text-indent: 0.15rem;
+}
+
+.profile-settings-form--authlike .auth-field .flagged-select-wrap--country {
+    min-height: 2.75rem;
+    border-radius: 14px;
+    border: 1.5px solid rgba(124, 58, 237, 0.22);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.profile-settings-form--authlike .auth-field .flagged-select-wrap--country .flagged-select {
+    padding: 0.55rem 1.85rem 0.55rem 0.15rem;
+    text-indent: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
 }
 .profile-settings-form--authlike .auth-field input::placeholder,
 .profile-settings-form--authlike .auth-field textarea::placeholder {

@@ -831,8 +831,24 @@ input[readonly] { background: var(--bg-alt); color: var(--text-muted); }
 }
 
 .flagged-select-wrap--country {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
     width: 100%;
     min-width: 0;
+    min-height: 2.75rem;
+    padding: 0 0.55rem 0 0.65rem;
+    border: 1.5px solid rgba(124, 58, 237, 0.16);
+    border-radius: var(--radius);
+    background-color: var(--surface, #fff);
+    box-sizing: border-box;
+}
+
+.users-browse-filter-grid .flagged-select-wrap--country {
+    min-height: 2.55rem;
+    padding: 0 0.4rem 0 0.55rem;
+    border-radius: 0.75rem;
+    border-color: var(--border);
 }
 
 .phone-country-flag,
@@ -848,6 +864,16 @@ input[readonly] { background: var(--bg-alt); color: var(--text-muted); }
     box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.12);
     pointer-events: none;
     z-index: 1;
+}
+
+/* Ülke alanı: bayrak select dışında, üst üste binmez */
+.flagged-select-wrap--country .flagged-select-flag {
+    position: static;
+    transform: none;
+    flex: 0 0 auto;
+    width: 1.35rem;
+    height: 1rem;
+    margin: 0;
 }
 
 .phone-country-flag img,
@@ -906,9 +932,34 @@ input[readonly] { background: var(--bg-alt); color: var(--text-muted); }
 
 .flagged-select-wrap--country .flagged-select,
 .auth-form .auth-field .flagged-select-wrap--country .flagged-select,
-.auth-form .auth-field select.loc-country {
-    /* Uzun ülke adları (ör. Amerika Birleşik Devletleri) için alan */
-    min-width: 100%;
+.auth-form .auth-field select.loc-country,
+.profile-settings-form--authlike .auth-field .flagged-select-wrap--country .flagged-select {
+    /* Bayrak wrap içinde; select kendi kenarlığını göstermez */
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    min-height: 2.45rem;
+    margin: 0;
+    padding: 0.55rem 1.85rem 0.55rem 0.15rem;
+    text-indent: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.flagged-select-wrap--country:focus-within {
+    border-color: var(--violet);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+.flagged-select-wrap--country .flagged-select:focus,
+.users-browse-filter-grid .flagged-select-wrap--country .flagged-select:focus,
+.auth-form .auth-field .flagged-select-wrap--country .flagged-select:focus,
+.profile-settings-form--authlike .auth-field .flagged-select-wrap--country .flagged-select:focus {
+    border: none;
+    box-shadow: none;
+    outline: none;
 }
 
 .phone-country-select option,
@@ -8948,6 +8999,16 @@ html[data-theme="dark"] .btn-primary:disabled {
     font: inherit;
     background: var(--surface, #fff);
     color: inherit;
+}
+
+/* Bayraklı ülke seçici: grid select padding’i sol boşluğu ezmesin */
+.users-browse-filter-grid .flagged-select-wrap--country .flagged-select,
+.users-browse-filter-grid select.loc-country.flagged-select {
+    width: auto;
+    padding: 0.45rem 1.85rem 0.45rem 0.15rem;
+    border: none;
+    background-color: transparent;
+    text-indent: 0;
 }
 .users-browse-filter-check {
     display: flex !important;
