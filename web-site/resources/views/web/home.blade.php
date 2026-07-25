@@ -89,7 +89,7 @@
                     ])
                     <p class="landing-hero-google-note">
                         <span class="landing-hero-google-note__icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'heart'])</span>
-                        Ücretsiz kayıt ol ve hesabınla saniyeler içinde mesajlaşmaya başla
+                        Doğru kişiyle tanışmak bir mesajla başlar — gönül köprüsünü bugün sen kur
                     </p>
                 </div>
             </div>
