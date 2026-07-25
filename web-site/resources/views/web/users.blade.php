@@ -81,8 +81,7 @@
                         @include('partials.location-fields', [
                             'country' => $filters['country'] ?? '',
                             'city' => $filters['city'] ?? '',
-                            'district' => $filters['district'] ?? '',
-                            'showDistrict' => true,
+                            'showDistrict' => false,
                             'required' => false,
                         ])
                     </div>
