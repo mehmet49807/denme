@@ -39,6 +39,10 @@
         "remote": "js"
       },
       {
+        "local": "web-site/public/marketing",
+        "remote": "marketing"
+      },
+      {
         "local": "web-site/public/.htaccess",
         "remote": ".htaccess",
         "file": true
