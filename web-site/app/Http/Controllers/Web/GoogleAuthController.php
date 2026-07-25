@@ -293,7 +293,9 @@ class GoogleAuthController extends Controller
             // Kayıt akışını e-posta hatası durdurmasın.
         }
 
-        return redirect()->route('feed')->with('success', 'Google hesabınızla kayıt tamamlandı.');
+        return redirect()
+            ->to(app(\App\Services\UserAttributionService::class)->postSignupRedirectUrl())
+            ->with('success', 'Google hesabınızla kayıt tamamlandı.');
     }
 
     private function makeUniqueUsername(string $firstName, string $lastName, string $email): string

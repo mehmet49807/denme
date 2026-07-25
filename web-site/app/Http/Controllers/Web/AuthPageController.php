@@ -150,7 +150,7 @@ class AuthPageController extends Controller
                 Auth::login($user);
                 \App\Support\FcmWebPrompt::arm();
 
-                return redirect()->route('feed')
+                return redirect()->to(app(UserAttributionService::class)->postSignupRedirectUrl())
                     ->with('success', 'Kayıt tamamlandı. Profil fotoğrafı yüklenemedi; profil sayfasından tekrar ekleyebilirsiniz.');
             }
         }
@@ -169,7 +169,7 @@ class AuthPageController extends Controller
             // Kayıt akışını e-posta hatası durdurmasın.
         }
 
-        return redirect()->route('feed');
+        return redirect()->to(app(UserAttributionService::class)->postSignupRedirectUrl());
     }
 
     public function loginForm(): View|RedirectResponse

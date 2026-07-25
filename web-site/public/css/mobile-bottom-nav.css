@@ -27,20 +27,28 @@ html[data-theme="dark"] {
     }
 
     body.app-shell-body .app-sidebar {
-        left: 0.7rem;
-        right: 0.7rem;
-        bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+        left: 0.55rem;
+        right: 0.55rem;
+        bottom: calc(0.4rem + env(safe-area-inset-bottom, 0px));
         width: auto;
-        padding: 0.65rem 0.4rem 0.55rem;
-        border-radius: 1.45rem;
-        border: 1px solid rgba(124, 58, 237, 0.1);
+        padding: 0.7rem 0.35rem 0.6rem;
+        border-radius: 1.55rem;
+        border: 1px solid rgba(124, 58, 237, 0.12);
         background: var(--smart-nav-bar-bg);
         box-shadow:
-            0 14px 42px rgba(91, 33, 182, 0.16),
-            0 4px 12px rgba(15, 23, 42, 0.06);
+            0 16px 46px rgba(91, 33, 182, 0.18),
+            0 4px 14px rgba(15, 23, 42, 0.07);
         overflow: visible;
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    /* Daha app-benzeri aktif sekme */
+    body.app-shell-body .app-sidebar-nav--smart a.active {
+        transform: translateY(-0.35rem);
+    }
+    body.app-shell-body .app-sidebar-nav--smart a {
+        transition: transform 0.28s cubic-bezier(0.34, 1.35, 0.64, 1), color 0.18s ease;
     }
 
     /* Çentik — yalnızca aktif sekme varken (Premium gibi sayfalarda boş çentik kalmasın) */

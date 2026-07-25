@@ -49,13 +49,19 @@
         @endif
         @auth
             <a
-                href="{{ route('users.index', array_filter(['country' => 'Türkiye', 'city' => $city, 'district' => $district ?? null])) }}"
+                href="{{ $discoverUrl ?? route('users.index', array_filter(['country' => 'Türkiye', 'city' => $city, 'district' => $district ?? null])) }}"
                 class="btn btn-outline"
                 data-gk-event="city_cta_click"
                 data-gk-event-label="discover_{{ $slug }}"
             >{{ $placeTitle }} üyelerini keşfet</a>
         @else
-            <a href="{{ route('login') }}" class="btn btn-outline">Giriş Yap</a>
+            <a
+                href="{{ $registerUrl }}"
+                class="btn btn-outline"
+                data-gk-event="city_cta_click"
+                data-gk-event-label="discover_register_{{ $slug }}"
+            >{{ $placeTitle }}’da keşfe başla</a>
+            <a href="{{ route('login', ['redirect' => $discoverUrl ?? '']) }}" class="btn btn-ghost">Giriş Yap</a>
         @endauth
         <a href="{{ $instagramUrl }}" class="btn btn-ghost" target="_blank" rel="noopener" data-gk-event="instagram_cta" data-gk-event-label="city_{{ $slug }}">Instagram</a>
     </p>

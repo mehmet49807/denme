@@ -5912,8 +5912,28 @@ body.ig-story-open .app-sidebar {
         background: #1A1523;
     }
 }
-.ig-story-progress { position: absolute; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 3px; padding: 8px; }
-.ig-story-header { position: absolute; top: 0; left: 0; right: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 0.75rem 0.5rem; background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 100%); }
+.ig-story-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    display: flex;
+    gap: 3px;
+    padding: calc(8px + env(safe-area-inset-top, 0px)) 8px 8px;
+}
+.ig-story-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(1.5rem + env(safe-area-inset-top, 0px)) 0.75rem 0.5rem;
+    background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 100%);
+}
 .ig-story-user { display: flex; align-items: center; gap: 0.5rem; color: #fff; text-decoration: none; }
 .ig-story-user-avatar {
     width: 32px;
@@ -5928,8 +5948,37 @@ body.ig-story-open .app-sidebar {
 .ig-story-user-meta { display: flex; flex-direction: column; gap: 0.05rem; line-height: 1.2; }
 .ig-story-user-meta strong { font-size: 0.82rem; font-weight: 700; }
 .ig-story-user-meta small { font-size: 0.68rem; opacity: 0.85; }
-.ig-story-progress-bar { flex: 1; height: 2px; background: rgba(255, 255, 255, 0.35); border-radius: 2px; overflow: hidden; }
-.ig-story-progress-fill { display: block; height: 100%; width: 0; background: #fff; border-radius: 2px; }
+.ig-story-progress-bar {
+    flex: 1;
+    height: 2.5px;
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.ig-story-progress-fill {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: #fff;
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left center;
+    will-change: transform;
+}
+.ig-story-progress-fill.is-done { transform: scaleX(1); }
+.ig-story-progress-fill.is-animating {
+    animation-name: igStoryFill;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+.ig-story-progress-fill.is-paused { animation-play-state: paused; }
+@keyframes igStoryFill {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ig-story-progress-fill.is-animating { animation: none; transform: scaleX(1); }
+}
 .ig-story-close, .ig-story-delete { background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 1.1rem; cursor: pointer; border-radius: 50%; width: 32px; height: 32px; }
 .ig-story-stage { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
 .ig-story-media { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
@@ -5937,6 +5986,58 @@ body.ig-story-open .app-sidebar {
 .ig-story-tap { position: absolute; top: 0; bottom: 0; width: 35%; background: none; border: none; cursor: pointer; z-index: 1; }
 .ig-story-tap--prev { left: 0; }
 .ig-story-tap--next { right: 0; }
+.ig-story-reply {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    padding: 0.75rem 0.75rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.28) 70%, transparent 100%);
+}
+.ig-story-reply[hidden] { display: none !important; }
+.ig-story-reply-form {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+.ig-story-reply-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 2.55rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font: inherit;
+    font-size: 0.9rem;
+    outline: none;
+}
+.ig-story-reply-input::placeholder { color: rgba(255, 255, 255, 0.72); }
+.ig-story-reply-input:focus {
+    border-color: rgba(251, 191, 36, 0.65);
+    background: rgba(255, 255, 255, 0.18);
+}
+.ig-story-reply-send {
+    flex: 0 0 auto;
+    min-height: 2.55rem;
+    padding: 0.55rem 1rem;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #db2777, #f97316);
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+.ig-story-reply-send:disabled { opacity: 0.65; cursor: wait; }
+.ig-story-reply-status {
+    margin: 0.4rem 0.2rem 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #fde68a;
+}
 
 .pagination { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.85rem; list-style: none; padding: 0; }
 .pagination a, .pagination span { padding: 0.35rem 0.65rem; border-radius: 8px; font-size: 0.82rem; }
@@ -8601,28 +8702,63 @@ html[data-theme="dark"] .site-header .site-logo-brand-img {
 
 .pwa-install-hint {
     position: fixed;
-    left: 1rem;
-    right: 1rem;
-    bottom: calc(4.5rem + env(safe-area-inset-bottom));
-    z-index: 40;
-    padding: 0.85rem 1rem;
-    border-radius: 14px;
-    background: #1b1624;
+    left: 0.85rem;
+    right: 0.85rem;
+    bottom: calc(5.85rem + env(safe-area-inset-bottom, 0px));
+    z-index: 130;
+    padding: 0.85rem 0.95rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1b1624 0%, #2d1b4e 100%);
     color: #fff;
     display: flex;
     justify-content: space-between;
     gap: 0.75rem;
     align-items: center;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    box-shadow: 0 14px 36px rgba(15, 23, 42, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .pwa-install-hint[hidden] { display: none !important; }
+.pwa-install-hint__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+.pwa-install-hint__copy strong {
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+.pwa-install-hint__copy span {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.35;
+}
+.pwa-install-hint__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+}
 .pwa-install-hint button {
     border: 0;
     border-radius: 999px;
-    padding: 0.45rem 0.8rem;
+    padding: 0.5rem 0.85rem;
     font: inherit;
     font-weight: 700;
     cursor: pointer;
+}
+.pwa-install-hint__install {
+    background: linear-gradient(135deg, #db2777, #f59e0b);
+    color: #fff;
+}
+.pwa-install-hint__dismiss {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    width: 2.1rem;
+    height: 2.1rem;
+    padding: 0;
+    display: inline-grid;
+    place-items: center;
 }
 
 /* —— App premium stability pack —— */
@@ -8964,7 +9100,7 @@ html[data-theme="dark"] .btn-primary:disabled {
 .referral-next-milestone { margin: 0.75rem 0 0; font-size: 0.9rem; }
 .referral-leaderboard-list {
     list-style: none;
-    margin: 0;
+    margin: 0.65rem 0 0;
     padding: 0;
     display: grid;
     gap: 0.55rem;
@@ -8976,6 +9112,24 @@ html[data-theme="dark"] .btn-primary:disabled {
     align-items: baseline;
     padding: 0.55rem 0;
     border-bottom: 1px solid var(--border);
+}
+.referral-leaderboard-list li.is-me {
+    background: rgba(251, 191, 36, 0.12);
+    border-radius: 10px;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+    border-bottom-color: transparent;
+}
+.referral-leaderboard-rank {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.45rem;
+    height: 1.45rem;
+    border-radius: 999px;
+    background: rgba(124, 58, 237, 0.12);
+    color: var(--violet);
+    font-size: 0.72rem;
+    font-weight: 800;
 }
 .referral-leaderboard-list em { margin-left: auto; font-style: normal; font-weight: 700; }
 .users-browse-filter-grid {

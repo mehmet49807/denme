@@ -135,33 +135,7 @@
 @include('partials.feed-compose', ['viewer' => $viewer])
 @include('partials.post-detail-dialog')
 
-@if($allStoryGroups->isNotEmpty())
-<div class="ig-story-viewer" id="igStoryViewer" hidden data-groups="{{ $allStoryGroups->toJson() }}">
-    <div class="ig-story-frame">
-        <div class="ig-story-progress" id="igStoryProgress"></div>
-
-        <header class="ig-story-header">
-            <a href="#" id="igStoryUserLink" class="ig-story-user">
-                <span class="ig-story-user-avatar" id="igStoryUserAvatar"></span>
-                <span class="ig-story-user-meta">
-                    <strong id="igStoryUserName"></strong>
-                    <small id="igStoryTime">{{ __('app.common.now') }}</small>
-                </span>
-            </a>
-            <div class="ig-story-header-actions">
-                <button type="button" class="ig-story-delete" id="igStoryDelete" hidden aria-label="{{ __('app.feed.delete_story') }}">🗑</button>
-                <button type="button" class="ig-story-close" data-close-story aria-label="{{ __('app.common.close') }}">×</button>
-            </div>
-        </header>
-
-        <div class="ig-story-stage" id="igStoryStage">
-            <button type="button" class="ig-story-tap ig-story-tap--prev" id="igStoryTapPrev" aria-label="{{ __('app.feed.prev') }}"></button>
-            <div class="ig-story-media" id="igStoryMedia"></div>
-            <button type="button" class="ig-story-tap ig-story-tap--next" id="igStoryTapNext" aria-label="{{ __('app.feed.next') }}"></button>
-        </div>
-    </div>
-</div>
-@endif
+@include('partials.ig-story-viewer')
 
 @include('partials.asset', ['path' => 'js/feed-page.min.js', 'defer' => true])
 @endsection

@@ -91,33 +91,7 @@
 @include('partials.feed-compose', ['viewer' => $user])
 @include('partials.post-caption-edit-dialog')
 
-@if($ownStoryGroup)
-<div class="ig-story-viewer" id="igStoryViewer" hidden data-groups="{{ $allStoryGroups->toJson() }}">
-    <div class="ig-story-frame">
-        <div class="ig-story-progress" id="igStoryProgress"></div>
-
-        <header class="ig-story-header">
-            <a href="{{ route('profile') }}" id="igStoryUserLink" class="ig-story-user">
-                <span class="ig-story-user-avatar" id="igStoryUserAvatar"></span>
-                <span class="ig-story-user-meta">
-                    <strong id="igStoryUserName"></strong>
-                    <small id="igStoryTime">Şimdi</small>
-                </span>
-            </a>
-            <div class="ig-story-header-actions">
-                <button type="button" class="ig-story-delete" id="igStoryDelete" hidden aria-label="Hikayeyi sil">🗑</button>
-                <button type="button" class="ig-story-close" data-close-story aria-label="Kapat">×</button>
-            </div>
-        </header>
-
-        <div class="ig-story-stage" id="igStoryStage">
-            <button type="button" class="ig-story-tap ig-story-tap--prev" id="igStoryTapPrev" aria-label="Önceki"></button>
-            <div class="ig-story-media" id="igStoryMedia"></div>
-            <button type="button" class="ig-story-tap ig-story-tap--next" id="igStoryTapNext" aria-label="Sonraki"></button>
-        </div>
-    </div>
-</div>
-@endif
+@include('partials.ig-story-viewer')
 
 @include('partials.asset', ['path' => 'js/profile-page.min.js', 'defer' => true])
 @endsection

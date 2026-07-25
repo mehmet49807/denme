@@ -155,17 +155,25 @@ class CitySeoPageController extends Controller
             'seoLead' => $copy['lead'],
             'seoWhy' => $copy['why'],
             'jsonLd' => $jsonLd,
-            'registerUrl' => route('register', [
+            'registerUrl' => route('register', array_filter([
                 'utm_source' => 'seo',
                 'utm_medium' => $district ? 'district' : 'city',
                 'utm_campaign' => $district ? ($slug.'-'.SeoDistricts::slug($district)) : $slug,
-            ]),
+                'country' => $country,
+                'city' => $city,
+                'district' => $district,
+            ])),
             'campaignUrl' => route('campaign.landing', [
                 'utm_source' => 'seo',
                 'utm_medium' => $district ? 'district' : 'city',
                 'utm_campaign' => $slug,
                 'city' => $slug,
             ]),
+            'discoverUrl' => route('users.index', array_filter([
+                'country' => $country,
+                'city' => $city,
+                'district' => $district,
+            ])),
             'instagramUrl' => InstagramUrl::withUtm('seo', $district ? 'district' : 'city', $slug),
         ]);
     }

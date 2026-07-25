@@ -65,7 +65,10 @@
     <link rel="icon" href="{{ asset('images/favicon.png') }}?v={{ config('brand.logo_version') }}" sizes="32x32" type="image/png">
     <link rel="icon" href="{{ asset('images/favicon.svg') }}?v={{ config('brand.logo_version') }}" type="image/svg+xml">
     <link rel="apple-touch-icon" href="{{ asset('images/apple-touch-icon.png') }}?v={{ config('brand.logo_version') }}">
-    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}?v=gk-pwa-1">
+    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}?v=gk-pwa-2">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     @include('partials.async-fonts')
     @include('partials.critical-ui-css')
     @if($isLanding)
@@ -283,7 +286,9 @@
     @endif
     @if($appShell)
         @include('partials.profile-settings-sheet', ['user' => auth()->user()])
+        @include('partials.pwa-install-hint')
         @include('partials.asset', ['path' => 'js/app-shell.min.js', 'defer' => true])
+        @include('partials.asset', ['path' => 'js/pwa-install.min.js', 'defer' => true])
     @endif
     @include('partials.toast-host')
     @stack('page-scripts')

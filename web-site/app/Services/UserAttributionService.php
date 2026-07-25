@@ -20,6 +20,39 @@ final class UserAttributionService
                 session(['growth_'.$key => substr(trim((string) $value), 0, 120)]);
             }
         }
+
+        // SEO şehir sayfalarından kayıt → keşif yönlendirmesi
+        $city = trim((string) $request->input('city', $request->query('city', '')));
+        if ($city !== '') {
+            session(['growth_city' => substr($city, 0, 100)]);
+        }
+        $district = trim((string) $request->input('district', $request->query('district', '')));
+        if ($district !== '') {
+            session(['growth_district' => substr($district, 0, 100)]);
+        }
+        $country = trim((string) $request->input('country', $request->query('country', '')));
+        if ($country !== '') {
+            session(['growth_country' => substr($country, 0, 100)]);
+        }
+    }
+
+    /** Kayıt sonrası: şehir SEO dönüşümü varsa filtreli keşif, yoksa akış. */
+    public function postSignupRedirectUrl(): string
+    {
+        $city = trim((string) session('growth_city', ''));
+        if ($city === '') {
+            return route('feed');
+        }
+
+        $params = array_filter([
+            'country' => session('growth_country') ?: 'Türkiye',
+            'city' => $city,
+            'district' => session('growth_district') ?: null,
+        ], fn ($v) => $v !== null && $v !== '');
+
+        session()->forget(['growth_city', 'growth_district', 'growth_country']);
+
+        return route('users.index', $params);
     }
 
     /** @return array<string, string|null> */

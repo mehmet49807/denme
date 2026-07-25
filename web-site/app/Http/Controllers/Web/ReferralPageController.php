@@ -35,6 +35,17 @@ class ReferralPageController extends Controller
             ->limit(10)
             ->get();
 
+        // Geçen hafta birincisine ödül (idempotent)
+        try {
+            $this->referrals->ensurePreviousWeekWinnerRewarded();
+        } catch (\Throwable) {
+            // Ödül hatası sayfayı bozmasın
+        }
+
+        [$weekStart, $weekEnd] = $this->referrals->currentWeekBounds();
+        $leaderboard = $this->referrals->weeklyLeaderboard(8);
+        $myWeekly = collect($leaderboard)->firstWhere('user_id', $user->id);
+
         return view('web.referral', [
             'user' => $user,
             'inviteUrl' => $inviteUrl,
@@ -46,7 +57,10 @@ class ReferralPageController extends Controller
             'rewardDays' => User::REFERRAL_REWARD_DAYS,
             'milestones' => $this->referrals->milestones($user),
             'nextMilestone' => $this->referrals->nextMilestone($user),
-            'leaderboard' => $this->referrals->leaderboard(8),
+            'leaderboard' => $leaderboard,
+            'weekStart' => $weekStart->timezone('Europe/Istanbul'),
+            'weekEnd' => $weekEnd->timezone('Europe/Istanbul'),
+            'myWeeklyTotal' => (int) ($myWeekly['total'] ?? 0),
         ]);
     }
 

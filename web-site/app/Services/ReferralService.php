@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\PremiumSubscription;
 use App\Models\Referral;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 final class ReferralService
@@ -201,19 +202,106 @@ final class ReferralService
 
     public function leaderboard(int $limit = 8): array
     {
+        return $this->weeklyLeaderboard($limit);
+    }
+
+    /** Bu haftanın Pazartesi 00:00 — Pazar 23:59 (Europe/Istanbul). */
+    public function currentWeekBounds(): array
+    {
+        $tz = 'Europe/Istanbul';
+        $start = now($tz)->startOfWeek(Carbon::MONDAY)->utc();
+        $end = now($tz)->endOfWeek(Carbon::SUNDAY)->utc();
+
+        return [$start, $end];
+    }
+
+    public function weekKey(?\DateTimeInterface $at = null): string
+    {
+        $at = Carbon::parse($at ?? now(), 'Europe/Istanbul');
+
+        return $at->isoFormat('GGGG-[W]WW');
+    }
+
+    public function weeklyLeaderboard(int $limit = 8): array
+    {
+        [$start, $end] = $this->currentWeekBounds();
+
         return Referral::query()
             ->selectRaw('referrer_id, COUNT(*) as total')
+            ->whereBetween('created_at', [$start, $end])
             ->groupBy('referrer_id')
             ->orderByDesc('total')
             ->limit($limit)
             ->with('referrer:id,username,profile_photo_url,city,gender')
             ->get()
             ->map(fn ($row) => [
+                'user_id' => (int) $row->referrer_id,
                 'username' => $row->referrer?->username ?? 'üye',
                 'city' => $row->referrer?->city,
                 'photo' => $row->referrer?->profile_photo_url,
+                'gender' => $row->referrer?->gender,
                 'total' => (int) $row->total,
             ])
             ->all();
+    }
+
+    /**
+     * Geçen haftanın 1.'sine ödül ver (bir kez). Erkek +7 gün Pro, kadın +48s boost.
+     */
+    public function ensurePreviousWeekWinnerRewarded(): ?array
+    {
+        $tz = 'Europe/Istanbul';
+        $prevStart = now($tz)->subWeek()->startOfWeek(Carbon::MONDAY)->utc();
+        $prevEnd = now($tz)->subWeek()->endOfWeek(Carbon::SUNDAY)->utc();
+        $weekKey = $this->weekKey(now($tz)->subWeek());
+        $cacheKey = 'referral_week_rewarded:'.$weekKey;
+
+        if (cache()->get($cacheKey)) {
+            return null;
+        }
+
+        $winner = Referral::query()
+            ->selectRaw('referrer_id, COUNT(*) as total')
+            ->whereBetween('created_at', [$prevStart, $prevEnd])
+            ->groupBy('referrer_id')
+            ->orderByDesc('total')
+            ->havingRaw('COUNT(*) > 0')
+            ->first();
+
+        if (! $winner) {
+            cache()->forever($cacheKey, ['empty' => true]);
+
+            return null;
+        }
+
+        $user = User::query()->find($winner->referrer_id);
+        if (! $user) {
+            cache()->forever($cacheKey, ['missing' => true]);
+
+            return null;
+        }
+
+        if ($user->gender === 'male') {
+            $this->grantPremiumDays($user, 7);
+            $base = $user->trial_ends_at && $user->trial_ends_at->isFuture()
+                ? $user->trial_ends_at
+                : now();
+            $user->forceFill(['trial_ends_at' => $base->copy()->addDays(7)])->saveQuietly();
+        } else {
+            $boostBase = $user->boost_until && $user->boost_until->isFuture()
+                ? $user->boost_until
+                : now();
+            $user->forceFill(['boost_until' => $boostBase->copy()->addHours(48)])->saveQuietly();
+        }
+
+        $payload = [
+            'week' => $weekKey,
+            'user_id' => $user->id,
+            'username' => $user->username,
+            'total' => (int) $winner->total,
+        ];
+        cache()->forever($cacheKey, $payload);
+
+        return $payload;
     }
 }

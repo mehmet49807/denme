@@ -55,20 +55,26 @@
                 <a href="{{ $whatsappUrl }}" class="btn btn-outline referral-share-btn referral-share-btn--whatsapp" target="_blank" rel="noopener" data-gk-event="invite_share" data-gk-event-label="whatsapp">
                     WhatsApp ile paylaş
                 </a>
+                <button type="button" class="btn btn-primary referral-share-btn" id="inviteStoryKitBtn"
+                    data-share-url="{{ $inviteUrl }}"
+                    data-username="{{ $user->username }}"
+                    data-gk-event="invite_share" data-gk-event-label="story_kit">
+                    Story görseli indir
+                </button>
                 <button type="button" class="btn btn-outline referral-share-btn" id="nativeShareInviteBtn"
                     data-share-url="{{ $inviteUrl }}"
                     data-share-text="{{ $shareText }}"
                     data-gk-event="invite_share" data-gk-event-label="native_share">
-                    Paylaş / Story’ye hazırla
+                    Paylaş
                 </button>
                 <a href="{{ \App\Support\InstagramUrl::withUtm('referral', 'share', 'instagram') }}"
                    class="btn btn-ghost referral-share-btn" target="_blank" rel="noopener"
                    data-gk-event="instagram_cta" data-gk-event-label="referral">
-                    Instagram’da paylaş
+                    Instagram’ı aç
                 </a>
             </div>
             <p class="referral-card-hint" style="margin-top:.65rem">
-                Instagram’da: linki kopyala → hikâyene yapıştır veya DM gönder. Önce “Kopyala” veya “Paylaş” kullan.
+                Reels / Hikâye: görseli indir → Instagram’a yükle → linki yapıştır. Link otomatik kopyalanır.
             </p>
         </section>
 
@@ -116,12 +122,22 @@
         </section>
     @endif
 
-    @if(!empty($leaderboard))
-        <section class="glass-card referral-leaderboard">
-            <h2>Bu haftanın davet liderleri</h2>
+    <section class="glass-card referral-leaderboard">
+        <h2>Bu haftanın davet liderleri</h2>
+        <p class="referral-card-hint">
+            @if(!empty($weekStart) && !empty($weekEnd))
+                {{ $weekStart->translatedFormat('d M') }} – {{ $weekEnd->translatedFormat('d M') }}
+            @endif
+            · 1. olan: erkeklerde +7 gün Premium, kadınlarda 48 saat öne çıkarma
+            @if(($myWeeklyTotal ?? 0) > 0)
+                · Senin bu hafta: <strong>{{ $myWeeklyTotal }}</strong> davet
+            @endif
+        </p>
+        @if(!empty($leaderboard))
             <ol class="referral-leaderboard-list">
-                @foreach($leaderboard as $row)
-                    <li>
+                @foreach($leaderboard as $i => $row)
+                    <li class="{{ ($row['user_id'] ?? null) === $user->id ? 'is-me' : '' }}">
+                        <span class="referral-leaderboard-rank">{{ $i + 1 }}</span>
                         <strong>{{ $row['username'] }}</strong>
                         @if(!empty($row['city']))
                             <span>{{ $row['city'] }}</span>
@@ -130,16 +146,19 @@
                     </li>
                 @endforeach
             </ol>
-            <p class="referral-card-hint">
-                Instagram’da hikâyene link yapıştır:
-                <a href="{{ $instagramUrl ?? \App\Support\InstagramUrl::withUtm('referral', 'share', 'instagram') }}" target="_blank" rel="noopener" data-gk-event="instagram_cta" data-gk-event-label="referral_leaderboard">@gonulkoprusucom</a>
-            </p>
-        </section>
-    @endif
+        @else
+            <p class="referral-card-hint">Bu hafta henüz davet yok — ilk sırayı sen kap.</p>
+        @endif
+        <p class="referral-card-hint">
+            Instagram’da hikâyene link yapıştır:
+            <a href="{{ $instagramUrl ?? \App\Support\InstagramUrl::withUtm('referral', 'share', 'instagram') }}" target="_blank" rel="noopener" data-gk-event="instagram_cta" data-gk-event-label="referral_leaderboard">@gonulkoprusucom</a>
+        </p>
+    </section>
 </div>
 @endsection
 
 @push('page-scripts')
+@include('partials.asset', ['path' => 'js/invite-story-kit.min.js', 'defer' => true])
 <script>
 (function () {
     var csrf = document.querySelector('meta[name="csrf-token"]')?.content;

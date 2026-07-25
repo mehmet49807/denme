@@ -145,7 +145,9 @@ for f in \
   profile-settings.js \
   profile-like.js \
   flagged-select.js \
-  chat.js
+  chat.js \
+  pwa-install.js \
+  invite-story-kit.js
 do
   minify_js_file "$JS_DIR/$f" "$JS_DIR/${f%.js}.min.js"
 done
