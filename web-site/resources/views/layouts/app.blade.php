@@ -120,9 +120,12 @@
             @include('partials.logo', ['showTagline' => true])
 
             @unless($appShell)
+            {{-- Landing app.min.css yüklemez; hamburger butonu beyaz kare olarak kalmasın --}}
+            @unless($isLanding)
             <button type="button" class="site-nav-toggle" aria-expanded="false" aria-controls="site-nav-main" aria-label="Menü">
                 <span></span><span></span><span></span>
             </button>
+            @endunless
             <nav id="site-nav-main" class="site-nav" aria-label="{{ __('app.nav.main') }}">
                 <a href="{{ route('home') }}">{{ __('app.nav.home') }}</a>
                 <a href="{{ route('about') }}">{{ __('app.nav.about') }}</a>

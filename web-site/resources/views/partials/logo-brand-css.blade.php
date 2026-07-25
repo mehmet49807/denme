@@ -52,6 +52,10 @@
     justify-content: space-between;
     row-gap: 0.55rem;
 }
+/* Landing app.min.css yüklemez; hamburger stilleri gelmeyince beyaz kare kalıyordu */
+.page-landing .site-header--landing .site-nav-toggle {
+    display: none !important;
+}
 .page-landing .site-header--landing .site-logo--brand {
     order: 1;
     width: auto;
