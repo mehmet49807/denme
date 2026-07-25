@@ -28,6 +28,7 @@ class AdminMarketingController extends Controller
             'marketingNotes' => (string) $settings->get('marketing_notes', ''),
             'defaultCampaign' => (string) $settings->get('marketing_default_campaign', 'organic'),
             'links' => $this->campaignLinks($frontend, (string) $settings->get('marketing_default_campaign', 'organic')),
+            'adVideos' => $this->adVideos($frontend),
         ]);
     }
 
@@ -99,6 +100,168 @@ class AdminMarketingController extends Controller
 
             return $empty;
         }
+    }
+
+    /**
+     * Reklam videoları — canlıda /marketing/ads altında.
+     *
+     * @return list<array{
+     *   id: string,
+     *   title: string,
+     *   subtitle: string,
+     *   format: string,
+     *   channel: string,
+     *   duration_hint: string,
+     *   video_url: string,
+     *   poster_url: string,
+     *   download_url: string,
+     *   cta_url: string,
+     *   group: string
+     * }>
+     */
+    private function adVideos(string $frontend): array
+    {
+        $base = $frontend.'/marketing/ads';
+        $items = [
+            [
+                'id' => 'web-01-ciddi-iliski',
+                'title' => 'Ciddi ilişki arayanlar burada',
+                'subtitle' => 'Güvenli tanışma · Evlilik odaklı',
+                'format' => '16:9',
+                'channel' => 'YouTube / Display / Web',
+                'duration_hint' => '~14s',
+                'video' => 'web-01-ciddi-iliski.mp4',
+                'poster' => 'web-01-ciddi-iliski.png',
+                'cta_url' => $frontend.'/kampanya?utm_source=ads&utm_medium=video&utm_campaign=web',
+                'group' => 'Web (16:9)',
+            ],
+            [
+                'id' => 'web-02-dogru-insan',
+                'title' => 'Doğru insan, doğru yer',
+                'subtitle' => 'Kalpten kalbe uzanan köprü',
+                'format' => '16:9',
+                'channel' => 'YouTube / Display / Web',
+                'duration_hint' => '~11s',
+                'video' => 'web-02-dogru-insan.mp4',
+                'poster' => 'web-02-dogru-insan.png',
+                'cta_url' => $frontend.'/kampanya?utm_source=ads&utm_medium=video&utm_campaign=web',
+                'group' => 'Web (16:9)',
+            ],
+            [
+                'id' => 'web-03-guvenli',
+                'title' => 'Güvenli · Ciddi · Gerçek bağlar',
+                'subtitle' => 'Moderasyonlu, ciddi üyelik',
+                'format' => '16:9',
+                'channel' => 'YouTube / Display / Web',
+                'duration_hint' => '~10s',
+                'video' => 'web-03-guvenli.mp4',
+                'poster' => 'web-03-guvenli.png',
+                'cta_url' => $frontend.'/kampanya?utm_source=ads&utm_medium=video&utm_campaign=web',
+                'group' => 'Web (16:9)',
+            ],
+            [
+                'id' => 'web-04-evlilik',
+                'title' => 'Evlilik hayaline bir adım',
+                'subtitle' => 'Gönülden gönüle',
+                'format' => '16:9',
+                'channel' => 'YouTube / Display / Web',
+                'duration_hint' => '~10s',
+                'video' => 'web-04-evlilik.mp4',
+                'poster' => 'web-04-evlilik.png',
+                'cta_url' => $frontend.'/kampanya?utm_source=ads&utm_medium=video&utm_campaign=web',
+                'group' => 'Web (16:9)',
+            ],
+            [
+                'id' => 'web-reel-full',
+                'title' => 'Web reklam birleşik reel',
+                'subtitle' => '4 reklam tek videoda',
+                'format' => '16:9',
+                'channel' => 'YouTube · Landing · Site içi',
+                'duration_hint' => 'birleşik',
+                'video' => 'web-reel-full.mp4',
+                'poster' => 'web-reel-full.png',
+                'cta_url' => $frontend.'/kampanya?utm_source=ads&utm_medium=video&utm_campaign=web',
+                'group' => 'Web (16:9)',
+            ],
+            [
+                'id' => 'story-01-ciddi-iliski',
+                'title' => 'Ciddi ilişki arayanlar burada',
+                'subtitle' => 'Instagram Story / Reels',
+                'format' => '9:16',
+                'channel' => 'Instagram Story · Reels · TikTok',
+                'duration_hint' => 'story',
+                'video' => 'story-01-ciddi-iliski.mp4',
+                'poster' => 'story-01-ciddi-iliski.png',
+                'cta_url' => $frontend.'/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly',
+                'group' => 'Story / Reels (9:16)',
+            ],
+            [
+                'id' => 'story-02-dogru-insan',
+                'title' => 'Doğru insan, doğru yer',
+                'subtitle' => 'Instagram Story / Reels',
+                'format' => '9:16',
+                'channel' => 'Instagram Story · Reels · TikTok',
+                'duration_hint' => 'story',
+                'video' => 'story-02-dogru-insan.mp4',
+                'poster' => 'story-02-dogru-insan.png',
+                'cta_url' => $frontend.'/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly',
+                'group' => 'Story / Reels (9:16)',
+            ],
+            [
+                'id' => 'story-03-guvenli',
+                'title' => 'Güvenli · Ciddi · Gerçek bağlar',
+                'subtitle' => 'Instagram Story / Reels',
+                'format' => '9:16',
+                'channel' => 'Instagram Story · Reels · TikTok',
+                'duration_hint' => 'story',
+                'video' => 'story-03-guvenli.mp4',
+                'poster' => 'story-03-guvenli.png',
+                'cta_url' => $frontend.'/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly',
+                'group' => 'Story / Reels (9:16)',
+            ],
+            [
+                'id' => 'story-04-evlilik',
+                'title' => 'Evlilik hayaline bir adım',
+                'subtitle' => 'Instagram Story / Reels',
+                'format' => '9:16',
+                'channel' => 'Instagram Story · Reels · TikTok',
+                'duration_hint' => 'story',
+                'video' => 'story-04-evlilik.mp4',
+                'poster' => 'story-04-evlilik.png',
+                'cta_url' => $frontend.'/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly',
+                'group' => 'Story / Reels (9:16)',
+            ],
+            [
+                'id' => 'story-reel-full',
+                'title' => '4 hikâye birleşik reel',
+                'subtitle' => 'Instagram Reels uzun versiyon',
+                'format' => '9:16',
+                'channel' => 'Instagram Reels · TikTok',
+                'duration_hint' => 'birleşik',
+                'video' => 'story-reel-full.mp4',
+                'poster' => 'story-reel-full.png',
+                'cta_url' => $frontend.'/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly',
+                'group' => 'Story / Reels (9:16)',
+            ],
+        ];
+
+        return array_map(static function (array $item) use ($base): array {
+            $videoUrl = $base.'/'.$item['video'];
+
+            return [
+                'id' => $item['id'],
+                'title' => $item['title'],
+                'subtitle' => $item['subtitle'],
+                'format' => $item['format'],
+                'channel' => $item['channel'],
+                'duration_hint' => $item['duration_hint'],
+                'video_url' => $videoUrl,
+                'poster_url' => $base.'/'.$item['poster'],
+                'download_url' => $videoUrl,
+                'cta_url' => $item['cta_url'],
+                'group' => $item['group'],
+            ];
+        }, $items);
     }
 
     /**
