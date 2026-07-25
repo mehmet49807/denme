@@ -10,6 +10,7 @@
 @endsection
 
 @section('content')
+<div class="admin-ads-page">
 <div class="admin-stat-grid admin-stat-grid--compact">
     <div class="admin-stat-card admin-stat-card--violet">
         <div class="admin-stat-value">{{ $videoCount }}</div>
@@ -45,7 +46,7 @@
         <div>
             <h3 class="admin-panel-title">Videolar</h3>
             <p class="admin-package-card__sub">
-                Gerçekçi stok görüntülü (rx-*) ve klasik paket. 9:16 Reels/Stories · 16:9 YouTube/Display.
+                Kompakt önizleme · 9:16 Reels/Stories · 16:9 YouTube/Display.
             </p>
         </div>
     </header>
@@ -59,37 +60,36 @@
     @endphp
 
     @forelse($videoGroups as $group => $items)
-        @php
-            $sampleFmt = (string) (($items->first()['format'] ?? ''));
-            $gridMod = $sampleFmt === '9:16' ? 'admin-ad-video-grid--portrait' : 'admin-ad-video-grid--landscape';
-        @endphp
         <h4 class="admin-marketing-group">{{ $group }}</h4>
-        <div class="admin-ad-video-grid {{ $gridMod }}">
+        <div class="admin-ad-list">
             @foreach($items as $video)
-                <article class="admin-ad-video-card" data-format="{{ $video['format'] }}">
-                    <div class="admin-ad-video-card__media">
+                @php $isPortrait = (($video['format'] ?? '') === '9:16'); @endphp
+                <article class="admin-ad-row {{ $isPortrait ? 'admin-ad-row--portrait' : 'admin-ad-row--landscape' }}" data-format="{{ $video['format'] }}">
+                    <div class="admin-ad-row__thumb">
                         <video
-                            class="admin-ad-video-card__player"
+                            class="admin-ad-row__player"
                             controls
                             playsinline
                             preload="metadata"
                             @if(!empty($video['poster_url'])) poster="{{ $video['poster_url'] }}" @endif
                             src="{{ $video['video_url'] }}"
                         ></video>
-                        <span class="admin-ad-video-card__badge">{{ $video['format'] }}</span>
-                        @if(($video['kind'] ?? '') === 'realistic')
-                            <span class="admin-ad-video-card__badge admin-ad-video-card__badge--rx">Gerçekçi</span>
-                        @endif
+                        <span class="admin-ad-row__badge">{{ $video['format'] }}</span>
                     </div>
-                    <div class="admin-ad-video-card__body">
-                        <strong>{{ $video['title'] }}</strong>
+                    <div class="admin-ad-row__body">
+                        <div class="admin-ad-row__title-row">
+                            <strong>{{ $video['title'] }}</strong>
+                            @if(($video['kind'] ?? '') === 'realistic')
+                                <span class="admin-ad-row__tag">Gerçekçi</span>
+                            @endif
+                        </div>
                         @if(!empty($video['subtitle']))
-                            <span>{{ $video['subtitle'] }}</span>
+                            <span class="admin-ad-row__sub">{{ $video['subtitle'] }}</span>
                         @endif
                         @if(!empty($video['channel']))
-                            <span class="admin-ad-video-card__meta">{{ $video['channel'] }}</span>
+                            <span class="admin-ad-row__meta">{{ $video['channel'] }}</span>
                         @endif
-                        <div class="admin-ad-video-card__actions">
+                        <div class="admin-ad-row__actions">
                             <a class="btn btn-primary btn-sm" href="{{ $video['download_url'] }}" download target="_blank" rel="noopener">İndir</a>
                             <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $video['video_url'] }}">URL</button>
                         </div>
@@ -106,7 +106,7 @@
     <header class="admin-package-card__head">
         <div>
             <h3 class="admin-panel-title">Fotoğraflar</h3>
-            <p class="admin-package-card__sub">Poster, still ve end-card görselleri — Story / Feed / carousel için.</p>
+            <p class="admin-package-card__sub">Poster, still ve end-card görselleri.</p>
         </div>
     </header>
 
@@ -119,7 +119,7 @@
                 <div class="admin-ad-photo-card__body">
                     <strong>{{ $photo['title'] }}</strong>
                     <span>{{ $photo['kind'] }}</span>
-                    <div class="admin-ad-video-card__actions">
+                    <div class="admin-ad-row__actions">
                         <a class="btn btn-primary btn-sm" href="{{ $photo['download_url'] }}" download target="_blank" rel="noopener">İndir</a>
                         <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $photo['url'] }}">URL</button>
                     </div>
@@ -135,6 +135,7 @@
     Yeniden üret: <code>python3 scripts/marketing/build-realistic-ads.py</code>
     · Klasik paket: <code>python3 scripts/marketing/build-website-ads.py</code>
 </p>
+</div>
 
 <script>
 (function () {
