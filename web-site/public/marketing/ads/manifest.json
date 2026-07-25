@@ -113,5 +113,6 @@
       "poster": "story-reel-full.png",
       "cta_url": "https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly"
     }
-  ]
+  ],
+  "deploy_note": "FTP mapping: web-site/public/marketing -> marketing"
 }

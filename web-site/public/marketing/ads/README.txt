@@ -17,3 +17,5 @@ Admin: Pazarlama menüsü → Reklam Videoları
 - story-03-guvenli.mp4 — Güvenli · Ciddi · Gerçek bağlar (9:16)
 - story-04-evlilik.mp4 — Evlilik hayaline bir adım (9:16)
 - story-reel-full.mp4 — 4 hikâye birleşik reel (9:16)
+
+Deploy mapping: public/marketing → marketing (document root)
