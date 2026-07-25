@@ -59,8 +59,12 @@
     @endphp
 
     @forelse($videoGroups as $group => $items)
+        @php
+            $sampleFmt = (string) (($items->first()['format'] ?? ''));
+            $gridMod = $sampleFmt === '9:16' ? 'admin-ad-video-grid--portrait' : 'admin-ad-video-grid--landscape';
+        @endphp
         <h4 class="admin-marketing-group">{{ $group }}</h4>
-        <div class="admin-ad-video-grid">
+        <div class="admin-ad-video-grid {{ $gridMod }}">
             @foreach($items as $video)
                 <article class="admin-ad-video-card" data-format="{{ $video['format'] }}">
                     <div class="admin-ad-video-card__media">
