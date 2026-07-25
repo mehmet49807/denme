@@ -70,16 +70,18 @@ body.app-shell-body .site-header-inner {
     overflow: visible;
 }
 
-/* Dolu ↔ boş + parlaklık: stroke her zaman, fill yanıp söner */
+/* Stroke outline; dolu/boş animasyonu yok */
 .header-premium-btn-icon svg path,
-.header-matches-btn-icon svg path,
-.profile-settings-open-btn-icon svg path {
-    fill: currentColor;
-    fill-opacity: 0;
+.header-premium-btn-icon svg circle,
+.profile-settings-open-btn-icon svg path,
+.profile-settings-open-btn-icon svg circle,
+.header-matches-btn-icon svg path {
+    fill: none;
 }
 
-.profile-settings-open-btn-icon svg circle {
-    fill: none;
+/* Eşleşme: beğeni/eşleşme varsa kalp dolu */
+.header-matches-btn--filled .header-matches-btn-icon svg path {
+    fill: currentColor;
 }
 
 .header-premium-btn-icon {
@@ -87,17 +89,9 @@ body.app-shell-body .site-header-inner {
     animation: headerPremiumIconPulse 2.2s ease-in-out infinite;
 }
 
-.header-premium-btn-icon svg path {
-    animation: headerPremiumIconFill 2.2s ease-in-out infinite;
-}
-
 .header-premium-btn--active .header-premium-btn-icon {
     animation: headerPremiumIconPulse 1.6s ease-in-out infinite;
     color: #fff;
-}
-
-.header-premium-btn--active .header-premium-btn-icon svg path {
-    animation-duration: 1.6s;
 }
 
 .profile-settings-open-btn-icon {
@@ -105,26 +99,18 @@ body.app-shell-body .site-header-inner {
     animation: headerSettingsIconSpin 3.6s linear infinite;
 }
 
-.profile-settings-open-btn-icon svg path {
-    animation: headerSettingsIconFill 3.6s ease-in-out infinite;
-}
-
 .header-matches-btn-icon {
     color: #db2777;
     animation: headerMatchesIconBeat 1.6s ease-in-out infinite;
 }
 
-.header-matches-btn-icon svg path {
-    animation: headerMatchesIconFill 1.6s ease-in-out infinite;
+.header-matches-btn--filled .header-matches-btn-icon {
+    animation-duration: 1.25s;
 }
 
 .header-matches-btn--active .header-matches-btn-icon {
     color: #fff;
     animation: headerMatchesIconBeat 1.2s ease-in-out infinite;
-}
-
-.header-matches-btn--active .header-matches-btn-icon svg path {
-    animation-duration: 1.2s;
 }
 
 @keyframes headerPremiumIconPulse {
@@ -136,11 +122,6 @@ body.app-shell-body .site-header-inner {
         transform: scale(1.14) translateY(-1px) rotate(-4deg);
         filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.95)) drop-shadow(0 0 18px rgba(251, 191, 36, 0.55)) brightness(1.35);
     }
-}
-
-@keyframes headerPremiumIconFill {
-    0%, 100% { fill-opacity: 0; }
-    45%, 55% { fill-opacity: 1; }
 }
 
 @keyframes headerSettingsIconSpin {
@@ -166,13 +147,6 @@ body.app-shell-body .site-header-inner {
     }
 }
 
-@keyframes headerSettingsIconFill {
-    0%, 100% { fill-opacity: 0; }
-    20%, 30% { fill-opacity: 1; }
-    45%, 55% { fill-opacity: 0; }
-    70%, 80% { fill-opacity: 1; }
-}
-
 @keyframes headerMatchesIconBeat {
     0%, 100% {
         transform: scale(1);
@@ -194,13 +168,6 @@ body.app-shell-body .site-header-inner {
         transform: scale(1);
         filter: drop-shadow(0 0 0 rgba(219, 39, 119, 0)) brightness(1);
     }
-}
-
-@keyframes headerMatchesIconFill {
-    0%, 100% { fill-opacity: 0; }
-    12%, 28% { fill-opacity: 1; }
-    36%, 42% { fill-opacity: 0; }
-    48%, 60% { fill-opacity: 1; }
 }
 
 .header-premium-btn-label {
@@ -281,18 +248,10 @@ body.app-shell-body .site-header-inner {
     .header-matches-btn-icon,
     .header-premium-btn--active .header-premium-btn-icon,
     .header-matches-btn--active .header-matches-btn-icon,
-    .header-premium-btn-icon svg path,
-    .profile-settings-open-btn-icon svg path,
-    .header-matches-btn-icon svg path {
+    .header-matches-btn--filled .header-matches-btn-icon {
         animation: none !important;
         filter: none !important;
         transform: none !important;
-    }
-
-    .header-premium-btn-icon svg path,
-    .profile-settings-open-btn-icon svg path,
-    .header-matches-btn-icon svg path {
-        fill-opacity: 0.85;
     }
 }
 

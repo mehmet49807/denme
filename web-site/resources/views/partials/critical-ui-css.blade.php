@@ -11,18 +11,12 @@
 .profile-settings-open-btn-icon{color:#7c3aed;animation:headerSettingsIconSpin 3.6s linear infinite}
 .header-matches-btn-icon{color:#db2777;animation:headerMatchesIconBeat 1.6s ease-in-out infinite}
 .header-premium-btn svg,.profile-settings-open-btn svg,.header-matches-btn svg,.header-premium-btn-icon svg,.profile-settings-open-btn-icon svg,.header-matches-btn-icon svg{display:block;width:20px!important;height:20px!important;max-width:20px;max-height:20px;overflow:visible}
-.header-premium-btn-icon svg path,.profile-settings-open-btn-icon svg path,.header-matches-btn-icon svg path{fill:currentColor;fill-opacity:0}
-.profile-settings-open-btn-icon svg circle{fill:none}
-.header-premium-btn-icon svg path{animation:headerPremiumIconFill 2.2s ease-in-out infinite}
-.profile-settings-open-btn-icon svg path{animation:headerSettingsIconFill 3.6s ease-in-out infinite}
-.header-matches-btn-icon svg path{animation:headerMatchesIconFill 1.6s ease-in-out infinite}
+.header-premium-btn-icon svg path,.profile-settings-open-btn-icon svg path,.profile-settings-open-btn-icon svg circle,.header-matches-btn-icon svg path{fill:none}
+.header-matches-btn--filled .header-matches-btn-icon svg path{fill:currentColor}
 @keyframes headerPremiumIconPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.14) translateY(-1px);filter:drop-shadow(0 0 10px rgba(251,191,36,.95)) brightness(1.35)}}
-@keyframes headerPremiumIconFill{0%,100%{fill-opacity:0}45%,55%{fill-opacity:1}}
 @keyframes headerSettingsIconSpin{0%{transform:rotate(0);filter:brightness(1)}25%{transform:rotate(90deg) scale(1.06);filter:drop-shadow(0 0 8px rgba(167,139,250,.85)) brightness(1.3)}50%{transform:rotate(180deg);filter:brightness(1.1)}75%{transform:rotate(270deg) scale(1.06);filter:drop-shadow(0 0 8px rgba(167,139,250,.85)) brightness(1.3)}100%{transform:rotate(360deg);filter:brightness(1)}}
-@keyframes headerSettingsIconFill{0%,100%{fill-opacity:0}20%,30%{fill-opacity:1}45%,55%{fill-opacity:0}70%,80%{fill-opacity:1}}
 @keyframes headerMatchesIconBeat{0%,100%{transform:scale(1);filter:brightness(1)}18%{transform:scale(1.22);filter:drop-shadow(0 0 9px rgba(244,63,94,.9)) brightness(1.4)}32%{transform:scale(.96)}48%{transform:scale(1.16);filter:drop-shadow(0 0 8px rgba(249,115,22,.65)) brightness(1.3)}}
-@keyframes headerMatchesIconFill{0%,100%{fill-opacity:0}12%,28%{fill-opacity:1}36%,42%{fill-opacity:0}48%,60%{fill-opacity:1}}
-@media(prefers-reduced-motion:reduce){.header-premium-btn-icon,.profile-settings-open-btn-icon,.header-matches-btn-icon,.header-premium-btn-icon svg path,.profile-settings-open-btn-icon svg path,.header-matches-btn-icon svg path{animation:none!important;filter:none!important}.header-premium-btn-icon svg path,.profile-settings-open-btn-icon svg path,.header-matches-btn-icon svg path{fill-opacity:.85}}
+@media(prefers-reduced-motion:reduce){.header-premium-btn-icon,.profile-settings-open-btn-icon,.header-matches-btn-icon{animation:none!important;filter:none!important}}
 .app-sidebar-nav ul{list-style:none;padding:0;margin:0}
 .app-sidebar-nav a,.app-sidebar-nav button{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:inherit;font:inherit}
 .sidebar-nav-icon{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:1.15rem;height:1.15rem;line-height:0;color:#7c3aed}

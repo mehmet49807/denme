@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\ProfileLike;
 use App\Support\SidebarBadgeCounts;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -28,16 +29,25 @@ class AppServiceProvider extends ServiceProvider
                 $view->with([
                     'unreadNotifications' => 0,
                     'unreadMessages' => 0,
+                    'headerMatchesHasActivity' => false,
                 ]);
 
                 return;
             }
 
             $counts = SidebarBadgeCounts::forUser($user);
+            $hasMatchActivity = false;
+            try {
+                $hasMatchActivity = class_exists(ProfileLike::class)
+                    && ProfileLike::userHasMatchOrLikeActivity((int) $user->id);
+            } catch (\Throwable) {
+                $hasMatchActivity = false;
+            }
 
             $view->with([
                 'unreadNotifications' => $counts['notifications'],
                 'unreadMessages' => $counts['messages'],
+                'headerMatchesHasActivity' => $hasMatchActivity,
             ]);
         });
     }

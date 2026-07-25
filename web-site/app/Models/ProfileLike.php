@@ -64,4 +64,17 @@ class ProfileLike extends Model
         return self::query()->where('liker_id', $a)->where('liked_id', $b)->exists()
             && self::query()->where('liker_id', $b)->where('liked_id', $a)->exists();
     }
+
+    /** Kullanıcının eşleşme veya beğeni aktivitesi var mı (header kalp dolu/boş). */
+    public static function userHasMatchOrLikeActivity(int $userId): bool
+    {
+        if ($userId <= 0 || ! self::ensureTable()) {
+            return false;
+        }
+
+        return self::query()
+            ->where('liker_id', $userId)
+            ->orWhere('liked_id', $userId)
+            ->exists();
+    }
 }
