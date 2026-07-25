@@ -101,6 +101,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/marketing', [AdminMarketingController::class, 'index'])->name('admin.marketing');
     Route::post('/marketing', [AdminMarketingController::class, 'update'])->name('admin.marketing.update');
     Route::get('/ads', [AdminAdsController::class, 'index'])->name('admin.ads');
+    Route::get('/ads/download', [AdminAdsController::class, 'download'])->name('admin.ads.download');
     Route::get('/broadcasts', [AdminPanelController::class, 'broadcasts'])->name('admin.broadcasts');
     Route::post('/broadcasts', [AdminPanelController::class, 'sendBroadcast'])->name('admin.broadcasts.send');
     Route::get('/emails', [AdminEmailController::class, 'index'])->name('admin.emails');

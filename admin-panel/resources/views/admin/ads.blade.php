@@ -90,7 +90,7 @@
                             <span class="admin-ad-row__meta">{{ $video['channel'] }}</span>
                         @endif
                         <div class="admin-ad-row__actions">
-                            <a class="btn btn-primary btn-sm" href="{{ $video['download_url'] }}" download target="_blank" rel="noopener">İndir</a>
+                            <a class="btn btn-primary btn-sm" href="{{ $video['download_url'] }}" download="{{ $video['file'] }}">İndir</a>
                             <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $video['video_url'] }}">URL</button>
                         </div>
                     </div>
@@ -120,7 +120,7 @@
                     <strong>{{ $photo['title'] }}</strong>
                     <span>{{ $photo['kind'] }}</span>
                     <div class="admin-ad-row__actions">
-                        <a class="btn btn-primary btn-sm" href="{{ $photo['download_url'] }}" download target="_blank" rel="noopener">İndir</a>
+                        <a class="btn btn-primary btn-sm" href="{{ $photo['download_url'] }}" download="{{ $photo['file'] }}">İndir</a>
                         <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $photo['url'] }}">URL</button>
                     </div>
                 </div>

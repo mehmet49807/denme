@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\View\View;
 
 class AdminAdsController extends Controller
 {
+    private const ALLOWED_EXT = ['mp4', 'png', 'jpg', 'jpeg', 'webp'];
+
     public function index(): View
     {
         $frontend = rtrim((string) config('app.frontend_url', 'https://gonulkoprusu.com'), '/');
@@ -23,6 +28,75 @@ class AdminAdsController extends Controller
             'videoCount' => count($catalog['videos']),
             'photoCount' => count($catalog['photos']),
         ]);
+    }
+
+    /**
+     * Same-origin download proxy — browser ignores download="" on cross-origin CDN URLs.
+     */
+    public function download(Request $request): BinaryFileResponse|StreamedResponse
+    {
+        $file = basename((string) $request->query('file', ''));
+        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+
+        if ($file === '' || $file === '.' || $file === '..' || ! in_array($ext, self::ALLOWED_EXT, true)) {
+            abort(404, 'Dosya bulunamadı.');
+        }
+
+        if (! preg_match('/^[A-Za-z0-9._-]+$/', $file)) {
+            abort(404, 'Dosya bulunamadı.');
+        }
+
+        $mime = match ($ext) {
+            'mp4' => 'video/mp4',
+            'png' => 'image/png',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'webp' => 'image/webp',
+            default => 'application/octet-stream',
+        };
+
+        $localDir = $this->localAdsDir();
+        $localPath = $localDir ? $localDir.DIRECTORY_SEPARATOR.$file : null;
+        if (is_string($localPath) && is_file($localPath)) {
+            return response()->download($localPath, $file, [
+                'Content-Type' => $mime,
+                'Cache-Control' => 'private, max-age=3600',
+            ]);
+        }
+
+        $frontend = rtrim((string) config('app.frontend_url', 'https://gonulkoprusu.com'), '/');
+        $remote = $frontend.'/images/ads/'.$file;
+
+        $tmp = tempnam(sys_get_temp_dir(), 'gkads_');
+        if ($tmp === false) {
+            abort(500, 'Geçici dosya oluşturulamadı.');
+        }
+
+        $ctx = stream_context_create([
+            'http' => [
+                'timeout' => 120,
+                'header' => "User-Agent: GonulKoprusuAdmin/1.0\r\n",
+            ],
+            'ssl' => [
+                'verify_peer' => true,
+                'verify_peer_name' => true,
+            ],
+        ]);
+
+        $ok = @copy($remote, $tmp, $ctx);
+        if (! $ok || ! is_file($tmp) || filesize($tmp) < 32) {
+            @unlink($tmp);
+            abort(404, 'Dosya bulunamadı.');
+        }
+
+        return response()->download($tmp, $file, [
+            'Content-Type' => $mime,
+            'Cache-Control' => 'private, max-age=3600',
+        ])->deleteFileAfterSend(true);
+    }
+
+    private function downloadUrl(string $file): string
+    {
+        return route('admin.ads.download', ['file' => $file]);
     }
 
     /**
@@ -53,7 +127,7 @@ class AdminAdsController extends Controller
                 'kind' => (string) ($item['kind'] ?? (str_starts_with($file, 'rx-') ? 'realistic' : 'classic')),
                 'video_url' => $base.'/'.$file,
                 'poster_url' => $poster !== '' ? $base.'/'.$poster : '',
-                'download_url' => $base.'/'.$file,
+                'download_url' => $this->downloadUrl($file),
                 'file' => $file,
             ];
         }
@@ -68,7 +142,7 @@ class AdminAdsController extends Controller
                 'title' => (string) ($item['title'] ?? $file),
                 'kind' => (string) ($item['kind'] ?? 'still'),
                 'url' => $base.'/'.$file,
-                'download_url' => $base.'/'.$file,
+                'download_url' => $this->downloadUrl($file),
                 'file' => $file,
             ];
         }
@@ -96,7 +170,7 @@ class AdminAdsController extends Controller
                         'kind' => str_starts_with($name, 'rx-') ? 'realistic' : 'classic',
                         'video_url' => $base.'/'.$name,
                         'poster_url' => File::exists($localDir.'/'.$poster) ? $base.'/'.$poster : '',
-                        'download_url' => $base.'/'.$name,
+                        'download_url' => $this->downloadUrl($name),
                         'file' => $name,
                     ];
                 } elseif (in_array($ext, ['png', 'jpg', 'jpeg', 'webp'], true)) {
@@ -108,7 +182,7 @@ class AdminAdsController extends Controller
                         'title' => str_replace('-', ' ', pathinfo($name, PATHINFO_FILENAME)),
                         'kind' => str_contains($name, 'still') ? 'still' : 'poster',
                         'url' => $base.'/'.$name,
-                        'download_url' => $base.'/'.$name,
+                        'download_url' => $this->downloadUrl($name),
                         'file' => $name,
                     ];
                 }
