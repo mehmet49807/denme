@@ -106,13 +106,14 @@ class ProfileLikeController extends Controller
 
         $viewer = $request->user();
         $tab = $request->query('tab') === 'incoming' ? 'incoming' : 'matches';
-        $canRevealIncoming = $viewer->canAccessIncomingLikes();
+        // Erkeklerde aktif Premium; kadın/admin serbest. Trial açmaz.
+        $canRevealMatches = $viewer->canAccessIncomingLikes();
 
         $likedIds = ProfileLike::query()
             ->where('liker_id', $viewer->id)
             ->pluck('liked_id');
 
-        $matchedUsers = User::query()
+        $matchedQuery = User::query()
             ->where('role', 'user')
             ->where('is_banned', false)
             ->whereIn('id', function ($q) use ($viewer, $likedIds) {
@@ -124,9 +125,7 @@ class ProfileLikeController extends Controller
             ->where(function ($q) use ($viewer) {
                 $this->genderFilter->applyDiscoveryFilters($q, $viewer);
             })
-            ->latest('last_active_at')
-            ->paginate(24, ['*'], 'matches_page')
-            ->withQueryString();
+            ->latest('last_active_at');
 
         $incomingQuery = User::query()
             ->where('role', 'user')
@@ -142,10 +141,15 @@ class ProfileLikeController extends Controller
             })
             ->latest('last_active_at');
 
+        // Kilitliyken yalnızca sayı; kimlik / fotoğraf sızdırılmaz.
+        $matchesCount = (clone $matchedQuery)->count();
         $incomingCount = (clone $incomingQuery)->count();
 
-        // Premium olmayanlara kimlik sızdırmamak için liste hiç yüklenmez.
-        $incomingUsers = ($tab === 'incoming' && $canRevealIncoming)
+        $matchedUsers = ($canRevealMatches && $tab === 'matches')
+            ? $matchedQuery->paginate(24, ['*'], 'matches_page')->withQueryString()
+            : null;
+
+        $incomingUsers = ($canRevealMatches && $tab === 'incoming')
             ? $incomingQuery->paginate(24, ['*'], 'incoming_page')->withQueryString()
             : null;
 
@@ -153,10 +157,11 @@ class ProfileLikeController extends Controller
             'matchedUsers' => $matchedUsers,
             'incomingUsers' => $incomingUsers,
             'incomingCount' => $incomingCount,
-            'matchesCount' => $matchedUsers->total(),
+            'matchesCount' => $matchesCount,
             'viewer' => $viewer,
             'tab' => $tab,
-            'canRevealIncoming' => $canRevealIncoming,
+            'canRevealMatches' => $canRevealMatches,
+            'canRevealIncoming' => $canRevealMatches,
         ]);
     }
 }

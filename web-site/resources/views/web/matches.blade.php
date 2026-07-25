@@ -8,18 +8,18 @@
 @php
     $tab = $tab ?? 'matches';
     $incomingCount = (int) ($incomingCount ?? 0);
-    $matchesCount = (int) ($matchesCount ?? ($matchedUsers->total() ?? 0));
-    $canRevealIncoming = (bool) ($canRevealIncoming ?? false);
-    $incomingLocked = $tab === 'incoming' && ! $canRevealIncoming;
+    $matchesCount = (int) ($matchesCount ?? 0);
+    $canRevealMatches = (bool) ($canRevealMatches ?? $canRevealIncoming ?? false);
+    $pageLocked = ! $canRevealMatches;
 @endphp
-<div class="matches-page users-browse-page {{ $incomingLocked ? 'matches-page--locked' : '' }}">
+<div class="matches-page users-browse-page {{ $pageLocked ? 'matches-page--locked' : '' }}">
     <header class="users-browse-hero">
         <div class="users-browse-hero-inner">
             <span class="users-browse-badge">{{ $tab === 'incoming' ? 'Bekleyen beğeni' : 'Karşılıklı beğeni' }}</span>
             <h1>{{ $tab === 'incoming' ? 'Kim Beğendi' : 'Eşleşmelerim' }}</h1>
             <p class="users-browse-hero-lead">
-                @if($incomingLocked)
-                    Bu alan yalnızca Premium üyelere açıktır.
+                @if($pageLocked)
+                    Eşleşmeler ve kim beğendi alanı yalnızca Premium üyelere açıktır.
                 @elseif($tab === 'incoming')
                     Sizi beğenen üyeler burada. Karşılık verirseniz eşleşirsiniz.
                 @else
@@ -28,14 +28,14 @@
             </p>
 
             <nav class="matches-tabs" aria-label="Eşleşme sekmeleri">
-                <a
-                    href="{{ route('matches.index') }}"
-                    class="matches-tab {{ $tab === 'matches' ? 'is-active' : '' }}"
-                >
-                    Eşleşmeler
-                    <span class="matches-tab__count">{{ $matchesCount }}</span>
-                </a>
-                @if($canRevealIncoming)
+                @if($canRevealMatches)
+                    <a
+                        href="{{ route('matches.index') }}"
+                        class="matches-tab {{ $tab === 'matches' ? 'is-active' : '' }}"
+                    >
+                        Eşleşmeler
+                        <span class="matches-tab__count">{{ $matchesCount }}</span>
+                    </a>
                     <a
                         href="{{ route('matches.index', ['tab' => 'incoming']) }}"
                         class="matches-tab {{ $tab === 'incoming' ? 'is-active' : '' }}"
@@ -46,6 +46,24 @@
                         @endif
                     </a>
                 @else
+                    <a
+                        href="{{ route('matches.index') }}"
+                        class="matches-tab matches-tab--locked {{ $tab === 'matches' ? 'is-active' : '' }}"
+                        aria-label="Eşleşmeler — Premium gerekli"
+                        data-gk-event="matches_tab_lock"
+                    >
+                        <span class="matches-tab__blur" aria-hidden="true">
+                            <span class="matches-tab__label">Eşleşmeler</span>
+                            <span class="matches-tab__count">{{ $matchesCount }}</span>
+                        </span>
+                        <span class="matches-tab__lock" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="5" y="11" width="14" height="10" rx="2"/>
+                                <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+                            </svg>
+                            Premium
+                        </span>
+                    </a>
                     <a
                         href="{{ route('matches.index', ['tab' => 'incoming']) }}"
                         class="matches-tab matches-tab--locked {{ $tab === 'incoming' ? 'is-active' : '' }}"
@@ -68,18 +86,11 @@
                     </a>
                 @endif
             </nav>
-
-            @unless($incomingLocked)
-            <div class="matches-hero-actions">
-                <a href="{{ route('users.index') }}" class="btn btn-primary btn-sm">Keşfet</a>
-                <a href="{{ route('feed') }}" class="btn btn-outline btn-sm">Önerilenler</a>
-            </div>
-            @endunless
         </div>
     </header>
 
-    @if($incomingLocked)
-        <section class="matches-full-lock" data-gk-event="incoming_likes_full_lock_view" aria-label="Kim Beğendi kilitli">
+    @if($pageLocked)
+        <section class="matches-full-lock" data-gk-event="matches_full_lock_view" aria-label="Eşleşmeler kilitli">
             <div class="matches-full-lock__glow" aria-hidden="true"></div>
             <div class="matches-full-lock__icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
@@ -87,22 +98,28 @@
                     <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
                 </svg>
             </div>
-            <h2>Kim Beğendi kilitli</h2>
+            <h2>Eşleşmeler kilitli</h2>
             <p>
                 @if($incomingCount > 0)
                     <strong>{{ $incomingCount }}</strong> kişi sizi beğendi.
-                    Kim olduklarını görmek ve eşleşmek için Premium gerekli.
+                    Kim olduklarını görmek, eşleşmek ve mesajlaşmak için Premium gerekli.
                 @else
-                    Kimlerin sizi beğendiğini görmek yalnızca Premium üyelere açıktır.
+                    Eşleşmeleriniz ve sizi beğenenler bu alanda.
+                    Kimlikleri görmek yalnızca Premium üyelere açıktır.
                 @endif
             </p>
             <div class="matches-full-lock__actions">
-                <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary" data-gk-event="trial_cta_click" data-gk-event-label="incoming_full_lock">Premium’a geç</a>
-                <a href="{{ route('matches.index') }}" class="btn btn-outline">Eşleşmelerime dön</a>
+                <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary" data-gk-event="trial_cta_click" data-gk-event-label="matches_full_lock">Premium’a geç</a>
+                <a href="{{ route('users.index') }}" class="btn btn-outline">Üyeleri keşfet</a>
             </div>
             <div class="matches-full-lock__ghost" aria-hidden="true">
                 @for($i = 0; $i < 6; $i++)
-                    <span class="matches-full-lock__ghost-card"></span>
+                    <span class="matches-full-lock__ghost-card">
+                        <span class="matches-full-lock__ghost-avatar"></span>
+                        <span class="matches-full-lock__ghost-line"></span>
+                        <span class="matches-full-lock__ghost-line matches-full-lock__ghost-line--short"></span>
+                        <span class="matches-full-lock__ghost-btns"></span>
+                    </span>
                 @endfor
             </div>
         </section>
@@ -147,8 +164,12 @@
             {{ $incomingUsers->links() }}
         @endif
     @else
+        <div class="matches-hero-actions" style="margin:0 0 1rem;">
+            <a href="{{ route('users.index') }}" class="btn btn-primary btn-sm">Keşfet</a>
+            <a href="{{ route('feed') }}" class="btn btn-outline btn-sm">Önerilenler</a>
+        </div>
         <div class="users-browse-grid matches-grid">
-            @forelse($matchedUsers as $user)
+            @forelse(($matchedUsers ?? collect()) as $user)
                 <article class="users-browse-card matches-card">
                     <a href="{{ route('users.show', $user->username) }}" class="users-browse-card__link">
                         <span class="users-browse-card__photo">
@@ -187,7 +208,9 @@
             @endforelse
         </div>
 
-        {{ $matchedUsers->links() }}
+        @if($matchedUsers)
+            {{ $matchedUsers->links() }}
+        @endif
     @endif
 </div>
 @endsection
