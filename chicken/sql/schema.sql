@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS menu_items (
 CREATE TABLE IF NOT EXISTS orders (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   order_code VARCHAR(32) NOT NULL UNIQUE,
-  source ENUM('online','waiter') NOT NULL,
+  source ENUM('online','waiter','cashier') NOT NULL,
   status ENUM('pending','accepted','preparing','ready','served','paid','cancelled') NOT NULL DEFAULT 'pending',
   table_id INT UNSIGNED NULL,
   waiter_id INT UNSIGNED NULL,
@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS orders (
   subtotal DECIMAL(10,2) NOT NULL DEFAULT 0,
   total DECIMAL(10,2) NOT NULL DEFAULT 0,
   paid_at TIMESTAMP NULL DEFAULT NULL,
+  payment_method ENUM('cash','card') NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_orders_table FOREIGN KEY (table_id) REFERENCES dining_tables(id),

@@ -7,6 +7,7 @@ require __DIR__ . '/app/Database.php';
 require __DIR__ . '/app/Auth.php';
 require __DIR__ . '/app/OrderService.php';
 require __DIR__ . '/app/CategorySync.php';
+require __DIR__ . '/app/SchemaSync.php';
 require __DIR__ . '/app/Router.php';
 
 $config = config();
@@ -34,6 +35,10 @@ try {
 
 if (!$installed && $path !== '/install.php') {
     redirect('/install.php');
+}
+
+if ($installed) {
+    SchemaSync::ensure();
 }
 
 $router = new Router();
@@ -211,32 +216,86 @@ $router->get('/garson', static function () use ($menuCatalog): void {
 $router->get('/siparisler', static function (): void {
     Auth::requireRole('waiter', 'admin');
     $pdo = Database::pdo();
-    $tables = $pdo->query('SELECT * FROM dining_tables WHERE is_active = 1 ORDER BY id')->fetchAll();
-    $filters = ['from' => date('Y-m-d 00:00:00')];
-    if (Auth::role() === 'waiter') {
-        $filters['waiter_id'] = Auth::id();
-    }
+    $tables = OrderService::tablesOverview();
+    $allTables = $pdo->query('SELECT * FROM dining_tables WHERE is_active = 1 ORDER BY id')->fetchAll();
     view('staff/orders', [
         'title' => 'Siparişler',
-        'tables' => $tables,
-        'orders' => OrderService::listRecent($filters, 40),
+        'tables' => $allTables,
+        'openTables' => array_values(array_filter($tables, static fn(array $t): bool => !empty($t['is_open']))),
         'user' => Auth::user(),
+        'canManage' => Auth::role() === 'admin',
+    ]);
+});
+
+$router->get('/garson/masa/{id}', static function (string $id) use ($menuCatalog): void {
+    Auth::requireRole('waiter', 'admin');
+    $table = OrderService::findTable((int) $id);
+    if (!$table) {
+        http_response_code(404);
+        echo 'Masa bulunamadı';
+        return;
+    }
+    $catalog = $menuCatalog();
+    $orders = OrderService::openOrdersForTable((int) $id);
+    $role = Auth::role();
+    $uid = Auth::id();
+    view('staff/table_detail', [
+        'title' => $table['label'],
+        'table' => $table,
+        'orders' => $orders,
+        'items' => $catalog['items'],
+        'categories' => $catalog['categories'],
+        'user' => Auth::user(),
+        'mode' => 'waiter',
+        'canPay' => false,
+        'canCancel' => $role === 'admin',
+        'canClose' => false,
+        'canAddToOrder' => static function (array $order) use ($role, $uid): bool {
+            if ($role === 'admin') {
+                return true;
+            }
+            return (int) ($order['waiter_id'] ?? 0) === (int) $uid;
+        },
+        'canEditItemNote' => static function (array $order) use ($role, $uid): bool {
+            if ($role === 'admin') {
+                return true;
+            }
+            return (int) ($order['waiter_id'] ?? 0) === (int) $uid;
+        },
     ]);
 });
 
 $router->post('/api/staff/orders', static function (): void {
-    Auth::requireRole('waiter', 'admin');
+    Auth::requireRole('waiter', 'cashier', 'admin');
     $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
     if (!is_array($payload)) {
         json_response(['ok' => false, 'error' => 'Geçersiz istek'], 400);
     }
+
+    $role = Auth::role();
+    $targetOrderId = (int) ($payload['order_id'] ?? 0);
+    $items = $payload['items'] ?? [];
+
     try {
+        if ($targetOrderId > 0) {
+            $order = OrderService::findById($targetOrderId);
+            if (!$order) {
+                throw new InvalidArgumentException('Sipariş bulunamadı.');
+            }
+            if ($role === 'waiter' && (int) ($order['waiter_id'] ?? 0) !== (int) Auth::id()) {
+                json_response(['ok' => false, 'error' => 'Sadece kendi siparişinize ürün ekleyebilirsiniz.'], 403);
+            }
+            $order = OrderService::addItems($targetOrderId, $items, Auth::id());
+            json_response(['ok' => true, 'order' => $order]);
+        }
+
+        $source = $role === 'cashier' ? 'cashier' : 'waiter';
         $order = OrderService::create([
-            'source' => 'waiter',
+            'source' => $source,
             'table_id' => (int) ($payload['table_id'] ?? 0),
             'waiter_id' => Auth::id(),
             'customer_note' => trim((string) ($payload['customer_note'] ?? '')),
-            'items' => $payload['items'] ?? [],
+            'items' => $items,
         ]);
         json_response(['ok' => true, 'order' => $order]);
     } catch (Throwable $e) {
@@ -319,11 +378,43 @@ $router->post('/api/station/item-status', static function (): void {
 // Cashier
 $router->get('/kasa', static function (): void {
     Auth::requireRole('cashier', 'admin');
+    $tables = OrderService::tablesOverview();
     $orders = OrderService::listRecent(['from' => date('Y-m-d 00:00:00')], 150);
+    $onlineOpen = array_values(array_filter(
+        $orders,
+        static fn(array $o): bool => $o['source'] === 'online' && !in_array($o['status'], ['paid', 'cancelled'], true)
+    ));
     view('staff/cashier', [
         'title' => 'Kasa',
+        'tables' => $tables,
         'orders' => $orders,
+        'onlineOpen' => $onlineOpen,
         'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/kasa/masa/{id}', static function (string $id) use ($menuCatalog): void {
+    Auth::requireRole('cashier', 'admin');
+    $table = OrderService::findTable((int) $id);
+    if (!$table) {
+        http_response_code(404);
+        echo 'Masa bulunamadı';
+        return;
+    }
+    $catalog = $menuCatalog();
+    view('staff/table_detail', [
+        'title' => 'Kasa · ' . $table['label'],
+        'table' => $table,
+        'orders' => OrderService::openOrdersForTable((int) $id),
+        'items' => $catalog['items'],
+        'categories' => $catalog['categories'],
+        'user' => Auth::user(),
+        'mode' => 'cashier',
+        'canPay' => true,
+        'canCancel' => true,
+        'canClose' => true,
+        'canAddToOrder' => static fn(array $order): bool => true,
+        'canEditItemNote' => static fn(array $order): bool => true,
     ]);
 });
 
@@ -331,8 +422,80 @@ $router->post('/api/orders/{id}/status', static function (string $id): void {
     Auth::requireRole('cashier', 'admin', 'waiter');
     $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
     $status = (string) ($payload['status'] ?? '');
+    if (Auth::role() === 'waiter' && in_array($status, ['paid', 'cancelled'], true)) {
+        json_response(['ok' => false, 'error' => 'Garson sipariş iptal edemez veya tahsilat yapamaz.'], 403);
+    }
     try {
         OrderService::updateStatus((int) $id, $status, Auth::id());
+        json_response(['ok' => true]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
+$router->post('/api/orders/{id}/pay', static function (string $id): void {
+    Auth::requireRole('cashier', 'admin');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    try {
+        OrderService::payOrder((int) $id, (string) ($payload['payment_method'] ?? ''), Auth::id());
+        json_response(['ok' => true]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
+$router->post('/api/orders/{id}/cancel', static function (string $id): void {
+    Auth::requireRole('cashier', 'admin');
+    try {
+        OrderService::cancelOrder((int) $id, Auth::id());
+        json_response(['ok' => true]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
+$router->post('/api/order-items/{id}/cancel', static function (string $id): void {
+    Auth::requireRole('cashier', 'admin');
+    try {
+        OrderService::cancelItem((int) $id, Auth::id());
+        json_response(['ok' => true]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
+$router->post('/api/order-items/{id}/note', static function (string $id): void {
+    Auth::requireRole('waiter', 'cashier', 'admin');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    $itemId = (int) $id;
+    $pdo = Database::pdo();
+    $stmt = $pdo->prepare(
+        'SELECT oi.id, o.waiter_id, o.status
+         FROM order_items oi
+         JOIN orders o ON o.id = oi.order_id
+         WHERE oi.id = ? LIMIT 1'
+    );
+    $stmt->execute([$itemId]);
+    $row = $stmt->fetch();
+    if (!$row) {
+        json_response(['ok' => false, 'error' => 'Ürün bulunamadı'], 404);
+    }
+    if (Auth::role() === 'waiter' && (int) ($row['waiter_id'] ?? 0) !== (int) Auth::id()) {
+        json_response(['ok' => false, 'error' => 'Sadece kendi siparişinize not yazabilirsiniz.'], 403);
+    }
+    try {
+        OrderService::updateItemNote($itemId, (string) ($payload['note'] ?? ''), Auth::id());
+        json_response(['ok' => true]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
+$router->post('/api/tables/{id}/close', static function (string $id): void {
+    Auth::requireRole('cashier', 'admin');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    try {
+        OrderService::closeTable((int) $id, (string) ($payload['payment_method'] ?? ''), Auth::id());
         json_response(['ok' => true]);
     } catch (Throwable $e) {
         json_response(['ok' => false, 'error' => $e->getMessage()], 422);

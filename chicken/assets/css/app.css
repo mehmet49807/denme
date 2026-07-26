@@ -610,11 +610,100 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   align-self: start;
 }
 .cart-line {
+  display: grid;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.cart-line-main {
   display: flex;
   justify-content: space-between;
   gap: 10px;
+  align-items: center;
+}
+.cart-item-note {
+  display: grid;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.cart-item-note input {
+  width: 100%;
+  min-height: 40px;
+}
+.table-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+.table-tile {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px;
+  min-height: 140px;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.table-tile:hover {
+  border-color: rgba(255,106,26,0.45);
+  transform: translateY(-1px);
+}
+.table-tile.is-open {
+  border-color: rgba(255,106,26,0.35);
+  background: linear-gradient(180deg, rgba(255,106,26,0.12), rgba(18,21,18,0.96));
+}
+.table-tile-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.table-tile-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 14px;
+  align-items: baseline;
+}
+.order-manage { margin-bottom: 16px; }
+.item-manage-list {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+}
+.item-manage {
   padding: 10px 0;
-  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+}
+.item-manage.is-cancelled {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+.item-manage-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: start;
+}
+.item-note-label {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.item-note-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+@media (max-width: 640px) {
+  .item-note-row { grid-template-columns: 1fr; }
+  .table-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .qty {
   display: inline-flex;

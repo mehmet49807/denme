@@ -191,7 +191,20 @@ function status_label(string $status): string
 
 function source_label(string $source): string
 {
-    return $source === 'online' ? 'Online' : 'Garson';
+    return match ($source) {
+        'online' => 'Online',
+        'cashier' => 'Kasa',
+        default => 'Garson',
+    };
+}
+
+function payment_method_label(?string $method): string
+{
+    return match ($method) {
+        'cash', 'nakit' => 'Nakit',
+        'card', 'kart' => 'Kart',
+        default => '—',
+    };
 }
 
 function generate_order_code(PDO $pdo): string

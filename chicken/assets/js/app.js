@@ -124,6 +124,7 @@
           price: Number(item.price || 0),
           station: item.station === 'bar' ? 'bar' : 'kitchen',
           qty: Math.max(1, Number(item.qty || 1)),
+          note: typeof item.note === 'string' ? item.note : '',
         });
       });
       if (tableSelect && meta.table_id) tableSelect.value = meta.table_id;
@@ -147,15 +148,21 @@
               .map(
                 (item) => `
           <div class="cart-line" data-id="${item.id}">
-            <div>
-              <strong>${item.name}</strong>
-              <div class="muted small">${money(item.price)} · ${item.station === 'bar' ? 'Bar' : 'Mutfak'}</div>
+            <div class="cart-line-main">
+              <div>
+                <strong>${item.name}</strong>
+                <div class="muted small">${money(item.price)} · ${item.station === 'bar' ? 'Bar' : 'Mutfak'}</div>
+              </div>
+              <div class="qty">
+                <button type="button" data-dec="${item.id}">−</button>
+                <span>${item.qty}</span>
+                <button type="button" data-inc="${item.id}">+</button>
+              </div>
             </div>
-            <div class="qty">
-              <button type="button" data-dec="${item.id}">−</button>
-              <span>${item.qty}</span>
-              <button type="button" data-inc="${item.id}">+</button>
-            </div>
+            <label class="cart-item-note">
+              ${item.station === 'bar' ? 'Bar' : 'Mutfak'} notu
+              <input type="text" maxlength="255" data-item-cart-note="${item.id}" value="${(item.note || '').replace(/"/g, '&quot;')}" placeholder="Bu ürün için not...">
+            </label>
           </div>`
               )
               .join('')
@@ -187,6 +194,15 @@
           render();
         }
       });
+      root.addEventListener('input', (e) => {
+        const t = e.target;
+        if (!(t instanceof HTMLInputElement)) return;
+        const id = t.getAttribute('data-item-cart-note');
+        if (id && state.has(Number(id))) {
+          state.get(Number(id)).note = t.value || '';
+          persist();
+        }
+      });
       if (tableSelect) {
         tableSelect.addEventListener('change', () => {
           meta.table_id = String(tableSelect.value || '');
@@ -208,7 +224,7 @@
           const name = btn.getAttribute('data-name') || 'Ürün';
           const price = Number(btn.getAttribute('data-price') || 0);
           const station = btn.getAttribute('data-station') || 'kitchen';
-          if (!state.has(id)) state.set(id, { id, name, price, station, qty: 0 });
+          if (!state.has(id)) state.set(id, { id, name, price, station, qty: 0, note: '' });
           state.get(id).qty += 1;
           render();
           btn.classList.add('is-added');
@@ -223,6 +239,7 @@
         return [...state.values()].map((i) => ({
           menu_item_id: i.id,
           quantity: i.qty,
+          note: i.note || '',
         }));
       },
       clear() {
@@ -250,9 +267,12 @@
   const onlineCart = createCart(onlineRoot, { bindAdd: !!onlineRoot });
   const waiterRoot = document.querySelector('[data-waiter-cart]');
   const isStaffWaiterUi = !!document.querySelector('[data-staff-layout]');
+  const shouldPersistWaiter =
+    !!waiterRoot?.getAttribute('data-cart-persist') ||
+    (!waiterRoot && !!document.querySelector('[data-waiter-menu]'));
   const waiterCart = isStaffWaiterUi
     ? createCart(waiterRoot, {
-        persistKey: WAITER_CART_KEY,
+        persistKey: shouldPersistWaiter ? WAITER_CART_KEY : null,
         bindAdd: !onlineRoot && !!document.querySelector('[data-add-item]'),
       })
     : null;
@@ -296,43 +316,165 @@
     });
   }
 
+  async function submitStaffOrder(form, cart) {
+    if (!cart || cart.isEmpty()) {
+      alert('Ürün seçin.');
+      return;
+    }
+    const fd = new FormData(form);
+    const tableId = Number(fd.get('table_id') || 0);
+    const orderId = Number(fd.get('order_id') || 0);
+    const note = String(fd.get('customer_note') || '');
+    if (!orderId && !tableId) {
+      alert('Masa seçin.');
+      return;
+    }
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) btn.disabled = true;
+    try {
+      const body = {
+        table_id: tableId,
+        order_id: orderId || undefined,
+        customer_note: note,
+        items: cart.payload(),
+      };
+      const res = await fetch(api('/api/staff/orders'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'Sipariş gönderilemedi');
+      cart.clear();
+      if (orderId) {
+        location.reload();
+        return;
+      }
+      const tablePage = document.querySelector('[data-table-order-builder]');
+      if (tablePage && tableId) {
+        location.reload();
+        return;
+      }
+      window.location.href = api(`/garson/fis/${data.order.id}`);
+    } catch (err) {
+      alert(err.message || 'Hata');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
   const waiterForm = document.querySelector('[data-waiter-form]');
   if (waiterForm && waiterCart) {
-    waiterForm.addEventListener('submit', async (e) => {
+    waiterForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (waiterCart.isEmpty()) {
-        alert('Ürün seçin.');
-        return;
-      }
-      const tableId = Number(new FormData(waiterForm).get('table_id') || 0);
-      const note = String(new FormData(waiterForm).get('customer_note') || '');
-      if (!tableId) {
-        alert('Masa seçin.');
-        return;
-      }
-      const btn = waiterForm.querySelector('button[type="submit"]');
-      if (btn) btn.disabled = true;
-      try {
-        const res = await fetch(api('/api/staff/orders'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            table_id: tableId,
-            customer_note: note,
-            items: waiterCart.payload(),
-          }),
-        });
-        const data = await res.json();
-        if (!data.ok) throw new Error(data.error || 'Sipariş gönderilemedi');
-        waiterCart.clear();
-        window.location.href = api(`/garson/fis/${data.order.id}`);
-      } catch (err) {
-        alert(err.message || 'Hata');
-      } finally {
-        if (btn) btn.disabled = false;
-      }
+      submitStaffOrder(waiterForm, waiterCart);
     });
   }
+
+  const tableOrderForm = document.querySelector('[data-table-order-form]');
+  if (tableOrderForm && waiterCart) {
+    tableOrderForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitStaffOrder(tableOrderForm, waiterCart);
+    });
+  }
+
+  document.querySelectorAll('[data-focus-add]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const orderId = btn.getAttribute('data-focus-add');
+      const select = document.querySelector('[data-target-order]');
+      const builder = document.querySelector('#order-builder');
+      if (select && orderId) select.value = orderId;
+      if (builder) builder.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  async function postJson(path, body) {
+    const res = await fetch(api(path), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body || {}),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'İşlem başarısız');
+    return data;
+  }
+
+  document.querySelectorAll('[data-pay-order]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-pay-order');
+      const method = btn.getAttribute('data-method') || 'cash';
+      const label = method === 'card' ? 'Kart' : 'Nakit';
+      if (!confirm(`${label} ödemesi alınsın mı?`)) return;
+      try {
+        await postJson(`/api/orders/${id}/pay`, { payment_method: method });
+        location.reload();
+      } catch (err) {
+        alert(err.message || 'Ödeme alınamadı');
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-close-table]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-close-table');
+      const method = btn.getAttribute('data-method') || 'cash';
+      const label = method === 'card' ? 'Kart' : 'Nakit';
+      if (!confirm(`Masa ${label} ile kapatılsın mı? Açık siparişler ödenmiş sayılır.`)) return;
+      try {
+        await postJson(`/api/tables/${id}/close`, { payment_method: method });
+        window.location.href = api('/kasa');
+      } catch (err) {
+        alert(err.message || 'Masa kapatılamadı');
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-cancel-order]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-cancel-order');
+      if (!confirm('Sipariş iptal edilsin mi?')) return;
+      try {
+        await postJson(`/api/orders/${id}/cancel`, {});
+        location.reload();
+      } catch (err) {
+        alert(err.message || 'İptal edilemedi');
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-cancel-item]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-cancel-item');
+      if (!confirm('Bu ürün iptal edilsin mi?')) return;
+      try {
+        await postJson(`/api/order-items/${id}/cancel`, {});
+        location.reload();
+      } catch (err) {
+        alert(err.message || 'Ürün iptal edilemedi');
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-item-note-save]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-item-note-save');
+      const input = document.querySelector(`[data-item-note-input="${id}"]`);
+      if (!input) return;
+      btn.disabled = true;
+      try {
+        await postJson(`/api/order-items/${id}/note`, { note: input.value || '' });
+        btn.textContent = 'Kaydedildi';
+        setTimeout(() => {
+          btn.textContent = 'Kaydet';
+        }, 1200);
+      } catch (err) {
+        alert(err.message || 'Not kaydedilemedi');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
 
   document.querySelectorAll('[data-status-btn]').forEach((btn) => {
     btn.addEventListener('click', async () => {

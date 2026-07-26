@@ -1,70 +1,72 @@
+<?php
+/** @var array $tables */
+/** @var array $orders */
+/** @var array $onlineOpen */
+$openTables = count(array_filter($tables, static fn(array $t): bool => !empty($t['is_open'])));
+$paidSum = array_sum(array_map(
+    static fn(array $o): float => $o['status'] === 'paid' ? (float) $o['total'] : 0.0,
+    $orders
+));
+?>
 <div class="panel-head">
   <div>
     <p class="eyebrow">Kasa alanı</p>
-    <h1>Günün siparişleri</h1>
+    <h1>Masalar</h1>
   </div>
 </div>
 
 <div class="stats">
-  <?php
-    $open = count(array_filter($orders, fn($o) => !in_array($o['status'], ['paid', 'cancelled'], true)));
-    $online = count(array_filter($orders, fn($o) => $o['source'] === 'online'));
-    $waiter = count(array_filter($orders, fn($o) => $o['source'] === 'waiter'));
-    $paidSum = array_sum(array_map(fn($o) => $o['status'] === 'paid' ? (float) $o['total'] : 0, $orders));
-  ?>
-  <div class="stat"><span class="muted">Açık sipariş</span><strong><?= $open ?></strong></div>
-  <div class="stat"><span class="muted">Online</span><strong><?= $online ?></strong></div>
-  <div class="stat"><span class="muted">Garson</span><strong><?= $waiter ?></strong></div>
-  <div class="stat"><span class="muted">Tahsilat</span><strong><?= e(money($paidSum)) ?></strong></div>
+  <div class="stat"><span class="muted">Açık masa</span><strong><?= (int) $openTables ?></strong></div>
+  <div class="stat"><span class="muted">Toplam masa</span><strong><?= count($tables) ?></strong></div>
+  <div class="stat"><span class="muted">Online açık</span><strong><?= count($onlineOpen) ?></strong></div>
+  <div class="stat"><span class="muted">Bugün tahsilat</span><strong><?= e(money($paidSum)) ?></strong></div>
 </div>
 
-<div class="order-card-list">
-  <?php if (!$orders): ?>
-    <div class="panel muted">Bugün henüz sipariş yok.</div>
-  <?php endif; ?>
-  <?php foreach ($orders as $order): ?>
-    <article class="order-card">
-      <div class="order-card-head">
-        <div>
-          <a class="order-code" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>"><?= e($order['order_code']) ?></a>
-          <div class="small muted"><?= e($order['created_at'] ?? '') ?></div>
-        </div>
-        <span class="chip <?= e($order['source']) ?>"><?= e(source_label($order['source'])) ?></span>
+<div class="table-board">
+  <?php foreach ($tables as $table): ?>
+    <?php $isOpen = !empty($table['is_open']); ?>
+    <a class="table-tile <?= $isOpen ? 'is-open' : 'is-free' ?>" href="<?= e(url('/kasa/masa/' . (int) $table['id'])) ?>">
+      <div class="table-tile-top">
+        <strong><?= e($table['label']) ?></strong>
+        <span class="chip <?= $isOpen ? 'kitchen' : '' ?>"><?= $isOpen ? 'Açık' : 'Boş' ?></span>
       </div>
-      <div class="order-card-meta">
-        <div>
-          <span class="muted small">Masa / Müşteri</span>
-          <strong><?= e($order['table_label'] ?? ($order['customer_name'] ?: '—')) ?></strong>
-          <?php if (!empty($order['customer_phone'])): ?>
-            <div class="small muted"><?= e($order['customer_phone']) ?></div>
-          <?php endif; ?>
+      <div class="table-tile-code muted small"><?= e($table['code']) ?> · <?= (int) $table['seats'] ?> kişi</div>
+      <?php if ($isOpen): ?>
+        <div class="table-tile-meta">
+          <span><?= (int) $table['open_count'] ?> sipariş</span>
+          <strong class="price"><?= e(money((float) $table['open_total'])) ?></strong>
         </div>
-        <div>
-          <span class="muted small">Garson</span>
-          <strong><?= e($order['waiter_name'] ?? '—') ?></strong>
-        </div>
-        <div>
-          <span class="muted small">Durum</span>
-          <strong><?= e(status_label($order['status'])) ?></strong>
-        </div>
-        <div>
-          <span class="muted small">Tutar</span>
-          <strong class="price"><?= e(money((float) $order['total'])) ?></strong>
-        </div>
-      </div>
-      <?php partial('partials/order_note', ['order' => $order]); ?>
-      <div class="cta-row order-card-actions">
-        <?php if ($order['status'] === 'pending'): ?>
-          <button class="btn btn-primary btn-sm" type="button" data-order-id="<?= (int) $order['id'] ?>" data-status-btn="accepted">Al</button>
+        <?php if (!empty($table['waiter_names'])): ?>
+          <div class="muted small"><?= e(implode(', ', $table['waiter_names'])) ?></div>
         <?php endif; ?>
-        <?php if (in_array($order['status'], ['accepted', 'preparing'], true)): ?>
-          <button class="btn btn-ghost btn-sm" type="button" data-order-id="<?= (int) $order['id'] ?>" data-status-btn="ready">Hazır</button>
-        <?php endif; ?>
-        <?php if (!in_array($order['status'], ['paid', 'cancelled'], true)): ?>
-          <button class="btn btn-dark btn-sm" type="button" data-order-id="<?= (int) $order['id'] ?>" data-status-btn="paid">Ödendi</button>
-        <?php endif; ?>
-        <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>">Fiş</a>
-      </div>
-    </article>
+      <?php else: ?>
+        <div class="muted small">Sipariş aç / tahsilat</div>
+      <?php endif; ?>
+    </a>
   <?php endforeach; ?>
 </div>
+
+<?php if ($onlineOpen): ?>
+  <div class="panel" style="margin-top:24px">
+    <h2 style="font-family:var(--font-display);margin:0 0 12px">Online açık siparişler</h2>
+    <div class="order-card-list">
+      <?php foreach ($onlineOpen as $order): ?>
+        <article class="order-card">
+          <div class="order-card-head">
+            <div>
+              <div class="order-code"><?= e($order['order_code']) ?></div>
+              <div class="small muted"><?= e($order['customer_name'] ?? '—') ?> · <?= e(status_label($order['status'])) ?></div>
+            </div>
+            <strong class="price"><?= e(money((float) $order['total'])) ?></strong>
+          </div>
+          <div class="cta-row">
+            <button class="btn btn-primary btn-sm" type="button" data-pay-order="<?= (int) $order['id'] ?>" data-method="cash">Nakit</button>
+            <button class="btn btn-dark btn-sm" type="button" data-pay-order="<?= (int) $order['id'] ?>" data-method="card">Kart</button>
+            <button class="btn btn-ghost btn-sm" type="button" data-cancel-order="<?= (int) $order['id'] ?>">İptal</button>
+            <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>">Fiş</a>
+          </div>
+        </article>
+      <?php endforeach; ?>
+    </div>
+  </div>
+<?php endif; ?>
