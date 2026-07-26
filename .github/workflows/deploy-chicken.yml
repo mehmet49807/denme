@@ -21,6 +21,8 @@ jobs:
 
       - name: Deploy chicken via FTP
         env:
+          PYTHONUNBUFFERED: "1"
+          CHICKEN_REPAIR_ONLY: "1"
           CHICKEN_FTP_HOST: ftp.gonulkoprusu.com
           CHICKEN_FTP_USER: ${{ secrets.FTP_CHICKEN_USER }}
           CHICKEN_FTP_PASSWORD: ${{ secrets.FTP_CHICKEN_PASSWORD }}
@@ -31,4 +33,4 @@ jobs:
           CHICKEN_DB_NAME: gonulkop_chicken
           CHICKEN_DB_USER: gonulkop_admin
           CHICKEN_DB_PASS: ${{ secrets.CHICKEN_DB_PASSWORD }}
-        run: python3 scripts/deploy/deploy_chicken_actions.py
+        run: python3 -u scripts/deploy/deploy_chicken_actions.py

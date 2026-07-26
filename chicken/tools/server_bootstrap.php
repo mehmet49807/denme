@@ -129,6 +129,65 @@ function copy_tree(string $src, string $dst): int
     return $count;
 }
 
+function fetch_github(string $rel, string $branch = 'cursor/chicken-restaurant-site-7a42'): string
+{
+    $url = 'https://raw.githubusercontent.com/mehmet49807/denme/'
+        . rawurlencode($branch)
+        . '/chicken/'
+        . implode('/', array_map('rawurlencode', explode('/', $rel)));
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_CONNECTTIMEOUT => 20,
+            CURLOPT_TIMEOUT => 60,
+            CURLOPT_USERAGENT => 'ChickenBootstrapRepair/1.0',
+        ]);
+        $body = curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if ($body === false || $code >= 400 || strlen((string) $body) < 20) {
+            throw new RuntimeException("fetch failed {$rel} http={$code}");
+        }
+        return (string) $body;
+    }
+    $body = @file_get_contents($url);
+    if ($body === false || strlen($body) < 20) {
+        throw new RuntimeException("fetch failed {$rel}");
+    }
+    return $body;
+}
+
+// If a previous FTP timeout wiped index.php, restore critical files from GitHub first.
+$repair = [
+    'index.php',
+    'app/helpers.php',
+    'app/MenuImageSync.php',
+    'views/partials/menu_item_card.php',
+    'assets/css/app.css',
+];
+foreach ($repair as $rel) {
+    $path = $source . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $rel);
+    $size = is_file($path) ? filesize($path) : 0;
+    if ($size !== false && $size > 20) {
+        continue;
+    }
+    try {
+        $body = fetch_github($rel);
+        $dir = dirname($path);
+        if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+            throw new RuntimeException('mkdir failed: ' . $dir);
+        }
+        if (file_put_contents($path, $body) === false) {
+            throw new RuntimeException('write failed: ' . $path);
+        }
+        echo "REPAIRED_SOURCE {$rel} bytes=" . strlen($body) . "\n";
+    } catch (Throwable $e) {
+        echo "REPAIR_FAIL {$rel} " . $e->getMessage() . "\n";
+    }
+}
+
 try {
     $copied = copy_tree($source, $target);
     echo "COPIED={$copied}\n";

@@ -49,30 +49,29 @@ def ensure_dir(ftp: FTP, remote_dir: str) -> None:
             pass
 
 
-def connect(user: str, password: str, attempts: int = 24) -> FTP:
+def connect(user: str, password: str, attempts: int = 12) -> FTP:
     last: Exception | None = None
     for i in range(attempts):
         try:
+            print(f"connect try {i + 1}/{attempts} {HOST}", flush=True)
             ftp = FTP()
-            ftp.connect(HOST, 21, timeout=180)
+            ftp.connect(HOST, 21, timeout=90)
             ftp.login(user, password)
             ftp.set_pasv(True)
             try:
                 ftp.encoding = "utf-8"
             except Exception:
                 pass
-            # Keep the control socket from idling out on large trees.
             try:
                 ftp.sock.settimeout(180)
             except Exception:
                 pass
-            print(f"login ok attempt={i + 1} pwd={ftp.pwd()}")
+            print(f"login ok attempt={i + 1} pwd={ftp.pwd()}", flush=True)
             return ftp
         except Exception as exc:  # noqa: BLE001
             last = exc
-            print(f"connect fail {i + 1}: {type(exc).__name__}: {exc}")
-            # Host often returns 421 when too many FTP sessions linger.
-            time.sleep(min(45, 5 * (i + 1)))
+            print(f"connect fail {i + 1}: {type(exc).__name__}: {exc}", flush=True)
+            time.sleep(min(20, 4 * (i + 1)))
     raise RuntimeError(f"FTP connect failed: {last}")
 
 
@@ -105,6 +104,7 @@ def upload_one(ftp: FTP, user: str, password: str, local: Path, remote: str) -> 
 
 
 def list_files() -> list[Path]:
+    repair_only = os.environ.get("CHICKEN_REPAIR_ONLY", "").strip() in {"1", "true", "yes"}
     files = [
         p
         for p in ROOT.rglob("*")
@@ -115,6 +115,15 @@ def list_files() -> list[Path]:
         path = ROOT / rel
         if path.is_file():
             priority_paths.append(path)
+    if repair_only:
+        # Also include menu photos so the restored menu is not blank.
+        images = [
+            p
+            for p in files
+            if "assets/img/menu" in p.as_posix() and p.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}
+        ]
+        print("REPAIR_ONLY=1 priority", len(priority_paths), "images", len(images))
+        return priority_paths + images
     rest = [p for p in files if p not in priority_paths]
     # Images after PHP/CSS so the app boots even if image upload times out.
     images = [p for p in rest if "assets/img/menu" in p.as_posix()]
