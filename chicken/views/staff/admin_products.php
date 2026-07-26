@@ -15,6 +15,7 @@
     <table>
       <thead>
         <tr>
+          <th></th>
           <th>Ürün</th>
           <th>Kategori</th>
           <th>İstasyon</th>
@@ -25,10 +26,17 @@
       </thead>
       <tbody>
         <?php if (!$items): ?>
-          <tr><td colspan="6" class="muted">Henüz ürün yok.</td></tr>
+          <tr><td colspan="7" class="muted">Henüz ürün yok.</td></tr>
         <?php endif; ?>
         <?php foreach ($items as $item): ?>
           <tr>
+            <td class="admin-thumb-cell">
+              <?php if (!empty($item['image_url'])): ?>
+                <img class="admin-thumb" src="<?= e(url((string) $item['image_url'])) ?>" alt="">
+              <?php else: ?>
+                <span class="admin-thumb is-empty" aria-hidden="true"></span>
+              <?php endif; ?>
+            </td>
             <td>
               <strong><?= e($item['name']) ?></strong>
               <?php if (!empty($item['description'])): ?>

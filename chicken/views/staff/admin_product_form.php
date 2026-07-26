@@ -24,6 +24,19 @@ $isEdit = !empty($item);
     <label>Açıklama
       <textarea name="description" rows="2" maxlength="400" placeholder="İsteğe bağlı"><?= e((string) ($item['description'] ?? '')) ?></textarea>
     </label>
+    <label>Görsel URL
+      <input
+        name="image_url"
+        maxlength="255"
+        placeholder="/assets/img/menu/ornek.jpg"
+        value="<?= e((string) ($item['image_url'] ?? '')) ?>"
+      >
+    </label>
+    <?php if (!empty($item['image_url'])): ?>
+      <div class="admin-product-preview">
+        <img src="<?= e(url((string) $item['image_url'])) ?>" alt="<?= e((string) $item['name']) ?>">
+      </div>
+    <?php endif; ?>
     <label>Kategori
       <select name="category_id" required>
         <option value="">Seçin</option>

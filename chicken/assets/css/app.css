@@ -182,15 +182,45 @@ button, input, select, textarea { font: inherit; }
   background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent), var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 18px;
+  padding: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
   transition: border-color .2s ease, transform .2s ease;
 }
 .menu-item:hover {
   border-color: rgba(255, 106, 26, 0.45);
   transform: translateY(-2px);
+}
+.menu-item-media {
+  aspect-ratio: 4 / 3;
+  background:
+    linear-gradient(135deg, rgba(255,106,26,0.18), transparent 55%),
+    #171a17;
+  overflow: hidden;
+}
+.menu-item-media.is-empty {
+  min-height: 0;
+  aspect-ratio: auto;
+  height: 0;
+}
+.menu-item-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .35s ease;
+}
+.menu-item:hover .menu-item-media img {
+  transform: scale(1.04);
+}
+.menu-item-body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
 }
 .menu-item h3 {
   margin: 0;
@@ -202,6 +232,33 @@ button, input, select, textarea { font: inherit; }
   color: var(--muted);
   font-size: 0.95rem;
   flex: 1;
+}
+.admin-thumb-cell {
+  width: 64px;
+}
+.admin-thumb {
+  width: 56px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  display: block;
+  background: #171a17;
+}
+.admin-thumb.is-empty {
+  background: #1a1d1a;
+}
+.admin-product-preview {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  max-width: 280px;
+}
+.admin-product-preview img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
 }
 .meta-row {
   display: flex;
@@ -907,7 +964,8 @@ tr:hover td { background: rgba(255,255,255,0.02); }
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
-  .menu-item { padding: 12px; border-radius: 14px; }
+  .menu-item { border-radius: 14px; }
+  .menu-item-body { padding: 10px 12px 12px; gap: 8px; }
   .menu-item h3 { font-size: 0.98rem; }
   .btn { min-height: 44px; }
   .btn-sm { min-height: 40px; }

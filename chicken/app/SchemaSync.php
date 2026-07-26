@@ -38,6 +38,16 @@ final class SchemaSync
             );
         } catch (Throwable) {
         }
+
+        try {
+            self::ensureColumn(
+                $pdo,
+                'menu_items',
+                'image_url',
+                'ALTER TABLE menu_items ADD COLUMN image_url VARCHAR(255) NULL AFTER is_available'
+            );
+        } catch (Throwable) {
+        }
     }
 
     private static function ensureColumn(PDO $pdo, string $table, string $column, string $alterSql): void
