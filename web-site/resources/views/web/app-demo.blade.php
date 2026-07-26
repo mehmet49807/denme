@@ -32,6 +32,7 @@
                     class="app-demo-phone__frame"
                     title="Uygulama önizleme"
                     src="{{ $isAuthed ? $feedUrl : $loginUrl }}"
+                    referrerpolicy="no-referrer-when-downgrade"
                     loading="lazy"
                 ></iframe>
             </div>

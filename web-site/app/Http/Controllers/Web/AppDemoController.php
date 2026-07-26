@@ -27,7 +27,7 @@ class AppDemoController extends Controller
         if ($request->boolean('go')) {
             $target = auth()->check()
                 ? route('feed')
-                : route('login', ['redirect' => route('feed')]);
+                : route('app.login', ['redirect' => route('feed'), 'app' => 1]);
 
             return redirect()
                 ->to($target)
@@ -39,7 +39,7 @@ class AppDemoController extends Controller
                 'demoKey' => self::DEMO_KEY,
                 'openUrl' => route('app.demo', ['key' => self::DEMO_KEY, 'go' => 1]),
                 'feedUrl' => route('feed'),
-                'loginUrl' => route('login', ['redirect' => route('feed')]),
+                'loginUrl' => route('app.login', ['redirect' => route('feed'), 'app' => 1]),
                 'isAuthed' => auth()->check(),
             ])
             ->cookie(self::COOKIE_FLAG, '1', 60 * 24 * 14, '/', null, true, false, false, 'Lax');

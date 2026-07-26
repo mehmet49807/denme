@@ -46,6 +46,10 @@
     <p class="admin-package-card__sub" style="margin-top:0.75rem">
         Sıra: 1) Demo kontrol → 2) Onay → 3) APK + AAB (Play Store). Key: <code>gk-app-demo-2026</code>
     </p>
+    <p class="admin-package-card__sub">
+        App giriş teması (web’den ayrı):
+        <a href="{{ $frontendUrl }}/uygulama/giris" target="_blank" rel="noopener">{{ $frontendUrl }}/uygulama/giris</a>
+    </p>
 </section>
 
 <form method="POST" action="{{ route('admin.app-links.update') }}" class="admin-app-links-form">

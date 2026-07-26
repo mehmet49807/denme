@@ -26,6 +26,7 @@ use App\Http\Controllers\Web\StoryPageController;
 use App\Http\Controllers\Web\UserProfilePageController;
 use App\Http\Controllers\Web\ProfileLikeController;
 use App\Http\Controllers\Web\AppDemoController;
+use App\Http\Controllers\Web\AppAuthController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Cache;
@@ -66,6 +67,10 @@ Route::redirect('/gizlilik-sozlesmesi', '/gizlilik-politikasi', 301);
 // Android uygulama demosu (özel key) — APK/AAB öncesi kontrol
 Route::get('/uygulama-demo', [AppDemoController::class, 'show'])->name('app.demo');
 Route::get('/uygulama-demo/cikis', [AppDemoController::class, 'exit'])->name('app.demo.exit');
+
+// Uygulama auth teması (web login’den ayrı görsel dil)
+Route::get('/uygulama/giris', [AppAuthController::class, 'loginForm'])->name('app.login');
+Route::get('/uygulama/kayit', [AppAuthController::class, 'registerForm'])->name('app.register');
 
 if (class_exists(\App\Http\Controllers\Web\SetupController::class)) {
     // setup middleware: key VEYA admin personel; deploy hook'ları key ile çalışır
@@ -403,6 +408,7 @@ Route::get('/robots.txt', function () {
         'Disallow: /vendor/',
         'Disallow: /marketing/',
         'Disallow: /uygulama-demo',
+        'Disallow: /uygulama/',
         'Disallow: /ara/oneriler',
         'Disallow: /kampanya',
         'Disallow: /ads',

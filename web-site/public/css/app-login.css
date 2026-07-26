@@ -1,0 +1,341 @@
+/* App auth theme — distinct from website purple split login
+   Direction: deep teal night + amber copper accent, Fraunces + Sora */
+
+:root {
+    --aa-ink: #07141c;
+    --aa-deep: #0b1f2a;
+    --aa-teal: #134e5e;
+    --aa-mist: #d7efe8;
+    --aa-amber: #e8a54b;
+    --aa-copper: #c9703a;
+    --aa-cream: #f4efe6;
+    --aa-text: #f7f1e8;
+    --aa-muted: rgba(247, 241, 232, 0.72);
+    --aa-sheet: rgba(12, 28, 36, 0.78);
+    --aa-line: rgba(232, 165, 75, 0.28);
+    --aa-radius: 28px;
+    --aa-font-display: "Fraunces", Georgia, serif;
+    --aa-font-body: "Sora", "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body.app-auth {
+    min-height: 100dvh;
+    font-family: var(--aa-font-body);
+    color: var(--aa-text);
+    background: var(--aa-ink);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+.app-auth__atmosphere {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(120% 70% at 50% -10%, rgba(19, 78, 94, 0.55), transparent 58%),
+        radial-gradient(90% 60% at 100% 100%, rgba(201, 112, 58, 0.28), transparent 50%),
+        linear-gradient(165deg, #07141c 0%, #0b1f2a 42%, #102a33 100%);
+    z-index: 0;
+}
+
+.app-auth__orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.55;
+    animation: aaOrb 14s ease-in-out infinite;
+}
+
+.app-auth__orb--a {
+    width: 220px;
+    height: 220px;
+    top: 8%;
+    left: -40px;
+    background: rgba(45, 140, 140, 0.45);
+}
+
+.app-auth__orb--b {
+    width: 260px;
+    height: 260px;
+    right: -60px;
+    bottom: 18%;
+    background: rgba(232, 165, 75, 0.28);
+    animation-delay: -4s;
+}
+
+.app-auth__grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes aaOrb {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(12px, -18px, 0) scale(1.08); }
+}
+
+.app-auth__shell {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 440px);
+    margin: 0 auto;
+    min-height: 100dvh;
+    padding:
+        calc(1.1rem + env(safe-area-inset-top, 0px))
+        1.1rem
+        calc(1.25rem + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.app-auth__brand {
+    text-align: center;
+    margin-bottom: auto;
+    padding-top: 1.5rem;
+    animation: aaRise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.app-auth__logo {
+    display: block;
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 0.85rem;
+    border-radius: 24px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    animation: aaPulse 4.5s ease-in-out infinite;
+}
+
+.app-auth__brand-name {
+    margin: 0;
+    font-family: var(--aa-font-display);
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--aa-cream);
+}
+
+.app-auth__brand-tag {
+    margin: 0.35rem 0 0;
+    font-size: 0.92rem;
+    color: var(--aa-muted);
+}
+
+@keyframes aaPulse {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+@keyframes aaRise {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.app-auth__sheet {
+    border-radius: var(--aa-radius) var(--aa-radius) 22px 22px;
+    background: var(--aa-sheet);
+    border: 1px solid var(--aa-line);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.28);
+    padding: 1.25rem 1.15rem 1.1rem;
+    animation: aaSheet 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+@keyframes aaSheet {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.app-auth__title {
+    margin: 0 0 0.35rem;
+    font-family: var(--aa-font-display);
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--aa-cream);
+}
+
+.app-auth__lead {
+    margin: 0 0 1.1rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--aa-muted);
+}
+
+.app-auth__google {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    width: 100%;
+    min-height: 48px;
+    border-radius: 999px !important;
+    border: 1px solid rgba(247, 241, 232, 0.18) !important;
+    background: rgba(247, 241, 232, 0.08) !important;
+    color: var(--aa-cream) !important;
+    text-decoration: none !important;
+    font-family: var(--aa-font-body) !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+}
+
+.app-auth__google:hover {
+    background: rgba(247, 241, 232, 0.14) !important;
+}
+
+.app-auth__divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    color: var(--aa-muted);
+    font-size: 0.78rem;
+}
+
+.app-auth__divider::before,
+.app-auth__divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(247, 241, 232, 0.14);
+}
+
+.app-auth__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.app-auth__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: var(--aa-muted);
+}
+
+.app-auth__field input {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 14px;
+    border: 1px solid rgba(247, 241, 232, 0.14);
+    background: rgba(7, 20, 28, 0.55);
+    color: var(--aa-cream);
+    padding: 0.75rem 0.9rem;
+    font: inherit;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.app-auth__field input::placeholder {
+    color: rgba(247, 241, 232, 0.35);
+}
+
+.app-auth__field input:focus {
+    border-color: rgba(232, 165, 75, 0.65);
+    box-shadow: 0 0 0 3px rgba(232, 165, 75, 0.18);
+}
+
+.app-auth__field small {
+    color: #ffb4a8;
+}
+
+.app-auth__remember {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    color: var(--aa-muted);
+}
+
+.app-auth__submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    margin-top: 0.25rem;
+    border: 0;
+    border-radius: 999px;
+    font: inherit;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1a1208;
+    text-decoration: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #f0c27a 0%, #e8a54b 45%, #c9703a 100%);
+    box-shadow: 0 12px 28px rgba(201, 112, 58, 0.35);
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.app-auth__submit:active {
+    transform: scale(0.98);
+}
+
+.app-auth__submit--secondary {
+    background: transparent;
+    color: var(--aa-cream);
+    border: 1px solid rgba(247, 241, 232, 0.22);
+    box-shadow: none;
+    margin-top: 0;
+}
+
+.app-auth__sheet-foot {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.84rem;
+    color: var(--aa-muted);
+}
+
+.app-auth__sheet-foot p {
+    margin: 0.35rem 0 0;
+}
+
+.app-auth__sheet-foot a {
+    color: var(--aa-amber);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.app-auth__legal {
+    margin: 0;
+    text-align: center;
+    font-size: 0.7rem;
+    line-height: 1.4;
+    color: rgba(247, 241, 232, 0.45);
+}
+
+.app-auth__legal a {
+    color: rgba(232, 165, 75, 0.85);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+    body.app-auth {
+        display: grid;
+        place-items: center;
+        padding: 1.5rem;
+    }
+
+    .app-auth__shell {
+        min-height: min(860px, 100dvh);
+        border-radius: 36px;
+        border: 1px solid rgba(247, 241, 232, 0.08);
+        background: rgba(7, 20, 28, 0.35);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+        overflow: hidden;
+    }
+}
