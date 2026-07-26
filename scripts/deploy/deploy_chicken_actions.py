@@ -17,6 +17,7 @@ SKIP = {".git", ".DS_Store", "Thumbs.db", "config.local.php"}
 # Upload these first so a mid-deploy timeout cannot wipe the app entrypoint.
 PRIORITY = [
     "index.php",
+    ".htaccess",
     "app/helpers.php",
     "app/MenuImageSync.php",
     "app/SchemaSync.php",

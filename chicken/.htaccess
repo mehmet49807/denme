@@ -1,10 +1,6 @@
+# Prefer main domain valid SSL when possible.
 RewriteEngine On
-RewriteBase /
-
-# Block sensitive paths
-RewriteRule ^(config|app|sql|storage)/ - [F,L]
-
-# Front controller
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.php [L]
+# If accessed via chicken subdomain over HTTP, send to main HTTPS path.
+RewriteCond %{HTTP_HOST} ^chicken\.gonulkoprusu\.com$ [NC]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://gonulkoprusu.com/chicken/$1 [R=302,L,QSA]
