@@ -16,14 +16,7 @@
   <p class="section-intro">Mutfak ve bar ayrı fişlerle çalışır. Her siparişin benzersiz kimliği vardır.</p>
   <div class="menu-grid">
     <?php foreach (array_slice($items, 0, 6) as $item): ?>
-      <article class="menu-item">
-        <div class="meta-row">
-          <span class="chip <?= e($item['station']) ?>"><?= e(station_label($item['station'])) ?></span>
-          <span class="price"><?= e(money((float) $item['price'])) ?></span>
-        </div>
-        <h3><?= e($item['name']) ?></h3>
-        <p><?= e($item['description'] ?? '') ?></p>
-      </article>
+      <?php partial('partials/menu_item_card', ['item' => $item, 'showDescription' => true]); ?>
     <?php endforeach; ?>
   </div>
 </section>

@@ -12,14 +12,7 @@
 
   <div class="menu-grid">
     <?php foreach ($items as $item): ?>
-      <article class="menu-item" data-cat="<?= e($item['category_slug']) ?>">
-        <div class="meta-row">
-          <span class="chip <?= e($item['station']) ?>"><?= e(station_label($item['station'])) ?></span>
-          <span class="price"><?= e(money((float) $item['price'])) ?></span>
-        </div>
-        <h3><?= e($item['name']) ?></h3>
-        <p><?= e($item['description'] ?? '') ?></p>
-      </article>
+      <?php partial('partials/menu_item_card', ['item' => $item, 'showDescription' => true]); ?>
     <?php endforeach; ?>
   </div>
 

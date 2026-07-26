@@ -26,25 +26,25 @@ INSERT INTO categories (name, slug, sort_order) VALUES
 ('Tüm İçecekler', 'tum-icecekler', 7)
 ON DUPLICATE KEY UPDATE name = VALUES(name), sort_order = VALUES(sort_order), is_active = 1;
 
-INSERT INTO menu_items (category_id, name, description, price, station, sort_order) VALUES
-((SELECT id FROM categories WHERE slug='izgara'), 'Izgara Tavuk Şiş', 'Marine edilmiş tavuk şiş, köz biber', 260.00, 'kitchen', 1),
-((SELECT id FROM categories WHERE slug='izgara'), 'Acılı Kanat', '8 adet acılı ızgara kanat', 245.00, 'kitchen', 2),
-((SELECT id FROM categories WHERE slug='izgara'), 'Ballı Hardallı Tavuk', 'Ballı hardal glaze, yeşillik', 275.00, 'kitchen', 3),
-((SELECT id FROM categories WHERE slug='menuler'), 'Chicken Menü', 'Burger + patates + içecek', 320.00, 'kitchen', 1),
-((SELECT id FROM categories WHERE slug='menuler'), 'Aile Menüsü', '2 şiş + 2 kanat + patates + 4 içecek', 890.00, 'kitchen', 2),
-((SELECT id FROM categories WHERE slug='durumler'), 'Tavuk Dürüm', 'Izgara tavuk, lavaş, turşu', 210.00, 'kitchen', 1),
-((SELECT id FROM categories WHERE slug='durumler'), 'Köfte Dürüm', 'Izgara köfte, sos, yeşillik', 230.00, 'kitchen', 2),
-((SELECT id FROM categories WHERE slug='burgerler'), 'Chicken Burger', 'Özel sos, çıtır tavuk, turşu', 220.00, 'kitchen', 1),
-((SELECT id FROM categories WHERE slug='burgerler'), 'Cheese Burger', 'Cheddar, özel sos', 240.00, 'kitchen', 2),
-((SELECT id FROM categories WHERE slug='yan-urunler'), 'Çıtır Patates', 'Ev yapımı baharatlı patates', 90.00, 'kitchen', 1),
-((SELECT id FROM categories WHERE slug='yan-urunler'), 'Soğan Halkası', '6 adet çıtır soğan halkası', 95.00, 'kitchen', 2),
-((SELECT id FROM categories WHERE slug='yan-urunler'), 'Coleslaw', 'Taze lahana salatası', 70.00, 'kitchen', 3),
-((SELECT id FROM categories WHERE slug='tatlilar'), 'Sufle', 'Sıcak çikolatalı sufle', 140.00, 'kitchen', 1),
-((SELECT id FROM categories WHERE slug='tatlilar'), 'Dondurma', '2 top', 90.00, 'bar', 2),
-((SELECT id FROM categories WHERE slug='tum-icecekler'), 'Ayran', '300 ml', 45.00, 'bar', 1),
-((SELECT id FROM categories WHERE slug='tum-icecekler'), 'Kola', '330 ml', 55.00, 'bar', 2),
-((SELECT id FROM categories WHERE slug='tum-icecekler'), 'Limonata', 'Ev yapımı', 65.00, 'bar', 3),
-((SELECT id FROM categories WHERE slug='tum-icecekler'), 'Su', '0.5 L', 25.00, 'bar', 4);
+INSERT INTO menu_items (category_id, name, description, price, station, image_url, sort_order) VALUES
+((SELECT id FROM categories WHERE slug='izgara'), 'Izgara Tavuk Şiş', 'Marine edilmiş tavuk şiş, köz biber', 260.00, 'kitchen', '/assets/img/menu/izgara-tavuk-sis.jpg', 1),
+((SELECT id FROM categories WHERE slug='izgara'), 'Acılı Kanat', '8 adet acılı ızgara kanat', 245.00, 'kitchen', '/assets/img/menu/acili-kanat.jpg', 2),
+((SELECT id FROM categories WHERE slug='izgara'), 'Ballı Hardallı Tavuk', 'Ballı hardal glaze, yeşillik', 275.00, 'kitchen', '/assets/img/menu/balli-hardalli-tavuk.jpg', 3),
+((SELECT id FROM categories WHERE slug='menuler'), 'Chicken Menü', 'Burger + patates + içecek', 320.00, 'kitchen', '/assets/img/menu/chicken-menu.jpg', 1),
+((SELECT id FROM categories WHERE slug='menuler'), 'Aile Menüsü', '2 şiş + 2 kanat + patates + 4 içecek', 890.00, 'kitchen', '/assets/img/menu/aile-menusu.jpg', 2),
+((SELECT id FROM categories WHERE slug='durumler'), 'Tavuk Dürüm', 'Izgara tavuk, lavaş, turşu', 210.00, 'kitchen', '/assets/img/menu/tavuk-durum.jpg', 1),
+((SELECT id FROM categories WHERE slug='durumler'), 'Köfte Dürüm', 'Izgara köfte, sos, yeşillik', 230.00, 'kitchen', '/assets/img/menu/kofte-durum.jpg', 2),
+((SELECT id FROM categories WHERE slug='burgerler'), 'Chicken Burger', 'Özel sos, çıtır tavuk, turşu', 220.00, 'kitchen', '/assets/img/menu/chicken-burger.jpg', 1),
+((SELECT id FROM categories WHERE slug='burgerler'), 'Cheese Burger', 'Cheddar, özel sos', 240.00, 'kitchen', '/assets/img/menu/cheese-burger.jpg', 2),
+((SELECT id FROM categories WHERE slug='yan-urunler'), 'Çıtır Patates', 'Ev yapımı baharatlı patates', 90.00, 'kitchen', '/assets/img/menu/citir-patates.jpg', 1),
+((SELECT id FROM categories WHERE slug='yan-urunler'), 'Soğan Halkası', '6 adet çıtır soğan halkası', 95.00, 'kitchen', '/assets/img/menu/sogan-halkasi.jpg', 2),
+((SELECT id FROM categories WHERE slug='yan-urunler'), 'Coleslaw', 'Taze lahana salatası', 70.00, 'kitchen', '/assets/img/menu/coleslaw.jpg', 3),
+((SELECT id FROM categories WHERE slug='tatlilar'), 'Sufle', 'Sıcak çikolatalı sufle', 140.00, 'kitchen', '/assets/img/menu/sufle.jpg', 1),
+((SELECT id FROM categories WHERE slug='tatlilar'), 'Dondurma', '2 top', 90.00, 'bar', '/assets/img/menu/dondurma.jpg', 2),
+((SELECT id FROM categories WHERE slug='tum-icecekler'), 'Ayran', '300 ml', 45.00, 'bar', '/assets/img/menu/ayran.jpg', 1),
+((SELECT id FROM categories WHERE slug='tum-icecekler'), 'Kola', '330 ml', 55.00, 'bar', '/assets/img/menu/kola.jpg', 2),
+((SELECT id FROM categories WHERE slug='tum-icecekler'), 'Limonata', 'Ev yapımı', 65.00, 'bar', '/assets/img/menu/limonata.jpg', 3),
+((SELECT id FROM categories WHERE slug='tum-icecekler'), 'Su', '0.5 L', 25.00, 'bar', '/assets/img/menu/su.jpg', 4);
 
 INSERT INTO settings (setting_key, setting_value) VALUES
 ('restaurant_name', 'Chicken'),

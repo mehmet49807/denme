@@ -8,7 +8,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e($title ?? 'Chicken') ?></title>
   <meta name="description" content="Chicken restoran — QR menü, online sipariş ve sipariş takip.">
-  <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
+  <?php
+    $assetRoot = dirname(__DIR__, 2) . '/assets';
+    $cssVer = @filemtime($assetRoot . '/css/app.css') ?: time();
+    $jsVer = @filemtime($assetRoot . '/js/app.js') ?: time();
+  ?>
+  <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) $cssVer) ?>">
 </head>
 <body<?= !empty($bodyAttrs) ? ' ' . $bodyAttrs : '' ?> data-base="<?= e(base_path()) ?>">
   <header class="site-header">
@@ -27,6 +32,6 @@
     <div>Chicken · Izgara lezzet · QR menü · Online sipariş</div>
   </footer>
   <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
-  <script src="<?= e(url('/assets/js/app.js')) ?>" defer></script>
+  <script src="<?= e(url('/assets/js/app.js')) ?>?v=<?= e((string) $jsVer) ?>" defer></script>
 </body>
 </html>

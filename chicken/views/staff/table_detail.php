@@ -137,21 +137,7 @@ $openTotal = array_sum(array_map(static fn(array $o): float => (float) $o['total
 
     <div class="menu-grid menu-grid-compact">
       <?php foreach ($items as $item): ?>
-        <article class="menu-item" data-cat="<?= e($item['category_slug']) ?>">
-          <div class="meta-row">
-            <span class="chip <?= e($item['station']) ?>"><?= e(station_label($item['station'])) ?></span>
-            <span class="price"><?= e(money((float) $item['price'])) ?></span>
-          </div>
-          <h3><?= e($item['name']) ?></h3>
-          <button
-            class="btn btn-dark btn-sm"
-            type="button"
-            data-add-item="<?= (int) $item['id'] ?>"
-            data-name="<?= e($item['name']) ?>"
-            data-price="<?= e((string) $item['price']) ?>"
-            data-station="<?= e($item['station']) ?>"
-          >Ekle</button>
-        </article>
+        <?php partial('partials/menu_item_card', ['item' => $item, 'showAdd' => true]); ?>
       <?php endforeach; ?>
     </div>
 

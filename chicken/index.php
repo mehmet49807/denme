@@ -8,6 +8,7 @@ require __DIR__ . '/app/Auth.php';
 require __DIR__ . '/app/OrderService.php';
 require __DIR__ . '/app/CategorySync.php';
 require __DIR__ . '/app/SchemaSync.php';
+require __DIR__ . '/app/MenuImageSync.php';
 require __DIR__ . '/app/Router.php';
 
 $config = config();
@@ -39,6 +40,7 @@ if (!$installed && $path !== '/install.php') {
 
 if ($installed) {
     SchemaSync::ensure();
+    MenuImageSync::ensure();
 }
 
 $router = new Router();
@@ -717,13 +719,17 @@ $router->post('/yonetici/urunler/ekle', static function (): void {
     $station = (string) input('station');
     $sort = max(0, (int) input('sort_order'));
     $available = input('is_available') ? 1 : 0;
+    $imageUrl = trim((string) input('image_url'));
     if ($name === '' || $categoryId <= 0 || $price < 0 || !in_array($station, ['kitchen', 'bar'], true)) {
         flash('error', 'Ürün bilgileri geçersiz.');
         redirect('/yonetici/urunler/ekle');
     }
+    if ($imageUrl === '' && isset(MenuImageSync::catalog()[$name])) {
+        $imageUrl = MenuImageSync::catalog()[$name];
+    }
     Database::pdo()->prepare(
-        'INSERT INTO menu_items (category_id, name, description, price, station, is_available, sort_order)
-         VALUES (?, ?, ?, ?, ?, ?, ?)'
+        'INSERT INTO menu_items (category_id, name, description, price, station, is_available, image_url, sort_order)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
     )->execute([
         $categoryId,
         $name,
@@ -731,6 +737,7 @@ $router->post('/yonetici/urunler/ekle', static function (): void {
         $price,
         $station,
         $available,
+        $imageUrl !== '' ? $imageUrl : null,
         $sort,
     ]);
     flash('success', 'Ürün eklendi.');
@@ -783,13 +790,17 @@ $router->post('/yonetici/urunler/{id}', static function (string $id): void {
     $station = (string) input('station');
     $sort = max(0, (int) input('sort_order'));
     $available = input('is_available') ? 1 : 0;
+    $imageUrl = trim((string) input('image_url'));
     if ($name === '' || $categoryId <= 0 || $price < 0 || !in_array($station, ['kitchen', 'bar'], true)) {
         flash('error', 'Ürün bilgileri geçersiz.');
         redirect('/yonetici/urunler/' . (int) $id);
     }
+    if ($imageUrl === '' && isset(MenuImageSync::catalog()[$name])) {
+        $imageUrl = MenuImageSync::catalog()[$name];
+    }
     Database::pdo()->prepare(
         'UPDATE menu_items
-         SET category_id = ?, name = ?, description = ?, price = ?, station = ?, is_available = ?, sort_order = ?
+         SET category_id = ?, name = ?, description = ?, price = ?, station = ?, is_available = ?, image_url = ?, sort_order = ?
          WHERE id = ?'
     )->execute([
         $categoryId,
@@ -798,6 +809,7 @@ $router->post('/yonetici/urunler/{id}', static function (string $id): void {
         $price,
         $station,
         $available,
+        $imageUrl !== '' ? $imageUrl : null,
         $sort,
         (int) $id,
     ]);
