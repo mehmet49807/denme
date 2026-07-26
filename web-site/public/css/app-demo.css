@@ -1,0 +1,234 @@
+/* Android app demo — gate + in-app phone shell */
+.app-demo-gate {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    color: #1f1230;
+    background:
+        radial-gradient(120% 80% at 50% -10%, rgba(124, 58, 237, 0.28), transparent 55%),
+        linear-gradient(180deg, #1a0f24 0%, #2a1538 40%, #120816 100%);
+    color: #fff8f2;
+}
+
+.app-demo-gate__wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 2.5rem;
+}
+
+.app-demo-gate__head {
+    text-align: center;
+    margin-bottom: 1.25rem;
+}
+
+.app-demo-gate__head img {
+    display: block;
+    margin: 0 auto 0.75rem;
+    border-radius: 18px;
+}
+
+.app-demo-gate__head h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.45rem;
+    line-height: 1.25;
+}
+
+.app-demo-gate__head p {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: rgba(255, 248, 242, 0.82);
+}
+
+.app-demo-phone {
+    position: relative;
+    width: min(100%, 340px);
+    margin: 0 auto 1.25rem;
+    padding: 12px;
+    border-radius: 36px;
+    background: linear-gradient(160deg, #3a3a42, #111118);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.app-demo-phone__notch {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 108px;
+    height: 22px;
+    border-radius: 14px;
+    background: #0a0a0e;
+    z-index: 2;
+}
+
+.app-demo-phone__screen {
+    position: relative;
+    border-radius: 28px;
+    overflow: hidden;
+    background: #120816;
+    aspect-ratio: 9 / 19.5;
+}
+
+.app-demo-phone__status {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.55rem 0.85rem 0.35rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.88);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent);
+    pointer-events: none;
+}
+
+.app-demo-phone__frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #f9f6ff;
+}
+
+.app-demo-gate__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-bottom: 1.5rem;
+}
+
+.app-demo-gate__btn {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #fff8f2;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.app-demo-gate__btn--primary {
+    background: linear-gradient(135deg, #7c3aed, #db2777);
+    border-color: transparent;
+}
+
+.app-demo-gate__btn--ghost {
+    background: transparent;
+    font-weight: 600;
+    opacity: 0.85;
+}
+
+.app-demo-gate__notes {
+    border-radius: 16px;
+    padding: 1rem 1.1rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-demo-gate__notes h2 {
+    margin: 0 0 0.55rem;
+    font-size: 1rem;
+}
+
+.app-demo-gate__notes ul {
+    margin: 0 0 0.75rem;
+    padding-left: 1.1rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: rgba(255, 248, 242, 0.88);
+}
+
+.app-demo-gate__hint {
+    margin: 0;
+    font-size: 0.82rem;
+    color: rgba(255, 210, 230, 0.9);
+    line-height: 1.4;
+}
+
+/* In-app demo mode: desktop’ta telefon genişliği + mobil alt nav zorla */
+body.app-demo-mode {
+    --app-demo-max: 430px;
+}
+
+.app-demo-banner {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(90deg, #7c3aed, #db2777);
+}
+
+.app-demo-banner a {
+    color: #fff;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+@media (min-width: 768px) {
+    body.app-demo-mode {
+        background: #0f0a14 !important;
+    }
+
+    body.app-demo-mode .app-demo-banner,
+    body.app-demo-mode .site-header,
+    body.app-demo-mode .site-main,
+    body.app-demo-mode .app-layout,
+    body.app-demo-mode .flash-success {
+        max-width: var(--app-demo-max);
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+
+    body.app-demo-mode .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    body.app-demo-mode.app-shell-body {
+        min-height: 100vh;
+    }
+
+    /* Desktop’ta da mobil alt navigasyonu göster (uygulama demosu) */
+    body.app-demo-mode.app-shell-body .app-layout {
+        padding-bottom: calc(6.1rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    body.app-demo-mode.app-shell-body .app-sidebar {
+        position: fixed !important;
+        left: 50% !important;
+        right: auto !important;
+        bottom: calc(0.4rem + env(safe-area-inset-bottom, 0px)) !important;
+        transform: translateX(-50%);
+        width: min(var(--app-demo-max), calc(100% - 1.1rem)) !important;
+        max-width: var(--app-demo-max);
+        z-index: 50;
+        display: block !important;
+        padding: 0.7rem 0.35rem 0.6rem;
+        border-radius: 1.55rem;
+        border: 1px solid rgba(124, 58, 237, 0.12);
+        background: var(--smart-nav-bar-bg, rgba(255, 255, 255, 0.98));
+        box-shadow:
+            0 16px 46px rgba(91, 33, 182, 0.18),
+            0 4px 14px rgba(15, 23, 42, 0.07);
+        overflow: visible;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+}

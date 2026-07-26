@@ -10,11 +10,19 @@ use Illuminate\View\View;
 
 class AdminAppLinksController extends Controller
 {
+    /** Keep in sync with web-site AppDemoController::DEMO_KEY */
+    private const APP_DEMO_KEY = 'gk-app-demo-2026';
+
     public function index(SiteSettingsService $settings): View
     {
+        $frontend = rtrim((string) config('app.frontend_url', 'https://gonulkoprusu.com'), '/');
+
         return view('admin.app-links', [
             'androidAppUrl' => (string) $settings->get('android_app_url', ''),
             'iosAppUrl' => (string) $settings->get('ios_app_url', ''),
+            'frontendUrl' => $frontend,
+            'appDemoUrl' => $frontend.'/uygulama-demo?key='.self::APP_DEMO_KEY,
+            'appDemoOpenUrl' => $frontend.'/uygulama-demo?key='.self::APP_DEMO_KEY.'&go=1',
         ]);
     }
 

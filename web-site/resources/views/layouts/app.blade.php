@@ -4,6 +4,12 @@
     $appShell = trim($__env->yieldContent('body-class')) === 'app-shell';
     $isContentPage = str_contains(trim($__env->yieldContent('body-class')), 'page-content');
     $isAuthPage = str_contains(trim($__env->yieldContent('body-class')), 'page-auth');
+    $appDemoMode = false;
+    try {
+        $appDemoMode = \App\Http\Controllers\Web\AppDemoController::isActive();
+    } catch (\Throwable) {
+        $appDemoMode = false;
+    }
     $themePreference = auth()->check()
         ? (string) (auth()->user()->theme_preference ?: 'system')
         : 'system';
@@ -69,6 +75,10 @@
     <meta name="theme-color" content="#7C3AED">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    @if(!empty($appDemoMode))
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="stylesheet" href="{{ asset('css/app-demo.css') }}?v=app-demo-1">
+    @endif
     @include('partials.async-fonts')
     @include('partials.critical-ui-css')
     @if($isLanding)
@@ -116,8 +126,14 @@
     @stack('head-meta')
     @endauth
 </head>
-<body class="{{ trim(($appShell ? 'app-shell-body' : '') . ' ' . ($isLanding ? 'page-landing' : '') . ' ' . ($isContentPage ? 'page-content' : '') . ' ' . ($isAuthPage ? 'page-auth' : '')) }}">
+<body class="{{ trim(($appShell ? 'app-shell-body' : '') . ' ' . ($isLanding ? 'page-landing' : '') . ' ' . ($isContentPage ? 'page-content' : '') . ' ' . ($isAuthPage ? 'page-auth' : '') . ' ' . (!empty($appDemoMode) ? 'app-demo-mode' : '')) }}">
 @include('partials.google-tag-manager-body')
+    @if(!empty($appDemoMode))
+    <div class="app-demo-banner" role="status">
+        <span>Android uygulama demosu</span>
+        <a href="{{ route('app.demo.exit') }}">Çık</a>
+    </div>
+    @endif
     <header class="site-header {{ $isLanding || $isAuthPage ? 'site-header--landing' : '' }}">
         <div class="site-header-inner">
             @include('partials.logo', ['showTagline' => true])
