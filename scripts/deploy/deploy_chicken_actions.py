@@ -49,16 +49,21 @@ def ensure_dir(ftp: FTP, remote_dir: str) -> None:
             pass
 
 
-def connect(user: str, password: str, attempts: int = 8) -> FTP:
+def connect(user: str, password: str, attempts: int = 24) -> FTP:
     last: Exception | None = None
     for i in range(attempts):
         try:
             ftp = FTP()
-            ftp.connect(HOST, 21, timeout=120)
+            ftp.connect(HOST, 21, timeout=180)
             ftp.login(user, password)
             ftp.set_pasv(True)
             try:
                 ftp.encoding = "utf-8"
+            except Exception:
+                pass
+            # Keep the control socket from idling out on large trees.
+            try:
+                ftp.sock.settimeout(180)
             except Exception:
                 pass
             print(f"login ok attempt={i + 1} pwd={ftp.pwd()}")
@@ -66,7 +71,8 @@ def connect(user: str, password: str, attempts: int = 8) -> FTP:
         except Exception as exc:  # noqa: BLE001
             last = exc
             print(f"connect fail {i + 1}: {type(exc).__name__}: {exc}")
-            time.sleep(min(30, 3 * (i + 1)))
+            # Host often returns 421 when too many FTP sessions linger.
+            time.sleep(min(45, 5 * (i + 1)))
     raise RuntimeError(f"FTP connect failed: {last}")
 
 
@@ -116,14 +122,42 @@ def list_files() -> list[Path]:
     return priority_paths + other + images
 
 
-def upload_tree(ftp: FTP, user: str, password: str, base: str) -> FTP:
-    files = list_files()
+def write_config(ftp: FTP, base: str) -> None:
+    db_pass = os.environ.get("CHICKEN_DB_PASS", "")
+    if not db_pass:
+        return
+    cfg = (
+        "<?php\n\ndeclare(strict_types=1);\n\nreturn [\n"
+        "    'app_url' => 'https://chicken.gonulkoprusu.com',\n"
+        "    'db' => [\n"
+        "        'host' => 'localhost',\n"
+        "        'port' => 3306,\n"
+        "        'name' => "
+        + repr(os.environ.get("CHICKEN_DB_NAME", "gonulkop_chicken"))
+        + ",\n"
+        "        'user' => "
+        + repr(os.environ.get("CHICKEN_DB_USER", "gonulkop_admin"))
+        + ",\n"
+        "        'pass' => "
+        + repr(db_pass)
+        + ",\n"
+        "        'charset' => 'utf8mb4',\n"
+        "    ],\n"
+        "];\n"
+    )
+    remote_cfg = f"{base}/config/config.local.php" if base else "/config/config.local.php"
+    ensure_dir(ftp, str(Path(remote_cfg).parent).replace("\\", "/"))
+    ftp.storbinary(f"STOR {remote_cfg}", BytesIO(cfg.encode("utf-8")))
+    print("OK config/config.local.php")
+
+
+def upload_files(ftp: FTP, user: str, password: str, base: str, files: list[Path]) -> FTP:
     print(f"Uploading {len(files)} files to {base or '/'}")
     for idx, local in enumerate(files, 1):
         rel = local.relative_to(ROOT).as_posix()
         remote = f"{base}/{rel}" if base else f"/{rel}"
         ftp = upload_one(ftp, user, password, local, remote)
-        if idx % 12 == 0:
+        if idx % 8 == 0:
             try:
                 ftp.voidcmd("NOOP")
             except Exception:
@@ -132,32 +166,23 @@ def upload_tree(ftp: FTP, user: str, password: str, base: str) -> FTP:
                 except Exception:
                     pass
                 ftp = connect(user, password)
+    return ftp
 
-    db_pass = os.environ.get("CHICKEN_DB_PASS", "")
-    if db_pass:
-        cfg = (
-            "<?php\n\ndeclare(strict_types=1);\n\nreturn [\n"
-            "    'app_url' => 'https://chicken.gonulkoprusu.com',\n"
-            "    'db' => [\n"
-            "        'host' => 'localhost',\n"
-            "        'port' => 3306,\n"
-            "        'name' => "
-            + repr(os.environ.get("CHICKEN_DB_NAME", "gonulkop_chicken"))
-            + ",\n"
-            "        'user' => "
-            + repr(os.environ.get("CHICKEN_DB_USER", "gonulkop_admin"))
-            + ",\n"
-            "        'pass' => "
-            + repr(db_pass)
-            + ",\n"
-            "        'charset' => 'utf8mb4',\n"
-            "    ],\n"
-            "];\n"
-        )
-        remote_cfg = f"{base}/config/config.local.php" if base else "/config/config.local.php"
-        ensure_dir(ftp, str(Path(remote_cfg).parent).replace("\\", "/"))
-        ftp.storbinary(f"STOR {remote_cfg}", BytesIO(cfg.encode("utf-8")))
-        print("OK config/config.local.php")
+
+def upload_tree(ftp: FTP, user: str, password: str, base: str) -> FTP:
+    files = list_files()
+    priority = [p for p in files if p.relative_to(ROOT).as_posix() in set(PRIORITY)]
+    rest = [p for p in files if p not in priority]
+
+    # Phase 1: restore bootable app immediately.
+    ftp = upload_files(ftp, user, password, base, priority)
+    write_config(ftp, base)
+    print("PHASE1_DONE", base)
+
+    # Phase 2: remaining views/assets/images.
+    if rest:
+        ftp = upload_files(ftp, user, password, base, rest)
+    print("PHASE2_DONE", base)
     return ftp
 
 
