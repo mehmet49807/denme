@@ -32,6 +32,6 @@
     <div>Chicken · Izgara lezzet · QR menü · Online sipariş</div>
   </footer>
   <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
-  <script src="<?= e(url('/assets/js/app.js')) ?>" defer></script>
+  <script src="<?= e(url('/assets/js/app.js')) ?>?v=<?= e((string) $jsVer) ?>" defer></script>
 </body>
 </html>
