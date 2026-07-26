@@ -3,6 +3,15 @@
 /** @var string $content */
 /** @var array|null $user */
 $role = $user['role'] ?? Auth::role();
+$staffCategories = [];
+try {
+    $staffCategories = Database::pdo()
+        ->query('SELECT name, slug FROM categories WHERE is_active = 1 ORDER BY sort_order, id')
+        ->fetchAll();
+} catch (Throwable) {
+    $staffCategories = [];
+}
+$homeStaff = in_array($role, ['waiter', 'admin'], true) ? url('/garson') : (in_array($role, ['cashier'], true) ? url('/kasa') : url('/mutfak'));
 ?><!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -17,28 +26,28 @@ $role = $user['role'] ?? Auth::role();
 
     <aside class="side" id="staff-side" aria-hidden="true">
       <div class="side-top">
-        <a class="brand" href="<?= e(url('/')) ?>">Chicken<span>.</span></a>
+        <div>
+          <p class="side-label">Garson</p>
+          <strong class="side-waiter-name"><?= e($user['name'] ?? 'Personel') ?></strong>
+        </div>
         <button class="icon-btn side-close" type="button" data-nav-close aria-label="Menüyü kapat">✕</button>
       </div>
-      <p class="side-label">Personel menü</p>
-      <nav>
-        <?php if (in_array($role, ['waiter', 'admin'], true)): ?>
-          <a class="<?= is_active_path('/garson') ? 'active' : '' ?>" href="<?= e(url('/garson')) ?>">Garson</a>
-        <?php endif; ?>
+
+      <p class="side-label">Kategoriler</p>
+      <nav class="side-cats" data-side-cats>
+        <button class="side-cat active" type="button" data-cat-tab="all">Tümü</button>
+        <?php foreach ($staffCategories as $cat): ?>
+          <button class="side-cat" type="button" data-cat-tab="<?= e($cat['slug']) ?>"><?= e($cat['name']) ?></button>
+        <?php endforeach; ?>
+      </nav>
+
+      <div class="userbox">
         <?php if (in_array($role, ['cashier', 'admin'], true)): ?>
-          <a class="<?= is_active_path('/kasa') ? 'active' : '' ?>" href="<?= e(url('/kasa')) ?>">Kasa</a>
+          <a class="side-link" href="<?= e(url('/kasa')) ?>">Kasa</a>
         <?php endif; ?>
         <?php if ($role === 'admin'): ?>
-          <a class="<?= is_active_path('/yonetici') ? 'active' : '' ?>" href="<?= e(url('/yonetici')) ?>">Yönetici</a>
+          <a class="side-link" href="<?= e(url('/yonetici')) ?>">Yönetici</a>
         <?php endif; ?>
-        <a class="<?= is_active_path('/mutfak') ? 'active' : '' ?>" href="<?= e(url('/mutfak')) ?>">Mutfak</a>
-        <a class="<?= is_active_path('/bar') ? 'active' : '' ?>" href="<?= e(url('/bar')) ?>">Bar</a>
-        <a href="<?= e(url('/qr')) ?>">QR Kodlar</a>
-        <a href="<?= e(url('/menu')) ?>">Menü</a>
-      </nav>
-      <div class="userbox">
-        <div><?= e($user['name'] ?? '') ?></div>
-        <div class="small"><?= e($user['role'] ?? '') ?></div>
         <form method="post" action="<?= e(url('/personel/cikis')) ?>" style="margin-top:10px">
           <button class="btn btn-ghost btn-sm" type="submit">Çıkış</button>
         </form>
@@ -47,6 +56,15 @@ $role = $user['role'] ?? Auth::role();
 
     <div class="staff-content">
       <header class="staff-topbar">
+        <a class="brand-inline header-logo" href="<?= e($homeStaff) ?>">Chicken<span>.</span></a>
+        <nav class="header-nav">
+          <?php if (in_array($role, ['waiter', 'admin'], true)): ?>
+            <a class="<?= is_active_path('/garson') ? 'active' : '' ?>" href="<?= e(url('/garson')) ?>">Garson</a>
+          <?php endif; ?>
+          <a class="<?= is_active_path('/mutfak') ? 'active' : '' ?>" href="<?= e(url('/mutfak')) ?>">Mutfak</a>
+          <a class="<?= is_active_path('/bar') ? 'active' : '' ?>" href="<?= e(url('/bar')) ?>">Bar</a>
+          <a class="<?= is_active_path('/qr') ? 'active' : '' ?>" href="<?= e(url('/qr')) ?>">QR Kodlar</a>
+        </nav>
         <button
           class="btn btn-dark btn-menu"
           type="button"
@@ -57,11 +75,6 @@ $role = $user['role'] ?? Auth::role();
           <span class="menu-icon" aria-hidden="true">☰</span>
           <span data-nav-label>Menü</span>
         </button>
-        <div class="staff-topbar-title">
-          <span class="brand-inline">Chicken<span>.</span></span>
-          <span class="small muted"><?= e($title ?? 'Personel') ?></span>
-        </div>
-        <span class="chip"><?= e($user['name'] ?? '') ?></span>
       </header>
       <main class="main">
         <?php if ($msg = flash('success')): ?><div class="alert alert-ok"><?= e($msg) ?></div><?php endif; ?>

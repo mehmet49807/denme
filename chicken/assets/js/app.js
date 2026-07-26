@@ -5,7 +5,7 @@
     new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(n);
 
   const staffLayout = document.querySelector('[data-staff-layout]');
-  const toggleBtn = document.querySelector('[data-nav-toggle]');
+  const toggleButtons = document.querySelectorAll('[data-nav-toggle]');
   const sidePanel = document.querySelector('#staff-side');
   const navLabel = document.querySelector('[data-nav-label]');
 
@@ -15,10 +15,10 @@
     const backdrop = staffLayout.querySelector('.side-backdrop');
     if (backdrop) backdrop.hidden = !open;
     if (sidePanel) sidePanel.setAttribute('aria-hidden', open ? 'false' : 'true');
-    if (toggleBtn) {
-      toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      toggleBtn.classList.toggle('is-open', open);
-    }
+    toggleButtons.forEach((btn) => {
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.classList.toggle('is-open', open);
+    });
     if (navLabel) navLabel.textContent = open ? 'Kapat' : 'Menü';
     document.body.style.overflow = open ? 'hidden' : '';
   };
@@ -26,16 +26,47 @@
   const closeNav = () => setNavOpen(false);
   const toggleNav = () => setNavOpen(!(staffLayout && staffLayout.classList.contains('nav-open')));
 
-  if (toggleBtn) toggleBtn.addEventListener('click', toggleNav);
+  toggleButtons.forEach((btn) => btn.addEventListener('click', toggleNav));
   document.querySelectorAll('[data-nav-close]').forEach((btn) => {
     btn.addEventListener('click', closeNav);
   });
-  document.querySelectorAll('.side nav a').forEach((link) => {
+  document.querySelectorAll('.side-link').forEach((link) => {
     link.addEventListener('click', closeNav);
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeNav();
   });
+
+  const applyCategoryFilter = (key) => {
+    const cards = document.querySelectorAll('[data-cat]');
+    const hasMenu = cards.length > 0;
+    if (!hasMenu) {
+      const target = api('/garson') + (key && key !== 'all' ? `?cat=${encodeURIComponent(key)}` : '');
+      window.location.href = target;
+      return;
+    }
+    document.querySelectorAll('[data-cat-tab]').forEach((t) => {
+      t.classList.toggle('active', t.getAttribute('data-cat-tab') === key);
+    });
+    cards.forEach((card) => {
+      const show = key === 'all' || card.getAttribute('data-cat') === key;
+      card.style.display = show ? '' : 'none';
+    });
+    closeNav();
+  };
+
+  document.querySelectorAll('[data-cat-tab]').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      applyCategoryFilter(tab.getAttribute('data-cat-tab') || 'all');
+    });
+  });
+
+  // Restore category filter from query string on garson page
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    if (cat) applyCategoryFilter(cat);
+  } catch (_) {}
 
   function createCart(root) {
     if (!root) return null;
@@ -260,19 +291,6 @@
       } finally {
         btn.disabled = false;
       }
-    });
-  });
-
-  const tabs = document.querySelectorAll('[data-cat-tab]');
-  const cards = document.querySelectorAll('[data-cat]');
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', () => {
-      const key = tab.getAttribute('data-cat-tab');
-      tabs.forEach((t) => t.classList.toggle('active', t === tab));
-      cards.forEach((card) => {
-        const show = key === 'all' || card.getAttribute('data-cat') === key;
-        card.style.display = show ? '' : 'none';
-      });
     });
   });
 

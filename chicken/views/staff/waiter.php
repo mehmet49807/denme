@@ -3,16 +3,11 @@
     <p class="eyebrow">Garson paneli</p>
     <h1>Masa siparişi</h1>
   </div>
+  <button class="btn btn-ghost btn-sm" type="button" data-nav-toggle>Kategoriler</button>
 </div>
 
 <div class="order-builder">
   <div class="builder-menu">
-    <div class="tabs tabs-scroll">
-      <button class="tab active" type="button" data-cat-tab="all">Tümü</button>
-      <?php foreach ($categories as $cat): ?>
-        <button class="tab" type="button" data-cat-tab="<?= e($cat['slug']) ?>"><?= e($cat['name']) ?></button>
-      <?php endforeach; ?>
-    </div>
     <div class="menu-grid menu-grid-compact">
       <?php foreach ($items as $item): ?>
         <article class="menu-item" data-cat="<?= e($item['category_slug']) ?>">
