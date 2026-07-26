@@ -2,22 +2,30 @@
 /** @var array $item */
 $showDescription = !empty($showDescription);
 $showAdd = !empty($showAdd);
-$image = trim((string) ($item['image_url'] ?? ''));
+$image = class_exists('MenuImageSync')
+    ? MenuImageSync::resolve($item)
+    : trim((string) ($item['image_url'] ?? ''));
 $cat = (string) ($item['category_slug'] ?? '');
+$imageSrc = $image !== '' ? asset_url($image) : '';
 ?>
-<article class="menu-item<?= $image !== '' ? ' has-media' : '' ?>"<?= $cat !== '' ? ' data-cat="' . e($cat) . '"' : '' ?>>
-  <div class="menu-item-media<?= $image === '' ? ' is-empty' : '' ?>">
-    <?php if ($image !== ''): ?>
+<article class="menu-item<?= $imageSrc !== '' ? ' has-media' : '' ?>"<?= $cat !== '' ? ' data-cat="' . e($cat) . '"' : '' ?>>
+  <?php if ($imageSrc !== ''): ?>
+    <div
+      class="menu-item-media"
+      style="background-image:url('<?= e($imageSrc) ?>')"
+    >
       <img
-        src="<?= e(url($image)) ?>"
+        src="<?= e($imageSrc) ?>"
         alt="<?= e((string) $item['name']) ?>"
-        loading="lazy"
+        loading="eager"
         decoding="async"
         width="480"
         height="360"
       >
-    <?php endif; ?>
-  </div>
+    </div>
+  <?php else: ?>
+    <div class="menu-item-media is-empty" aria-hidden="true"></div>
+  <?php endif; ?>
   <div class="menu-item-body">
     <div class="meta-row">
       <span class="chip <?= e((string) $item['station']) ?>"><?= e(station_label((string) $item['station'])) ?></span>

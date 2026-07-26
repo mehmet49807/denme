@@ -53,6 +53,23 @@ function url(string $path = '/'): string
     return base_path() . $path;
 }
 
+/** Local asset URL with filemtime cache-buster. */
+function asset_url(string $path): string
+{
+    if (!str_starts_with($path, '/') && !str_starts_with($path, 'http')) {
+        $path = '/' . $path;
+    }
+    $url = url($path);
+    if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+        return $url;
+    }
+    $file = dirname(__DIR__) . $path;
+    if (is_file($file)) {
+        $url .= (str_contains($url, '?') ? '&' : '?') . 'v=' . filemtime($file);
+    }
+    return $url;
+}
+
 function redirect(string $path): never
 {
     if (!str_starts_with($path, 'http://') && !str_starts_with($path, 'https://')) {
