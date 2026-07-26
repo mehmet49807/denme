@@ -61,13 +61,22 @@ $homeStaff = in_array($role, ['waiter', 'admin'], true) ? url('/garson') : (in_a
 
       <div class="userbox">
         <?php if (in_array($role, ['cashier', 'admin'], true)): ?>
-          <a class="side-link" href="<?= e(url('/kasa')) ?>">Kasa</a>
+          <a class="side-link" href="<?= e(url('/kasa')) ?>">
+            <?php partial('partials/menu_icon', ['icon' => 'cashier', 'color' => '#4c8dff']); ?>
+            <span>Kasa</span>
+          </a>
         <?php endif; ?>
         <?php if ($role === 'admin'): ?>
-          <a class="side-link" href="<?= e(url('/yonetici')) ?>">Yönetici</a>
+          <a class="side-link" href="<?= e(url('/yonetici')) ?>">
+            <?php partial('partials/menu_icon', ['icon' => 'menu', 'color' => '#e2b457']); ?>
+            <span>Yönetici</span>
+          </a>
         <?php endif; ?>
         <form method="post" action="<?= e(url('/personel/cikis')) ?>" style="margin-top:10px">
-          <button class="btn btn-ghost btn-sm" type="submit">Çıkış</button>
+          <button class="side-link" type="submit">
+            <?php partial('partials/menu_icon', ['icon' => 'logout', 'color' => '#ff7a7a']); ?>
+            <span>Çıkış</span>
+          </button>
         </form>
       </div>
     </aside>
