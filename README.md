@@ -8,6 +8,7 @@ Bu depo (`mehmet49807/denme`) **gonulkoprusu.com** web sitesi ve **admin.gonulko
 |--------|----------|
 | `web-site/` | Ana site (Laravel parçaları: routes, app, views, images) |
 | `admin-panel/` | Yönetim paneli (Laravel parçaları) |
+| `chicken/` | Chicken restoran sitesi (QR menü, online sipariş, garson/kasa/yönetici) |
 | `deploy/` | FTP deploy manifest |
 | `scripts/deploy/` | GitHub Actions deploy scripti |
 | `.github/workflows/` | Otomatik deploy workflow |
