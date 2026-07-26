@@ -486,7 +486,7 @@ textarea { min-height: 90px; resize: vertical; }
   text-decoration: none;
 }
 .admin-lead {
-  margin: -6px 0 20px;
+  margin: -6px 0 18px;
   max-width: 36rem;
   line-height: 1.45;
 }
