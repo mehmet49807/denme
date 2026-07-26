@@ -398,44 +398,71 @@ textarea { min-height: 90px; resize: vertical; }
 }
 .side-close { display: inline-grid; }
 .side-label {
-  margin: 0 0 8px;
+  margin: 0 0 4px;
   color: var(--gold);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   font-weight: 700;
 }
+.side-waiter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
 .side-waiter-name {
   display: block;
   font-family: var(--font-display);
-  font-size: 1.25rem;
-  margin-bottom: 18px;
+  font-size: 1.15rem;
+  line-height: 1.15;
+}
+.menu-ico {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--ico);
+  background: color-mix(in srgb, var(--ico) 18%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ico) 35%, transparent);
+}
+.menu-ico svg {
+  width: 20px;
+  height: 20px;
+  display: block;
 }
 .side-cats {
   display: grid;
   gap: 8px;
+  margin-top: 8px;
 }
 .side-cat,
 .side-link {
   width: 100%;
   text-align: left;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
   border: 1px solid var(--line);
   background: #171a17;
-  color: var(--muted);
-  min-height: 44px;
+  color: var(--text);
+  min-height: 52px;
   display: flex;
   align-items: center;
+  gap: 12px;
   font-weight: 600;
   cursor: pointer;
 }
+.side-cat span { line-height: 1.2; }
 .side-cat.active,
 .side-cat:hover,
 .side-link:hover {
-  background: rgba(255,106,26,0.12);
-  color: var(--text);
-  border-color: rgba(255,106,26,0.35);
+  background: rgba(255,255,255,0.04);
+  border-color: color-mix(in srgb, var(--ember) 40%, var(--line));
+}
+.side-cat.active {
+  box-shadow: inset 0 0 0 1px rgba(255,106,26,0.25);
 }
 .side .userbox {
   margin-top: 28px;

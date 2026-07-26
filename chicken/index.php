@@ -6,6 +6,7 @@ require __DIR__ . '/app/helpers.php';
 require __DIR__ . '/app/Database.php';
 require __DIR__ . '/app/Auth.php';
 require __DIR__ . '/app/OrderService.php';
+require __DIR__ . '/app/CategorySync.php';
 require __DIR__ . '/app/Router.php';
 
 $config = config();
@@ -142,14 +143,20 @@ $router->get('/api/orders/{code}', static function (string $code): void {
 });
 
 $router->get('/qr', static function (): void {
+    Auth::requireRole('waiter', 'cashier', 'admin');
     $pdo = Database::pdo();
     $tables = $pdo->query('SELECT * FROM dining_tables WHERE is_active = 1 ORDER BY id')->fetchAll();
-    $base = rtrim((string) config('app_url'), '/');
-    view('public/qr', [
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = (string) ($_SERVER['HTTP_HOST'] ?? '');
+    $base = $host !== ''
+        ? ($scheme . '://' . $host . base_path())
+        : rtrim((string) config('app_url'), '/');
+    view('staff/qr', [
         'title' => 'QR Menü Kodları',
         'tables' => $tables,
         'menuUrl' => $base . '/menu',
         'base' => $base,
+        'user' => Auth::user(),
     ]);
 });
 

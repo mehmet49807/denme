@@ -3,6 +3,7 @@
 /** @var string $content */
 /** @var array|null $user */
 $role = $user['role'] ?? Auth::role();
+CategorySync::ensure();
 $staffCategories = [];
 try {
     $staffCategories = Database::pdo()
@@ -10,6 +11,11 @@ try {
         ->fetchAll();
 } catch (Throwable) {
     $staffCategories = [];
+}
+// Prefer curated catalog order/icons even if DB lags
+$catalogBySlug = [];
+foreach (CategorySync::catalog() as $row) {
+    $catalogBySlug[$row['slug']] = $row;
 }
 $homeStaff = in_array($role, ['waiter', 'admin'], true) ? url('/garson') : (in_array($role, ['cashier'], true) ? url('/kasa') : url('/mutfak'));
 ?><!DOCTYPE html>
@@ -26,18 +32,30 @@ $homeStaff = in_array($role, ['waiter', 'admin'], true) ? url('/garson') : (in_a
 
     <aside class="side" id="staff-side" aria-hidden="true">
       <div class="side-top">
-        <div>
-          <p class="side-label">Garson</p>
-          <strong class="side-waiter-name"><?= e($user['name'] ?? 'Personel') ?></strong>
+        <div class="side-waiter">
+          <?php partial('partials/menu_icon', ['icon' => 'waiter', 'color' => '#ff6a1a']); ?>
+          <div>
+            <p class="side-label">Garson</p>
+            <strong class="side-waiter-name"><?= e($user['name'] ?? 'Personel') ?></strong>
+          </div>
         </div>
         <button class="icon-btn side-close" type="button" data-nav-close aria-label="Menüyü kapat">✕</button>
       </div>
 
-      <p class="side-label">Kategoriler</p>
       <nav class="side-cats" data-side-cats>
-        <button class="side-cat active" type="button" data-cat-tab="all">Tümü</button>
+        <button class="side-cat active" type="button" data-cat-tab="all">
+          <?php partial('partials/menu_icon', ['icon' => 'all', 'color' => '#e2b457']); ?>
+          <span>Tümü</span>
+        </button>
         <?php foreach ($staffCategories as $cat): ?>
-          <button class="side-cat" type="button" data-cat-tab="<?= e($cat['slug']) ?>"><?= e($cat['name']) ?></button>
+          <?php
+            $meta = $catalogBySlug[$cat['slug']] ?? CategorySync::meta($cat['slug']);
+            $label = $catalogBySlug[$cat['slug']]['name'] ?? $cat['name'];
+          ?>
+          <button class="side-cat" type="button" data-cat-tab="<?= e($cat['slug']) ?>">
+            <?php partial('partials/menu_icon', ['icon' => $meta['icon'], 'color' => $meta['color']]); ?>
+            <span><?= e($label) ?></span>
+          </button>
         <?php endforeach; ?>
       </nav>
 
