@@ -215,10 +215,21 @@ def main() -> int:
         for url in bootstrap_urls:
             try:
                 print("bootstrap try", url.split("?")[0])
-                with urllib.request.urlopen(url, timeout=45) as resp:
+                req = urllib.request.Request(
+                    url,
+                    headers={
+                        "User-Agent": (
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                            "AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "Chrome/126.0.0.0 Safari/537.36"
+                        ),
+                        "Accept": "text/plain,*/*",
+                    },
+                )
+                with urllib.request.urlopen(req, timeout=60) as resp:
                     body = resp.read().decode("utf-8", "replace")
-                print(body)
-                if "COPIED=" in body or "OK" in body:
+                print(body[:2000])
+                if "COPIED=" in body or "\nOK\n" in body or body.strip().endswith("OK"):
                     break
             except Exception as exc:  # noqa: BLE001
                 print("bootstrap failed", type(exc).__name__, exc)
