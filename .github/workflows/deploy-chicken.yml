@@ -1,0 +1,150 @@
+name: Deploy Chicken
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cursor/chicken-restaurant-site-7a42
+    paths:
+      - 'chicken/**'
+      - 'scripts/deploy/ftp_sync_chicken.py'
+      - '.github/workflows/deploy-chicken.yml'
+
+jobs:
+  deploy-chicken:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy chicken via FTP
+        env:
+          CHICKEN_FTP_HOST: ftp.gonulkoprusu.com
+          CHICKEN_FTP_USER: ${{ secrets.FTP_CHICKEN_USER }}
+          CHICKEN_FTP_PASSWORD: ${{ secrets.FTP_CHICKEN_PASSWORD }}
+          FTP_WEB_USER: ${{ secrets.FTP_WEB_USER }}
+          FTP_WEB_PASSWORD: ${{ secrets.FTP_WEB_PASSWORD }}
+          CHICKEN_DB_NAME: gonulkop_chicken
+          CHICKEN_DB_USER: gonulkop_admin
+          CHICKEN_DB_PASS: ${{ secrets.CHICKEN_DB_PASSWORD }}
+        run: |
+          python3 <<'PY'
+          import os, sys
+          from ftplib import FTP, error_perm
+          from pathlib import Path
+          from io import BytesIO
+
+          ROOT = Path('chicken')
+          HOST = os.environ.get('CHICKEN_FTP_HOST', 'ftp.gonulkoprusu.com')
+          SKIP = {'.git', '.DS_Store', 'Thumbs.db', 'config.local.php'}
+
+          candidates = []
+          chicken_user = os.environ.get('CHICKEN_FTP_USER') or 'chicken@gonulkoprusu.com'
+          if os.environ.get('CHICKEN_FTP_PASSWORD'):
+              candidates.append((chicken_user, os.environ['CHICKEN_FTP_PASSWORD'], 'chicken'))
+          if os.environ.get('FTP_WEB_PASSWORD') and os.environ.get('FTP_WEB_USER'):
+              candidates.append((os.environ['FTP_WEB_USER'], os.environ['FTP_WEB_PASSWORD'], 'web'))
+
+          if not candidates:
+              print('::error::No FTP credentials available (FTP_CHICKEN_PASSWORD or FTP_WEB_PASSWORD)')
+              sys.exit(1)
+
+          def ensure_dir(ftp, remote_dir):
+              parts = [p for p in remote_dir.split('/') if p]
+              path = ''
+              for part in parts:
+                  path += '/' + part
+                  try:
+                      ftp.mkd(path)
+                  except error_perm:
+                      pass
+
+          def upload_tree(ftp, base):
+              files = [p for p in ROOT.rglob('*') if p.is_file() and p.name not in SKIP and 'config.local.php' not in p.parts]
+              print(f'Uploading {len(files)} files to {base or "/"}')
+              for local in files:
+                  rel = local.relative_to(ROOT).as_posix()
+                  remote = f'{base}/{rel}' if base else f'/{rel}'
+                  ensure_dir(ftp, str(Path(remote).parent).replace('\\', '/'))
+                  with local.open('rb') as handle:
+                      ftp.storbinary(f'STOR {remote}', handle)
+                  print('OK', rel)
+              db_pass = os.environ.get('CHICKEN_DB_PASS', '')
+              if db_pass:
+                  cfg = (
+                      "<?php\n\ndeclare(strict_types=1);\n\nreturn [\n"
+                      "    'app_url' => 'https://chicken.gonulkoprusu.com',\n"
+                      "    'db' => [\n"
+                      "        'host' => 'localhost',\n"
+                      "        'port' => 3306,\n"
+                      "        'name' => " + repr(os.environ.get('CHICKEN_DB_NAME', 'gonulkop_chicken')) + ",\n"
+                      "        'user' => " + repr(os.environ.get('CHICKEN_DB_USER', 'gonulkop_admin')) + ",\n"
+                      "        'pass' => " + repr(db_pass) + ",\n"
+                      "        'charset' => 'utf8mb4',\n"
+                      "    ],\n"
+                      "];\n"
+                  )
+                  remote_cfg = f'{base}/config/config.local.php' if base else '/config/config.local.php'
+                  ensure_dir(ftp, str(Path(remote_cfg).parent).replace('\\', '/'))
+                  ftp.storbinary(f'STOR {remote_cfg}', BytesIO(cfg.encode('utf-8')))
+                  print('OK config/config.local.php')
+
+          last_err = None
+          for user, password, label in candidates:
+              print(f'Trying FTP as {label} ({user})')
+              try:
+                  ftp = FTP()
+                  ftp.connect(HOST, 21, timeout=40)
+                  ftp.login(user, password)
+                  ftp.set_pasv(True)
+                  print('login ok, pwd=', ftp.pwd())
+                  try:
+                      print('root entries:', ftp.nlst()[:80])
+                  except Exception as e:
+                      print('nlst failed', e)
+
+                  base = None
+                  for path in [
+                      '/chicken.gonulkoprusu.com',
+                      'chicken.gonulkoprusu.com',
+                      '/home/gonulkop/chicken.gonulkoprusu.com',
+                      '/public_html/chicken',
+                      '/chicken.gonulkoprusu.com/public_html',
+                  ]:
+                      try:
+                          ftp.cwd(path)
+                          base = ftp.pwd().rstrip('/')
+                          print('using remote base', base)
+                          break
+                      except error_perm as e:
+                          print('cwd fail', path, e)
+
+                  if base is None and label == 'chicken':
+                      base = ftp.pwd().rstrip('/')
+                      print('chicken account home as base', base or '/')
+
+                  if base is None:
+                      raise RuntimeError('Could not locate chicken document root')
+
+                  try:
+                      names = ftp.nlst(base)
+                      if any(n.endswith('public_html') or n.split('/')[-1] == 'public_html' for n in names):
+                          candidate = base.rstrip('/') + '/public_html'
+                          ftp.cwd(candidate)
+                          base = ftp.pwd().rstrip('/')
+                          print('switched to public_html', base)
+                  except Exception:
+                      pass
+
+                  upload_tree(ftp, base)
+                  ftp.quit()
+                  print('Deploy finished via', label)
+                  sys.exit(0)
+              except Exception as e:
+                  last_err = e
+                  print(f'Failed via {label}: {type(e).__name__}: {e}')
+
+          print('::error::All FTP strategies failed:', last_err)
+          sys.exit(1)
+          PY
