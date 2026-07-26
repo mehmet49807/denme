@@ -22,7 +22,7 @@ jobs:
       - name: Deploy chicken via FTP
         env:
           PYTHONUNBUFFERED: "1"
-          CHICKEN_REPAIR_ONLY: "0"
+          CHICKEN_REPAIR_ONLY: "1"
           CHICKEN_FTP_HOST: ftp.gonulkoprusu.com
           CHICKEN_FTP_USER: ${{ secrets.FTP_CHICKEN_USER }}
           CHICKEN_FTP_PASSWORD: ${{ secrets.FTP_CHICKEN_PASSWORD }}
