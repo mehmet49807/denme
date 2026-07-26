@@ -83,7 +83,7 @@ button, input, select, textarea { font: inherit; }
   inset: 0;
   background:
     linear-gradient(180deg, rgba(10,12,10,0.15) 0%, rgba(10,12,10,0.35) 40%, rgba(10,12,10,0.92) 100%),
-    url('/assets/img/hero.svg') center/cover no-repeat;
+    url('../img/hero.svg') center/cover no-repeat;
   transform: scale(1.02);
   animation: drift 18s ease-in-out infinite alternate;
 }

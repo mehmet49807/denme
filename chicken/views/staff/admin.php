@@ -40,7 +40,7 @@
 
   <section class="panel">
     <h2 style="font-family:var(--font-display);margin:0 0 12px">Personel ekle</h2>
-    <form method="post" action="/yonetici/personel" class="stack">
+    <form method="post" action="<?= e(url('/yonetici/personel')) ?>" class="stack">
       <?= csrf_field() ?>
       <label>Ad
         <input name="name" required>
@@ -106,7 +106,7 @@
       <tbody>
         <?php foreach ($orders as $order): ?>
           <tr>
-            <td><a href="/garson/fis/<?= (int) $order['id'] ?>"><?= e($order['order_code']) ?></a></td>
+            <td><a href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>"><?= e($order['order_code']) ?></a></td>
             <td><span class="chip <?= e($order['source']) ?>"><?= e(source_label($order['source'])) ?></span></td>
             <td><?= e($order['waiter_name'] ?? '—') ?></td>
             <td><?= e(status_label($order['status'])) ?></td>

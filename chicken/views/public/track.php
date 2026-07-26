@@ -4,7 +4,7 @@
   <h1 class="page-title">Siparişini izle</h1>
   <p class="muted">Sipariş kodunu girerek güncel durumu görün.</p>
 
-  <form class="panel stack" method="get" action="/takip" style="margin:22px 0; max-width:520px">
+  <form class="panel stack" method="get" action="<?= e(url('/takip')) ?>" style="margin:22px 0; max-width:520px">
     <label>Sipariş kodu
       <input name="code" value="<?= e($code) ?>" placeholder="CHK-......" required>
     </label>

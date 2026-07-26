@@ -74,10 +74,10 @@ def find_chicken_base(ftp: FTP, label: str) -> str | None:
         "/chicken.gonulkoprusu.com/public_html",
         "/domains/chicken.gonulkoprusu.com/public_html",
         "/home/gonulkop/chicken.gonulkoprusu.com",
-        "/public_html/chicken",
-        "public_html/chicken",
         "/chicken",
         "chicken",
+        "/public_html/chicken",
+        "public_html/chicken",
     ]
     for path in candidates:
         try:
@@ -171,15 +171,27 @@ def main() -> int:
             ftp.login(user, password)
             ftp.set_pasv(True)
             print("login ok, pwd=", ftp.pwd())
-            base = find_chicken_base(ftp, label)
-            if not base and label != "web":
-                raise RuntimeError("Could not locate chicken document root")
-            if not base:
+            bases = []
+            primary = find_chicken_base(ftp, label)
+            if primary:
+                bases.append(primary)
+            # Always also ensure web-root /chicken when using main accounts
+            if label in {"web", "admin"}:
+                for extra in ("/chicken", "/public_html/chicken"):
+                    try:
+                        ensure_dir(ftp, extra)
+                        ftp.cwd(extra)
+                        b = ftp.pwd().rstrip("/")
+                        if b not in bases:
+                            bases.append(b)
+                    except Exception as exc:
+                        print("extra base fail", extra, exc)
+            if not bases:
                 raise RuntimeError("Could not locate/create chicken document root")
-            upload_tree(ftp, base)
-            uploaded_bases.append(f"{label}:{base}")
+            for base in bases:
+                upload_tree(ftp, base)
+                uploaded_bases.append(f"{label}:{base}")
             ftp.quit()
-            # Prefer success via chicken account; otherwise keep trying others for coverage
             if label == "chicken":
                 print("Deploy finished via chicken account")
                 print("UPLOADED", ",".join(uploaded_bases))

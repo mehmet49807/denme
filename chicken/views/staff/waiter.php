@@ -3,7 +3,7 @@
     <p class="eyebrow">Garson paneli</p>
     <h1>Masa siparişi</h1>
   </div>
-  <a class="btn btn-ghost btn-sm" href="/garson/fis/0" style="display:none"></a>
+  <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/0')) ?>" style="display:none"></a>
 </div>
 
 <div class="order-builder">
@@ -79,7 +79,7 @@
             <td><?= e($order['table_label'] ?? '-') ?></td>
             <td><?= e(status_label($order['status'])) ?></td>
             <td><?= e(money((float) $order['total'])) ?></td>
-            <td><a class="btn btn-ghost btn-sm" href="/garson/fis/<?= (int) $order['id'] ?>">Aç</a></td>
+            <td><a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>">Aç</a></td>
           </tr>
         <?php endforeach; ?>
       </tbody>

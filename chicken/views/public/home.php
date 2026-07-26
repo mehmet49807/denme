@@ -5,8 +5,8 @@
     <h1>CHICKEN</h1>
     <p class="lede">Izgara tavuk, sıcak bar, hızlı servis. QR menüden bakın, online sipariş verin, siparişinizi anlık takip edin.</p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="/menu">QR Menüyü Aç</a>
-      <a class="btn btn-ghost" href="/siparis">Online Sipariş</a>
+      <a class="btn btn-primary" href="<?= e(url('/menu')) ?>">QR Menüyü Aç</a>
+      <a class="btn btn-ghost" href="<?= e(url('/siparis')) ?>">Online Sipariş</a>
     </div>
   </div>
 </section>

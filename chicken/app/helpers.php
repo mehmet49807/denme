@@ -27,13 +27,36 @@ function e(?string $value): string
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+function base_path(): string
+{
+    static $base = null;
+    if ($base !== null) {
+        return $base;
+    }
+    $script = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+    $dir = rtrim(str_replace('\\', '/', dirname($script)), '/');
+    $base = ($dir === '' || $dir === '/' || $dir === '.') ? '' : $dir;
+    return $base;
+}
+
+function url(string $path = '/'): string
+{
+    if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+        return $path;
+    }
+    if ($path === '' || $path === '/') {
+        return base_path() !== '' ? base_path() . '/' : '/';
+    }
+    if (!str_starts_with($path, '/')) {
+        $path = '/' . $path;
+    }
+    return base_path() . $path;
+}
+
 function redirect(string $path): never
 {
-    // Prefer host-relative redirects so install/login works before DNS/docroot is finalized.
-    if (!str_starts_with($path, 'http')) {
-        if (!str_starts_with($path, '/')) {
-            $path = '/' . $path;
-        }
+    if (!str_starts_with($path, 'http://') && !str_starts_with($path, 'https://')) {
+        $path = url($path);
     }
     header('Location: ' . $path);
     exit;
@@ -134,6 +157,10 @@ function current_path(): string
 {
     $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     $path = is_string($uri) ? $uri : '/';
+    $base = base_path();
+    if ($base !== '' && str_starts_with($path, $base)) {
+        $path = substr($path, strlen($base)) ?: '/';
+    }
     return rtrim($path, '/') ?: '/';
 }
 

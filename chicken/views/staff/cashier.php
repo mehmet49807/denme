@@ -35,7 +35,7 @@
       <?php foreach ($orders as $order): ?>
         <tr>
           <td>
-            <a href="/garson/fis/<?= (int) $order['id'] ?>"><?= e($order['order_code']) ?></a>
+            <a href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>"><?= e($order['order_code']) ?></a>
           </td>
           <td><span class="chip <?= e($order['source']) ?>"><?= e(source_label($order['source'])) ?></span></td>
           <td>
@@ -58,7 +58,7 @@
               <?php if (!in_array($order['status'], ['paid', 'cancelled'], true)): ?>
                 <button class="btn btn-dark btn-sm" type="button" data-order-id="<?= (int) $order['id'] ?>" data-status-btn="paid">Ödendi</button>
               <?php endif; ?>
-              <a class="btn btn-ghost btn-sm" href="/garson/fis/<?= (int) $order['id'] ?>">Fiş</a>
+              <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>">Fiş</a>
             </div>
           </td>
         </tr>

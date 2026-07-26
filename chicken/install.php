@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chicken Kurulum</title>
-  <link rel="stylesheet" href="/assets/css/app.css">
+  <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
 </head>
 <body class="auth-body">
   <main class="auth-card">
@@ -125,14 +125,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <li>Kasa: kasa / Kasa123!</li>
           <li>Garson: garson1 / Garson123!</li>
         </ul>
-        <a class="btn btn-primary" href="/">Siteye git</a>
-        <a class="btn btn-ghost" href="/personel/giris">Personel girişi</a>
+        <a class="btn btn-primary" href="<?= e(url('/')) ?>">Siteye git</a>
+        <a class="btn btn-ghost" href="<?= e(url('/personel/giris')) ?>">Personel girişi</a>
         <p class="muted small">Güvenlik için kurulumdan sonra <code>install.php</code> dosyasını silin.</p>
       </div>
     <?php else: ?>
       <form method="post" class="stack">
+        <?php
+          $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+          $guessUrl = isset($_SERVER['HTTP_HOST'])
+            ? ($scheme . '://' . $_SERVER['HTTP_HOST'] . base_path())
+            : 'https://chicken.gonulkoprusu.com';
+        ?>
         <label>Uygulama URL
-          <input name="app_url" value="https://chicken.gonulkoprusu.com" required>
+          <input name="app_url" value="<?= e($guessUrl) ?>" required>
         </label>
         <label>DB Host
           <input name="db_host" value="localhost" required>

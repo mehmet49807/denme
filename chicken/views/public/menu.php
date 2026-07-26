@@ -24,7 +24,7 @@
   </div>
 
   <div class="cta-row" style="margin-top:28px">
-    <a class="btn btn-primary" href="/siparis">Online Sipariş Ver</a>
-    <a class="btn btn-ghost" href="/takip">Sipariş Takip</a>
+    <a class="btn btn-primary" href="<?= e(url('/siparis')) ?>">Online Sipariş Ver</a>
+    <a class="btn btn-ghost" href="<?= e(url('/takip')) ?>">Sipariş Takip</a>
   </div>
 </div>

@@ -8,17 +8,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e($title ?? 'Chicken') ?></title>
   <meta name="description" content="Chicken restoran — QR menü, online sipariş ve sipariş takip.">
-  <link rel="stylesheet" href="/assets/css/app.css">
+  <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
 </head>
-<body<?= !empty($bodyAttrs) ? ' ' . $bodyAttrs : '' ?>>
+<body<?= !empty($bodyAttrs) ? ' ' . $bodyAttrs : '' ?> data-base="<?= e(base_path()) ?>">
   <header class="site-header">
     <div class="nav">
-      <a class="brand" href="/">Chicken<span>.</span></a>
+      <a class="brand" href="<?= e(url('/')) ?>">Chicken<span>.</span></a>
       <nav class="nav-links">
-        <a href="/menu">Menü</a>
-        <a href="/siparis">Sipariş</a>
-        <a href="/takip">Takip</a>
-        <a href="/personel/giris">Personel</a>
+        <a href="<?= e(url('/menu')) ?>">Menü</a>
+        <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
+        <a href="<?= e(url('/takip')) ?>">Takip</a>
+        <a href="<?= e(url('/personel/giris')) ?>">Personel</a>
       </nav>
     </div>
   </header>
@@ -26,6 +26,7 @@
   <footer class="footer">
     <div>Chicken · Izgara lezzet · QR menü · Online sipariş</div>
   </footer>
-  <script src="/assets/js/app.js" defer></script>
+  <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
+  <script src="<?= e(url('/assets/js/app.js')) ?>" defer></script>
 </body>
 </html>

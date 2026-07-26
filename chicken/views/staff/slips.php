@@ -5,7 +5,7 @@
   </div>
   <div class="cta-row">
     <button class="btn btn-primary btn-sm" type="button" onclick="window.print()">Yazdır</button>
-    <a class="btn btn-ghost btn-sm" href="/garson">Panele dön</a>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson')) ?>">Panele dön</a>
   </div>
 </div>
 

@@ -1,4 +1,6 @@
 (() => {
+  const base = (window.CHICKEN_BASE || '').replace(/\/$/, '');
+  const api = (path) => base + path;
   const money = (n) =>
     new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(n);
 
@@ -108,7 +110,7 @@
       const btn = onlineForm.querySelector('button[type="submit"]');
       if (btn) btn.disabled = true;
       try {
-        const res = await fetch('/api/orders', {
+        const res = await fetch(api('/api/orders'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
@@ -116,7 +118,7 @@
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || 'Sipariş alınamadı');
         onlineCart.clear();
-        window.location.href = `/takip?code=${encodeURIComponent(data.order.order_code)}`;
+        window.location.href = api(`/takip?code=${encodeURIComponent(data.order.order_code)}`);
       } catch (err) {
         alert(err.message || 'Hata');
       } finally {
@@ -142,7 +144,7 @@
       const btn = waiterForm.querySelector('button[type="submit"]');
       if (btn) btn.disabled = true;
       try {
-        const res = await fetch('/api/staff/orders', {
+        const res = await fetch(api('/api/staff/orders'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -153,7 +155,7 @@
         });
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || 'Sipariş gönderilemedi');
-        window.location.href = `/garson/fis/${data.order.id}`;
+        window.location.href = api(`/garson/fis/${data.order.id}`);
       } catch (err) {
         alert(err.message || 'Hata');
       } finally {
@@ -166,7 +168,7 @@
     btn.addEventListener('click', async () => {
       const id = btn.getAttribute('data-order-id');
       const status = btn.getAttribute('data-status-btn');
-      const res = await fetch(`/api/orders/${id}/status`, {
+      const res = await fetch(api(`/api/orders/${id}/status`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
@@ -184,7 +186,7 @@
     btn.addEventListener('click', async () => {
       const itemId = btn.getAttribute('data-item-id');
       const status = btn.getAttribute('data-item-status');
-      const res = await fetch('/api/station/item-status', {
+      const res = await fetch(api('/api/station/item-status'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ item_id: Number(itemId), status }),
@@ -215,7 +217,7 @@
   if (trackCode) {
     setInterval(async () => {
       try {
-        const res = await fetch(`/api/orders/${encodeURIComponent(trackCode)}`);
+        const res = await fetch(api(`/api/orders/${encodeURIComponent(trackCode)}`));
         const data = await res.json();
         if (!data.ok) return;
         const el = document.querySelector('[data-live-status]');
