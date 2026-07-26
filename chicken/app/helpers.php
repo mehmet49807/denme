@@ -29,10 +29,10 @@ function e(?string $value): string
 
 function redirect(string $path): never
 {
+    // Prefer host-relative redirects so install/login works before DNS/docroot is finalized.
     if (!str_starts_with($path, 'http')) {
-        $base = rtrim((string) config('app_url', ''), '/');
-        if ($base !== '' && str_starts_with($path, '/')) {
-            $path = $base . $path;
+        if (!str_starts_with($path, '/')) {
+            $path = '/' . $path;
         }
     }
     header('Location: ' . $path);

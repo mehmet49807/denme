@@ -120,16 +120,24 @@ def find_chicken_base(ftp: FTP, label: str) -> str | None:
         return home
 
     if label in {"web", "admin"}:
-        # Create under public_html/chicken as fallback document root target
-        for path in ["/public_html/chicken", "public_html/chicken", "/chicken"]:
+        # Prefer web-root /chicken (FTP jail root is the live web root on this host).
+        # Also create public_html/chicken for cPanel document-root remapping.
+        created: list[str] = []
+        for path in ["/chicken", "chicken", "/public_html/chicken", "public_html/chicken"]:
             try:
                 ensure_dir(ftp, path if path.startswith("/") else "/" + path)
                 ftp.cwd(path)
                 base = ftp.pwd().rstrip("/")
                 print("created fallback base", base)
-                return base
+                created.append(base)
             except Exception as exc:
                 print("fallback fail", path, exc)
+        if created:
+            # Prefer shortest /chicken web-root path
+            for base in created:
+                if base.rstrip("/").endswith("/chicken") and "public_html" not in base:
+                    return base
+            return created[0]
 
     return None
 
@@ -183,9 +191,29 @@ def main() -> int:
     if uploaded_bases:
         print("Deploy finished via fallback account(s)")
         print("UPLOADED", ",".join(uploaded_bases))
+        # Try server-side copy into subdomain docroot if PHP can see it.
+        import urllib.request
+        import secrets as _secrets
+
+        token = _secrets.token_urlsafe(16)
+        bootstrap_urls = [
+            f"https://gonulkoprusu.com/public_html/chicken/tools/server_bootstrap.php?key={token}&expect={token}",
+            f"https://gonulkoprusu.com/chicken/tools/server_bootstrap.php?key={token}&expect={token}",
+        ]
+        for url in bootstrap_urls:
+            try:
+                print("bootstrap try", url.split("?")[0])
+                with urllib.request.urlopen(url, timeout=45) as resp:
+                    body = resp.read().decode("utf-8", "replace")
+                print(body)
+                if "COPIED=" in body or "OK" in body:
+                    break
+            except Exception as exc:  # noqa: BLE001
+                print("bootstrap failed", type(exc).__name__, exc)
+
         print(
             "::warning::Uploaded under main site FTP. "
-            "Point chicken.gonulkoprusu.com document root to public_html/chicken "
+            "If chicken.gonulkoprusu.com is still 404, point its document root to public_html/chicken "
             "or fix chicken FTP password for direct deploy."
         )
         return 0
