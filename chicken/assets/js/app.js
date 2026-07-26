@@ -13,9 +13,20 @@
   const toggleButtons = document.querySelectorAll('[data-nav-toggle]');
   const sidePanel = document.querySelector('#staff-side');
   const navLabel = document.querySelector('[data-nav-label]');
+  const isAdminArea = !!(staffLayout && staffLayout.hasAttribute('data-admin-area'));
+  const isDesktopAdminNav = () =>
+    isAdminArea && window.matchMedia('(min-width: 900px)').matches;
 
   const setNavOpen = (open) => {
     if (!staffLayout) return;
+    if (isDesktopAdminNav()) {
+      staffLayout.classList.remove('nav-open');
+      const backdrop = staffLayout.querySelector('.side-backdrop');
+      if (backdrop) backdrop.hidden = true;
+      if (sidePanel) sidePanel.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = '';
+      return;
+    }
     staffLayout.classList.toggle('nav-open', open);
     const backdrop = staffLayout.querySelector('.side-backdrop');
     if (backdrop) backdrop.hidden = !open;
@@ -35,12 +46,20 @@
   document.querySelectorAll('[data-nav-close]').forEach((btn) => {
     btn.addEventListener('click', closeNav);
   });
-  document.querySelectorAll('.side-link').forEach((link) => {
-    link.addEventListener('click', closeNav);
+  document.querySelectorAll('.side-link, .admin-side-nav .side-cat').forEach((link) => {
+    link.addEventListener('click', () => {
+      if (!isDesktopAdminNav()) closeNav();
+    });
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeNav();
   });
+  if (staffLayout && staffLayout.hasAttribute('data-admin-home-nav') && !isDesktopAdminNav()) {
+    openNav();
+  }
+  if (isDesktopAdminNav() && sidePanel) {
+    sidePanel.setAttribute('aria-hidden', 'false');
+  }
 
   const applyCategoryFilter = (key) => {
     const cards = document.querySelectorAll('[data-cat]');

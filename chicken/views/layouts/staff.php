@@ -45,10 +45,15 @@ $sideColor = match ($role) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title><?= e($title ?? 'Chicken Personel') ?></title>
-  <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
+  <?php
+    $assetRoot = dirname(__DIR__, 2) . '/assets';
+    $cssVer = @filemtime($assetRoot . '/css/app.css') ?: time();
+    $jsVer = @filemtime($assetRoot . '/js/app.js') ?: time();
+  ?>
+  <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) $cssVer) ?>">
 </head>
-<body data-base="<?= e(base_path()) ?>" class="staff-body">
-  <div class="layout-staff" data-staff-layout>
+<body data-base="<?= e(base_path()) ?>" class="staff-body<?= $isAdminArea ? ' is-admin-area' : '' ?>">
+  <div class="layout-staff<?= $isAdminArea ? ' admin-area' : '' ?>" data-staff-layout<?= $isAdminArea ? ' data-admin-area' : '' ?><?= ($isAdminArea && current_path() === '/yonetici') ? ' data-admin-home-nav' : '' ?>>
     <div class="side-backdrop" data-nav-close hidden></div>
 
     <aside class="side" id="staff-side" aria-hidden="true">
@@ -152,6 +157,6 @@ $sideColor = match ($role) {
     </div>
   </div>
   <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
-  <script src="<?= e(url('/assets/js/app.js')) ?>" defer></script>
+  <script src="<?= e(url('/assets/js/app.js')) ?>?v=<?= e((string) $jsVer) ?>" defer></script>
 </body>
 </html>
