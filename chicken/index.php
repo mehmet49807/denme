@@ -617,6 +617,194 @@ $router->post('/yonetici/masalar/ekle', static function (): void {
     }
 });
 
+$router->post('/yonetici/masalar/durum', static function (): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/masalar');
+    }
+    $tableId = (int) input('table_id');
+    $active = (string) input('is_active') === '1' ? 1 : 0;
+    Database::pdo()->prepare('UPDATE dining_tables SET is_active = ? WHERE id = ?')->execute([$active, $tableId]);
+    flash('success', $active ? 'Masa aktifleştirildi.' : 'Masa pasife alındı.');
+    redirect('/yonetici/masalar');
+});
+
+$router->get('/yonetici/masalar/{id}', static function (string $id): void {
+    Auth::requireRole('admin');
+    $stmt = Database::pdo()->prepare('SELECT * FROM dining_tables WHERE id = ? LIMIT 1');
+    $stmt->execute([(int) $id]);
+    $table = $stmt->fetch();
+    if (!$table) {
+        http_response_code(404);
+        echo 'Masa bulunamadı';
+        return;
+    }
+    view('staff/admin_table_edit', [
+        'title' => 'Yönetici · Masa düzenle',
+        'table' => $table,
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->post('/yonetici/masalar/{id}', static function (string $id): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/masalar/' . (int) $id);
+    }
+    $code = strtoupper(trim((string) input('code')));
+    $label = trim((string) input('label'));
+    $seats = max(1, min(50, (int) input('seats')));
+    $active = input('is_active') ? 1 : 0;
+    if ($code === '' || $label === '' || !preg_match('/^[A-Z0-9_-]+$/', $code)) {
+        flash('error', 'Masa bilgileri geçersiz.');
+        redirect('/yonetici/masalar/' . (int) $id);
+    }
+    try {
+        Database::pdo()->prepare(
+            'UPDATE dining_tables SET code = ?, label = ?, seats = ?, is_active = ? WHERE id = ?'
+        )->execute([$code, $label, $seats, $active, (int) $id]);
+        flash('success', 'Masa güncellendi.');
+        redirect('/yonetici/masalar');
+    } catch (Throwable) {
+        flash('error', 'Güncellenemedi (kod benzersiz olmalı).');
+        redirect('/yonetici/masalar/' . (int) $id);
+    }
+});
+
+$router->get('/yonetici/urunler', static function (): void {
+    Auth::requireRole('admin');
+    $pdo = Database::pdo();
+    $items = $pdo->query(
+        'SELECT m.*, c.name AS category_name
+         FROM menu_items m
+         LEFT JOIN categories c ON c.id = m.category_id
+         ORDER BY c.sort_order, m.sort_order, m.id'
+    )->fetchAll();
+    $categories = $pdo->query('SELECT * FROM categories WHERE is_active = 1 ORDER BY sort_order, id')->fetchAll();
+    view('staff/admin_products', [
+        'title' => 'Yönetici · Ürünler',
+        'items' => $items,
+        'categories' => $categories,
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/yonetici/urunler/ekle', static function (): void {
+    Auth::requireRole('admin');
+    $categories = Database::pdo()
+        ->query('SELECT * FROM categories WHERE is_active = 1 ORDER BY sort_order, id')
+        ->fetchAll();
+    view('staff/admin_product_form', [
+        'title' => 'Yönetici · Ürün ekle',
+        'item' => null,
+        'categories' => $categories,
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->post('/yonetici/urunler/ekle', static function (): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/urunler/ekle');
+    }
+    $name = trim((string) input('name'));
+    $description = trim((string) input('description'));
+    $categoryId = (int) input('category_id');
+    $price = (float) input('price');
+    $station = (string) input('station');
+    $sort = max(0, (int) input('sort_order'));
+    $available = input('is_available') ? 1 : 0;
+    if ($name === '' || $categoryId <= 0 || $price < 0 || !in_array($station, ['kitchen', 'bar'], true)) {
+        flash('error', 'Ürün bilgileri geçersiz.');
+        redirect('/yonetici/urunler/ekle');
+    }
+    Database::pdo()->prepare(
+        'INSERT INTO menu_items (category_id, name, description, price, station, is_available, sort_order)
+         VALUES (?, ?, ?, ?, ?, ?, ?)'
+    )->execute([
+        $categoryId,
+        $name,
+        $description !== '' ? $description : null,
+        $price,
+        $station,
+        $available,
+        $sort,
+    ]);
+    flash('success', 'Ürün eklendi.');
+    redirect('/yonetici/urunler');
+});
+
+$router->post('/yonetici/urunler/durum', static function (): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/urunler');
+    }
+    $itemId = (int) input('item_id');
+    $available = (string) input('is_available') === '1' ? 1 : 0;
+    Database::pdo()->prepare('UPDATE menu_items SET is_available = ? WHERE id = ?')->execute([$available, $itemId]);
+    flash('success', $available ? 'Ürün satışa açıldı.' : 'Ürün satıştan kaldırıldı.');
+    redirect('/yonetici/urunler');
+});
+
+$router->get('/yonetici/urunler/{id}', static function (string $id): void {
+    Auth::requireRole('admin');
+    $pdo = Database::pdo();
+    $stmt = $pdo->prepare('SELECT * FROM menu_items WHERE id = ? LIMIT 1');
+    $stmt->execute([(int) $id]);
+    $item = $stmt->fetch();
+    if (!$item) {
+        http_response_code(404);
+        echo 'Ürün bulunamadı';
+        return;
+    }
+    $categories = $pdo->query('SELECT * FROM categories WHERE is_active = 1 ORDER BY sort_order, id')->fetchAll();
+    view('staff/admin_product_form', [
+        'title' => 'Yönetici · Ürün düzenle',
+        'item' => $item,
+        'categories' => $categories,
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->post('/yonetici/urunler/{id}', static function (string $id): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/urunler/' . (int) $id);
+    }
+    $name = trim((string) input('name'));
+    $description = trim((string) input('description'));
+    $categoryId = (int) input('category_id');
+    $price = (float) input('price');
+    $station = (string) input('station');
+    $sort = max(0, (int) input('sort_order'));
+    $available = input('is_available') ? 1 : 0;
+    if ($name === '' || $categoryId <= 0 || $price < 0 || !in_array($station, ['kitchen', 'bar'], true)) {
+        flash('error', 'Ürün bilgileri geçersiz.');
+        redirect('/yonetici/urunler/' . (int) $id);
+    }
+    Database::pdo()->prepare(
+        'UPDATE menu_items
+         SET category_id = ?, name = ?, description = ?, price = ?, station = ?, is_available = ?, sort_order = ?
+         WHERE id = ?'
+    )->execute([
+        $categoryId,
+        $name,
+        $description !== '' ? $description : null,
+        $price,
+        $station,
+        $available,
+        $sort,
+        (int) $id,
+    ]);
+    flash('success', 'Ürün güncellendi.');
+    redirect('/yonetici/urunler');
+});
+
 $router->get('/yonetici/istatistikler', static function () use ($adminSalesSummary): void {
     Auth::requireRole('admin');
     $monthStart = date('Y-m-01 00:00:00');

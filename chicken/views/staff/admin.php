@@ -18,6 +18,16 @@
     <strong>Masa ekleme</strong>
     <span class="muted small">Yeni masa + QR</span>
   </a>
+  <a class="admin-quick" href="<?= e(url('/yonetici/urunler')) ?>">
+    <?php partial('partials/menu_icon', ['icon' => 'burger', 'color' => '#f0b429']); ?>
+    <strong>Ürünler</strong>
+    <span class="muted small">Fiyat / satış durumu</span>
+  </a>
+  <a class="admin-quick" href="<?= e(url('/yonetici/urunler/ekle')) ?>">
+    <?php partial('partials/menu_icon', ['icon' => 'add', 'color' => '#2bb3a3']); ?>
+    <strong>Ürün ekle</strong>
+    <span class="muted small">Yeni menü ürünü</span>
+  </a>
   <a class="admin-quick" href="<?= e(url('/yonetici/istatistikler')) ?>">
     <?php partial('partials/menu_icon', ['icon' => 'stats', 'color' => '#e2b457']); ?>
     <strong>Satış istatistikleri</strong>

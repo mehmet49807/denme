@@ -716,6 +716,10 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   border-color: rgba(255,106,26,0.35);
   background: linear-gradient(180deg, rgba(255,106,26,0.12), rgba(18,21,18,0.96));
 }
+.table-tile.is-inactive {
+  opacity: 0.65;
+  filter: grayscale(0.35);
+}
 .table-tile-top {
   display: flex;
   justify-content: space-between;

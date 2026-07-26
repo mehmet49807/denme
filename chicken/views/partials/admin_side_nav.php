@@ -2,6 +2,8 @@
 $items = [
     ['href' => '/yonetici/masalar', 'label' => 'Tüm masalar', 'icon' => 'tables', 'color' => '#ff6a1a'],
     ['href' => '/yonetici/masalar/ekle', 'label' => 'Masa ekleme', 'icon' => 'add', 'color' => '#3d9a6a'],
+    ['href' => '/yonetici/urunler', 'label' => 'Ürünler', 'icon' => 'burger', 'color' => '#f0b429'],
+    ['href' => '/yonetici/urunler/ekle', 'label' => 'Ürün ekle', 'icon' => 'add', 'color' => '#2bb3a3'],
     ['href' => '/yonetici/istatistikler', 'label' => 'Satış istatistikleri', 'icon' => 'stats', 'color' => '#e2b457'],
     ['href' => '/yonetici/siparisler', 'label' => 'Siparişler', 'icon' => 'orders', 'color' => '#4c8dff'],
     ['href' => '/yonetici/personel-istatistik', 'label' => 'Kasa ve Garson istatistikler', 'icon' => 'staffstats', 'color' => '#f0b429'],

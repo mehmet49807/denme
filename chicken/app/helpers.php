@@ -220,10 +220,15 @@ function role_label(string $role): string
 function admin_nav_active(string $prefix): bool
 {
     $path = current_path();
-    if ($prefix === '/yonetici') {
-        return $path === '/yonetici';
+    $prefix = rtrim($prefix, '/') ?: '/';
+    if ($path === $prefix) {
+        return true;
     }
-    return $path === $prefix || str_starts_with($path, rtrim($prefix, '/') . '/');
+    // Highlight parent section for nested edit pages like /yonetici/urunler/12
+    if (preg_match('#^' . preg_quote($prefix, '#') . '/\d+#', $path)) {
+        return true;
+    }
+    return false;
 }
 
 function generate_order_code(PDO $pdo): string
