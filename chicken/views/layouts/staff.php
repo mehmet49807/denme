@@ -14,11 +14,13 @@ $role = $user['role'] ?? Auth::role();
 <body data-base="<?= e(base_path()) ?>" class="staff-body">
   <div class="layout-staff" data-staff-layout>
     <div class="side-backdrop" data-nav-close hidden></div>
-    <aside class="side" id="staff-side">
+
+    <aside class="side" id="staff-side" aria-hidden="true">
       <div class="side-top">
         <a class="brand" href="<?= e(url('/')) ?>">Chicken<span>.</span></a>
         <button class="icon-btn side-close" type="button" data-nav-close aria-label="Menüyü kapat">✕</button>
       </div>
+      <p class="side-label">Personel menü</p>
       <nav>
         <?php if (in_array($role, ['waiter', 'admin'], true)): ?>
           <a class="<?= is_active_path('/garson') ? 'active' : '' ?>" href="<?= e(url('/garson')) ?>">Garson</a>
@@ -42,9 +44,19 @@ $role = $user['role'] ?? Auth::role();
         </form>
       </div>
     </aside>
+
     <div class="staff-content">
       <header class="staff-topbar">
-        <button class="icon-btn" type="button" data-nav-open aria-label="Menüyü aç" aria-controls="staff-side">☰</button>
+        <button
+          class="btn btn-dark btn-menu"
+          type="button"
+          data-nav-toggle
+          aria-expanded="false"
+          aria-controls="staff-side"
+        >
+          <span class="menu-icon" aria-hidden="true">☰</span>
+          <span data-nav-label>Menü</span>
+        </button>
         <div class="staff-topbar-title">
           <span class="brand-inline">Chicken<span>.</span></span>
           <span class="small muted"><?= e($title ?? 'Personel') ?></span>

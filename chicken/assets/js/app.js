@@ -5,28 +5,36 @@
     new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(n);
 
   const staffLayout = document.querySelector('[data-staff-layout]');
-  const openNav = () => {
+  const toggleBtn = document.querySelector('[data-nav-toggle]');
+  const sidePanel = document.querySelector('#staff-side');
+  const navLabel = document.querySelector('[data-nav-label]');
+
+  const setNavOpen = (open) => {
     if (!staffLayout) return;
-    staffLayout.classList.add('nav-open');
-    const backdrop = staffLayout.querySelector('[data-nav-close].side-backdrop');
-    if (backdrop) backdrop.hidden = false;
-    document.body.style.overflow = 'hidden';
+    staffLayout.classList.toggle('nav-open', open);
+    const backdrop = staffLayout.querySelector('.side-backdrop');
+    if (backdrop) backdrop.hidden = !open;
+    if (sidePanel) sidePanel.setAttribute('aria-hidden', open ? 'false' : 'true');
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggleBtn.classList.toggle('is-open', open);
+    }
+    if (navLabel) navLabel.textContent = open ? 'Kapat' : 'Menü';
+    document.body.style.overflow = open ? 'hidden' : '';
   };
-  const closeNav = () => {
-    if (!staffLayout) return;
-    staffLayout.classList.remove('nav-open');
-    const backdrop = staffLayout.querySelector('[data-nav-close].side-backdrop');
-    if (backdrop) backdrop.hidden = true;
-    document.body.style.overflow = '';
-  };
-  document.querySelectorAll('[data-nav-open]').forEach((btn) => {
-    btn.addEventListener('click', openNav);
-  });
+  const openNav = () => setNavOpen(true);
+  const closeNav = () => setNavOpen(false);
+  const toggleNav = () => setNavOpen(!(staffLayout && staffLayout.classList.contains('nav-open')));
+
+  if (toggleBtn) toggleBtn.addEventListener('click', toggleNav);
   document.querySelectorAll('[data-nav-close]').forEach((btn) => {
     btn.addEventListener('click', closeNav);
   });
   document.querySelectorAll('.side nav a').forEach((link) => {
     link.addEventListener('click', closeNav);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeNav();
   });
 
   function createCart(root) {
