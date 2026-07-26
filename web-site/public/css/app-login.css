@@ -337,20 +337,8 @@ body.app-auth {
         padding: 1.5rem;
     }
 
-    .app-auth__photo--a,
-    .app-auth__photo--b {
-        display: none;
-    }
-
-    .app-auth__photo--wide {
-        display: block;
+    .app-auth__photo {
         object-position: center center;
-        animation: aaWideKen 18s ease-in-out infinite alternate;
-    }
-
-    @keyframes aaWideKen {
-        from { transform: scale(1.02); }
-        to { transform: scale(1.08) translate3d(-1.5%, 0, 0); }
     }
 
     .app-auth__shell {
