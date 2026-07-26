@@ -13,13 +13,15 @@ $messages = [];
 $errors = [];
 $done = false;
 
-function run_sql_file(PDO $pdo, string $path): void
-{
-    $sql = file_get_contents($path);
-    if ($sql === false) {
-        throw new RuntimeException('SQL dosyası okunamadı: ' . $path);
+if (!function_exists('run_sql_file')) {
+    function run_sql_file(PDO $pdo, string $path): void
+    {
+        $sql = file_get_contents($path);
+        if ($sql === false) {
+            throw new RuntimeException('SQL dosyası okunamadı: ' . $path);
+        }
+        $pdo->exec($sql);
     }
-    $pdo->exec($sql);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

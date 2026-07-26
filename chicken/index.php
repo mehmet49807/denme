@@ -17,7 +17,10 @@ $path = current_path();
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 // Allow installer even if DB is missing
-if ($path === '/install.php' || $path === '/install') {
+if ($path === '/install') {
+    redirect('/install.php');
+}
+if ($path === '/install.php') {
     require __DIR__ . '/install.php';
     exit;
 }
@@ -28,8 +31,8 @@ try {
     $installed = false;
 }
 
-if (!$installed && $path !== '/install') {
-    redirect('/install');
+if (!$installed && $path !== '/install.php') {
+    redirect('/install.php');
 }
 
 $router = new Router();
