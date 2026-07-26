@@ -48,6 +48,7 @@ body.app-auth {
 .app-auth__photos {
     position: absolute;
     inset: 0;
+    display: block;
 }
 
 .app-auth__photo {
@@ -57,20 +58,6 @@ body.app-auth {
     height: 100%;
     object-fit: cover;
     object-position: center 28%;
-    transform: scale(1.04);
-}
-
-.app-auth__photo--a {
-    animation: aaPhotoA 14s ease-in-out infinite;
-}
-
-.app-auth__photo--b {
-    opacity: 0;
-    animation: aaPhotoB 14s ease-in-out infinite;
-}
-
-.app-auth__photo--wide {
-    display: none;
 }
 
 .app-auth__veil {
@@ -87,18 +74,6 @@ body.app-auth {
     inset: 0;
     opacity: 0.06;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-@keyframes aaPhotoA {
-    0%, 42% { opacity: 1; transform: scale(1.04); }
-    50%, 92% { opacity: 0; transform: scale(1.08); }
-    100% { opacity: 1; transform: scale(1.04); }
-}
-
-@keyframes aaPhotoB {
-    0%, 42% { opacity: 0; transform: scale(1.08); }
-    50%, 92% { opacity: 1; transform: scale(1.04); }
-    100% { opacity: 0; transform: scale(1.08); }
 }
 
 .app-auth__shell {
