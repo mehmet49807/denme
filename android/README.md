@@ -12,6 +12,12 @@ https://gonulkoprusu.com/uygulama-demo?key=gk-app-demo-2026
 
 Admin: **Büyüme → Uygulama → Android demo**
 
+App giriş teması (web’den ayrı):
+
+```
+https://gonulkoprusu.com/uygulama/giris
+```
+
 Demo onayından sonra APK + AAB üretilecek.
 
 ## Son adım (henüz yapılmadı): APK + AAB
