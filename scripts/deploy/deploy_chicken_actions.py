@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import sys
+import time
 from ftplib import FTP, error_perm
 from io import BytesIO
 from pathlib import Path
@@ -12,6 +13,29 @@ from pathlib import Path
 ROOT = Path("chicken")
 HOST = os.environ.get("CHICKEN_FTP_HOST", "ftp.gonulkoprusu.com")
 SKIP = {".git", ".DS_Store", "Thumbs.db", "config.local.php"}
+
+# Upload these first so a mid-deploy timeout cannot wipe the app entrypoint.
+PRIORITY = [
+    "index.php",
+    "app/helpers.php",
+    "app/MenuImageSync.php",
+    "app/SchemaSync.php",
+    "app/CategorySync.php",
+    "app/Database.php",
+    "app/Auth.php",
+    "app/OrderService.php",
+    "app/Router.php",
+    "views/partials/menu_item_card.php",
+    "views/layouts/public.php",
+    "views/layouts/staff.php",
+    "views/public/menu.php",
+    "views/public/home.php",
+    "views/public/order.php",
+    "assets/css/app.css",
+    "assets/js/app.js",
+    "tools/server_bootstrap.php",
+    "tools/repair_app.php",
+]
 
 
 def ensure_dir(ftp: FTP, remote_dir: str) -> None:
@@ -25,20 +49,89 @@ def ensure_dir(ftp: FTP, remote_dir: str) -> None:
             pass
 
 
-def upload_tree(ftp: FTP, base: str) -> None:
+def connect(user: str, password: str, attempts: int = 8) -> FTP:
+    last: Exception | None = None
+    for i in range(attempts):
+        try:
+            ftp = FTP()
+            ftp.connect(HOST, 21, timeout=120)
+            ftp.login(user, password)
+            ftp.set_pasv(True)
+            try:
+                ftp.encoding = "utf-8"
+            except Exception:
+                pass
+            print(f"login ok attempt={i + 1} pwd={ftp.pwd()}")
+            return ftp
+        except Exception as exc:  # noqa: BLE001
+            last = exc
+            print(f"connect fail {i + 1}: {type(exc).__name__}: {exc}")
+            time.sleep(min(30, 3 * (i + 1)))
+    raise RuntimeError(f"FTP connect failed: {last}")
+
+
+def upload_one(ftp: FTP, user: str, password: str, local: Path, remote: str) -> FTP:
+    for attempt in range(5):
+        try:
+            ensure_dir(ftp, str(Path(remote).parent).replace("\\", "/"))
+            with local.open("rb") as handle:
+                ftp.storbinary(f"STOR {remote}", handle)
+            try:
+                remote_size = ftp.size(remote)
+            except Exception:
+                remote_size = None
+            local_size = local.stat().st_size
+            if remote_size is not None and int(remote_size) != local_size:
+                raise RuntimeError(f"size mismatch {remote_size}!={local_size}")
+            if local_size > 0 and remote_size == 0:
+                raise RuntimeError(f"remote empty after upload: {remote}")
+            print("OK", remote, local_size)
+            return ftp
+        except Exception as exc:  # noqa: BLE001
+            print(f"retry {remote} #{attempt + 1}: {type(exc).__name__}: {exc}")
+            try:
+                ftp.quit()
+            except Exception:
+                pass
+            time.sleep(2 * (attempt + 1))
+            ftp = connect(user, password)
+    raise RuntimeError(f"failed to upload {remote}")
+
+
+def list_files() -> list[Path]:
     files = [
         p
         for p in ROOT.rglob("*")
         if p.is_file() and p.name not in SKIP and "config.local.php" not in p.parts
     ]
+    priority_paths = []
+    for rel in PRIORITY:
+        path = ROOT / rel
+        if path.is_file():
+            priority_paths.append(path)
+    rest = [p for p in files if p not in priority_paths]
+    # Images after PHP/CSS so the app boots even if image upload times out.
+    images = [p for p in rest if "assets/img/menu" in p.as_posix()]
+    other = [p for p in rest if p not in images]
+    return priority_paths + other + images
+
+
+def upload_tree(ftp: FTP, user: str, password: str, base: str) -> FTP:
+    files = list_files()
     print(f"Uploading {len(files)} files to {base or '/'}")
-    for local in files:
+    for idx, local in enumerate(files, 1):
         rel = local.relative_to(ROOT).as_posix()
         remote = f"{base}/{rel}" if base else f"/{rel}"
-        ensure_dir(ftp, str(Path(remote).parent).replace("\\", "/"))
-        with local.open("rb") as handle:
-            ftp.storbinary(f"STOR {remote}", handle)
-        print("OK", rel)
+        ftp = upload_one(ftp, user, password, local, remote)
+        if idx % 12 == 0:
+            try:
+                ftp.voidcmd("NOOP")
+            except Exception:
+                try:
+                    ftp.quit()
+                except Exception:
+                    pass
+                ftp = connect(user, password)
 
     db_pass = os.environ.get("CHICKEN_DB_PASS", "")
     if db_pass:
@@ -65,6 +158,7 @@ def upload_tree(ftp: FTP, base: str) -> None:
         ensure_dir(ftp, str(Path(remote_cfg).parent).replace("\\", "/"))
         ftp.storbinary(f"STOR {remote_cfg}", BytesIO(cfg.encode("utf-8")))
         print("OK config/config.local.php")
+    return ftp
 
 
 def find_chicken_base(ftp: FTP, label: str) -> str | None:
@@ -88,7 +182,6 @@ def find_chicken_base(ftp: FTP, label: str) -> str | None:
         except error_perm as exc:
             print("cwd fail", path, exc)
 
-    # Search one level up / around home for chicken-named dirs
     try:
         ftp.cwd("/")
         names = ftp.nlst()
@@ -99,47 +192,56 @@ def find_chicken_base(ftp: FTP, label: str) -> str | None:
                 try:
                     ftp.cwd(name)
                     base = ftp.pwd().rstrip("/")
-                    # prefer public_html child if present
-                    try:
-                        children = ftp.nlst()
-                        if any(c.split("/")[-1] == "public_html" for c in children):
-                            ftp.cwd("public_html")
-                            base = ftp.pwd().rstrip("/")
-                    except Exception:
-                        pass
-                    print("discovered base", base)
+                    print("found searched base", base)
                     return base
                 except error_perm:
                     continue
-    except Exception as exc:
-        print("search failed", exc)
-
-    if label == "chicken":
-        home = ftp.pwd().rstrip("/")
-        print("chicken account home as base", home or "/")
-        return home
+    except Exception as exc:  # noqa: BLE001
+        print("search fail", exc)
 
     if label in {"web", "admin"}:
-        # Prefer web-root /chicken (FTP jail root is the live web root on this host).
-        # Also create public_html/chicken for cPanel document-root remapping.
-        created: list[str] = []
-        for path in ["/chicken", "chicken", "/public_html/chicken", "public_html/chicken"]:
+        for path in ("/chicken", "/public_html/chicken"):
             try:
-                ensure_dir(ftp, path if path.startswith("/") else "/" + path)
+                ensure_dir(ftp, path)
                 ftp.cwd(path)
                 base = ftp.pwd().rstrip("/")
-                print("created fallback base", base)
-                created.append(base)
-            except Exception as exc:
-                print("fallback fail", path, exc)
-        if created:
-            # Prefer shortest /chicken web-root path
-            for base in created:
-                if base.rstrip("/").endswith("/chicken") and "public_html" not in base:
-                    return base
-            return created[0]
-
+                print("created base", base)
+                return base
+            except Exception as exc:  # noqa: BLE001
+                print("create fail", path, exc)
     return None
+
+
+def bootstrap_subdomain() -> None:
+    import secrets as _secrets
+    import urllib.request
+
+    token = _secrets.token_urlsafe(16)
+    bootstrap_urls = [
+        f"https://gonulkoprusu.com/public_html/chicken/tools/server_bootstrap.php?key={token}&expect={token}",
+        f"https://gonulkoprusu.com/chicken/tools/server_bootstrap.php?key={token}&expect={token}",
+    ]
+    for url in bootstrap_urls:
+        try:
+            print("bootstrap try", url.split("?")[0])
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "User-Agent": (
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/126.0.0.0 Safari/537.36"
+                    ),
+                    "Accept": "text/plain,*/*",
+                },
+            )
+            with urllib.request.urlopen(req, timeout=90) as resp:
+                body = resp.read().decode("utf-8", "replace")
+            print(body[:2000])
+            if "COPIED=" in body or "\nOK\n" in body or body.strip().endswith("OK"):
+                break
+        except Exception as exc:  # noqa: BLE001
+            print("bootstrap failed", type(exc).__name__, exc)
 
 
 def main() -> int:
@@ -165,17 +267,13 @@ def main() -> int:
 
     for user, password, label in candidates:
         print(f"Trying FTP as {label} ({user})")
+        ftp = None
         try:
-            ftp = FTP()
-            ftp.connect(HOST, 21, timeout=40)
-            ftp.login(user, password)
-            ftp.set_pasv(True)
-            print("login ok, pwd=", ftp.pwd())
-            bases = []
+            ftp = connect(user, password)
+            bases: list[str] = []
             primary = find_chicken_base(ftp, label)
             if primary:
                 bases.append(primary)
-            # Always also ensure web-root /chicken when using main accounts
             if label in {"web", "admin"}:
                 for extra in ("/chicken", "/public_html/chicken"):
                     try:
@@ -184,56 +282,35 @@ def main() -> int:
                         b = ftp.pwd().rstrip("/")
                         if b not in bases:
                             bases.append(b)
-                    except Exception as exc:
+                    except Exception as exc:  # noqa: BLE001
                         print("extra base fail", extra, exc)
             if not bases:
                 raise RuntimeError("Could not locate/create chicken document root")
             for base in bases:
-                upload_tree(ftp, base)
+                ftp = upload_tree(ftp, user, password, base)
                 uploaded_bases.append(f"{label}:{base}")
-            ftp.quit()
+            try:
+                ftp.quit()
+            except Exception:
+                pass
             if label == "chicken":
                 print("Deploy finished via chicken account")
                 print("UPLOADED", ",".join(uploaded_bases))
+                bootstrap_subdomain()
                 return 0
         except Exception as exc:  # noqa: BLE001
             last_err = exc
             print(f"Failed via {label}: {type(exc).__name__}: {exc}")
+            if ftp is not None:
+                try:
+                    ftp.quit()
+                except Exception:
+                    pass
 
     if uploaded_bases:
         print("Deploy finished via fallback account(s)")
         print("UPLOADED", ",".join(uploaded_bases))
-        # Try server-side copy into subdomain docroot if PHP can see it.
-        import urllib.request
-        import secrets as _secrets
-
-        token = _secrets.token_urlsafe(16)
-        bootstrap_urls = [
-            f"https://gonulkoprusu.com/public_html/chicken/tools/server_bootstrap.php?key={token}&expect={token}",
-            f"https://gonulkoprusu.com/chicken/tools/server_bootstrap.php?key={token}&expect={token}",
-        ]
-        for url in bootstrap_urls:
-            try:
-                print("bootstrap try", url.split("?")[0])
-                req = urllib.request.Request(
-                    url,
-                    headers={
-                        "User-Agent": (
-                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                            "AppleWebKit/537.36 (KHTML, like Gecko) "
-                            "Chrome/126.0.0.0 Safari/537.36"
-                        ),
-                        "Accept": "text/plain,*/*",
-                    },
-                )
-                with urllib.request.urlopen(req, timeout=60) as resp:
-                    body = resp.read().decode("utf-8", "replace")
-                print(body[:2000])
-                if "COPIED=" in body or "\nOK\n" in body or body.strip().endswith("OK"):
-                    break
-            except Exception as exc:  # noqa: BLE001
-                print("bootstrap failed", type(exc).__name__, exc)
-
+        bootstrap_subdomain()
         print(
             "::warning::Uploaded under main site FTP. "
             "If chicken.gonulkoprusu.com is still 404, point its document root to public_html/chicken "
