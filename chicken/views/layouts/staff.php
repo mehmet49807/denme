@@ -78,6 +78,9 @@ $homeStaff = in_array($role, ['waiter', 'admin'], true) ? url('/garson') : (in_a
         <nav class="header-nav">
           <?php if (in_array($role, ['waiter', 'admin'], true)): ?>
             <a class="<?= is_active_path('/garson') ? 'active' : '' ?>" href="<?= e(url('/garson')) ?>">Garson</a>
+            <a class="<?= is_active_path('/siparisler') ? 'active' : '' ?>" href="<?= e(url('/siparisler')) ?>">
+              Siparişler <span class="nav-badge" data-cart-badge hidden>0</span>
+            </a>
           <?php endif; ?>
           <a class="<?= is_active_path('/mutfak') ? 'active' : '' ?>" href="<?= e(url('/mutfak')) ?>">Mutfak</a>
           <a class="<?= is_active_path('/bar') ? 'active' : '' ?>" href="<?= e(url('/bar')) ?>">Bar</a>

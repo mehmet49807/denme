@@ -68,19 +68,84 @@
     if (cat) applyCategoryFilter(cat);
   } catch (_) {}
 
-  function createCart(root) {
-    if (!root) return null;
-    const listEl = root.querySelector('[data-cart-list]');
-    const totalEl = root.querySelector('[data-cart-total]');
-    const countEl = root.querySelector('[data-cart-count]');
+  const WAITER_CART_KEY = 'chicken_waiter_cart_v1';
+
+  function readStorage(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return { items: [], table_id: '', note: '' };
+      const data = JSON.parse(raw);
+      return {
+        items: Array.isArray(data.items) ? data.items : [],
+        table_id: data.table_id != null ? String(data.table_id) : '',
+        note: typeof data.note === 'string' ? data.note : '',
+      };
+    } catch (_) {
+      return { items: [], table_id: '', note: '' };
+    }
+  }
+
+  function writeStorage(key, payload) {
+    try {
+      localStorage.setItem(key, JSON.stringify(payload));
+    } catch (_) {}
+  }
+
+  function updateCartBadges(count) {
+    document.querySelectorAll('[data-cart-badge]').forEach((el) => {
+      el.textContent = String(count);
+      el.hidden = count <= 0;
+      el.classList.toggle('is-empty', count <= 0);
+    });
+  }
+
+  function createCart(root, options = {}) {
+    const persistKey = options.persistKey || null;
+    const bindAdd = options.bindAdd !== false;
+    if (!root && !persistKey) return null;
+
+    const listEl = root ? root.querySelector('[data-cart-list]') : null;
+    const totalEl = root ? root.querySelector('[data-cart-total]') : null;
+    const countEl = root ? root.querySelector('[data-cart-count]') : null;
+    const tableSelect = root ? root.querySelector('select[name="table_id"]') : null;
+    const noteInput = root ? root.querySelector('textarea[name="customer_note"]') : null;
     const state = new Map();
+    let meta = { table_id: '', note: '' };
+
+    if (persistKey) {
+      const saved = readStorage(persistKey);
+      meta.table_id = saved.table_id;
+      meta.note = saved.note;
+      saved.items.forEach((item) => {
+        if (!item || !item.id) return;
+        state.set(Number(item.id), {
+          id: Number(item.id),
+          name: String(item.name || 'Ürün'),
+          price: Number(item.price || 0),
+          station: item.station === 'bar' ? 'bar' : 'kitchen',
+          qty: Math.max(1, Number(item.qty || 1)),
+        });
+      });
+      if (tableSelect && meta.table_id) tableSelect.value = meta.table_id;
+      if (noteInput && meta.note) noteInput.value = meta.note;
+    }
+
+    function persist() {
+      if (!persistKey) return;
+      writeStorage(persistKey, {
+        items: [...state.values()],
+        table_id: tableSelect ? String(tableSelect.value || '') : meta.table_id,
+        note: noteInput ? String(noteInput.value || '') : meta.note,
+      });
+    }
 
     function render() {
       const items = [...state.values()];
-      listEl.innerHTML = items.length
-        ? items
-            .map(
-              (item) => `
+      if (listEl) {
+        listEl.innerHTML = items.length
+          ? items
+              .map(
+                (item) => `
           <div class="cart-line" data-id="${item.id}">
             <div>
               <strong>${item.name}</strong>
@@ -92,44 +157,65 @@
               <button type="button" data-inc="${item.id}">+</button>
             </div>
           </div>`
-            )
-            .join('')
-        : '<p class="muted">Henüz ürün eklenmedi.</p>';
+              )
+              .join('')
+          : '<p class="muted">Henüz ürün eklenmedi.</p>';
+      }
 
       const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
       const count = items.reduce((sum, i) => sum + i.qty, 0);
       if (totalEl) totalEl.textContent = money(total);
       if (countEl) countEl.textContent = String(count);
+      if (persistKey) updateCartBadges(count);
+      persist();
     }
 
-    root.addEventListener('click', (e) => {
-      const t = e.target;
-      if (!(t instanceof HTMLElement)) return;
-      const inc = t.getAttribute('data-inc');
-      const dec = t.getAttribute('data-dec');
-      if (inc && state.has(Number(inc))) {
-        state.get(Number(inc)).qty += 1;
-        render();
-      }
-      if (dec && state.has(Number(dec))) {
-        const item = state.get(Number(dec));
-        item.qty -= 1;
-        if (item.qty <= 0) state.delete(Number(dec));
-        render();
-      }
-    });
-
-    document.querySelectorAll('[data-add-item]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const id = Number(btn.getAttribute('data-add-item'));
-        const name = btn.getAttribute('data-name') || 'Ürün';
-        const price = Number(btn.getAttribute('data-price') || 0);
-        const station = btn.getAttribute('data-station') || 'kitchen';
-        if (!state.has(id)) state.set(id, { id, name, price, station, qty: 0 });
-        state.get(id).qty += 1;
-        render();
+    if (root) {
+      root.addEventListener('click', (e) => {
+        const t = e.target;
+        if (!(t instanceof HTMLElement)) return;
+        const inc = t.getAttribute('data-inc');
+        const dec = t.getAttribute('data-dec');
+        if (inc && state.has(Number(inc))) {
+          state.get(Number(inc)).qty += 1;
+          render();
+        }
+        if (dec && state.has(Number(dec))) {
+          const item = state.get(Number(dec));
+          item.qty -= 1;
+          if (item.qty <= 0) state.delete(Number(dec));
+          render();
+        }
       });
-    });
+      if (tableSelect) {
+        tableSelect.addEventListener('change', () => {
+          meta.table_id = String(tableSelect.value || '');
+          persist();
+        });
+      }
+      if (noteInput) {
+        noteInput.addEventListener('input', () => {
+          meta.note = String(noteInput.value || '');
+          persist();
+        });
+      }
+    }
+
+    if (bindAdd) {
+      document.querySelectorAll('[data-add-item]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = Number(btn.getAttribute('data-add-item'));
+          const name = btn.getAttribute('data-name') || 'Ürün';
+          const price = Number(btn.getAttribute('data-price') || 0);
+          const station = btn.getAttribute('data-station') || 'kitchen';
+          if (!state.has(id)) state.set(id, { id, name, price, station, qty: 0 });
+          state.get(id).qty += 1;
+          render();
+          btn.classList.add('is-added');
+          setTimeout(() => btn.classList.remove('is-added'), 350);
+        });
+      });
+    }
 
     render();
     return {
@@ -141,7 +227,18 @@
       },
       clear() {
         state.clear();
-        render();
+        meta = { table_id: '', note: '' };
+        if (tableSelect) tableSelect.value = '';
+        if (noteInput) noteInput.value = '';
+        if (listEl) listEl.innerHTML = '<p class="muted">Henüz ürün eklenmedi.</p>';
+        if (totalEl) totalEl.textContent = money(0);
+        if (countEl) countEl.textContent = '0';
+        if (persistKey) {
+          try {
+            localStorage.removeItem(persistKey);
+          } catch (_) {}
+          updateCartBadges(0);
+        }
       },
       isEmpty() {
         return state.size === 0;
@@ -149,8 +246,16 @@
     };
   }
 
-  const onlineCart = createCart(document.querySelector('[data-online-cart]'));
-  const waiterCart = createCart(document.querySelector('[data-waiter-cart]'));
+  const onlineRoot = document.querySelector('[data-online-cart]');
+  const onlineCart = createCart(onlineRoot, { bindAdd: !!onlineRoot });
+  const waiterRoot = document.querySelector('[data-waiter-cart]');
+  const isStaffWaiterUi = !!document.querySelector('[data-staff-layout]');
+  const waiterCart = isStaffWaiterUi
+    ? createCart(waiterRoot, {
+        persistKey: WAITER_CART_KEY,
+        bindAdd: !onlineRoot && !!document.querySelector('[data-add-item]'),
+      })
+    : null;
 
   const onlineForm = document.querySelector('[data-online-form]');
   if (onlineForm && onlineCart) {
@@ -219,6 +324,7 @@
         });
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || 'Sipariş gönderilemedi');
+        waiterCart.clear();
         window.location.href = api(`/garson/fis/${data.order.id}`);
       } catch (err) {
         alert(err.message || 'Hata');

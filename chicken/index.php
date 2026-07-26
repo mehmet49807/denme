@@ -199,20 +199,27 @@ $router->post('/personel/cikis', static function (): void {
 // Waiter
 $router->get('/garson', static function () use ($menuCatalog): void {
     Auth::requireRole('waiter', 'admin');
+    $catalog = $menuCatalog();
+    view('staff/waiter', [
+        'title' => 'Garson Paneli',
+        'categories' => $catalog['categories'],
+        'items' => $catalog['items'],
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/siparisler', static function (): void {
+    Auth::requireRole('waiter', 'admin');
     $pdo = Database::pdo();
     $tables = $pdo->query('SELECT * FROM dining_tables WHERE is_active = 1 ORDER BY id')->fetchAll();
-    $catalog = $menuCatalog();
     $filters = ['from' => date('Y-m-d 00:00:00')];
     if (Auth::role() === 'waiter') {
         $filters['waiter_id'] = Auth::id();
     }
-    $myOrders = OrderService::listRecent($filters, 40);
-    view('staff/waiter', [
-        'title' => 'Garson Paneli',
+    view('staff/orders', [
+        'title' => 'Siparişler',
         'tables' => $tables,
-        'categories' => $catalog['categories'],
-        'items' => $catalog['items'],
-        'orders' => $myOrders,
+        'orders' => OrderService::listRecent($filters, 40),
         'user' => Auth::user(),
     ]);
 });
