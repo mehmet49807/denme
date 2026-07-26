@@ -3,6 +3,11 @@
   const api = (path) => base + path;
   const money = (n) =>
     new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(n);
+  const escAttr = (s) =>
+    String(s || '')
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;');
 
   const staffLayout = document.querySelector('[data-staff-layout]');
   const toggleButtons = document.querySelectorAll('[data-nav-toggle]');
@@ -161,7 +166,7 @@
             </div>
             <label class="cart-item-note">
               ${item.station === 'bar' ? 'Bar' : 'Mutfak'} notu
-              <input type="text" maxlength="255" data-item-cart-note="${item.id}" value="${(item.note || '').replace(/"/g, '&quot;')}" placeholder="Bu ürün için not...">
+              <input type="text" maxlength="255" data-item-cart-note="${item.id}" value="${escAttr(item.note || '')}" placeholder="Bu ürün için not...">
             </label>
           </div>`
               )

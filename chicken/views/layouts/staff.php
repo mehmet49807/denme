@@ -3,21 +3,42 @@
 /** @var string $content */
 /** @var array|null $user */
 $role = $user['role'] ?? Auth::role();
+$isAdminArea = $role === 'admin' && str_starts_with(current_path(), '/yonetici');
 CategorySync::ensure();
 $staffCategories = [];
-try {
-    $staffCategories = Database::pdo()
-        ->query('SELECT name, slug FROM categories WHERE is_active = 1 ORDER BY sort_order, id')
-        ->fetchAll();
-} catch (Throwable) {
-    $staffCategories = [];
+if (!$isAdminArea) {
+    try {
+        $staffCategories = Database::pdo()
+            ->query('SELECT name, slug FROM categories WHERE is_active = 1 ORDER BY sort_order, id')
+            ->fetchAll();
+    } catch (Throwable) {
+        $staffCategories = [];
+    }
 }
-// Prefer curated catalog order/icons even if DB lags
 $catalogBySlug = [];
 foreach (CategorySync::catalog() as $row) {
     $catalogBySlug[$row['slug']] = $row;
 }
-$homeStaff = in_array($role, ['waiter', 'admin'], true) ? url('/garson') : (in_array($role, ['cashier'], true) ? url('/kasa') : url('/mutfak'));
+$homeStaff = $role === 'admin'
+    ? url('/yonetici')
+    : (in_array($role, ['waiter'], true)
+        ? url('/garson')
+        : (in_array($role, ['cashier'], true) ? url('/kasa') : url('/mutfak')));
+$sideLabel = match ($role) {
+    'admin' => 'Yönetici',
+    'cashier' => 'Kasa',
+    default => 'Garson',
+};
+$sideIcon = match ($role) {
+    'admin' => 'menu',
+    'cashier' => 'cashier',
+    default => 'waiter',
+};
+$sideColor = match ($role) {
+    'admin' => '#e2b457',
+    'cashier' => '#4c8dff',
+    default => '#ff6a1a',
+};
 ?><!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -33,43 +54,54 @@ $homeStaff = in_array($role, ['waiter', 'admin'], true) ? url('/garson') : (in_a
     <aside class="side" id="staff-side" aria-hidden="true">
       <div class="side-top">
         <div class="side-waiter">
-          <?php partial('partials/menu_icon', ['icon' => 'waiter', 'color' => '#ff6a1a']); ?>
+          <?php partial('partials/menu_icon', ['icon' => $sideIcon, 'color' => $sideColor]); ?>
           <div>
-            <p class="side-label">Garson</p>
+            <p class="side-label"><?= e($sideLabel) ?></p>
             <strong class="side-waiter-name"><?= e($user['name'] ?? 'Personel') ?></strong>
           </div>
         </div>
         <button class="icon-btn side-close" type="button" data-nav-close aria-label="Menüyü kapat">✕</button>
       </div>
 
-      <nav class="side-cats" data-side-cats>
-        <button class="side-cat active" type="button" data-cat-tab="all">
-          <?php partial('partials/menu_icon', ['icon' => 'all', 'color' => '#e2b457']); ?>
-          <span>Tümü</span>
-        </button>
-        <?php foreach ($staffCategories as $cat): ?>
-          <?php
-            $meta = $catalogBySlug[$cat['slug']] ?? CategorySync::meta($cat['slug']);
-            $label = $catalogBySlug[$cat['slug']]['name'] ?? $cat['name'];
-          ?>
-          <button class="side-cat" type="button" data-cat-tab="<?= e($cat['slug']) ?>">
-            <?php partial('partials/menu_icon', ['icon' => $meta['icon'], 'color' => $meta['color']]); ?>
-            <span><?= e($label) ?></span>
+      <?php if ($isAdminArea): ?>
+        <p class="side-section-title">Restoran kontrol</p>
+        <?php partial('partials/admin_side_nav'); ?>
+      <?php else: ?>
+        <nav class="side-cats" data-side-cats>
+          <button class="side-cat active" type="button" data-cat-tab="all">
+            <?php partial('partials/menu_icon', ['icon' => 'all', 'color' => '#e2b457']); ?>
+            <span>Tümü</span>
           </button>
-        <?php endforeach; ?>
-      </nav>
+          <?php foreach ($staffCategories as $cat): ?>
+            <?php
+              $meta = $catalogBySlug[$cat['slug']] ?? CategorySync::meta($cat['slug']);
+              $label = $catalogBySlug[$cat['slug']]['name'] ?? $cat['name'];
+            ?>
+            <button class="side-cat" type="button" data-cat-tab="<?= e($cat['slug']) ?>">
+              <?php partial('partials/menu_icon', ['icon' => $meta['icon'], 'color' => $meta['color']]); ?>
+              <span><?= e($label) ?></span>
+            </button>
+          <?php endforeach; ?>
+        </nav>
+      <?php endif; ?>
 
       <div class="userbox">
-        <?php if (in_array($role, ['cashier', 'admin'], true)): ?>
+        <?php if ($role === 'admin' && !$isAdminArea): ?>
+          <a class="side-link" href="<?= e(url('/yonetici')) ?>">
+            <?php partial('partials/menu_icon', ['icon' => 'menu', 'color' => '#e2b457']); ?>
+            <span>Yönetici</span>
+          </a>
+        <?php endif; ?>
+        <?php if (in_array($role, ['cashier', 'admin'], true) && !str_starts_with(current_path(), '/kasa')): ?>
           <a class="side-link" href="<?= e(url('/kasa')) ?>">
             <?php partial('partials/menu_icon', ['icon' => 'cashier', 'color' => '#4c8dff']); ?>
             <span>Kasa</span>
           </a>
         <?php endif; ?>
-        <?php if ($role === 'admin'): ?>
-          <a class="side-link" href="<?= e(url('/yonetici')) ?>">
-            <?php partial('partials/menu_icon', ['icon' => 'menu', 'color' => '#e2b457']); ?>
-            <span>Yönetici</span>
+        <?php if (in_array($role, ['waiter', 'admin'], true) && !str_starts_with(current_path(), '/garson') && current_path() !== '/siparisler'): ?>
+          <a class="side-link" href="<?= e(url('/garson')) ?>">
+            <?php partial('partials/menu_icon', ['icon' => 'waiter', 'color' => '#ff6a1a']); ?>
+            <span>Garson</span>
           </a>
         <?php endif; ?>
         <form method="post" action="<?= e(url('/personel/cikis')) ?>" style="margin-top:10px">
@@ -85,6 +117,9 @@ $homeStaff = in_array($role, ['waiter', 'admin'], true) ? url('/garson') : (in_a
       <header class="staff-topbar">
         <a class="brand-inline header-logo" href="<?= e($homeStaff) ?>">Chicken<span>.</span></a>
         <nav class="header-nav">
+          <?php if ($role === 'admin'): ?>
+            <a class="<?= str_starts_with(current_path(), '/yonetici') ? 'active' : '' ?>" href="<?= e(url('/yonetici')) ?>">Yönetici</a>
+          <?php endif; ?>
           <?php if (in_array($role, ['waiter', 'admin'], true)): ?>
             <a class="<?= is_active_path('/garson') ? 'active' : '' ?>" href="<?= e(url('/garson')) ?>">Garson</a>
             <a class="<?= is_active_path('/siparisler') || str_starts_with(current_path(), '/garson/masa') ? 'active' : '' ?>" href="<?= e(url('/siparisler')) ?>">

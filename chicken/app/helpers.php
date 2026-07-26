@@ -207,6 +207,25 @@ function payment_method_label(?string $method): string
     };
 }
 
+function role_label(string $role): string
+{
+    return match ($role) {
+        'admin' => 'Yönetici',
+        'cashier' => 'Kasa',
+        'waiter' => 'Garson',
+        default => $role,
+    };
+}
+
+function admin_nav_active(string $prefix): bool
+{
+    $path = current_path();
+    if ($prefix === '/yonetici') {
+        return $path === '/yonetici';
+    }
+    return $path === $prefix || str_starts_with($path, rtrim($prefix, '/') . '/');
+}
+
 function generate_order_code(PDO $pdo): string
 {
     $prefix = 'CHK';

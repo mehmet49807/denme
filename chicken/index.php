@@ -514,56 +514,187 @@ $router->post('/api/orders/{id}/note', static function (string $id): void {
     }
 });
 
-// Admin
-$router->get('/yonetici', static function (): void {
-    Auth::requireRole('admin');
+// Admin — Restoran kontrol
+$adminSalesSummary = static function (string $from, string $to): array {
     $pdo = Database::pdo();
-    $monthStart = date('Y-m-01 00:00:00');
-    $monthEnd = date('Y-m-t 23:59:59');
-
     $summary = $pdo->prepare(
         "SELECT
             COUNT(*) AS order_count,
             COALESCE(SUM(CASE WHEN status = 'paid' THEN total ELSE 0 END),0) AS paid_total,
             COALESCE(SUM(CASE WHEN source = 'online' AND status = 'paid' THEN total ELSE 0 END),0) AS online_total,
-            COALESCE(SUM(CASE WHEN source = 'waiter' AND status = 'paid' THEN total ELSE 0 END),0) AS waiter_total
+            COALESCE(SUM(CASE WHEN source = 'waiter' AND status = 'paid' THEN total ELSE 0 END),0) AS waiter_total,
+            COALESCE(SUM(CASE WHEN source = 'cashier' AND status = 'paid' THEN total ELSE 0 END),0) AS cashier_total,
+            COALESCE(SUM(CASE WHEN status = 'paid' AND payment_method = 'cash' THEN total ELSE 0 END),0) AS cash_total,
+            COALESCE(SUM(CASE WHEN status = 'paid' AND payment_method = 'card' THEN total ELSE 0 END),0) AS card_total,
+            COALESCE(SUM(CASE WHEN status NOT IN ('paid','cancelled') THEN total ELSE 0 END),0) AS open_total
          FROM orders
          WHERE created_at BETWEEN ? AND ?"
     );
-    $summary->execute([$monthStart, $monthEnd]);
-    $stats = $summary->fetch() ?: [];
+    $summary->execute([$from, $to]);
+    return $summary->fetch() ?: [];
+};
 
-    $waiterStats = $pdo->prepare(
+$adminStaffStats = static function (string $role, string $from, string $to): array {
+    $pdo = Database::pdo();
+    $stmt = $pdo->prepare(
         "SELECT s.id, s.name,
             COUNT(o.id) AS order_count,
             COALESCE(SUM(CASE WHEN o.status = 'paid' THEN o.total ELSE 0 END),0) AS sales_total
          FROM staff s
          LEFT JOIN orders o ON o.waiter_id = s.id AND o.created_at BETWEEN ? AND ?
-         WHERE s.role = 'waiter'
+         WHERE s.role = ?
          GROUP BY s.id, s.name
-         ORDER BY sales_total DESC"
+         ORDER BY sales_total DESC, s.name ASC"
     );
-    $waiterStats->execute([$monthStart, $monthEnd]);
+    $stmt->execute([$from, $to, $role]);
+    return $stmt->fetchAll();
+};
 
-    $staff = $pdo->query('SELECT id, name, username, role, is_active, created_at FROM staff ORDER BY role, name')->fetchAll();
-    $recent = OrderService::listRecent([], 50);
-
+$router->get('/yonetici', static function (): void {
+    Auth::requireRole('admin');
     view('staff/admin', [
-        'title' => 'Yönetici Paneli',
-        'stats' => $stats,
-        'waiterStats' => $waiterStats->fetchAll(),
-        'staff' => $staff,
-        'orders' => $recent,
+        'title' => 'Yönetici · Restoran kontrol',
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/yonetici/masalar', static function (): void {
+    Auth::requireRole('admin');
+    $pdo = Database::pdo();
+    $all = $pdo->query('SELECT * FROM dining_tables ORDER BY id')->fetchAll();
+    $openMap = [];
+    foreach (OrderService::tablesOverview() as $row) {
+        $openMap[(int) $row['id']] = $row;
+    }
+    foreach ($all as &$table) {
+        $id = (int) $table['id'];
+        $open = $openMap[$id] ?? null;
+        $table['is_open'] = $open['is_open'] ?? false;
+        $table['open_count'] = $open['open_count'] ?? 0;
+        $table['open_total'] = $open['open_total'] ?? 0;
+        $table['waiter_names'] = $open['waiter_names'] ?? [];
+    }
+    unset($table);
+    view('staff/admin_tables', [
+        'title' => 'Yönetici · Masalar',
+        'tables' => $all,
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/yonetici/masalar/ekle', static function (): void {
+    Auth::requireRole('admin');
+    view('staff/admin_table_add', [
+        'title' => 'Yönetici · Masa ekle',
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->post('/yonetici/masalar/ekle', static function (): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/masalar/ekle');
+    }
+    $code = strtoupper(trim((string) input('code')));
+    $label = trim((string) input('label'));
+    $seats = max(1, min(50, (int) input('seats')));
+    if ($code === '' || $label === '' || !preg_match('/^[A-Z0-9_-]+$/', $code)) {
+        flash('error', 'Masa kodu veya adı geçersiz.');
+        redirect('/yonetici/masalar/ekle');
+    }
+    try {
+        $token = bin2hex(random_bytes(16));
+        $stmt = Database::pdo()->prepare(
+            'INSERT INTO dining_tables (code, label, seats, is_active, qr_token) VALUES (?, ?, ?, 1, ?)'
+        );
+        $stmt->execute([$code, $label, $seats, $token]);
+        flash('success', 'Masa eklendi: ' . $label);
+        redirect('/yonetici/masalar');
+    } catch (Throwable $e) {
+        flash('error', 'Masa eklenemedi (kod benzersiz olmalı).');
+        redirect('/yonetici/masalar/ekle');
+    }
+});
+
+$router->get('/yonetici/istatistikler', static function () use ($adminSalesSummary): void {
+    Auth::requireRole('admin');
+    $monthStart = date('Y-m-01 00:00:00');
+    $monthEnd = date('Y-m-t 23:59:59');
+    $dayStart = date('Y-m-d 00:00:00');
+    $dayEnd = date('Y-m-d 23:59:59');
+    view('staff/admin_sales', [
+        'title' => 'Yönetici · Satış istatistikleri',
+        'stats' => $adminSalesSummary($monthStart, $monthEnd),
+        'dayStats' => $adminSalesSummary($dayStart, $dayEnd),
         'monthLabel' => date('F Y'),
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/yonetici/siparisler', static function (): void {
+    Auth::requireRole('admin');
+    view('staff/admin_orders', [
+        'title' => 'Yönetici · Siparişler',
+        'orders' => OrderService::listRecent([], 120),
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/yonetici/personel-istatistik', static function () use ($adminStaffStats): void {
+    Auth::requireRole('admin');
+    $monthStart = date('Y-m-01 00:00:00');
+    $monthEnd = date('Y-m-t 23:59:59');
+    view('staff/admin_staff_stats', [
+        'title' => 'Yönetici · Personel istatistik',
+        'waiterStats' => $adminStaffStats('waiter', $monthStart, $monthEnd),
+        'cashierStats' => $adminStaffStats('cashier', $monthStart, $monthEnd),
+        'monthLabel' => date('F Y'),
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/yonetici/personel', static function (): void {
+    Auth::requireRole('admin');
+    $staff = Database::pdo()
+        ->query('SELECT id, name, username, role, is_active, created_at FROM staff ORDER BY is_active DESC, role, name')
+        ->fetchAll();
+    view('staff/admin_staff', [
+        'title' => 'Yönetici · Personel takip',
+        'staff' => $staff,
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/yonetici/personel/ekle', static function (): void {
+    Auth::requireRole('admin');
+    view('staff/admin_staff_add', [
+        'title' => 'Yönetici · Personel ekle',
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/yonetici/personel/cikar', static function (): void {
+    Auth::requireRole('admin');
+    $staff = Database::pdo()
+        ->query('SELECT id, name, username, role, is_active, created_at FROM staff ORDER BY is_active DESC, role, name')
+        ->fetchAll();
+    view('staff/admin_staff_remove', [
+        'title' => 'Yönetici · Personel çıkarma',
+        'staff' => $staff,
         'user' => Auth::user(),
     ]);
 });
 
 $router->post('/yonetici/personel', static function (): void {
     Auth::requireRole('admin');
+    $redirect = (string) input('redirect');
+    if ($redirect === '' || !str_starts_with($redirect, '/yonetici')) {
+        $redirect = '/yonetici/personel/ekle';
+    }
     if (!verify_csrf((string) input('_csrf'))) {
         flash('error', 'CSRF hatası');
-        redirect('/yonetici');
+        redirect($redirect);
     }
     $name = trim((string) input('name'));
     $username = trim((string) input('username'));
@@ -571,18 +702,49 @@ $router->post('/yonetici/personel', static function (): void {
     $role = (string) input('role');
     if ($name === '' || $username === '' || strlen($password) < 6 || !in_array($role, ['admin', 'cashier', 'waiter'], true)) {
         flash('error', 'Personel bilgileri geçersiz.');
-        redirect('/yonetici');
+        redirect($redirect);
     }
     try {
         $stmt = Database::pdo()->prepare(
             'INSERT INTO staff (name, username, password_hash, role, is_active) VALUES (?, ?, ?, ?, 1)'
         );
         $stmt->execute([$name, $username, password_hash($password, PASSWORD_DEFAULT), $role]);
-        flash('success', 'Personel eklendi.');
+        flash('success', 'Personel eklendi (' . role_label($role) . ').');
+        redirect('/yonetici/personel');
     } catch (Throwable $e) {
-        flash('error', 'Personel eklenemedi: ' . $e->getMessage());
+        flash('error', 'Personel eklenemedi: kullanıcı adı kullanılıyor olabilir.');
+        redirect($redirect);
     }
-    redirect('/yonetici');
+});
+
+$router->post('/yonetici/personel/cikar', static function (): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/personel/cikar');
+    }
+    $staffId = (int) input('staff_id');
+    if ($staffId <= 0 || $staffId === (int) Auth::id()) {
+        flash('error', 'Bu personel çıkarılamaz.');
+        redirect('/yonetici/personel/cikar');
+    }
+    $stmt = Database::pdo()->prepare('UPDATE staff SET is_active = 0, updated_at = NOW() WHERE id = ?');
+    $stmt->execute([$staffId]);
+    flash('success', 'Personel pasife alındı.');
+    redirect('/yonetici/personel/cikar');
+});
+
+$router->post('/yonetici/personel/aktif', static function (): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/personel/cikar');
+    }
+    $staffId = (int) input('staff_id');
+    $stmt = Database::pdo()->prepare('UPDATE staff SET is_active = 1, updated_at = NOW() WHERE id = ?');
+    $stmt->execute([$staffId]);
+    flash('success', 'Personel yeniden aktifleştirildi.');
+    redirect('/yonetici/personel/cikar');
 });
 
 $router->dispatch($method, $path);

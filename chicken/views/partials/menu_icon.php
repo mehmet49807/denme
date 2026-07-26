@@ -35,6 +35,20 @@ $s = 'stroke="' . e($safe) . '"';
   <?= $svgOpen ?><rect x="3.5" y="6" width="17" height="12" rx="2" <?= $s ?> stroke-width="1.8"/><path d="M7 10h4M7 13h6" <?= $s ?> stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="12" r="1.4" fill="<?= e($safe) ?>"/></svg>
 <?php elseif ($icon === 'logout'): ?>
   <?= $svgOpen ?><path d="M10 4.5H7.5A2.5 2.5 0 0 0 5 7v10a2.5 2.5 0 0 0 2.5 2.5H10" <?= $s ?> stroke-width="1.8" stroke-linecap="round"/><path d="M13 12h7" <?= $s ?> stroke-width="1.8" stroke-linecap="round"/><path d="M17.5 8.5 21 12l-3.5 3.5" <?= $s ?> stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<?php elseif ($icon === 'tables'): ?>
+  <?= $svgOpen ?><rect x="4" y="8" width="16" height="10" rx="2" <?= $s ?> stroke-width="1.8"/><path d="M8 8V6.5A2.5 2.5 0 0 1 10.5 4h3A2.5 2.5 0 0 1 16 6.5V8M9 18v2M15 18v2" <?= $s ?> stroke-width="1.8" stroke-linecap="round"/></svg>
+<?php elseif ($icon === 'add'): ?>
+  <?= $svgOpen ?><circle cx="12" cy="12" r="8" <?= $s ?> stroke-width="1.8"/><path d="M12 8v8M8 12h8" <?= $s ?> stroke-width="1.8" stroke-linecap="round"/></svg>
+<?php elseif ($icon === 'stats'): ?>
+  <?= $svgOpen ?><path d="M5 19V10M12 19V5M19 19v-7" <?= $s ?> stroke-width="1.8" stroke-linecap="round"/><path d="M4 19h16" <?= $s ?> stroke-width="1.8" stroke-linecap="round"/></svg>
+<?php elseif ($icon === 'orders'): ?>
+  <?= $svgOpen ?><rect x="5" y="3.5" width="14" height="17" rx="2" <?= $s ?> stroke-width="1.8"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4" <?= $s ?> stroke-width="1.8" stroke-linecap="round"/></svg>
+<?php elseif ($icon === 'staff' || $icon === 'staffstats'): ?>
+  <?= $svgOpen ?><circle cx="9" cy="9" r="2.8" <?= $s ?> stroke-width="1.7"/><circle cx="16" cy="10" r="2.2" <?= $s ?> stroke-width="1.7"/><path d="M4.5 18c.8-2.4 2.4-3.6 4.5-3.6s3.7 1.2 4.5 3.6M13.5 18c.4-1.5 1.4-2.4 2.7-2.4 1.4 0 2.4.9 2.8 2.4" <?= $s ?> stroke-width="1.7" stroke-linecap="round"/></svg>
+<?php elseif ($icon === 'staffadd'): ?>
+  <?= $svgOpen ?><circle cx="10" cy="9" r="3" <?= $s ?> stroke-width="1.8"/><path d="M4.8 18.5c1-3 2.9-4.5 5.2-4.5s4.2 1.5 5.2 4.5M17 8v6M14 11h6" <?= $s ?> stroke-width="1.8" stroke-linecap="round"/></svg>
+<?php elseif ($icon === 'staffremove'): ?>
+  <?= $svgOpen ?><circle cx="10" cy="9" r="3" <?= $s ?> stroke-width="1.8"/><path d="M4.8 18.5c1-3 2.9-4.5 5.2-4.5s4.2 1.5 5.2 4.5M14.5 10.5l5 5M19.5 10.5l-5 5" <?= $s ?> stroke-width="1.8" stroke-linecap="round"/></svg>
 <?php else: ?>
   <?= $svgOpen ?><rect x="4" y="4" width="6.5" height="6.5" rx="1.5" <?= $s ?> stroke-width="1.8"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" <?= $s ?> stroke-width="1.8"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" <?= $s ?> stroke-width="1.8"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" <?= $s ?> stroke-width="1.8"/></svg>
 <?php endif; ?>

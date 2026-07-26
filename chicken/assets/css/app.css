@@ -468,10 +468,48 @@ textarea { min-height: 90px; resize: vertical; }
   display: block !important;
   flex: 0 0 auto;
 }
-.side-cats {
+.side-section-title {
+  margin: 4px 0 10px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold, #e2b457);
+  font-weight: 700;
+}
+.side-cats,
+.admin-side-nav {
   display: grid;
   gap: 8px;
   margin-top: 8px;
+}
+.admin-side-nav .side-cat {
+  text-decoration: none;
+}
+.admin-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+.admin-quick {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  text-decoration: none;
+  color: inherit;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  min-height: 140px;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.admin-quick:hover {
+  border-color: rgba(255,106,26,0.45);
+  transform: translateY(-1px);
+}
+.admin-quick strong {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
 }
 .side-cat,
 .side-link {
