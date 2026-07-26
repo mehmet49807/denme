@@ -250,7 +250,7 @@ $router->get('/mutfak', static function (): void {
     Auth::requireRole('waiter', 'cashier', 'admin');
     $pdo = Database::pdo();
     $rows = $pdo->query(
-        "SELECT oi.*, o.order_code, o.table_id, t.label AS table_label, o.source, o.created_at AS order_time
+        "SELECT oi.*, o.order_code, o.table_id, t.label AS table_label, o.source, o.customer_note, o.created_at AS order_time
          FROM order_items oi
          JOIN orders o ON o.id = oi.order_id
          LEFT JOIN dining_tables t ON t.id = o.table_id
@@ -271,7 +271,7 @@ $router->get('/bar', static function (): void {
     Auth::requireRole('waiter', 'cashier', 'admin');
     $pdo = Database::pdo();
     $rows = $pdo->query(
-        "SELECT oi.*, o.order_code, o.table_id, t.label AS table_label, o.source, o.created_at AS order_time
+        "SELECT oi.*, o.order_code, o.table_id, t.label AS table_label, o.source, o.customer_note, o.created_at AS order_time
          FROM order_items oi
          JOIN orders o ON o.id = oi.order_id
          LEFT JOIN dining_tables t ON t.id = o.table_id
@@ -320,6 +320,18 @@ $router->post('/api/orders/{id}/status', static function (string $id): void {
     try {
         OrderService::updateStatus((int) $id, $status, Auth::id());
         json_response(['ok' => true]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
+$router->post('/api/orders/{id}/note', static function (string $id): void {
+    Auth::requireRole('cashier', 'admin', 'waiter');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    $note = (string) ($payload['note'] ?? '');
+    try {
+        OrderService::updateNote((int) $id, $note, Auth::id());
+        json_response(['ok' => true, 'note' => trim($note)]);
     } catch (Throwable $e) {
         json_response(['ok' => false, 'error' => $e->getMessage()], 422);
     }

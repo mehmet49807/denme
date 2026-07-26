@@ -49,8 +49,8 @@
         <label>Telefon
           <input name="customer_phone" required placeholder="05xx...">
         </label>
-        <label>Not
-          <textarea name="customer_note" placeholder="Az acılı, ekstra sos..."></textarea>
+        <label>Sipariş notu
+          <textarea name="customer_note" placeholder="Sipariş altına not yazın..."></textarea>
         </label>
         <button class="btn btn-primary" type="submit">Siparişi Gönder</button>
       </form>

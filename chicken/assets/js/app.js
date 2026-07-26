@@ -4,6 +4,31 @@
   const money = (n) =>
     new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(n);
 
+  const staffLayout = document.querySelector('[data-staff-layout]');
+  const openNav = () => {
+    if (!staffLayout) return;
+    staffLayout.classList.add('nav-open');
+    const backdrop = staffLayout.querySelector('[data-nav-close].side-backdrop');
+    if (backdrop) backdrop.hidden = false;
+    document.body.style.overflow = 'hidden';
+  };
+  const closeNav = () => {
+    if (!staffLayout) return;
+    staffLayout.classList.remove('nav-open');
+    const backdrop = staffLayout.querySelector('[data-nav-close].side-backdrop');
+    if (backdrop) backdrop.hidden = true;
+    document.body.style.overflow = '';
+  };
+  document.querySelectorAll('[data-nav-open]').forEach((btn) => {
+    btn.addEventListener('click', openNav);
+  });
+  document.querySelectorAll('[data-nav-close]').forEach((btn) => {
+    btn.addEventListener('click', closeNav);
+  });
+  document.querySelectorAll('.side nav a').forEach((link) => {
+    link.addEventListener('click', closeNav);
+  });
+
   function createCart(root) {
     if (!root) return null;
     const listEl = root.querySelector('[data-cart-list]');
@@ -197,6 +222,36 @@
         return;
       }
       location.reload();
+    });
+  });
+
+  document.querySelectorAll('[data-note-save]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-note-save');
+      const box = btn.closest('[data-order-note]');
+      const input = box ? box.querySelector('[data-note-input]') : null;
+      const statusEl = box ? box.querySelector('[data-note-status]') : null;
+      if (!input) return;
+      btn.disabled = true;
+      if (statusEl) statusEl.textContent = 'Kaydediliyor...';
+      try {
+        const res = await fetch(api(`/api/orders/${id}/note`), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ note: input.value || '' }),
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Not kaydedilemedi');
+        if (statusEl) statusEl.textContent = 'Kaydedildi';
+        setTimeout(() => {
+          if (statusEl) statusEl.textContent = '';
+        }, 1800);
+      } catch (err) {
+        if (statusEl) statusEl.textContent = '';
+        alert(err.message || 'Not kaydedilemedi');
+      } finally {
+        btn.disabled = false;
+      }
     });
   });
 

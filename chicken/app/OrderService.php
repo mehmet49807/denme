@@ -208,6 +208,24 @@ final class OrderService
         self::addEvent($pdo, $orderId, $staffId, 'status_' . $status, 'Durum: ' . status_label($status));
     }
 
+    public static function updateNote(int $orderId, string $note, ?int $staffId = null): void
+    {
+        $note = trim($note);
+        if (mb_strlen($note) > 400) {
+            throw new InvalidArgumentException('Not en fazla 400 karakter olabilir.');
+        }
+        $pdo = Database::pdo();
+        $stmt = $pdo->prepare('UPDATE orders SET customer_note = ?, updated_at = NOW() WHERE id = ?');
+        $stmt->execute([$note !== '' ? $note : null, $orderId]);
+        self::addEvent(
+            $pdo,
+            $orderId,
+            $staffId,
+            'note_updated',
+            $note !== '' ? 'Sipariş notu güncellendi' : 'Sipariş notu temizlendi'
+        );
+    }
+
     public static function listRecent(array $filters = [], int $limit = 100): array
     {
         $pdo = Database::pdo();

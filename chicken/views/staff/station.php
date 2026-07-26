@@ -18,6 +18,9 @@
         · <?= e($row['table_label'] ?? 'Online') ?>
         · <?= e(source_label($row['source'])) ?>
       </p>
+      <?php if (!empty($row['customer_note'])): ?>
+        <p><strong>Sipariş notu:</strong> <?= e($row['customer_note']) ?></p>
+      <?php endif; ?>
       <?php if (!empty($row['note'])): ?>
         <p><?= e($row['note']) ?></p>
       <?php endif; ?>

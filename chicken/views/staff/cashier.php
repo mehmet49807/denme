@@ -18,51 +18,53 @@
   <div class="stat"><span class="muted">Tahsilat</span><strong><?= e(money($paidSum)) ?></strong></div>
 </div>
 
-<div class="table-wrap panel" style="padding:0">
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Kaynak</th>
-        <th>Masa / Müşteri</th>
-        <th>Garson</th>
-        <th>Durum</th>
-        <th>Tutar</th>
-        <th>İşlem</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php foreach ($orders as $order): ?>
-        <tr>
-          <td>
-            <a href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>"><?= e($order['order_code']) ?></a>
-          </td>
-          <td><span class="chip <?= e($order['source']) ?>"><?= e(source_label($order['source'])) ?></span></td>
-          <td>
-            <?= e($order['table_label'] ?? ($order['customer_name'] ?: '—')) ?>
-            <?php if (!empty($order['customer_phone'])): ?>
-              <div class="small muted"><?= e($order['customer_phone']) ?></div>
-            <?php endif; ?>
-          </td>
-          <td><?= e($order['waiter_name'] ?? '—') ?></td>
-          <td><?= e(status_label($order['status'])) ?></td>
-          <td><?= e(money((float) $order['total'])) ?></td>
-          <td>
-            <div class="cta-row">
-              <?php if ($order['status'] === 'pending'): ?>
-                <button class="btn btn-primary btn-sm" type="button" data-order-id="<?= (int) $order['id'] ?>" data-status-btn="accepted">Al</button>
-              <?php endif; ?>
-              <?php if (in_array($order['status'], ['accepted', 'preparing'], true)): ?>
-                <button class="btn btn-ghost btn-sm" type="button" data-order-id="<?= (int) $order['id'] ?>" data-status-btn="ready">Hazır</button>
-              <?php endif; ?>
-              <?php if (!in_array($order['status'], ['paid', 'cancelled'], true)): ?>
-                <button class="btn btn-dark btn-sm" type="button" data-order-id="<?= (int) $order['id'] ?>" data-status-btn="paid">Ödendi</button>
-              <?php endif; ?>
-              <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>">Fiş</a>
-            </div>
-          </td>
-        </tr>
-      <?php endforeach; ?>
-    </tbody>
-  </table>
+<div class="order-card-list">
+  <?php if (!$orders): ?>
+    <div class="panel muted">Bugün henüz sipariş yok.</div>
+  <?php endif; ?>
+  <?php foreach ($orders as $order): ?>
+    <article class="order-card">
+      <div class="order-card-head">
+        <div>
+          <a class="order-code" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>"><?= e($order['order_code']) ?></a>
+          <div class="small muted"><?= e($order['created_at'] ?? '') ?></div>
+        </div>
+        <span class="chip <?= e($order['source']) ?>"><?= e(source_label($order['source'])) ?></span>
+      </div>
+      <div class="order-card-meta">
+        <div>
+          <span class="muted small">Masa / Müşteri</span>
+          <strong><?= e($order['table_label'] ?? ($order['customer_name'] ?: '—')) ?></strong>
+          <?php if (!empty($order['customer_phone'])): ?>
+            <div class="small muted"><?= e($order['customer_phone']) ?></div>
+          <?php endif; ?>
+        </div>
+        <div>
+          <span class="muted small">Garson</span>
+          <strong><?= e($order['waiter_name'] ?? '—') ?></strong>
+        </div>
+        <div>
+          <span class="muted small">Durum</span>
+          <strong><?= e(status_label($order['status'])) ?></strong>
+        </div>
+        <div>
+          <span class="muted small">Tutar</span>
+          <strong class="price"><?= e(money((float) $order['total'])) ?></strong>
+        </div>
+      </div>
+      <?php partial('partials/order_note', ['order' => $order]); ?>
+      <div class="cta-row order-card-actions">
+        <?php if ($order['status'] === 'pending'): ?>
+          <button class="btn btn-primary btn-sm" type="button" data-order-id="<?= (int) $order['id'] ?>" data-status-btn="accepted">Al</button>
+        <?php endif; ?>
+        <?php if (in_array($order['status'], ['accepted', 'preparing'], true)): ?>
+          <button class="btn btn-ghost btn-sm" type="button" data-order-id="<?= (int) $order['id'] ?>" data-status-btn="ready">Hazır</button>
+        <?php endif; ?>
+        <?php if (!in_array($order['status'], ['paid', 'cancelled'], true)): ?>
+          <button class="btn btn-dark btn-sm" type="button" data-order-id="<?= (int) $order['id'] ?>" data-status-btn="paid">Ödendi</button>
+        <?php endif; ?>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>">Fiş</a>
+      </div>
+    </article>
+  <?php endforeach; ?>
 </div>

@@ -7,14 +7,18 @@ $role = $user['role'] ?? Auth::role();
 <html lang="tr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title><?= e($title ?? 'Chicken Personel') ?></title>
   <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
 </head>
-<body data-base="<?= e(base_path()) ?>">
-  <div class="layout-staff">
-    <aside class="side">
-      <a class="brand" href="<?= e(url('/')) ?>">Chicken<span>.</span></a>
+<body data-base="<?= e(base_path()) ?>" class="staff-body">
+  <div class="layout-staff" data-staff-layout>
+    <div class="side-backdrop" data-nav-close hidden></div>
+    <aside class="side" id="staff-side">
+      <div class="side-top">
+        <a class="brand" href="<?= e(url('/')) ?>">Chicken<span>.</span></a>
+        <button class="icon-btn side-close" type="button" data-nav-close aria-label="Menüyü kapat">✕</button>
+      </div>
       <nav>
         <?php if (in_array($role, ['waiter', 'admin'], true)): ?>
           <a class="<?= is_active_path('/garson') ? 'active' : '' ?>" href="<?= e(url('/garson')) ?>">Garson</a>
@@ -38,11 +42,21 @@ $role = $user['role'] ?? Auth::role();
         </form>
       </div>
     </aside>
-    <main class="main">
-      <?php if ($msg = flash('success')): ?><div class="alert alert-ok"><?= e($msg) ?></div><?php endif; ?>
-      <?php if ($msg = flash('error')): ?><div class="alert alert-error"><?= e($msg) ?></div><?php endif; ?>
-      <?= $content ?>
-    </main>
+    <div class="staff-content">
+      <header class="staff-topbar">
+        <button class="icon-btn" type="button" data-nav-open aria-label="Menüyü aç" aria-controls="staff-side">☰</button>
+        <div class="staff-topbar-title">
+          <span class="brand-inline">Chicken<span>.</span></span>
+          <span class="small muted"><?= e($title ?? 'Personel') ?></span>
+        </div>
+        <span class="chip"><?= e($user['name'] ?? '') ?></span>
+      </header>
+      <main class="main">
+        <?php if ($msg = flash('success')): ?><div class="alert alert-ok"><?= e($msg) ?></div><?php endif; ?>
+        <?php if ($msg = flash('error')): ?><div class="alert alert-error"><?= e($msg) ?></div><?php endif; ?>
+        <?= $content ?>
+      </main>
+    </div>
   </div>
   <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
   <script src="<?= e(url('/assets/js/app.js')) ?>" defer></script>

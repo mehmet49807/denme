@@ -9,6 +9,10 @@
   </div>
 </div>
 
+<div class="panel no-print" style="margin-bottom:16px">
+  <?php partial('partials/order_note', ['order' => $order]); ?>
+</div>
+
 <div class="slips">
   <section class="slip">
     <h2>Mutfak Fişi</h2>
@@ -17,6 +21,9 @@
       · <?= e($order['table_label'] ?? 'Paket/Online') ?>
       · <?= e($order['order_code']) ?>
     </p>
+    <?php if (!empty($order['customer_note'])): ?>
+      <p><strong>Not:</strong> <?= e($order['customer_note']) ?></p>
+    <?php endif; ?>
     <?php if ($order['kitchen_items']): ?>
       <ul>
         <?php foreach ($order['kitchen_items'] as $item): ?>
@@ -38,6 +45,9 @@
       · <?= e($order['table_label'] ?? 'Paket/Online') ?>
       · <?= e($order['order_code']) ?>
     </p>
+    <?php if (!empty($order['customer_note'])): ?>
+      <p><strong>Not:</strong> <?= e($order['customer_note']) ?></p>
+    <?php endif; ?>
     <?php if ($order['bar_items']): ?>
       <ul>
         <?php foreach ($order['bar_items'] as $item): ?>
@@ -60,5 +70,8 @@
     <p><strong>Müşteri:</strong> <?= e($order['customer_name'] ?? '-') ?> <?= e($order['customer_phone'] ?? '') ?></p>
     <p><strong>Toplam:</strong> <?= e(money((float) $order['total'])) ?></p>
     <p><strong>Durum:</strong> <?= e(status_label($order['status'])) ?></p>
+    <?php if (!empty($order['customer_note'])): ?>
+      <p><strong>Not:</strong> <?= e($order['customer_note']) ?></p>
+    <?php endif; ?>
   </section>
 </div>

@@ -3,18 +3,17 @@
     <p class="eyebrow">Garson paneli</p>
     <h1>Masa siparişi</h1>
   </div>
-  <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/0')) ?>" style="display:none"></a>
 </div>
 
 <div class="order-builder">
-  <div>
-    <div class="tabs">
+  <div class="builder-menu">
+    <div class="tabs tabs-scroll">
       <button class="tab active" type="button" data-cat-tab="all">Tümü</button>
       <?php foreach ($categories as $cat): ?>
         <button class="tab" type="button" data-cat-tab="<?= e($cat['slug']) ?>"><?= e($cat['name']) ?></button>
       <?php endforeach; ?>
     </div>
-    <div class="menu-grid">
+    <div class="menu-grid menu-grid-compact">
       <?php foreach ($items as $item): ?>
         <article class="menu-item" data-cat="<?= e($item['category_slug']) ?>">
           <div class="meta-row">
@@ -35,7 +34,7 @@
     </div>
   </div>
 
-  <aside class="panel cart" data-waiter-cart>
+  <aside class="panel cart cart-panel" data-waiter-cart>
     <h2 style="margin:0 0 12px;font-family:var(--font-display)">Sipariş fişi</h2>
     <form class="stack" data-waiter-form>
       <label>Masa
@@ -51,8 +50,8 @@
         <span class="muted">Toplam / adet</span>
         <strong><span data-cart-total>0,00 ₺</span> · <span data-cart-count>0</span></strong>
       </div>
-      <label>Not
-        <textarea name="customer_note" placeholder="Müşteri isteği"></textarea>
+      <label>Sipariş notu
+        <textarea name="customer_note" placeholder="Sipariş altına not yazın..."></textarea>
       </label>
       <button class="btn btn-primary" type="submit">Mutfak + Bar fişi gönder</button>
     </form>
@@ -61,28 +60,24 @@
 
 <div class="panel" style="margin-top:20px">
   <h2 style="font-family:var(--font-display);margin:0 0 12px">Bugünkü siparişlerim</h2>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Masa</th>
-          <th>Durum</th>
-          <th>Tutar</th>
-          <th>Fiş</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php foreach ($orders as $order): ?>
-          <tr>
-            <td><?= e($order['order_code']) ?></td>
-            <td><?= e($order['table_label'] ?? '-') ?></td>
-            <td><?= e(status_label($order['status'])) ?></td>
-            <td><?= e(money((float) $order['total'])) ?></td>
-            <td><a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>">Aç</a></td>
-          </tr>
-        <?php endforeach; ?>
-      </tbody>
-    </table>
+  <div class="order-card-list">
+    <?php if (!$orders): ?>
+      <p class="muted">Henüz sipariş yok.</p>
+    <?php endif; ?>
+    <?php foreach ($orders as $order): ?>
+      <article class="order-card">
+        <div class="order-card-head">
+          <div>
+            <div class="order-code"><?= e($order['order_code']) ?></div>
+            <div class="small muted"><?= e($order['table_label'] ?? '-') ?> · <?= e(status_label($order['status'])) ?></div>
+          </div>
+          <strong class="price"><?= e(money((float) $order['total'])) ?></strong>
+        </div>
+        <?php partial('partials/order_note', ['order' => $order]); ?>
+        <div class="cta-row">
+          <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>">Fiş aç</a>
+        </div>
+      </article>
+    <?php endforeach; ?>
   </div>
 </div>

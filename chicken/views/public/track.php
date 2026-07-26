@@ -26,6 +26,9 @@
       </div>
       <p style="margin:16px 0">Durum: <strong data-live-status><?= e(status_label($order['status'])) ?></strong></p>
       <p class="muted small">Toplam: <?= e(money((float) $order['total'])) ?> · <?= e($order['created_at']) ?></p>
+      <?php if (!empty($order['customer_note'])): ?>
+        <p><strong>Not:</strong> <?= e($order['customer_note']) ?></p>
+      <?php endif; ?>
       <ul>
         <?php foreach ($order['items'] as $item): ?>
           <li><?= (int) $item['quantity'] ?>× <?= e($item['item_name']) ?>

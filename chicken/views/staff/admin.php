@@ -91,30 +91,22 @@
 
 <section class="panel" style="margin-top:16px">
   <h2 style="font-family:var(--font-display);margin:0 0 12px">Garson / online sipariş takibi</h2>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Kaynak</th>
-          <th>Garson</th>
-          <th>Durum</th>
-          <th>Tutar</th>
-          <th>Zaman</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php foreach ($orders as $order): ?>
-          <tr>
-            <td><a href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>"><?= e($order['order_code']) ?></a></td>
-            <td><span class="chip <?= e($order['source']) ?>"><?= e(source_label($order['source'])) ?></span></td>
-            <td><?= e($order['waiter_name'] ?? '—') ?></td>
-            <td><?= e(status_label($order['status'])) ?></td>
-            <td><?= e(money((float) $order['total'])) ?></td>
-            <td class="small muted"><?= e($order['created_at']) ?></td>
-          </tr>
-        <?php endforeach; ?>
-      </tbody>
-    </table>
+  <div class="order-card-list">
+    <?php foreach ($orders as $order): ?>
+      <article class="order-card">
+        <div class="order-card-head">
+          <div>
+            <a class="order-code" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>"><?= e($order['order_code']) ?></a>
+            <div class="small muted"><?= e($order['created_at']) ?> · <?= e($order['waiter_name'] ?? '—') ?></div>
+          </div>
+          <div class="cta-row">
+            <span class="chip <?= e($order['source']) ?>"><?= e(source_label($order['source'])) ?></span>
+            <strong class="price"><?= e(money((float) $order['total'])) ?></strong>
+          </div>
+        </div>
+        <div class="small muted" style="margin-bottom:8px">Durum: <?= e(status_label($order['status'])) ?></div>
+        <?php partial('partials/order_note', ['order' => $order]); ?>
+      </article>
+    <?php endforeach; ?>
   </div>
 </section>
