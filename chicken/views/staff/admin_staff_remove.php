@@ -20,7 +20,7 @@ $me = (int) Auth::id();
 </p>
 
 <section class="panel">
-  <h2 class="admin-home-title" style="margin:0 0 12px">Garsonlar</h2>
+  <h2 class="side-group-title" style="margin:0 0 12px">Garsonlar</h2>
   <div class="table-wrap">
     <table>
       <thead>
