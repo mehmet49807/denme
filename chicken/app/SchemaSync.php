@@ -48,6 +48,40 @@ final class SchemaSync
             );
         } catch (Throwable) {
         }
+
+        try {
+            self::ensureOrdersWaiterCascade($pdo);
+        } catch (Throwable) {
+        }
+    }
+
+    private static function ensureOrdersWaiterCascade(PDO $pdo): void
+    {
+        // Allow hard-deleting waiters while keeping historical orders.
+        $stmt = $pdo->query(
+            "SELECT CONSTRAINT_NAME, DELETE_RULE
+             FROM information_schema.REFERENTIAL_CONSTRAINTS
+             WHERE CONSTRAINT_SCHEMA = DATABASE()
+               AND TABLE_NAME = 'orders'
+               AND REFERENCED_TABLE_NAME = 'staff'"
+        );
+        $rows = $stmt ? $stmt->fetchAll() : [];
+        foreach ($rows as $row) {
+            $name = (string) ($row['CONSTRAINT_NAME'] ?? '');
+            $rule = strtoupper((string) ($row['DELETE_RULE'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            if ($rule === 'SET NULL') {
+                return;
+            }
+            $pdo->exec('ALTER TABLE orders DROP FOREIGN KEY `' . str_replace('`', '``', $name) . '`');
+        }
+        $pdo->exec(
+            'ALTER TABLE orders
+             ADD CONSTRAINT fk_orders_waiter
+             FOREIGN KEY (waiter_id) REFERENCES staff(id) ON DELETE SET NULL'
+        );
     }
 
     private static function ensureColumn(PDO $pdo, string $table, string $column, string $alterSql): void

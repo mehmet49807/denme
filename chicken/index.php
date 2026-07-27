@@ -932,12 +932,14 @@ $router->post('/yonetici/personel/cikar', static function (): void {
     }
     $staffId = (int) input('staff_id');
     $roleGuard = trim((string) input('role_guard'));
+    $hardDelete = (string) input('hard_delete') === '1' || $roleGuard === 'waiter';
     if ($staffId <= 0 || $staffId === (int) Auth::id()) {
-        flash('error', 'Bu personel çıkarılamaz.');
+        flash('error', 'Bu personel silinemez.');
         redirect($redirect);
     }
 
     $pdo = Database::pdo();
+    SchemaSync::ensure();
     $stmt = $pdo->prepare('SELECT id, role, name FROM staff WHERE id = ? LIMIT 1');
     $stmt->execute([$staffId]);
     $member = $stmt->fetch();
@@ -950,9 +952,28 @@ $router->post('/yonetici/personel/cikar', static function (): void {
         redirect($redirect);
     }
 
-    $pdo->prepare('UPDATE staff SET is_active = 0, updated_at = NOW() WHERE id = ?')->execute([$staffId]);
     $label = role_label((string) $member['role']);
-    flash('success', $label . ' silindi (pasife alındı): ' . (string) $member['name']);
+    $name = (string) $member['name'];
+
+    if ($hardDelete && (string) $member['role'] === 'waiter') {
+        try {
+            $pdo->beginTransaction();
+            $pdo->prepare('UPDATE orders SET waiter_id = NULL WHERE waiter_id = ?')->execute([$staffId]);
+            $pdo->prepare('UPDATE order_events SET staff_id = NULL WHERE staff_id = ?')->execute([$staffId]);
+            $pdo->prepare('DELETE FROM staff WHERE id = ? AND role = ?')->execute([$staffId, 'waiter']);
+            $pdo->commit();
+            flash('success', 'Garson hesabı kalıcı olarak silindi: ' . $name);
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            flash('error', 'Garson silinemedi. Sipariş bağlantısını kontrol edin.');
+        }
+        redirect($redirect);
+    }
+
+    $pdo->prepare('UPDATE staff SET is_active = 0, updated_at = NOW() WHERE id = ?')->execute([$staffId]);
+    flash('success', $label . ' pasife alındı: ' . $name);
     redirect($redirect);
 });
 
