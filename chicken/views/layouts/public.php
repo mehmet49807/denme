@@ -25,10 +25,7 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
         <img class="brand-mark" src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="36" height="36">
         <span class="brand-text">Chicken<span>.</span></span>
       </a>
-      <nav class="nav-links">
-        <a href="<?= e(url('/menu')) ?>">Menü</a>
-        <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
-        <a href="<?= e(url('/takip')) ?>">Takip</a>
+      <div class="nav-auth">
         <?php if ($customer): ?>
           <span class="nav-user muted small"><?= e((string) $customer['name']) ?></span>
           <form method="post" action="<?= e(url('/cikis')) ?>" style="display:inline;margin:0">
@@ -39,12 +36,17 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
           <a class="btn btn-nav-login btn-sm" href="<?= e(url('/giris')) ?>">Giriş</a>
           <a class="btn btn-accent btn-sm" href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
         <?php endif; ?>
+      </div>
+      <nav class="nav-links" aria-label="Ana menü">
+        <a href="<?= e(url('/menu')) ?>">Menü</a>
+        <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
+        <a href="<?= e(url('/takip')) ?>">Takip</a>
       </nav>
     </div>
   </header>
   <?= $content ?>
   <footer class="footer">
-    <div>Chicken · Izgara lezzet · Online sipariş · Yeni üyelere %10</div>
+    <div>Chicken · Izgara lezzet · Online sipariş</div>
   </footer>
   <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
   <script src="<?= e(url('/assets/js/app.js')) ?>?v=<?= e((string) $jsVer) ?>" defer></script>

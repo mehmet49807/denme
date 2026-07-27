@@ -42,19 +42,23 @@ button, input, select, textarea { font: inherit; }
   top: 0;
   z-index: 20;
   backdrop-filter: blur(14px);
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.92);
   border-bottom: 1px solid var(--line);
 }
 .nav {
   max-width: var(--max);
   margin: 0 auto;
   padding: 12px 20px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "brand auth"
+    "links links";
+  gap: 10px 16px;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
 }
 .brand {
+  grid-area: brand;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -64,6 +68,7 @@ button, input, select, textarea { font: inherit; }
   text-transform: uppercase;
   font-size: 1.05rem;
   color: var(--text);
+  min-width: 0;
 }
 .brand-mark {
   width: 36px;
@@ -73,16 +78,33 @@ button, input, select, textarea { font: inherit; }
   box-shadow: 0 6px 16px rgba(232, 93, 4, 0.28);
 }
 .brand-text span { color: var(--ember); }
+.nav-auth {
+  grid-area: auth;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
 .nav-links {
+  grid-area: links;
   display: flex;
-  gap: 14px;
+  gap: 18px;
   align-items: center;
   color: var(--muted);
   font-weight: 600;
   flex-wrap: wrap;
 }
 .nav-links a:hover { color: var(--text); }
-.nav-user { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-user { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (min-width: 820px) {
+  .nav {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "brand links auth";
+    gap: 16px;
+  }
+  .nav-links { justify-content: center; }
+}
 
 .promo-banner {
   border-radius: 14px;
@@ -117,7 +139,7 @@ button, input, select, textarea { font: inherit; }
 }
 
 .hero {
-  min-height: calc(100vh - 64px);
+  min-height: min(78vh, 720px);
   display: grid;
   align-items: end;
   position: relative;
@@ -127,29 +149,16 @@ button, input, select, textarea { font: inherit; }
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(245,247,250,0.35) 45%, rgba(245,247,250,0.92) 100%),
-    url('../img/hero.svg') center/cover no-repeat;
-  transform: scale(1.02);
+    linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.18) 42%, rgba(245,247,250,0.96) 100%),
+    url('../img/hero.svg') right center / cover no-repeat;
   animation: drift 18s ease-in-out infinite alternate;
 }
 .hero-content {
   position: relative;
   max-width: var(--max);
   margin: 0 auto;
-  padding: 48px 20px 72px;
+  padding: 56px 20px 56px;
   width: 100%;
-}
-.hero-logo {
-  width: 72px;
-  height: 72px;
-  margin-bottom: 14px;
-  animation: rise 0.8s ease both;
-}
-.hero-logo img {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  box-shadow: 0 14px 32px rgba(232, 93, 4, 0.28);
 }
 .eyebrow {
   letter-spacing: 0.22em;
@@ -168,30 +177,33 @@ button, input, select, textarea { font: inherit; }
   color: var(--text);
 }
 .hero h1 {
-  font-size: clamp(3.4rem, 10vw, 6.8rem);
+  font-size: clamp(3.2rem, 12vw, 6.4rem);
   max-width: 10ch;
   animation: rise 0.9s ease both;
 }
 .lede {
   color: var(--muted);
   font-size: 1.05rem;
-  max-width: 36ch;
-  margin: 18px 0 28px;
+  max-width: 28ch;
+  margin: 16px 0 24px;
+  line-height: 1.45;
   animation: rise 1s ease both 0.1s;
 }
 .cta-row {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  align-items: flex-start;
+  align-items: center;
   animation: rise 1.1s ease both 0.18s;
 }
-.cta-home { align-items: flex-end; }
-.cta-primary-wrap {
+.cta-home {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   justify-items: start;
+  max-width: 280px;
+  animation: rise 1.1s ease both 0.18s;
 }
+.cta-home .btn { width: 100%; }
 .cta-note {
   margin: 0;
   color: var(--ember);
@@ -1076,8 +1088,10 @@ tr:hover td { background: rgba(232, 93, 4, 0.04); }
   table { min-width: 560px; }
   .slips { grid-template-columns: 1fr; }
   .auth-card { padding: 22px 18px; border-radius: 20px; }
-  .nav-links { gap: 10px; font-size: 0.92rem; }
-  .hero { min-height: 88vh; }
+  .nav-links { gap: 14px; font-size: 0.95rem; }
+  .hero { min-height: 72vh; }
+  .hero-content { padding: 40px 20px 44px; }
+  .cta-home { max-width: 100%; }
 }
 
 @media (max-width: 480px) {
