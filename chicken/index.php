@@ -73,19 +73,37 @@ $router->get('/', static function () use ($menuCatalog): void {
 });
 
 $router->get('/menu', static function () use ($menuCatalog): void {
-    $catalog = $menuCatalog();
-    $table = null;
+    // Eski masa QR'ları broşüre yönlendirilir
     $token = trim((string) input('t', ''));
     if ($token !== '') {
-        $stmt = Database::pdo()->prepare('SELECT * FROM dining_tables WHERE qr_token = ? AND is_active = 1 LIMIT 1');
-        $stmt->execute([$token]);
-        $table = $stmt->fetch() ?: null;
+        redirect('/menu/brosur?t=' . rawurlencode($token));
     }
+    $catalog = $menuCatalog();
     view('public/menu', [
         'title' => 'Menü',
         'categories' => $catalog['categories'],
         'items' => $catalog['items'],
+        'table' => null,
+    ]);
+});
+
+$router->get('/menu/brosur', static function () use ($menuCatalog): void {
+    $catalog = $menuCatalog();
+    $table = null;
+    $token = trim((string) input('t', ''));
+    if ($token !== '') {
+        $stmt = Database::pdo()->prepare(
+            'SELECT * FROM dining_tables WHERE qr_token = ? AND is_active = 1 LIMIT 1'
+        );
+        $stmt->execute([$token]);
+        $table = $stmt->fetch() ?: null;
+    }
+    view('public/menu_brochure', [
+        'title' => 'Chicken Menü Broşürü',
+        'categories' => $catalog['categories'],
+        'items' => $catalog['items'],
         'table' => $table,
+        'layout' => 'brochure',
     ]);
 });
 
@@ -253,18 +271,17 @@ $router->get('/api/orders/{code}', static function (string $code): void {
 
 $router->get('/qr', static function (): void {
     Auth::requireRole('waiter', 'cashier', 'admin');
-    $pdo = Database::pdo();
-    $tables = $pdo->query('SELECT * FROM dining_tables WHERE is_active = 1 ORDER BY id')->fetchAll();
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = (string) ($_SERVER['HTTP_HOST'] ?? '');
     $base = $host !== ''
         ? ($scheme . '://' . $host . base_path())
         : rtrim((string) config('app_url'), '/');
+    $brochureUrl = $base . '/menu/brosur';
+    $qrImageUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=' . rawurlencode($brochureUrl);
     view('staff/qr', [
-        'title' => 'QR Menü Kodları',
-        'tables' => $tables,
-        'menuUrl' => $base . '/menu',
-        'base' => $base,
+        'title' => 'QR Menü',
+        'brochureUrl' => $brochureUrl,
+        'qrImageUrl' => $qrImageUrl,
         'user' => Auth::user(),
     ]);
 });
@@ -646,12 +663,71 @@ $adminStaffStats = static function (string $role, string $from, string $to): arr
     return $stmt->fetchAll();
 };
 
-$router->get('/yonetici', static function (): void {
+$adminLiveStats = static function () use ($adminSalesSummary): array {
+    $dayFrom = date('Y-m-d 00:00:00');
+    $dayTo = date('Y-m-d 23:59:59');
+    $today = $adminSalesSummary($dayFrom, $dayTo);
+    $openTables = array_values(array_filter(
+        OrderService::tablesOverview(),
+        static fn(array $t): bool => !empty($t['is_open'])
+    ));
+    $pdo = Database::pdo();
+    $pendingOnline = (int) $pdo->query(
+        "SELECT COUNT(*) FROM orders WHERE source = 'online' AND status = 'pending'"
+    )->fetchColumn();
+    $kitchenQueued = (int) $pdo->query(
+        "SELECT COUNT(*) FROM order_items WHERE station = 'kitchen' AND status IN ('queued','preparing')"
+    )->fetchColumn();
+    $barQueued = (int) $pdo->query(
+        "SELECT COUNT(*) FROM order_items WHERE station = 'bar' AND status IN ('queued','preparing')"
+    )->fetchColumn();
+    $recent = OrderService::listRecent([], 8);
+    return [
+        'today' => [
+            'order_count' => (int) ($today['order_count'] ?? 0),
+            'paid_total' => (float) ($today['paid_total'] ?? 0),
+            'open_total' => (float) ($today['open_total'] ?? 0),
+            'online_total' => (float) ($today['online_total'] ?? 0),
+            'waiter_total' => (float) ($today['waiter_total'] ?? 0),
+            'cashier_total' => (float) ($today['cashier_total'] ?? 0),
+        ],
+        'open_tables' => array_map(static function (array $t): array {
+            return [
+                'id' => (int) $t['id'],
+                'label' => (string) ($t['label'] ?? ''),
+                'code' => (string) ($t['code'] ?? ''),
+                'open_count' => (int) ($t['open_count'] ?? 0),
+                'open_total' => (float) ($t['open_total'] ?? 0),
+                'waiter_names' => $t['waiter_names'] ?? [],
+            ];
+        }, $openTables),
+        'pending_online' => $pendingOnline,
+        'kitchen_queued' => $kitchenQueued,
+        'bar_queued' => $barQueued,
+        'recent' => array_map(static function (array $o): array {
+            return [
+                'order_code' => (string) $o['order_code'],
+                'source' => (string) $o['source'],
+                'status' => (string) $o['status'],
+                'total' => (float) $o['total'],
+            ];
+        }, $recent),
+        'updated_at' => date('H:i:s'),
+    ];
+};
+
+$router->get('/yonetici', static function () use ($adminLiveStats): void {
     Auth::requireRole('admin');
     view('staff/admin', [
         'title' => 'Yönetici · Restoran kontrol',
         'user' => Auth::user(),
+        'live' => $adminLiveStats(),
     ]);
+});
+
+$router->get('/api/admin/live-stats', static function () use ($adminLiveStats): void {
+    Auth::requireRole('admin');
+    json_response(['ok' => true, 'live' => $adminLiveStats()]);
 });
 
 $router->get('/yonetici/masalar', static function (): void {

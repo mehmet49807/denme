@@ -12,6 +12,7 @@ $groups = [
         'items' => [
             ['href' => '/yonetici/urunler', 'label' => 'Ürünler', 'icon' => 'burger', 'color' => '#f0b429'],
             ['href' => '/yonetici/urunler/ekle', 'label' => 'Ürün ekle', 'icon' => 'add', 'color' => '#2bb3a3'],
+            ['href' => '/qr', 'label' => 'QR Menü', 'icon' => 'qr', 'color' => '#4c8dff'],
         ],
     ],
     [
