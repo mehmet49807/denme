@@ -69,3 +69,7 @@ INSERT INTO settings (setting_key, setting_value) VALUES
 ('currency', 'TRY'),
 ('order_prefix', 'CHK')
 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);
+
+INSERT INTO discount_codes (code, label, percent, is_active) VALUES
+('YENI10', 'Yeni üye %10 indirim', 10.00, 1)
+ON DUPLICATE KEY UPDATE label = VALUES(label), percent = VALUES(percent), is_active = 1;

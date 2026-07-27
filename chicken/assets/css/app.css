@@ -68,8 +68,21 @@ button, input, select, textarea { font: inherit; }
   align-items: center;
   color: var(--muted);
   font-weight: 500;
+  flex-wrap: wrap;
 }
 .nav-links a:hover { color: var(--text); }
+.nav-user { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.promo-banner {
+  border-radius: 14px;
+  padding: 12px 16px;
+  background: linear-gradient(120deg, rgba(201, 148, 58, 0.18), rgba(196, 74, 42, 0.14));
+  border: 1px solid rgba(201, 148, 58, 0.35);
+  color: var(--text);
+  line-height: 1.45;
+}
+.promo-banner a { color: var(--gold); text-decoration: underline; text-underline-offset: 2px; }
+.auth-page { padding-top: 28px; padding-bottom: 40px; }
 
 .hero {
   min-height: calc(100vh - 64px);

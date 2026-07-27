@@ -50,6 +50,21 @@ final class SchemaSync
         }
 
         try {
+            self::ensureCustomers($pdo);
+        } catch (Throwable) {
+        }
+
+        try {
+            self::ensureDiscountCodes($pdo);
+        } catch (Throwable) {
+        }
+
+        try {
+            self::ensureOrderDiscountColumns($pdo);
+        } catch (Throwable) {
+        }
+
+        try {
             self::ensureStaffDeleteSetNull(
                 $pdo,
                 'orders',
@@ -66,6 +81,90 @@ final class SchemaSync
                 'staff_id',
                 'fk_events_staff'
             );
+        } catch (Throwable) {
+        }
+    }
+
+    private static function ensureCustomers(PDO $pdo): void
+    {
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS customers (
+              id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              name VARCHAR(120) NOT NULL,
+              email VARCHAR(160) NOT NULL UNIQUE,
+              phone VARCHAR(40) NOT NULL UNIQUE,
+              password_hash VARCHAR(255) NOT NULL,
+              is_active TINYINT(1) NOT NULL DEFAULT 1,
+              welcome_discount_used TINYINT(1) NOT NULL DEFAULT 0,
+              created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+    }
+
+    private static function ensureDiscountCodes(PDO $pdo): void
+    {
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS discount_codes (
+              id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              code VARCHAR(40) NOT NULL UNIQUE,
+              label VARCHAR(120) NOT NULL,
+              percent DECIMAL(5,2) NOT NULL,
+              is_active TINYINT(1) NOT NULL DEFAULT 1,
+              created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+        $pdo->prepare(
+            'INSERT INTO discount_codes (code, label, percent, is_active)
+             VALUES (?, ?, ?, 1)
+             ON DUPLICATE KEY UPDATE label = VALUES(label), percent = VALUES(percent), is_active = 1'
+        )->execute([DiscountService::WELCOME_CODE, 'Yeni üye %10 indirim', DiscountService::WELCOME_PERCENT]);
+    }
+
+    private static function ensureOrderDiscountColumns(PDO $pdo): void
+    {
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'customer_id',
+            'ALTER TABLE orders ADD COLUMN customer_id INT UNSIGNED NULL AFTER waiter_id'
+        );
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'discount_code',
+            'ALTER TABLE orders ADD COLUMN discount_code VARCHAR(40) NULL AFTER subtotal'
+        );
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'discount_percent',
+            'ALTER TABLE orders ADD COLUMN discount_percent DECIMAL(5,2) NOT NULL DEFAULT 0 AFTER discount_code'
+        );
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'discount_amount',
+            'ALTER TABLE orders ADD COLUMN discount_amount DECIMAL(10,2) NOT NULL DEFAULT 0 AFTER discount_percent'
+        );
+
+        try {
+            $stmt = $pdo->query(
+                "SELECT CONSTRAINT_NAME
+                 FROM information_schema.REFERENTIAL_CONSTRAINTS
+                 WHERE CONSTRAINT_SCHEMA = DATABASE()
+                   AND TABLE_NAME = 'orders'
+                   AND REFERENCED_TABLE_NAME = 'customers'
+                 LIMIT 1"
+            );
+            $existing = $stmt ? $stmt->fetchColumn() : false;
+            if (!$existing) {
+                $pdo->exec(
+                    'ALTER TABLE orders
+                     ADD CONSTRAINT fk_orders_customer
+                     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL'
+                );
+            }
         } catch (Throwable) {
         }
     }

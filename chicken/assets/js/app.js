@@ -130,9 +130,14 @@
 
     const listEl = root ? root.querySelector('[data-cart-list]') : null;
     const totalEl = root ? root.querySelector('[data-cart-total]') : null;
+    const subtotalEl = root ? root.querySelector('[data-cart-subtotal]') : null;
+    const discountEl = root ? root.querySelector('[data-cart-discount]') : null;
+    const discountRow = root ? root.querySelector('[data-cart-discount-row]') : null;
+    const discountInput = root ? root.querySelector('[data-discount-code]') : null;
     const countEl = root ? root.querySelector('[data-cart-count]') : null;
     const tableSelect = root ? root.querySelector('select[name="table_id"]') : null;
     const noteInput = root ? root.querySelector('textarea[name="customer_note"]') : null;
+    const welcomePercent = Number(root?.getAttribute('data-welcome-percent') || 10);
     const state = new Map();
     let meta = { table_id: '', note: '' };
 
@@ -164,6 +169,15 @@
       });
     }
 
+    function discountAmount(subtotal) {
+      if (!discountInput) return 0;
+      const code = String(discountInput.value || '').trim().toUpperCase();
+      if (code === 'YENI10' && subtotal > 0) {
+        return Math.round(subtotal * (welcomePercent / 100) * 100) / 100;
+      }
+      return 0;
+    }
+
     function render() {
       const items = [...state.values()];
       if (listEl) {
@@ -193,8 +207,13 @@
           : '<p class="muted">Henüz ürün eklenmedi.</p>';
       }
 
-      const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+      const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+      const disc = discountAmount(subtotal);
+      const total = Math.max(0, subtotal - disc);
       const count = items.reduce((sum, i) => sum + i.qty, 0);
+      if (subtotalEl) subtotalEl.textContent = money(subtotal);
+      if (discountEl) discountEl.textContent = '−' + money(disc);
+      if (discountRow) discountRow.hidden = disc <= 0;
       if (totalEl) totalEl.textContent = money(total);
       if (countEl) countEl.textContent = String(count);
       if (persistKey) updateCartBadges(count);
@@ -225,6 +244,9 @@
         if (id && state.has(Number(id))) {
           state.get(Number(id)).note = t.value || '';
           persist();
+        }
+        if (t === discountInput || t.hasAttribute('data-discount-code')) {
+          render();
         }
       });
       if (tableSelect) {
@@ -271,7 +293,11 @@
         meta = { table_id: '', note: '' };
         if (tableSelect) tableSelect.value = '';
         if (noteInput) noteInput.value = '';
+        if (discountInput) discountInput.value = '';
         if (listEl) listEl.innerHTML = '<p class="muted">Henüz ürün eklenmedi.</p>';
+        if (subtotalEl) subtotalEl.textContent = money(0);
+        if (discountEl) discountEl.textContent = '−' + money(0);
+        if (discountRow) discountRow.hidden = true;
         if (totalEl) totalEl.textContent = money(0);
         if (countEl) countEl.textContent = '0';
         if (persistKey) {
@@ -314,6 +340,7 @@
         customer_name: String(fd.get('customer_name') || ''),
         customer_phone: String(fd.get('customer_phone') || ''),
         customer_note: String(fd.get('customer_note') || ''),
+        discount_code: String(fd.get('discount_code') || '').trim(),
         items: onlineCart.payload(),
       };
       if (!body.customer_name || !body.customer_phone) {

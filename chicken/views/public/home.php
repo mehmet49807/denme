@@ -11,6 +11,16 @@
   </div>
 </section>
 
+<section class="section" id="welcome-offer">
+  <h2>Yeni üyelere %10 indirim</h2>
+  <p class="section-intro">
+    İlk kez kayıt olan müşteriler indirim kodu <strong>YENI10</strong> ile online siparişte %10 kazanır.
+    <a href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
+    ·
+    <a href="<?= e(url('/giris')) ?>">Giriş yap</a>
+  </p>
+</section>
+
 <section class="section" id="menu">
   <h2>Öne çıkan lezzetler</h2>
   <p class="section-intro">Mutfak ve bar ayrı fişlerle çalışır. Her siparişin benzersiz kimliği vardır.</p>

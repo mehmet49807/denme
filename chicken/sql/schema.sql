@@ -13,6 +13,27 @@ CREATE TABLE IF NOT EXISTS staff (
   updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS customers (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(160) NOT NULL UNIQUE,
+  phone VARCHAR(40) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  welcome_discount_used TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS discount_codes (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  code VARCHAR(40) NOT NULL UNIQUE,
+  label VARCHAR(120) NOT NULL,
+  percent DECIMAL(5,2) NOT NULL,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS dining_tables (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   code VARCHAR(20) NOT NULL UNIQUE,
@@ -52,10 +73,14 @@ CREATE TABLE IF NOT EXISTS orders (
   status ENUM('pending','accepted','preparing','ready','served','paid','cancelled') NOT NULL DEFAULT 'pending',
   table_id INT UNSIGNED NULL,
   waiter_id INT UNSIGNED NULL,
+  customer_id INT UNSIGNED NULL,
   customer_name VARCHAR(120) NULL,
   customer_phone VARCHAR(40) NULL,
   customer_note VARCHAR(400) NULL,
   subtotal DECIMAL(10,2) NOT NULL DEFAULT 0,
+  discount_code VARCHAR(40) NULL,
+  discount_percent DECIMAL(5,2) NOT NULL DEFAULT 0,
+  discount_amount DECIMAL(10,2) NOT NULL DEFAULT 0,
   total DECIMAL(10,2) NOT NULL DEFAULT 0,
   paid_at TIMESTAMP NULL DEFAULT NULL,
   payment_method ENUM('cash','card') NULL,
@@ -63,6 +88,7 @@ CREATE TABLE IF NOT EXISTS orders (
   updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_orders_table FOREIGN KEY (table_id) REFERENCES dining_tables(id),
   CONSTRAINT fk_orders_waiter FOREIGN KEY (waiter_id) REFERENCES staff(id) ON DELETE SET NULL,
+  CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
   INDEX idx_orders_status (status),
   INDEX idx_orders_created (created_at),
   INDEX idx_orders_waiter (waiter_id)

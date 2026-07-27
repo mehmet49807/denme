@@ -5,6 +5,8 @@ declare(strict_types=1);
 require __DIR__ . '/app/helpers.php';
 require __DIR__ . '/app/Database.php';
 require __DIR__ . '/app/Auth.php';
+require __DIR__ . '/app/CustomerAuth.php';
+require __DIR__ . '/app/DiscountService.php';
 require __DIR__ . '/app/OrderService.php';
 require __DIR__ . '/app/CategorySync.php';
 require __DIR__ . '/app/SchemaSync.php';
@@ -89,10 +91,15 @@ $router->get('/menu', static function () use ($menuCatalog): void {
 
 $router->get('/siparis', static function () use ($menuCatalog): void {
     $catalog = $menuCatalog();
+    if (CustomerAuth::check()) {
+        CustomerAuth::refresh();
+    }
     view('public/order', [
         'title' => 'Online Sipariş',
         'categories' => $catalog['categories'],
         'items' => $catalog['items'],
+        'customer' => CustomerAuth::user(),
+        'welcomeCode' => DiscountService::WELCOME_CODE,
     ]);
 });
 
@@ -107,11 +114,19 @@ $router->post('/api/orders', static function (): void {
         if ($customerName === '' || $customerPhone === '') {
             json_response(['ok' => false, 'error' => 'Ad ve telefon zorunlu.'], 422);
         }
+        $customer = CustomerAuth::user();
+        if ($customer) {
+            CustomerAuth::refresh();
+            $customer = CustomerAuth::user();
+        }
         $order = OrderService::create([
             'source' => 'online',
+            'customer_id' => $customer ? (int) $customer['id'] : null,
+            'customer' => $customer,
             'customer_name' => $customerName,
             'customer_phone' => $customerPhone,
             'customer_note' => trim((string) ($payload['customer_note'] ?? '')),
+            'discount_code' => trim((string) ($payload['discount_code'] ?? '')),
             'items' => $payload['items'] ?? [],
         ]);
         json_response(['ok' => true, 'order' => [
@@ -119,10 +134,93 @@ $router->post('/api/orders', static function (): void {
             'order_code' => $order['order_code'],
             'status' => $order['status'],
             'total' => (float) $order['total'],
+            'discount_amount' => (float) ($order['discount_amount'] ?? 0),
         ]]);
     } catch (Throwable $e) {
         json_response(['ok' => false, 'error' => $e->getMessage()], 422);
     }
+});
+
+function staff_home_path(?string $role): string
+{
+    return match ($role) {
+        'admin' => '/yonetici',
+        'cashier' => '/kasa',
+        'waiter' => '/garson',
+        default => '/garson',
+    };
+}
+
+$router->get('/giris', static function (): void {
+    if (Auth::check()) {
+        redirect(staff_home_path(Auth::role()));
+    }
+    if (CustomerAuth::check()) {
+        redirect('/siparis');
+    }
+    view('public/login', ['title' => 'Giriş']);
+});
+
+$router->post('/giris', static function (): void {
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'Oturum doğrulaması başarısız.');
+        redirect('/giris');
+    }
+    $login = trim((string) input('login'));
+    $password = (string) input('password');
+
+    // Staff first: garson / kasa / yönetici → own panel
+    if (Auth::attempt($login, $password)) {
+        CustomerAuth::logout();
+        redirect(staff_home_path(Auth::role()));
+    }
+
+    if (CustomerAuth::attempt($login, $password)) {
+        redirect('/siparis');
+    }
+
+    flash('error', 'E-posta / kullanıcı adı veya parola hatalı.');
+    redirect('/giris');
+});
+
+$router->get('/uye-ol', static function (): void {
+    if (Auth::check()) {
+        redirect(staff_home_path(Auth::role()));
+    }
+    if (CustomerAuth::check()) {
+        redirect('/siparis');
+    }
+    view('public/register', [
+        'title' => 'Üye ol',
+        'welcomeCode' => DiscountService::WELCOME_CODE,
+        'welcomePercent' => (int) DiscountService::WELCOME_PERCENT,
+    ]);
+});
+
+$router->post('/uye-ol', static function (): void {
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'Oturum doğrulaması başarısız.');
+        redirect('/uye-ol');
+    }
+    try {
+        CustomerAuth::register(
+            (string) input('name'),
+            (string) input('email'),
+            (string) input('phone'),
+            (string) input('password')
+        );
+        Auth::logout();
+        flash('success', 'Hoş geldiniz! İlk siparişinizde ' . DiscountService::WELCOME_CODE . ' kodu ile %10 indirim.');
+        redirect('/siparis');
+    } catch (Throwable $e) {
+        flash('error', $e->getMessage());
+        redirect('/uye-ol');
+    }
+});
+
+$router->post('/cikis', static function (): void {
+    CustomerAuth::logout();
+    redirect('/');
 });
 
 $router->get('/takip', static function (): void {
@@ -173,37 +271,29 @@ $router->get('/qr', static function (): void {
 // Staff auth
 $router->get('/personel/giris', static function (): void {
     if (Auth::check()) {
-        $role = Auth::role();
-        redirect(match ($role) {
-            'admin' => '/yonetici',
-            'cashier' => '/kasa',
-            default => '/garson',
-        });
+        redirect(staff_home_path(Auth::role()));
     }
-    view('staff/login', ['title' => 'Personel Girişi']);
+    // Müşteri giriş sayfasına yönlendir (personel de oradan girebilir)
+    redirect('/giris');
 });
 
 $router->post('/personel/giris', static function (): void {
     if (!verify_csrf((string) input('_csrf'))) {
         flash('error', 'Oturum doğrulaması başarısız.');
-        redirect('/personel/giris');
+        redirect('/giris');
     }
     $ok = Auth::attempt((string) input('username'), (string) input('password'));
     if (!$ok) {
         flash('error', 'Kullanıcı adı veya parola hatalı.');
-        redirect('/personel/giris');
+        redirect('/giris');
     }
-    $role = Auth::role();
-    redirect(match ($role) {
-        'admin' => '/yonetici',
-        'cashier' => '/kasa',
-        default => '/garson',
-    });
+    CustomerAuth::logout();
+    redirect(staff_home_path(Auth::role()));
 });
 
 $router->post('/personel/cikis', static function (): void {
     Auth::logout();
-    redirect('/personel/giris');
+    redirect('/giris');
 });
 
 // Waiter
@@ -932,7 +1022,7 @@ $router->post('/yonetici/personel/cikar', static function (): void {
     }
     $staffId = (int) input('staff_id');
     $roleGuard = trim((string) input('role_guard'));
-    $hardDelete = (string) input('hard_delete') === '1' || $roleGuard === 'waiter';
+    $hardDelete = (string) input('hard_delete') === '1';
     if ($staffId <= 0 || $staffId === (int) Auth::id()) {
         flash('error', 'Bu personel silinemez.');
         redirect($redirect);
