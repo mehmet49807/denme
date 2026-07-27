@@ -38,6 +38,7 @@ $files = [
     'app/CustomerAuth.php',
     'app/DiscountService.php',
     'assets/css/app.css',
+    'assets/css/public-site.css',
     'assets/js/app.js',
     'assets/img/logo.svg',
     'assets/img/logo.png',
