@@ -40,6 +40,9 @@ $files = [
     'assets/css/app.css',
     'assets/js/app.js',
     'assets/img/logo.svg',
+    'assets/img/logo.png',
+    'assets/img/logo-mark.png',
+    'assets/img/logo-96.png',
     'assets/img/hero.svg',
 ];
 
