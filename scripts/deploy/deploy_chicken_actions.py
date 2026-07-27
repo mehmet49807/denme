@@ -35,6 +35,9 @@ PRIORITY = [
     "views/public/order.php",
     "assets/css/app.css",
     "assets/js/app.js",
+    "assets/img/logo-crisp-co.png",
+    "assets/img/logo-mark.png",
+    "assets/img/logo.png",
     "tools/server_bootstrap.php",
     "tools/repair_app.php",
 ]
