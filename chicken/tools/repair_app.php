@@ -36,6 +36,8 @@ $files = [
     'app/CustomerAuth.php',
     'app/DiscountService.php',
     'assets/css/app.css',
+    'assets/img/logo.svg',
+    'assets/img/hero.svg',
 ];
 
 function fetch_url(string $url): string

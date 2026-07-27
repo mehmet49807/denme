@@ -42,13 +42,22 @@ final class CustomerAuth
         return true;
     }
 
-    public static function register(string $name, string $email, string $phone, string $password): array
-    {
+    public static function register(
+        string $name,
+        string $email,
+        string $phone,
+        string $password,
+        string $address = ''
+    ): array {
         $name = trim($name);
         $email = strtolower(trim($email));
         $phone = preg_replace('/\s+/', '', trim($phone)) ?? '';
+        $address = trim($address);
         if ($name === '' || $email === '' || $phone === '' || strlen($password) < 6) {
             throw new InvalidArgumentException('Ad, e-posta, telefon ve en az 6 karakter parola gerekli.');
+        }
+        if ($address === '') {
+            throw new InvalidArgumentException('Adres gerekli.');
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new InvalidArgumentException('Geçerli bir e-posta girin.');
@@ -62,16 +71,17 @@ final class CustomerAuth
         }
 
         $stmt = $pdo->prepare(
-            'INSERT INTO customers (name, email, phone, password_hash, is_active, welcome_discount_used)
-             VALUES (?, ?, ?, ?, 1, 0)'
+            'INSERT INTO customers (name, email, phone, address, password_hash, is_active, welcome_discount_used)
+             VALUES (?, ?, ?, ?, ?, 1, 0)'
         );
-        $stmt->execute([$name, $email, $phone, password_hash($password, PASSWORD_DEFAULT)]);
+        $stmt->execute([$name, $email, $phone, $address, password_hash($password, PASSWORD_DEFAULT)]);
         $id = (int) $pdo->lastInsertId();
         $user = [
             'id' => $id,
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
+            'address' => $address,
             'is_active' => 1,
             'welcome_discount_used' => 0,
         ];
@@ -86,7 +96,7 @@ final class CustomerAuth
             return;
         }
         $stmt = Database::pdo()->prepare(
-            'SELECT id, name, email, phone, is_active, welcome_discount_used, created_at
+            'SELECT id, name, email, phone, address, is_active, welcome_discount_used, created_at
              FROM customers WHERE id = ? AND is_active = 1 LIMIT 1'
         );
         $stmt->execute([$id]);

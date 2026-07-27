@@ -93,12 +93,19 @@ final class SchemaSync
               name VARCHAR(120) NOT NULL,
               email VARCHAR(160) NOT NULL UNIQUE,
               phone VARCHAR(40) NOT NULL UNIQUE,
+              address VARCHAR(400) NULL,
               password_hash VARCHAR(255) NOT NULL,
               is_active TINYINT(1) NOT NULL DEFAULT 1,
               welcome_discount_used TINYINT(1) NOT NULL DEFAULT 0,
               created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
               updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+        self::ensureColumn(
+            $pdo,
+            'customers',
+            'address',
+            'ALTER TABLE customers ADD COLUMN address VARCHAR(400) NULL AFTER phone'
         );
     }
 

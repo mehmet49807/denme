@@ -1,9 +1,12 @@
 <?php /** @var string $title */ ?>
 <div class="page-shell auth-page">
   <div class="auth-card" style="margin:0 auto;max-width:420px">
-    <p class="eyebrow">Müşteri & personel</p>
+    <div class="auth-logo">
+      <img src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="56" height="56">
+    </div>
+    <p class="eyebrow">Chicken</p>
     <h1>Giriş</h1>
-    <p class="lede">Üye girişi. Garson, kasa veya yönetici hesabıyla da giriş yapabilirsiniz.</p>
+    <p class="lede">Hesabınıza giriş yapın, sipariş verin.</p>
     <?php if ($msg = flash('error')): ?>
       <div class="alert alert-error"><?= e($msg) ?></div>
     <?php endif; ?>
@@ -13,16 +16,19 @@
     <form method="post" action="<?= e(url('/giris')) ?>" class="stack">
       <?= csrf_field() ?>
       <label>E-posta veya kullanıcı adı
-        <input name="login" required autocomplete="username" placeholder="ornek@mail.com / admin">
+        <input name="login" required autocomplete="username" placeholder="ornek@mail.com">
       </label>
       <label>Parola
         <input type="password" name="password" required autocomplete="current-password">
       </label>
-      <button class="btn btn-primary" type="submit">Giriş yap</button>
+      <button class="btn btn-accent btn-block" type="submit">Giriş yap</button>
     </form>
-    <p class="muted small" style="margin-top:16px">
-      Hesabınız yok mu? <a href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
-      · Yeni üyelere <strong>YENI10</strong> ile %10 indirim
+    <p class="auth-foot">
+      Hesabınız yok mu?
+      <a class="btn btn-nav-login btn-sm" href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
+    </p>
+    <p class="muted small" style="margin-top:12px;text-align:center">
+      Yeni üyelere <strong>YENI10</strong> ile %10 indirim
     </p>
   </div>
 </div>

@@ -1,29 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#2a1a12"/>
-      <stop offset="45%" stop-color="#151815"/>
-      <stop offset="100%" stop-color="#0c0e0c"/>
+    <linearGradient id="sky" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0%" stop-color="#FFF7ED"/>
+      <stop offset="55%" stop-color="#F3F6F9"/>
+      <stop offset="100%" stop-color="#EAF0F5"/>
     </linearGradient>
-    <radialGradient id="ember" cx="70%" cy="55%" r="35%">
-      <stop offset="0%" stop-color="#ff6a1a" stop-opacity="0.55"/>
-      <stop offset="100%" stop-color="#ff6a1a" stop-opacity="0"/>
+    <radialGradient id="sun" cx="78%" cy="28%" r="42%">
+      <stop offset="0%" stop-color="#FFB347" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#FFB347" stop-opacity="0"/>
     </radialGradient>
-    <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+    <radialGradient id="glow" cx="30%" cy="70%" r="45%">
+      <stop offset="0%" stop-color="#FF6A1A" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#FF6A1A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="plate" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FF7A1A"/>
+      <stop offset="1" stop-color="#F4B942"/>
+    </linearGradient>
   </defs>
-  <rect width="1600" height="900" fill="url(#g)"/>
-  <circle cx="1120" cy="480" r="260" fill="url(#ember)"/>
-  <g opacity="0.35" filter="url(#blur)">
-    <ellipse cx="780" cy="620" rx="420" ry="70" fill="#000"/>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <circle cx="1240" cy="220" r="320" fill="url(#sun)"/>
+  <circle cx="420" cy="700" r="360" fill="url(#glow)"/>
+  <g transform="translate(980 280)">
+    <ellipse cx="160" cy="250" rx="210" ry="36" fill="#1A1F24" opacity="0.08"/>
+    <circle cx="160" cy="150" r="132" fill="url(#plate)"/>
+    <circle cx="160" cy="150" r="108" fill="#FFF8F1"/>
+    <path d="M88 168c18-52 72-84 128-72 38 8 68 38 72 74 4 32-8 64-36 84-34 24-78 28-116 8-46-24-64-62-48-94z" fill="#1A1F24"/>
+    <path d="M118 148c16-22 46-34 72-26" stroke="#FF7A1A" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="214" cy="128" r="10" fill="#FF7A1A"/>
   </g>
-  <g fill="none" stroke="#e2b457" stroke-opacity="0.25" stroke-width="2">
-    <path d="M420 640c80-120 170-200 290-240"/>
-    <path d="M470 670c90-130 190-220 320-260"/>
-  </g>
-  <g transform="translate(860 300)">
-    <path d="M40 40c40-70 120-110 200-90 70 18 120 80 130 150 8 55-10 110-55 150-55 50-130 70-200 45-85-30-125-120-95-205z" fill="#3a2418" stroke="#ff9a3c" stroke-width="4"/>
-    <path d="M90 120c25-35 70-55 115-45" stroke="#f0b429" stroke-width="6" stroke-linecap="round"/>
-    <circle cx="250" cy="95" r="10" fill="#ff6a1a"/>
-  </g>
-  <text x="120" y="780" fill="#f3efe6" font-family="Arial, sans-serif" font-size="42" opacity="0.18">GRILL " FIRE " CHICKEN</text>
+  <text x="96" y="820" fill="#1A1F24" font-family="Arial, sans-serif" font-size="36" opacity="0.12" letter-spacing="8">CHICKEN GRILL</text>
 </svg>

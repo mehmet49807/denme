@@ -1,24 +1,20 @@
 <section class="hero">
   <div class="hero-media" aria-hidden="true"></div>
   <div class="hero-content">
-    <p class="eyebrow">Chicken Grill House</p>
+    <div class="hero-logo" aria-hidden="true">
+      <img src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="72" height="72">
+    </div>
+    <p class="eyebrow">Izgara &amp; hızlı servis</p>
     <h1>CHICKEN</h1>
-    <p class="lede">Izgara tavuk, sıcak bar, hızlı servis. QR menüden bakın, online sipariş verin, siparişinizi anlık takip edin.</p>
-    <div class="cta-row">
-      <a class="btn btn-primary" href="<?= e(url('/menu')) ?>">QR Menüyü Aç</a>
+    <p class="lede">Izgara tavuk, sıcak bar, hızlı servis. Menüden seçin, online sipariş verin, siparişinizi anlık takip edin.</p>
+    <div class="cta-row cta-home">
+      <div class="cta-primary-wrap">
+        <a class="btn btn-accent" href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
+        <p class="cta-note">Yeni üyelere <strong>%10 indirim</strong></p>
+      </div>
       <a class="btn btn-ghost" href="<?= e(url('/siparis')) ?>">Online Sipariş</a>
     </div>
   </div>
-</section>
-
-<section class="section" id="welcome-offer">
-  <h2>Yeni üyelere %10 indirim</h2>
-  <p class="section-intro">
-    İlk kez kayıt olan müşteriler indirim kodu <strong>YENI10</strong> ile online siparişte %10 kazanır.
-    <a href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
-    ·
-    <a href="<?= e(url('/giris')) ?>">Giriş yap</a>
-  </p>
 </section>
 
 <section class="section" id="menu">
