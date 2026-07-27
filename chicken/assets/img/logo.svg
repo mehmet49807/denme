@@ -1,19 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Chicken">
   <defs>
-    <linearGradient id="ckRing" x1="8" y1="4" x2="88" y2="92" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FF8A1F"/>
-      <stop offset="0.5" stop-color="#E85D04"/>
-      <stop offset="1" stop-color="#C97700"/>
+    <linearGradient id="ckRing" x1="8" y1="8" x2="88" y2="88" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF5A28"/>
+      <stop offset="0.28" stop-color="#FFB020"/>
+      <stop offset="0.55" stop-color="#46BE6E"/>
+      <stop offset="0.78" stop-color="#4696FF"/>
+      <stop offset="1" stop-color="#FF5A28"/>
+    </linearGradient>
+    <linearGradient id="ckWing" x1="36" y1="40" x2="68" y2="68" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF8C28"/>
+      <stop offset="1" stop-color="#FFC446"/>
     </linearGradient>
   </defs>
   <circle cx="48" cy="48" r="46" fill="url(#ckRing)"/>
-  <circle cx="48" cy="48" r="36" fill="#FFF8F1"/>
-  <path d="M28 56c4-20 22-32 40-26 11 3 20 13 21 24 1 10-3 19-12 24-10 6-24 7-35 1-13-6-18-16-14-23z" fill="#1A1F24"/>
-  <path d="M66 46l12 4-12 5z" fill="#E85D04"/>
-  <circle cx="62" cy="40" r="4.5" fill="#FFF8F1"/>
-  <circle cx="63" cy="41" r="2.2" fill="#E85D04"/>
-  <circle cx="46" cy="20" r="5.5" fill="#E85D04"/>
-  <circle cx="54" cy="16" r="4.2" fill="#FF8A1F"/>
-  <path d="M34 58c8 10 22 14 34 8" stroke="#F4B942" stroke-width="3" stroke-linecap="round" fill="none"/>
-  <path d="M24 70c12 8 28 11 42 8 12-2 22-8 30-16" stroke="#C97700" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+  <circle cx="48" cy="48" r="36" fill="#FFFAF4"/>
+  <path d="M27 56c3-18 18-30 36-26 12 3 21 13 22 24 1 10-3 18-12 23-10 6-23 7-33 2-13-6-18-15-13-23z" fill="#201C24"/>
+  <path d="M40 52l18-8 8 14-16 8z" fill="url(#ckWing)"/>
+  <path d="M66 42l14 4-14 5z" fill="#FFAA14"/>
+  <path d="M66 45l10 2.2-10 2.4z" fill="#FF7820"/>
+  <circle cx="62" cy="39" r="5" fill="#fff"/>
+  <circle cx="63.2" cy="40" r="2.4" fill="#282830"/>
+  <circle cx="64.4" cy="39" r="0.9" fill="#fff"/>
+  <circle cx="44" cy="20" r="5.8" fill="#E63737"/>
+  <circle cx="52" cy="16" r="4.8" fill="#FF5F2D"/>
+  <circle cx="58.5" cy="21" r="3.8" fill="#FFA028"/>
+  <circle cx="70" cy="52" r="3.2" fill="#FF788C" opacity=".55"/>
+  <path d="M24 70c10 7 24 10 36 8 11-2 21-7 28-14" stroke="#FF5A28" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+  <path d="M26 74c10 6 22 9 34 7" stroke="#FFB020" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <circle cx="18" cy="30" r="2.2" fill="#4696FF"/>
+  <circle cx="80" cy="28" r="2.2" fill="#46BE6E"/>
+  <circle cx="22" cy="78" r="2" fill="#FFB020"/>
 </svg>
