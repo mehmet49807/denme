@@ -496,6 +496,75 @@ final class OrderService
         self::addEvent($pdo, $orderId, $staffId, 'status_' . $status, 'Durum: ' . status_label($status));
     }
 
+    /**
+     * Online siparişi onayla: mutfak + bar fişleri gönderilir.
+     */
+    public static function acceptOnlineOrder(int $orderId, ?int $staffId = null): array
+    {
+        $order = self::findById($orderId);
+        if (!$order) {
+            throw new InvalidArgumentException('Sipariş bulunamadı.');
+        }
+        if (($order['source'] ?? '') !== 'online') {
+            throw new InvalidArgumentException('Yalnızca online siparişler onaylanır.');
+        }
+        if (($order['status'] ?? '') === 'cancelled') {
+            throw new InvalidArgumentException('İptal sipariş onaylanamaz.');
+        }
+        if (($order['status'] ?? '') === 'paid') {
+            throw new InvalidArgumentException('Ödenmiş sipariş onaylanamaz.');
+        }
+        if (($order['status'] ?? '') !== 'pending') {
+            // Already accepted — idempotent return
+            return $order;
+        }
+
+        $pdo = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare('UPDATE orders SET status = ?, updated_at = NOW() WHERE id = ? AND status = ?')
+                ->execute(['accepted', $orderId, 'pending']);
+            self::addEvent($pdo, $orderId, $staffId, 'status_accepted', 'Online sipariş onaylandı');
+            self::addEvent($pdo, $orderId, $staffId, 'sent_kitchen', 'Mutfak fişi gönderildi');
+            self::addEvent($pdo, $orderId, $staffId, 'sent_bar', 'Bar fişi gönderildi');
+            $pdo->commit();
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $e;
+        }
+
+        return self::findById($orderId) ?: $order;
+    }
+
+    /** @return list<array> */
+    public static function listOnlinePending(int $limit = 50): array
+    {
+        return self::listRecent([
+            'source' => 'online',
+            'status' => 'pending',
+        ], $limit);
+    }
+
+    /** @return list<array> */
+    public static function listOnlineActive(int $limit = 40): array
+    {
+        $pdo = Database::pdo();
+        $stmt = $pdo->prepare(
+            "SELECT o.*, t.label AS table_label, s.name AS waiter_name
+             FROM orders o
+             LEFT JOIN dining_tables t ON t.id = o.table_id
+             LEFT JOIN staff s ON s.id = o.waiter_id
+             WHERE o.source = 'online'
+               AND o.status NOT IN ('pending', 'paid', 'cancelled')
+             ORDER BY o.id DESC
+             LIMIT " . (int) $limit
+        );
+        $stmt->execute();
+        return $stmt->fetchAll() ?: [];
+    }
+
     public static function updateNote(int $orderId, string $note, ?int $staffId = null): void
     {
         $note = trim($note);

@@ -14,7 +14,13 @@ $paidSum = array_sum(array_map(
     <h1>Masalar</h1>
   </div>
   <div class="cta-row">
-    <a class="btn btn-accent btn-sm" href="<?= e(url('/qr')) ?>">QR Menü</a>
+    <a class="btn btn-accent btn-sm" href="<?= e(url('/online-siparisler')) ?>">
+      Online siparişler
+      <?php if (!empty($pendingOnlineCount)): ?>
+        <span class="nav-badge" style="margin-left:6px"><?= (int) $pendingOnlineCount ?></span>
+      <?php endif; ?>
+    </a>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('/qr')) ?>">QR Menü</a>
   </div>
 </div>
 

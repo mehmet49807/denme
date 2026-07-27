@@ -15,7 +15,8 @@ $recent = $live['recent'] ?? [];
   </div>
   <div class="cta-row">
     <span class="chip live-chip" data-live-updated>Canlı</span>
-    <a class="btn btn-accent btn-sm" href="<?= e(url('/qr')) ?>">QR Menü</a>
+    <a class="btn btn-accent btn-sm" href="<?= e(url('/online-siparisler')) ?>">Online siparişler</a>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('/qr')) ?>">QR Menü</a>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('/yonetici/brosurler')) ?>">Broşürler</a>
   </div>
 </div>

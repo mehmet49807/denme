@@ -21,6 +21,7 @@ $groups = [
         'items' => [
             ['href' => '/yonetici/istatistikler', 'label' => 'Satış istatistikleri', 'icon' => 'stats', 'color' => '#e2b457'],
             ['href' => '/yonetici/siparisler', 'label' => 'Siparişler', 'icon' => 'orders', 'color' => '#4c8dff'],
+            ['href' => '/online-siparisler', 'label' => 'Online siparişler', 'icon' => 'orders', 'color' => '#1f9d63'],
             ['href' => '/yonetici/personel-istatistik', 'label' => 'Kasa ve Garson', 'icon' => 'staffstats', 'color' => '#f0b429'],
         ],
     ],
