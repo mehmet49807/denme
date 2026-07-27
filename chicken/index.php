@@ -8,6 +8,7 @@ require __DIR__ . '/app/Auth.php';
 require __DIR__ . '/app/CustomerAuth.php';
 require __DIR__ . '/app/DiscountService.php';
 require __DIR__ . '/app/SiteContent.php';
+require __DIR__ . '/app/BrochureService.php';
 require __DIR__ . '/app/OrderService.php';
 require __DIR__ . '/app/CategorySync.php';
 require __DIR__ . '/app/SchemaSync.php';
@@ -99,11 +100,22 @@ $router->get('/menu/brosur', static function () use ($menuCatalog): void {
         $stmt->execute([$token]);
         $table = $stmt->fetch() ?: null;
     }
+
+    $preview = trim((string) input('preview', ''));
+    $themeId = BrochureService::selectedThemeId();
+    if ($preview !== '' && Auth::check() && Auth::role() === 'admin') {
+        $catalogThemes = BrochureService::catalog();
+        if (isset($catalogThemes[$preview])) {
+            $themeId = $preview;
+        }
+    }
+
     view('public/menu_brochure', [
         'title' => 'Chicken Menü Broşürü',
         'categories' => $catalog['categories'],
         'items' => $catalog['items'],
         'table' => $table,
+        'themeId' => $themeId,
         'layout' => 'brochure',
     ]);
 });
@@ -322,20 +334,56 @@ $router->get('/api/orders/{code}', static function (string $code): void {
 });
 
 $router->get('/qr', static function (): void {
-    Auth::requireRole('waiter', 'cashier', 'admin');
-    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = (string) ($_SERVER['HTTP_HOST'] ?? '');
-    $base = $host !== ''
-        ? ($scheme . '://' . $host . base_path())
-        : rtrim((string) config('app_url'), '/');
-    $brochureUrl = $base . '/menu/brosur';
-    $qrImageUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=' . rawurlencode($brochureUrl);
+    Auth::requireRole('cashier', 'admin');
+    $brochureUrl = BrochureService::brochurePublicUrl();
+    $qrImageUrl = BrochureService::qrImageUrl($brochureUrl);
+    $selectedId = BrochureService::selectedThemeId();
+    $selectedName = BrochureService::catalog()[$selectedId]['name'] ?? $selectedId;
     view('staff/qr', [
         'title' => 'QR Menü',
         'brochureUrl' => $brochureUrl,
         'qrImageUrl' => $qrImageUrl,
+        'canEdit' => Auth::role() === 'admin',
+        'selectedThemeName' => $selectedName,
         'user' => Auth::user(),
     ]);
+});
+
+$router->get('/yonetici/brosurler', static function (): void {
+    Auth::requireRole('admin');
+    $brochureUrl = BrochureService::brochurePublicUrl();
+    view('staff/admin_brochures', [
+        'title' => 'Yönetici · Broşür temaları',
+        'themes' => BrochureService::themesForAdmin(),
+        'brochureUrl' => $brochureUrl,
+        'qrImageUrl' => BrochureService::qrImageUrl($brochureUrl, 220),
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->post('/yonetici/brosurler', static function (): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/brosurler');
+    }
+    $action = (string) input('action');
+    $themeId = trim((string) input('theme_id'));
+    try {
+        if ($action === 'select') {
+            BrochureService::selectTheme($themeId);
+            flash('success', 'Broşür teması seçildi.');
+        } elseif ($action === 'toggle') {
+            $active = (string) input('active') === '1';
+            BrochureService::setThemeActive($themeId, $active);
+            flash('success', $active ? 'Tema aktifleştirildi.' : 'Tema pasife alındı.');
+        } else {
+            flash('error', 'Geçersiz işlem.');
+        }
+    } catch (Throwable $e) {
+        flash('error', $e->getMessage());
+    }
+    redirect('/yonetici/brosurler');
 });
 
 // Staff auth
