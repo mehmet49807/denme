@@ -12,8 +12,9 @@ RewriteRule ^(config|app|sql|storage)/ - [F,L]
 
 # Short cache for brand logos so updates show quickly
 <IfModule mod_headers.c>
-  <FilesMatch "logo(-mark|-96|-192)?\.(png|svg)$">
-    Header set Cache-Control "public, max-age=300, must-revalidate"
+  <FilesMatch "(logo|brand).*\.(png|svg|jpg|jpeg|webp)$">
+    Header set Cache-Control "public, max-age=120, must-revalidate"
+    Header set Pragma "no-cache"
   </FilesMatch>
 </IfModule>
 
