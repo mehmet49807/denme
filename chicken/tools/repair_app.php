@@ -43,6 +43,8 @@ $files = [
     'assets/img/logo.png',
     'assets/img/logo-mark.png',
     'assets/img/logo-96.png',
+    'assets/img/logo-192.png',
+    'assets/img/logo-chicken-head.png',
     'assets/img/hero.svg',
 ];
 
