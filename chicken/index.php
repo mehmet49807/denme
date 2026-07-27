@@ -207,7 +207,8 @@ $router->post('/uye-ol', static function (): void {
             (string) input('name'),
             (string) input('email'),
             (string) input('phone'),
-            (string) input('password')
+            (string) input('password'),
+            (string) input('address')
         );
         Auth::logout();
         flash('success', 'Hoş geldiniz! İlk siparişinizde ' . DiscountService::WELCOME_CODE . ' kodu ile %10 indirim.');

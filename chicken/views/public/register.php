@@ -5,6 +5,9 @@
 ?>
 <div class="page-shell auth-page">
   <div class="auth-card" style="margin:0 auto;max-width:440px">
+    <div class="auth-logo">
+      <img src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="56" height="56">
+    </div>
     <p class="eyebrow">Yeni üyelik</p>
     <h1>Üye ol</h1>
     <div class="promo-banner" style="margin:0 0 16px">
@@ -26,13 +29,17 @@
       <label>Telefon
         <input name="phone" required autocomplete="tel" placeholder="05xx...">
       </label>
+      <label>Adres
+        <textarea name="address" required rows="3" autocomplete="street-address" placeholder="Mahalle, sokak, bina no, ilçe / il"></textarea>
+      </label>
       <label>Parola
         <input type="password" name="password" required minlength="6" autocomplete="new-password" placeholder="En az 6 karakter">
       </label>
-      <button class="btn btn-primary" type="submit">Kayıt ol</button>
+      <button class="btn btn-accent btn-block" type="submit">Kayıt ol</button>
     </form>
-    <p class="muted small" style="margin-top:16px">
-      Zaten üye misiniz? <a href="<?= e(url('/giris')) ?>">Giriş yap</a>
+    <p class="auth-foot">
+      Zaten üye misiniz?
+      <a class="btn btn-nav-login btn-sm" href="<?= e(url('/giris')) ?>">Giriş yap</a>
     </p>
   </div>
 </div>

@@ -16,11 +16,15 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     $jsVer = @filemtime($assetRoot . '/js/app.js') ?: time();
   ?>
   <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) $cssVer) ?>">
+  <link rel="icon" href="<?= e(url('/assets/img/logo.svg')) ?>" type="image/svg+xml">
 </head>
 <body<?= !empty($bodyAttrs) ? ' ' . $bodyAttrs : '' ?> data-base="<?= e(base_path()) ?>">
   <header class="site-header">
     <div class="nav">
-      <a class="brand" href="<?= e(url('/')) ?>">Chicken<span>.</span></a>
+      <a class="brand" href="<?= e(url('/')) ?>">
+        <img class="brand-mark" src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="36" height="36">
+        <span class="brand-text">Chicken<span>.</span></span>
+      </a>
       <nav class="nav-links">
         <a href="<?= e(url('/menu')) ?>">Menü</a>
         <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
@@ -32,15 +36,15 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
             <button class="btn btn-ghost btn-sm" type="submit">Çıkış</button>
           </form>
         <?php else: ?>
-          <a href="<?= e(url('/giris')) ?>">Giriş</a>
-          <a href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
+          <a class="btn btn-nav-login btn-sm" href="<?= e(url('/giris')) ?>">Giriş</a>
+          <a class="btn btn-accent btn-sm" href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
         <?php endif; ?>
       </nav>
     </div>
   </header>
   <?= $content ?>
   <footer class="footer">
-    <div>Chicken · Izgara lezzet · QR menü · Online sipariş</div>
+    <div>Chicken · Izgara lezzet · Online sipariş · Yeni üyelere %10</div>
   </footer>
   <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
   <script src="<?= e(url('/assets/js/app.js')) ?>?v=<?= e((string) $jsVer) ?>" defer></script>
