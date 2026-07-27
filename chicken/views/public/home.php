@@ -1,21 +1,20 @@
-<section class="hero">
+<section class="hero theme-crisp">
   <div class="hero-media" aria-hidden="true"></div>
   <div class="hero-content">
-    <div class="hero-brand">
-      <img class="hero-logo" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="168" height="168">
-      <p class="eyebrow">Lezzetin doğal adresi</p>
-    </div>
+    <img class="hero-logo" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="148" height="148">
+    <p class="eyebrow">Lezzetin doğal adresi</p>
     <h1>CRISP &amp; CO.</h1>
-    <p class="lede">Taze ızgara tavuk, net menü ve online sipariş. Üye olmadan da sipariş verebilirsiniz.</p>
+    <p class="lede">Izgara tavuk, doğal lezzet. Menüden seçin — üye olmadan da sipariş verin.</p>
     <div class="cta-home">
       <a class="btn btn-accent" href="<?= e(url('/siparis')) ?>">Online Sipariş</a>
       <a class="btn btn-ghost" href="<?= e(url('/menu')) ?>">Menüyü gör</a>
-      <p class="cta-note">Üye olanlara <strong>YENI10</strong> ile %10 indirim</p>
     </div>
+    <p class="cta-note">Üye olanlara <strong>YENI10</strong> · %10 indirim</p>
   </div>
 </section>
 
 <section class="section section-home-menu" id="menu">
+  <p class="eyebrow">Menü</p>
   <h2>Öne çıkanlar</h2>
   <p class="section-intro">En sevilen ızgara ve menüler.</p>
   <div class="menu-grid">
@@ -30,6 +29,7 @@
 </section>
 
 <section class="section section-home-about" id="hakkimizda-ozet">
+  <p class="eyebrow">Marka</p>
   <h2>Crisp &amp; Co. hakkında</h2>
   <p class="section-intro">Lezzetin doğal adresi — taze ızgara, hızlı servis ve şeffaf iletişim.</p>
   <div class="about-links">
