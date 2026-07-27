@@ -8,8 +8,8 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title><?= e($title ?? 'Chicken') ?></title>
-  <meta name="description" content="Chicken restoran — QR menü, online sipariş ve sipariş takip.">
+  <title><?= e($title ?? 'Lezzet Tavukçusu') ?></title>
+  <meta name="description" content="Lezzet Tavukçusu — ızgara tavuk, QR menü, online sipariş ve sipariş takip.">
   <?php
     $assetRoot = dirname(__DIR__, 2) . '/assets';
     $cssVer = @filemtime($assetRoot . '/css/app.css') ?: time();
@@ -22,9 +22,8 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
 <body<?= !empty($bodyAttrs) ? ' ' . $bodyAttrs : '' ?> data-base="<?= e(base_path()) ?>" data-public-layout>
   <header class="site-header">
     <div class="nav">
-      <a class="brand" href="<?= e(url('/')) ?>">
-        <img class="brand-mark" src="<?= e($logoSrc) ?>" alt="Chicken" width="40" height="40">
-        <span class="brand-text">Chicken<span>.</span></span>
+      <a class="brand brand-logo-only" href="<?= e(url('/')) ?>" aria-label="Lezzet Tavukçusu">
+        <img class="brand-mark brand-mark-full" src="<?= e($logoSrc) ?>" alt="Lezzet Tavukçusu" width="56" height="56">
       </a>
       <div class="nav-auth">
         <a class="btn btn-cart btn-sm" href="<?= e(url('/siparis#sepet')) ?>" data-cart-link aria-label="Sepet">
@@ -74,11 +73,10 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     <div class="footer-glow" aria-hidden="true"></div>
     <div class="footer-inner footer-premium">
       <div class="footer-brand">
-        <a class="brand footer-brand-link" href="<?= e(url('/')) ?>">
-          <img class="brand-mark" src="<?= e($logoSrc) ?>" alt="Chicken" width="44" height="44">
-          <span class="brand-text">Chicken<span>.</span></span>
+        <a class="brand footer-brand-link brand-logo-only" href="<?= e(url('/')) ?>" aria-label="Lezzet Tavukçusu">
+          <img class="brand-mark brand-mark-full" src="<?= e($logoSrc) ?>" alt="Lezzet Tavukçusu" width="72" height="72">
         </a>
-        <p class="footer-tagline">Izgara lezzet · hızlı servis · online sipariş</p>
+        <p class="footer-tagline">Ustasından lezzet · ızgara tavuk · online sipariş</p>
         <div class="footer-cta">
           <a class="btn btn-accent btn-sm" href="<?= e(url('/siparis')) ?>">Sipariş ver</a>
           <a class="btn btn-ghost btn-sm" href="<?= e(url('/menu')) ?>">Menü</a>
@@ -122,7 +120,7 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© <?= date('Y') ?> Chicken</span>
+        <span>© <?= date('Y') ?> Lezzet Tavukçusu</span>
         <span class="footer-dot" aria-hidden="true"></span>
         <span>Yeni üyelere <strong>YENI10</strong> · %10 indirim</span>
       </div>

@@ -6,7 +6,7 @@
 <div class="page-shell auth-page">
   <div class="auth-card" style="margin:0 auto;max-width:480px">
     <div class="auth-logo">
-      <img src="<?= e(logo_url()) ?>" alt="Chicken" width="56" height="56">
+      <img class="auth-logo-img" src="<?= e(logo_url()) ?>" alt="Lezzet Tavukçusu" width="88" height="88">
     </div>
     <p class="eyebrow">Yeni üyelik</p>
     <h1>Üye ol</h1>
