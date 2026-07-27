@@ -23,7 +23,7 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
   <header class="site-header">
     <div class="nav">
       <a class="brand brand-logo-only" href="<?= e(url('/')) ?>" aria-label="Crisp &amp; Co.">
-        <img class="brand-mark brand-mark-full" src="<?= e($logoSrc) ?>" alt="Crisp &amp; Co." width="58" height="58">
+        <img class="brand-mark brand-mark-full" src="<?= e($logoSrc) ?>" alt="Crisp &amp; Co." width="64" height="64">
       </a>
       <div class="nav-auth">
         <a class="btn btn-cart btn-sm" href="<?= e(url('/siparis#sepet')) ?>" data-cart-link aria-label="Sepet">
