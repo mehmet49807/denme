@@ -167,6 +167,7 @@ $repair = [
     'app/MenuItemSync.php',
     'views/partials/menu_item_card.php',
     'assets/css/app.css',
+    'assets/css/public-site.css',
 ];
 foreach ($repair as $rel) {
     $path = $source . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $rel);
