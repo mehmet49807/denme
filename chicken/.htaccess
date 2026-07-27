@@ -10,6 +10,13 @@ RewriteRule ^(.*)$ https://gonulkoprusu.com/chicken/$1 [R=302,L,QSA]
 # Block sensitive paths
 RewriteRule ^(config|app|sql|storage)/ - [F,L]
 
+# Short cache for brand logos so updates show quickly
+<IfModule mod_headers.c>
+  <FilesMatch "logo(-mark|-96|-192)?\.(png|svg)$">
+    Header set Cache-Control "public, max-age=300, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
 # Front controller
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

@@ -15,7 +15,7 @@ $themeId = preg_replace('/[^a-z0-9_-]/i', '', (string) ($themeId ?? 'classic')) 
     $cssVer = @filemtime($assetRoot . '/css/app.css') ?: time();
   ?>
   <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) $cssVer) ?>">
-  <link rel="icon" href="<?= e(url('/assets/img/logo.svg')) ?>" type="image/svg+xml">
+  <link rel="icon" href="<?= e(logo_url()) ?>" type="image/png">
 </head>
 <body class="brochure-body theme-<?= e($themeId) ?>" data-base="<?= e(base_path()) ?>" data-theme="<?= e($themeId) ?>">
   <?= $content ?>

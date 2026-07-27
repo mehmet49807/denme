@@ -2,7 +2,7 @@
 <div class="page-shell auth-page">
   <div class="auth-card" style="margin:0 auto;max-width:420px">
     <div class="auth-logo">
-      <img src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="56" height="56">
+      <img src="<?= e(logo_url()) ?>" alt="Chicken" width="56" height="56">
     </div>
     <p class="eyebrow">Chicken</p>
     <h1>Giriş</h1>
