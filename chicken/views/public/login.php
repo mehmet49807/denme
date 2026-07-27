@@ -13,6 +13,10 @@
     <?php if ($msg = flash('success')): ?>
       <div class="alert alert-ok"><?= e($msg) ?></div>
     <?php endif; ?>
+
+    <?php partial('partials/google_auth_button', ['label' => 'Google ile giriş yap']); ?>
+    <div class="auth-divider"><span>veya</span></div>
+
     <form method="post" action="<?= e(url('/giris')) ?>" class="stack">
       <?= csrf_field() ?>
       <label>E-posta veya kullanıcı adı

@@ -41,12 +41,24 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
         <a href="<?= e(url('/menu')) ?>">Menü</a>
         <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
         <a href="<?= e(url('/takip')) ?>">Takip</a>
+        <a href="<?= e(url('/hakkimizda')) ?>">Hakkımızda</a>
       </nav>
     </div>
   </header>
   <?= $content ?>
   <footer class="footer">
-    <div>Chicken · Izgara lezzet · Online sipariş</div>
+    <div class="footer-inner">
+      <div>Chicken · Izgara lezzet · Online sipariş</div>
+      <nav class="footer-links" aria-label="Kurumsal ve sözleşmeler">
+        <a href="<?= e(url('/hakkimizda')) ?>">Hakkımızda</a>
+        <a href="<?= e(url('/misyon')) ?>">Misyon</a>
+        <a href="<?= e(url('/musteri-memnuniyeti')) ?>">Müşteri memnuniyeti</a>
+        <a href="<?= e(url('/sozlesmeler/kvkk')) ?>">KVKK</a>
+        <a href="<?= e(url('/sozlesmeler/gizlilik')) ?>">Gizlilik</a>
+        <a href="<?= e(url('/sozlesmeler/mesafeli-satis')) ?>">Mesafeli satış</a>
+        <a href="<?= e(url('/sozlesmeler/uyelik')) ?>">Üyelik sözleşmesi</a>
+      </nav>
+    </div>
   </footer>
   <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
   <script src="<?= e(url('/assets/js/app.js')) ?>?v=<?= e((string) $jsVer) ?>" defer></script>
