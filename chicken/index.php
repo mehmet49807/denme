@@ -960,7 +960,11 @@ $router->post('/yonetici/personel/cikar', static function (): void {
             $pdo->beginTransaction();
             $pdo->prepare('UPDATE orders SET waiter_id = NULL WHERE waiter_id = ?')->execute([$staffId]);
             $pdo->prepare('UPDATE order_events SET staff_id = NULL WHERE staff_id = ?')->execute([$staffId]);
-            $pdo->prepare('DELETE FROM staff WHERE id = ? AND role = ?')->execute([$staffId, 'waiter']);
+            $del = $pdo->prepare('DELETE FROM staff WHERE id = ? AND role = ?');
+            $del->execute([$staffId, 'waiter']);
+            if ($del->rowCount() < 1) {
+                throw new RuntimeException('Waiter row not deleted');
+            }
             $pdo->commit();
             flash('success', 'Garson hesabı kalıcı olarak silindi: ' . $name);
         } catch (Throwable $e) {

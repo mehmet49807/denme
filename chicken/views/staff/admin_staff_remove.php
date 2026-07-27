@@ -16,7 +16,7 @@ $me = (int) Auth::id();
 </div>
 
 <p class="muted" style="margin:-8px 0 16px">
-  Garson hesabı <strong>kalıcı olarak silinir</strong>. Sipariş geçmişi durur; garson bağlantısı kaldırılır.
+  Garson hesabı veritabanından <strong>kalıcı olarak silinir</strong> (pasife alma değil). Giriş yapamaz; sipariş geçmişi kalır, garson bağlantısı kaldırılır.
 </p>
 
 <section class="panel">
@@ -48,7 +48,7 @@ $me = (int) Auth::id();
                   method="post"
                   action="<?= e(url('/yonetici/personel/cikar')) ?>"
                   style="display:inline"
-                  onsubmit="return confirm('<?= e($member['name']) ?> hesabı KALICI silinsin mi? Bu işlem geri alınamaz.')"
+                  onsubmit="return confirm('<?= e($member['name']) ?> hesabı KALICI silinsin mi? Pasife alınmaz — hesap tamamen silinir ve geri alınamaz.')"
                 >
                   <?= csrf_field() ?>
                   <input type="hidden" name="staff_id" value="<?= (int) $member['id'] ?>">
