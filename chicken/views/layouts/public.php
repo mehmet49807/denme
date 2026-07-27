@@ -49,10 +49,42 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
         <?php endif; ?>
       </div>
       <nav class="nav-links" aria-label="Ana menü">
-        <a href="<?= e(url('/menu')) ?>">Menü</a>
-        <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
-        <a href="<?= e(url('/takip')) ?>">Takip</a>
-        <a href="<?= e(url('/hakkimizda')) ?>">Hakkımızda</a>
+        <a class="nav-link" href="<?= e(url('/menu')) ?>">
+          <span class="nav-ico nav-ico-menu" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          Menü
+        </a>
+        <a class="nav-link" href="<?= e(url('/siparis')) ?>">
+          <span class="nav-ico nav-ico-order" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M4 6h2l1.2 10.2a2 2 0 002 1.8h7.5a2 2 0 002-1.7L20 8H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="10" cy="20" r="1.4" fill="currentColor"/>
+              <circle cx="17" cy="20" r="1.4" fill="currentColor"/>
+            </svg>
+          </span>
+          Sipariş
+        </a>
+        <a class="nav-link" href="<?= e(url('/takip')) ?>">
+          <span class="nav-ico nav-ico-track" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 8v4l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          Takip
+        </a>
+        <a class="nav-link" href="<?= e(url('/hakkimizda')) ?>">
+          <span class="nav-ico nav-ico-about" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="2"/>
+              <path d="M5.5 19c1.6-3.2 4-4.8 6.5-4.8S16.9 15.8 18.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          Hakkımızda
+        </a>
       </nav>
     </div>
   </header>
