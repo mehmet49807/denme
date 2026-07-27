@@ -4,7 +4,7 @@
 /** @var int $welcomePercent */
 ?>
 <div class="page-shell auth-page">
-  <div class="auth-card" style="margin:0 auto;max-width:440px">
+  <div class="auth-card" style="margin:0 auto;max-width:480px">
     <div class="auth-logo">
       <img src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="56" height="56">
     </div>
@@ -18,6 +18,10 @@
     <?php if ($msg = flash('error')): ?>
       <div class="alert alert-error"><?= e($msg) ?></div>
     <?php endif; ?>
+
+    <?php partial('partials/google_auth_button', ['label' => 'Google ile üye ol']); ?>
+    <div class="auth-divider"><span>veya e-posta ile</span></div>
+
     <form method="post" action="<?= e(url('/uye-ol')) ?>" class="stack">
       <?= csrf_field() ?>
       <label>Ad Soyad
@@ -35,6 +39,37 @@
       <label>Parola
         <input type="password" name="password" required minlength="6" autocomplete="new-password" placeholder="En az 6 karakter">
       </label>
+
+      <div class="legal-checks">
+        <label class="check-line">
+          <input type="checkbox" name="accept_terms" value="1" required>
+          <span>
+            <a href="<?= e(url('/sozlesmeler/uyelik')) ?>" target="_blank" rel="noopener">Üyelik Sözleşmesi</a>
+            ve
+            <a href="<?= e(url('/sozlesmeler/kullanim')) ?>" target="_blank" rel="noopener">Kullanım Koşulları</a>’nı okudum, kabul ediyorum.
+          </span>
+        </label>
+        <label class="check-line">
+          <input type="checkbox" name="accept_kvkk" value="1" required>
+          <span>
+            <a href="<?= e(url('/sozlesmeler/kvkk')) ?>" target="_blank" rel="noopener">KVKK Aydınlatma Metni</a>’ni okudum;
+            <a href="<?= e(url('/sozlesmeler/acik-riza')) ?>" target="_blank" rel="noopener">Açık Rıza</a> metnini onaylıyorum.
+          </span>
+        </label>
+        <label class="check-line">
+          <input type="checkbox" name="accept_distance" value="1" required>
+          <span>
+            <a href="<?= e(url('/sozlesmeler/mesafeli-satis')) ?>" target="_blank" rel="noopener">Mesafeli Satış Sözleşmesi</a>
+            ve
+            <a href="<?= e(url('/sozlesmeler/gizlilik')) ?>" target="_blank" rel="noopener">Gizlilik Politikası</a>’nı kabul ediyorum.
+          </span>
+        </label>
+        <label class="check-line optional">
+          <input type="checkbox" name="accept_marketing" value="1">
+          <span>Kampanya, indirim ve bilgilendirme mesajları almak istiyorum. (İsteğe bağlı)</span>
+        </label>
+      </div>
+
       <button class="btn btn-accent btn-block" type="submit">Kayıt ol</button>
     </form>
     <p class="auth-foot">

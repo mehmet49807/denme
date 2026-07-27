@@ -7,6 +7,7 @@ require __DIR__ . '/app/Database.php';
 require __DIR__ . '/app/Auth.php';
 require __DIR__ . '/app/CustomerAuth.php';
 require __DIR__ . '/app/DiscountService.php';
+require __DIR__ . '/app/SiteContent.php';
 require __DIR__ . '/app/OrderService.php';
 require __DIR__ . '/app/CategorySync.php';
 require __DIR__ . '/app/SchemaSync.php';
@@ -220,6 +221,14 @@ $router->post('/uye-ol', static function (): void {
         flash('error', 'Oturum doğrulaması başarısız.');
         redirect('/uye-ol');
     }
+    if (
+        (string) input('accept_terms') !== '1'
+        || (string) input('accept_kvkk') !== '1'
+        || (string) input('accept_distance') !== '1'
+    ) {
+        flash('error', 'Devam etmek için zorunlu sözleşmeleri onaylayın.');
+        redirect('/uye-ol');
+    }
     try {
         CustomerAuth::register(
             (string) input('name'),
@@ -235,6 +244,49 @@ $router->post('/uye-ol', static function (): void {
         flash('error', $e->getMessage());
         redirect('/uye-ol');
     }
+});
+
+$contentPage = static function (string $slug): void {
+    $page = SiteContent::page($slug);
+    if (!$page) {
+        http_response_code(404);
+        view('errors/404', ['title' => 'Sayfa bulunamadı']);
+        return;
+    }
+    view('public/content', [
+        'title' => $page['title'],
+        'eyebrow' => $page['eyebrow'],
+        'heading' => $page['heading'],
+        'sections' => $page['sections'],
+    ]);
+};
+
+$router->get('/hakkimizda', static function () use ($contentPage): void {
+    $contentPage('hakkimizda');
+});
+$router->get('/misyon', static function () use ($contentPage): void {
+    $contentPage('misyon');
+});
+$router->get('/musteri-memnuniyeti', static function () use ($contentPage): void {
+    $contentPage('musteri-memnuniyeti');
+});
+$router->get('/sozlesmeler/uyelik', static function () use ($contentPage): void {
+    $contentPage('uyelik');
+});
+$router->get('/sozlesmeler/kullanim', static function () use ($contentPage): void {
+    $contentPage('kullanim');
+});
+$router->get('/sozlesmeler/kvkk', static function () use ($contentPage): void {
+    $contentPage('kvkk');
+});
+$router->get('/sozlesmeler/acik-riza', static function () use ($contentPage): void {
+    $contentPage('acik-riza');
+});
+$router->get('/sozlesmeler/gizlilik', static function () use ($contentPage): void {
+    $contentPage('gizlilik');
+});
+$router->get('/sozlesmeler/mesafeli-satis', static function () use ($contentPage): void {
+    $contentPage('mesafeli-satis');
 });
 
 $router->post('/cikis', static function (): void {
