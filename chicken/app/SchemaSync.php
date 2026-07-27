@@ -50,19 +50,38 @@ final class SchemaSync
         }
 
         try {
-            self::ensureOrdersWaiterCascade($pdo);
+            self::ensureStaffDeleteSetNull(
+                $pdo,
+                'orders',
+                'waiter_id',
+                'fk_orders_waiter'
+            );
+        } catch (Throwable) {
+        }
+
+        try {
+            self::ensureStaffDeleteSetNull(
+                $pdo,
+                'order_events',
+                'staff_id',
+                'fk_events_staff'
+            );
         } catch (Throwable) {
         }
     }
 
-    private static function ensureOrdersWaiterCascade(PDO $pdo): void
-    {
-        // Allow hard-deleting waiters while keeping historical orders.
+    private static function ensureStaffDeleteSetNull(
+        PDO $pdo,
+        string $table,
+        string $column,
+        string $constraintName
+    ): void {
+        // Allow hard-deleting waiters while keeping historical rows.
         $stmt = $pdo->query(
             "SELECT CONSTRAINT_NAME, DELETE_RULE
              FROM information_schema.REFERENTIAL_CONSTRAINTS
              WHERE CONSTRAINT_SCHEMA = DATABASE()
-               AND TABLE_NAME = 'orders'
+               AND TABLE_NAME = " . $pdo->quote($table) . "
                AND REFERENCED_TABLE_NAME = 'staff'"
         );
         $rows = $stmt ? $stmt->fetchAll() : [];
@@ -75,12 +94,15 @@ final class SchemaSync
             if ($rule === 'SET NULL') {
                 return;
             }
-            $pdo->exec('ALTER TABLE orders DROP FOREIGN KEY `' . str_replace('`', '``', $name) . '`');
+            $pdo->exec('ALTER TABLE `' . str_replace('`', '``', $table) . '` DROP FOREIGN KEY `' . str_replace('`', '``', $name) . '`');
         }
+        $safeTable = str_replace('`', '``', $table);
+        $safeColumn = str_replace('`', '``', $column);
+        $safeConstraint = str_replace('`', '``', $constraintName);
         $pdo->exec(
-            'ALTER TABLE orders
-             ADD CONSTRAINT fk_orders_waiter
-             FOREIGN KEY (waiter_id) REFERENCES staff(id) ON DELETE SET NULL'
+            "ALTER TABLE `{$safeTable}`
+             ADD CONSTRAINT `{$safeConstraint}`
+             FOREIGN KEY (`{$safeColumn}`) REFERENCES staff(id) ON DELETE SET NULL"
         );
     }
 
