@@ -1,6 +1,7 @@
 <?php
 /** @var string $title */
 /** @var string $content */
+$customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
 ?><!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -24,7 +25,16 @@
         <a href="<?= e(url('/menu')) ?>">Menü</a>
         <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
         <a href="<?= e(url('/takip')) ?>">Takip</a>
-        <a href="<?= e(url('/personel/giris')) ?>">Personel</a>
+        <?php if ($customer): ?>
+          <span class="nav-user muted small"><?= e((string) $customer['name']) ?></span>
+          <form method="post" action="<?= e(url('/cikis')) ?>" style="display:inline;margin:0">
+            <?= csrf_field() ?>
+            <button class="btn btn-ghost btn-sm" type="submit">Çıkış</button>
+          </form>
+        <?php else: ?>
+          <a href="<?= e(url('/giris')) ?>">Giriş</a>
+          <a href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
+        <?php endif; ?>
       </nav>
     </div>
   </header>

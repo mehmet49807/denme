@@ -53,7 +53,7 @@ final class Auth
                 json_response(['ok' => false, 'error' => 'Yetkisiz'], 401);
             }
             flash('error', 'Bu alan için yetkiniz yok.');
-            redirect('/personel/giris');
+            redirect('/giris');
         }
     }
 }

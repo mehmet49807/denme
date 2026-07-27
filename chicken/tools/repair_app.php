@@ -31,6 +31,10 @@ $files = [
     'views/public/home.php',
     'views/public/order.php',
     'views/layouts/public.php',
+    'views/public/login.php',
+    'views/public/register.php',
+    'app/CustomerAuth.php',
+    'app/DiscountService.php',
     'assets/css/app.css',
 ];
 

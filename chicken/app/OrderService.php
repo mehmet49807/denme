@@ -23,6 +23,36 @@ final class OrderService
             $normalized
         ));
 
+        $discountCode = null;
+        $discountPercent = 0.0;
+        $discountAmount = 0.0;
+        $customerId = isset($payload['customer_id']) ? (int) $payload['customer_id'] : null;
+        if ($customerId === 0) {
+            $customerId = null;
+        }
+        $discountMeta = null;
+        if (!empty($payload['discount_code'])) {
+            $customer = $payload['customer'] ?? null;
+            if (!$customer && $customerId) {
+                $cstmt = $pdo->prepare(
+                    'SELECT id, name, email, phone, welcome_discount_used FROM customers WHERE id = ? LIMIT 1'
+                );
+                $cstmt->execute([$customerId]);
+                $customer = $cstmt->fetch() ?: null;
+            }
+            $discountMeta = DiscountService::apply(
+                (string) $payload['discount_code'],
+                $subtotal,
+                is_array($customer) ? $customer : null
+            );
+            if ($discountMeta) {
+                $discountCode = $discountMeta['code'];
+                $discountPercent = $discountMeta['percent'];
+                $discountAmount = $discountMeta['amount'];
+            }
+        }
+        $total = max(0, round($subtotal - $discountAmount, 2));
+
         $tableId = isset($payload['table_id']) ? (int) $payload['table_id'] : null;
         if ($tableId === 0) {
             $tableId = null;
@@ -43,8 +73,9 @@ final class OrderService
         try {
             $stmt = $pdo->prepare(
                 'INSERT INTO orders
-                (order_code, source, status, table_id, waiter_id, customer_name, customer_phone, customer_note, subtotal, total)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                (order_code, source, status, table_id, waiter_id, customer_id, customer_name, customer_phone, customer_note,
+                 subtotal, discount_code, discount_percent, discount_amount, total)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
             );
             $stmt->execute([
                 $orderCode,
@@ -52,11 +83,15 @@ final class OrderService
                 $status,
                 $tableId,
                 $waiterId,
+                $customerId,
                 $payload['customer_name'] ?? null,
                 $payload['customer_phone'] ?? null,
                 $payload['customer_note'] ?? null,
                 $subtotal,
-                $subtotal,
+                $discountCode,
+                $discountPercent,
+                $discountAmount,
+                $total,
             ]);
             $orderId = (int) $pdo->lastInsertId();
 
@@ -68,6 +103,21 @@ final class OrderService
                 default => 'Garson siparişi oluşturuldu',
             };
             self::addEvent($pdo, $orderId, $waiterId, 'created', $label);
+            if ($discountMeta) {
+                self::addEvent(
+                    $pdo,
+                    $orderId,
+                    $waiterId,
+                    'discount',
+                    $discountMeta['label'] . ' (−' . number_format($discountAmount, 2, ',', '.') . ' ₺)'
+                );
+                if (
+                    $discountCode === DiscountService::WELCOME_CODE
+                    && $customerId
+                ) {
+                    CustomerAuth::markWelcomeUsed($customerId);
+                }
+            }
 
             if ($source !== 'online') {
                 self::addEvent($pdo, $orderId, $waiterId, 'sent_kitchen', 'Mutfak fişi gönderildi');
@@ -570,9 +620,22 @@ final class OrderService
              WHERE order_id = ? AND status != 'cancelled'"
         );
         $stmt->execute([$orderId]);
-        $total = (float) $stmt->fetchColumn();
-        $pdo->prepare('UPDATE orders SET subtotal = ?, total = ?, updated_at = NOW() WHERE id = ?')
-            ->execute([$total, $total, $orderId]);
+        $subtotal = (float) $stmt->fetchColumn();
+
+        $disc = $pdo->prepare(
+            'SELECT discount_percent, discount_amount, discount_code FROM orders WHERE id = ? LIMIT 1'
+        );
+        $disc->execute([$orderId]);
+        $row = $disc->fetch() ?: [];
+        $percent = (float) ($row['discount_percent'] ?? 0);
+        $amount = (float) ($row['discount_amount'] ?? 0);
+        if ($percent > 0) {
+            $amount = round($subtotal * ($percent / 100), 2);
+        }
+        $total = max(0, round($subtotal - $amount, 2));
+        $pdo->prepare(
+            'UPDATE orders SET subtotal = ?, discount_amount = ?, total = ?, updated_at = NOW() WHERE id = ?'
+        )->execute([$subtotal, $amount, $total, $orderId]);
     }
 
     private static function normalizePaymentMethod(string $method): string
