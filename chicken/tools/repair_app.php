@@ -24,6 +24,7 @@ $files = [
     'index.php',
     'app/helpers.php',
     'app/MenuImageSync.php',
+    'app/MenuItemSync.php',
     'app/SchemaSync.php',
     'views/partials/menu_item_card.php',
     'views/public/menu.php',

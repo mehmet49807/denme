@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 $defaults = [
     'app_name' => 'Chicken',
-    'app_url' => 'https://chicken.gonulkoprusu.com',
+    'app_url' => 'https://gonulkoprusu.com/chicken',
     'timezone' => 'Europe/Istanbul',
     'db' => [
         'host' => getenv('CHICKEN_DB_HOST') ?: 'localhost',

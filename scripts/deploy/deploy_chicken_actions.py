@@ -20,6 +20,7 @@ PRIORITY = [
     ".htaccess",
     "app/helpers.php",
     "app/MenuImageSync.php",
+    "app/MenuItemSync.php",
     "app/SchemaSync.php",
     "app/CategorySync.php",
     "app/Database.php",
@@ -138,7 +139,7 @@ def write_config(ftp: FTP, base: str) -> None:
         return
     cfg = (
         "<?php\n\ndeclare(strict_types=1);\n\nreturn [\n"
-        "    'app_url' => 'https://chicken.gonulkoprusu.com',\n"
+        "    'app_url' => 'https://gonulkoprusu.com/chicken',\n"
         "    'db' => [\n"
         "        'host' => 'localhost',\n"
         "        'port' => 3306,\n"

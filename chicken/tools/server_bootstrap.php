@@ -164,6 +164,7 @@ $repair = [
     'index.php',
     'app/helpers.php',
     'app/MenuImageSync.php',
+    'app/MenuItemSync.php',
     'views/partials/menu_item_card.php',
     'assets/css/app.css',
 ];
