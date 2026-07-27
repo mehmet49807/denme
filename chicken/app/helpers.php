@@ -73,9 +73,17 @@ function asset_url(string $path): string
 /** Brand mark URL (PNG — tarayıcı önbelleğini kırar, her yerde görünür). */
 function logo_url(): string
 {
-    $png = dirname(__DIR__) . '/assets/img/logo-mark.png';
-    if (is_file($png)) {
-        return asset_url('/assets/img/logo-mark.png');
+    $candidates = [
+        '/assets/img/logo-crisp-co.png',
+        '/assets/img/logo-crisp.png',
+        '/assets/img/logo-mark.png',
+        '/assets/img/logo.png',
+    ];
+    foreach ($candidates as $rel) {
+        $png = dirname(__DIR__) . $rel;
+        if (is_file($png)) {
+            return asset_url($rel);
+        }
     }
     return asset_url('/assets/img/logo.svg');
 }
