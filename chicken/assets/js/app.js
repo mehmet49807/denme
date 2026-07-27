@@ -605,4 +605,95 @@
       } catch (_) {}
     }, 8000);
   }
+
+  function moneyTr(n) {
+    return (
+      Number(n || 0).toLocaleString('tr-TR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }) + ' ₺'
+    );
+  }
+
+  function esc(s) {
+    return String(s ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  const liveRoot = document.querySelector('[data-live-stats]');
+  if (liveRoot) {
+    const sourceLabel = { online: 'Online', waiter: 'Garson', cashier: 'Kasa' };
+    const statusLabel = {
+      pending: 'Bekliyor',
+      accepted: 'Alındı',
+      preparing: 'Hazırlanıyor',
+      ready: 'Hazır',
+      served: 'Servis edildi',
+      paid: 'Ödendi',
+      cancelled: 'İptal',
+    };
+
+    async function refreshLive() {
+      try {
+        const res = await fetch(api('/api/admin/live-stats'));
+        const data = await res.json();
+        if (!data.ok || !data.live) return;
+        const live = data.live;
+        const set = (key, val) => {
+          liveRoot.querySelectorAll(`[data-stat="${key}"]`).forEach((el) => {
+            el.textContent = String(val);
+          });
+        };
+        set('order_count', live.today.order_count);
+        set('paid_total', moneyTr(live.today.paid_total));
+        set('open_total', moneyTr(live.today.open_total));
+        set('open_table_count', (live.open_tables || []).length);
+        set('pending_online', live.pending_online);
+        set('kitchen_queued', live.kitchen_queued);
+        set('bar_queued', live.bar_queued);
+
+        const updated = document.querySelector('[data-live-updated]');
+        if (updated) updated.textContent = 'Canlı · ' + (live.updated_at || '');
+
+        const tablesWrap = liveRoot.querySelector('[data-open-tables]');
+        if (tablesWrap) {
+          const rows = live.open_tables || [];
+          tablesWrap.innerHTML = rows.length
+            ? `<table><thead><tr><th>Masa</th><th>Sipariş</th><th>Tutar</th><th>Garson</th></tr></thead><tbody>${rows
+                .map(
+                  (t) => `<tr>
+                  <td><strong>${esc(t.label)}</strong></td>
+                  <td>${Number(t.open_count || 0)}</td>
+                  <td>${moneyTr(t.open_total)}</td>
+                  <td class="small muted">${esc((t.waiter_names || []).join(', ') || '—')}</td>
+                </tr>`
+                )
+                .join('')}</tbody></table>`
+            : '<p class="muted" style="margin:0">Açık masa yok.</p>';
+        }
+
+        const recentWrap = liveRoot.querySelector('[data-recent-orders]');
+        if (recentWrap) {
+          const rows = live.recent || [];
+          recentWrap.innerHTML = rows.length
+            ? `<table><thead><tr><th>Kod</th><th>Kaynak</th><th>Durum</th><th>Tutar</th></tr></thead><tbody>${rows
+                .map(
+                  (o) => `<tr>
+                  <td><strong>${esc(o.order_code)}</strong></td>
+                  <td>${esc(sourceLabel[o.source] || o.source)}</td>
+                  <td>${esc(statusLabel[o.status] || o.status)}</td>
+                  <td>${moneyTr(o.total)}</td>
+                </tr>`
+                )
+                .join('')}</tbody></table>`
+            : '<p class="muted" style="margin:0">Henüz sipariş yok.</p>';
+        }
+      } catch (_) {}
+    }
+
+    setInterval(refreshLive, 8000);
+  }
 })();
