@@ -2,14 +2,16 @@
 /** @var array $categories */
 /** @var array $items */
 /** @var array|null $table */
+/** @var string $themeId */
 $table = $table ?? null;
+$themeId = preg_replace('/[^a-z0-9_-]/i', '', (string) ($themeId ?? 'classic')) ?: 'classic';
 $byCat = [];
 foreach ($items as $item) {
     $slug = (string) ($item['category_slug'] ?? 'diger');
     $byCat[$slug][] = $item;
 }
 ?>
-<div class="brochure" data-brochure>
+<div class="brochure theme-<?= e($themeId) ?>" data-brochure data-theme="<?= e($themeId) ?>">
   <header class="brochure-hero">
     <img class="brochure-logo" src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="64" height="64">
     <p class="eyebrow">Chicken Grill</p>

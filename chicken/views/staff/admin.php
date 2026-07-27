@@ -16,8 +16,32 @@ $recent = $live['recent'] ?? [];
   <div class="cta-row">
     <span class="chip live-chip" data-live-updated>Canlı</span>
     <a class="btn btn-accent btn-sm" href="<?= e(url('/qr')) ?>">QR Menü</a>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('/yonetici/brosurler')) ?>">Broşürler</a>
   </div>
 </div>
+
+<section class="panel qr-embed" style="margin-bottom:18px">
+  <div class="meta-row" style="margin-bottom:12px">
+    <h2 class="live-title">QR Menü</h2>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('/yonetici/brosurler')) ?>">Tema düzenle</a>
+  </div>
+  <div class="qr-embed-row">
+    <img
+      class="qr-single-img"
+      src="<?= e(BrochureService::qrImageUrl(null, 160)) ?>"
+      alt="QR Menü"
+      width="140"
+      height="140"
+    >
+    <div>
+      <p class="muted" style="margin:0 0 10px">Müşteri okutunca seçili broşür teması + güncel menü açılır.</p>
+      <div class="cta-row">
+        <a class="btn btn-accent btn-sm" href="<?= e(url('/qr')) ?>">QR sayfası</a>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('/menu/brosur')) ?>" target="_blank" rel="noopener">Broşürü aç</a>
+      </div>
+    </div>
+  </div>
+</section>
 
 <div class="live-stats" data-live-stats>
   <div class="stats">

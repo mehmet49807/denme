@@ -13,7 +13,33 @@ $paidSum = array_sum(array_map(
     <p class="eyebrow">Kasa alanı</p>
     <h1>Masalar</h1>
   </div>
+  <div class="cta-row">
+    <a class="btn btn-accent btn-sm" href="<?= e(url('/qr')) ?>">QR Menü</a>
+  </div>
 </div>
+
+<section class="panel qr-embed" style="margin-bottom:18px">
+  <div class="meta-row" style="margin-bottom:12px">
+    <h2 class="live-title" style="font-family:var(--font-display);font-size:1.15rem;margin:0">QR Menü</h2>
+    <span class="chip">Görüntüleme</span>
+  </div>
+  <div class="qr-embed-row">
+    <img
+      class="qr-single-img"
+      src="<?= e(BrochureService::qrImageUrl(null, 160)) ?>"
+      alt="QR Menü"
+      width="140"
+      height="140"
+    >
+    <div>
+      <p class="muted" style="margin:0 0 10px">Yalnızca görüntüleme — yazdırıp kullanabilirsiniz. Tema düzenlemesi yöneticide.</p>
+      <div class="cta-row">
+        <a class="btn btn-accent btn-sm" href="<?= e(url('/qr')) ?>">QR’ı aç</a>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('/menu/brosur')) ?>" target="_blank" rel="noopener">Broşür</a>
+      </div>
+    </div>
+  </div>
+</section>
 
 <div class="stats">
   <div class="stat"><span class="muted">Açık masa</span><strong><?= (int) $openTables ?></strong></div>

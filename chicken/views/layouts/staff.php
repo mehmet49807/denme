@@ -136,10 +136,10 @@ $sideColor = match ($role) {
           <?php endif; ?>
           <?php if (in_array($role, ['cashier', 'admin'], true)): ?>
             <a class="<?= is_active_path('/kasa') || str_starts_with(current_path(), '/kasa/') ? 'active' : '' ?>" href="<?= e(url('/kasa')) ?>">Kasa</a>
+            <a class="<?= is_active_path('/qr') ? 'active' : '' ?>" href="<?= e(url('/qr')) ?>">QR Menü</a>
           <?php endif; ?>
           <a class="<?= is_active_path('/mutfak') ? 'active' : '' ?>" href="<?= e(url('/mutfak')) ?>">Mutfak</a>
           <a class="<?= is_active_path('/bar') ? 'active' : '' ?>" href="<?= e(url('/bar')) ?>">Bar</a>
-          <a class="<?= is_active_path('/qr') ? 'active' : '' ?>" href="<?= e(url('/qr')) ?>">QR Menü</a>
         </nav>
         <button
           class="btn btn-dark btn-menu"
