@@ -74,6 +74,7 @@ function asset_url(string $path): string
 function logo_url(): string
 {
     $candidates = [
+        '/assets/img/brand-crisp-co-v3.png',
         '/assets/img/logo-crisp-co.png',
         '/assets/img/logo-crisp.png',
         '/assets/img/logo-mark.png',
