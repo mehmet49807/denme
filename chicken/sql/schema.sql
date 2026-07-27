@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS orders (
   customer_name VARCHAR(120) NULL,
   customer_phone VARCHAR(40) NULL,
   customer_note VARCHAR(400) NULL,
+  payment_preference ENUM('cash','card') NULL,
   subtotal DECIMAL(10,2) NOT NULL DEFAULT 0,
   discount_code VARCHAR(40) NULL,
   discount_percent DECIMAL(5,2) NOT NULL DEFAULT 0,

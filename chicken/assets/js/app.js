@@ -93,6 +93,8 @@
   } catch (_) {}
 
   const WAITER_CART_KEY = 'chicken_waiter_cart_v1';
+  const ONLINE_CART_KEY = 'chicken_online_cart';
+  const isPublicLayout = !!document.querySelector('[data-public-layout]');
 
   function readStorage(key) {
     try {
@@ -121,6 +123,16 @@
       el.hidden = count <= 0;
       el.classList.toggle('is-empty', count <= 0);
     });
+    document.querySelectorAll('.cart-fab').forEach((el) => {
+      el.classList.toggle('has-items', count > 0);
+    });
+  }
+
+  function syncOnlineBadgeFromStorage() {
+    if (!isPublicLayout) return;
+    const saved = readStorage(ONLINE_CART_KEY);
+    const count = (saved.items || []).reduce((sum, i) => sum + Math.max(1, Number(i.qty || 1)), 0);
+    updateCartBadges(count);
   }
 
   function createCart(root, options = {}) {
@@ -314,7 +326,19 @@
   }
 
   const onlineRoot = document.querySelector('[data-online-cart]');
-  const onlineCart = createCart(onlineRoot, { bindAdd: !!onlineRoot });
+  const onlinePersist =
+    onlineRoot?.getAttribute('data-cart-persist') ||
+    (isPublicLayout ? ONLINE_CART_KEY : null);
+  const onlineCart = createCart(onlineRoot, {
+    persistKey: onlinePersist,
+    bindAdd:
+      !!onlineRoot ||
+      (isPublicLayout && !!document.querySelector('[data-add-item]')),
+  });
+  if (isPublicLayout && !onlineCart) {
+    syncOnlineBadgeFromStorage();
+  }
+
   const waiterRoot = document.querySelector('[data-waiter-cart]');
   const isStaffWaiterUi = !!document.querySelector('[data-staff-layout]');
   const shouldPersistWaiter =
@@ -336,11 +360,17 @@
         return;
       }
       const fd = new FormData(onlineForm);
+      const paymentPreference = String(fd.get('payment_preference') || '').trim();
+      if (!paymentPreference) {
+        alert('Kapıda ödeme tercihinizi seçin (nakit veya kart).');
+        return;
+      }
       const body = {
         customer_name: String(fd.get('customer_name') || ''),
         customer_phone: String(fd.get('customer_phone') || ''),
         customer_note: String(fd.get('customer_note') || ''),
         discount_code: String(fd.get('discount_code') || '').trim(),
+        payment_preference: paymentPreference,
         items: onlineCart.payload(),
       };
       if (!body.customer_name || !body.customer_phone) {
@@ -365,6 +395,10 @@
         if (btn) btn.disabled = false;
       }
     });
+  }
+
+  if (isPublicLayout) {
+    syncOnlineBadgeFromStorage();
   }
 
   async function submitStaffOrder(form, cart) {

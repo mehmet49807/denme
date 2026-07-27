@@ -44,6 +44,12 @@ $active = $active ?? [];
               −<?= e(money((float) $order['discount_amount'])) ?>
             </div>
           <?php endif; ?>
+          <?php if (!empty($order['payment_preference'])): ?>
+            <div class="small" style="margin-bottom:8px">
+              <strong>Kapıda ödeme:</strong>
+              <?= e(payment_preference_label((string) $order['payment_preference'])) ?>
+            </div>
+          <?php endif; ?>
           <?php if (!empty($order['customer_note'])): ?>
             <p style="margin:0 0 10px"><strong>Not:</strong> <?= e((string) $order['customer_note']) ?></p>
           <?php endif; ?>
