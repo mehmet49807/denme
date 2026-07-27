@@ -14,16 +14,16 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     $assetRoot = dirname(__DIR__, 2) . '/assets';
     $cssVer = @filemtime($assetRoot . '/css/app.css') ?: time();
     $jsVer = @filemtime($assetRoot . '/js/app.js') ?: time();
-    $logoVer = @filemtime($assetRoot . '/img/logo.svg') ?: time();
+    $logoSrc = logo_url();
   ?>
   <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) $cssVer) ?>">
-  <link rel="icon" href="<?= e(url('/assets/img/logo.svg')) ?>?v=<?= e((string) $logoVer) ?>" type="image/svg+xml">
+  <link rel="icon" href="<?= e($logoSrc) ?>" type="image/png">
 </head>
 <body<?= !empty($bodyAttrs) ? ' ' . $bodyAttrs : '' ?> data-base="<?= e(base_path()) ?>" data-public-layout>
   <header class="site-header">
     <div class="nav">
       <a class="brand" href="<?= e(url('/')) ?>">
-        <img class="brand-mark" src="<?= e(url('/assets/img/logo.svg')) ?>?v=<?= e((string) $logoVer) ?>" alt="" width="40" height="40">
+        <img class="brand-mark" src="<?= e($logoSrc) ?>" alt="Chicken" width="40" height="40">
         <span class="brand-text">Chicken<span>.</span></span>
       </a>
       <div class="nav-auth">
@@ -75,7 +75,7 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     <div class="footer-inner footer-premium">
       <div class="footer-brand">
         <a class="brand footer-brand-link" href="<?= e(url('/')) ?>">
-          <img class="brand-mark" src="<?= e(url('/assets/img/logo.svg')) ?>?v=<?= e((string) $logoVer) ?>" alt="" width="44" height="44">
+          <img class="brand-mark" src="<?= e($logoSrc) ?>" alt="Chicken" width="44" height="44">
           <span class="brand-text">Chicken<span>.</span></span>
         </a>
         <p class="footer-tagline">Izgara lezzet · hızlı servis · online sipariş</p>

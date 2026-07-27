@@ -70,6 +70,16 @@ function asset_url(string $path): string
     return $url;
 }
 
+/** Brand mark URL (PNG — tarayıcı önbelleğini kırar, her yerde görünür). */
+function logo_url(): string
+{
+    $png = dirname(__DIR__) . '/assets/img/logo-mark.png';
+    if (is_file($png)) {
+        return asset_url('/assets/img/logo-mark.png');
+    }
+    return asset_url('/assets/img/logo.svg');
+}
+
 function redirect(string $path): never
 {
     if (!str_starts_with($path, 'http://') && !str_starts_with($path, 'https://')) {

@@ -2,7 +2,7 @@
   <div class="hero-media" aria-hidden="true"></div>
   <div class="hero-content">
     <div class="hero-brand">
-      <img class="hero-logo" src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="72" height="72">
+      <img class="hero-logo" src="<?= e(logo_url()) ?>" alt="Chicken" width="72" height="72">
       <p class="eyebrow">Izgara · Hızlı servis</p>
     </div>
     <h1>CHICKEN</h1>
