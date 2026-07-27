@@ -14,18 +14,30 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     $assetRoot = dirname(__DIR__, 2) . '/assets';
     $cssVer = @filemtime($assetRoot . '/css/app.css') ?: time();
     $jsVer = @filemtime($assetRoot . '/js/app.js') ?: time();
+    $logoVer = @filemtime($assetRoot . '/img/logo.svg') ?: time();
   ?>
   <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) $cssVer) ?>">
-  <link rel="icon" href="<?= e(url('/assets/img/logo.svg')) ?>" type="image/svg+xml">
+  <link rel="icon" href="<?= e(url('/assets/img/logo.svg')) ?>?v=<?= e((string) $logoVer) ?>" type="image/svg+xml">
 </head>
-<body<?= !empty($bodyAttrs) ? ' ' . $bodyAttrs : '' ?> data-base="<?= e(base_path()) ?>">
+<body<?= !empty($bodyAttrs) ? ' ' . $bodyAttrs : '' ?> data-base="<?= e(base_path()) ?>" data-public-layout>
   <header class="site-header">
     <div class="nav">
       <a class="brand" href="<?= e(url('/')) ?>">
-        <img class="brand-mark" src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="36" height="36">
+        <img class="brand-mark" src="<?= e(url('/assets/img/logo.svg')) ?>?v=<?= e((string) $logoVer) ?>" alt="" width="40" height="40">
         <span class="brand-text">Chicken<span>.</span></span>
       </a>
       <div class="nav-auth">
+        <a class="btn btn-cart btn-sm" href="<?= e(url('/siparis#sepet')) ?>" data-cart-link aria-label="Sepet">
+          <span class="cart-ico" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M4 6h2l1.2 10.2a2 2 0 002 1.8h7.5a2 2 0 002-1.7L20 8H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="10" cy="20" r="1.4" fill="currentColor"/>
+              <circle cx="17" cy="20" r="1.4" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="cart-label">Sepet</span>
+          <span class="nav-badge cart-badge is-empty" data-cart-badge hidden>0</span>
+        </a>
         <?php if ($customer): ?>
           <span class="nav-user muted small"><?= e((string) $customer['name']) ?></span>
           <form method="post" action="<?= e(url('/cikis')) ?>" style="display:inline;margin:0">
@@ -46,12 +58,24 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     </div>
   </header>
   <?= $content ?>
+
+  <a class="cart-fab" href="<?= e(url('/siparis#sepet')) ?>" data-cart-link aria-label="Sepete git">
+    <span class="cart-ico" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M4 6h2l1.2 10.2a2 2 0 002 1.8h7.5a2 2 0 002-1.7L20 8H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="10" cy="20" r="1.4" fill="currentColor"/>
+        <circle cx="17" cy="20" r="1.4" fill="currentColor"/>
+      </svg>
+    </span>
+    <span class="nav-badge cart-badge is-empty" data-cart-badge hidden>0</span>
+  </a>
+
   <footer class="footer site-footer">
     <div class="footer-glow" aria-hidden="true"></div>
     <div class="footer-inner footer-premium">
       <div class="footer-brand">
         <a class="brand footer-brand-link" href="<?= e(url('/')) ?>">
-          <img class="brand-mark" src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="40" height="40">
+          <img class="brand-mark" src="<?= e(url('/assets/img/logo.svg')) ?>?v=<?= e((string) $logoVer) ?>" alt="" width="44" height="44">
           <span class="brand-text">Chicken<span>.</span></span>
         </a>
         <p class="footer-tagline">Izgara lezzet · hızlı servis · online sipariş</p>
@@ -62,20 +86,35 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
       </div>
       <div class="footer-cols">
         <div class="footer-col">
-          <h3>Keşfet</h3>
+          <h3>
+            <span class="footer-col-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M7 7V5.5A1.5 1.5 0 018.5 4h7A1.5 1.5 0 0117 5.5V7M6 7l1 12h10l1-12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            Keşfet
+          </h3>
           <a href="<?= e(url('/menu')) ?>">Menü</a>
           <a href="<?= e(url('/siparis')) ?>">Online sipariş</a>
           <a href="<?= e(url('/takip')) ?>">Sipariş takip</a>
           <a href="<?= e(url('/menu/brosur')) ?>">QR menü broşürü</a>
         </div>
         <div class="footer-col">
-          <h3>Kurumsal</h3>
+          <h3>
+            <span class="footer-col-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" stroke="currentColor" stroke-width="1.8"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5" stroke="currentColor" stroke-width="1.8"/></svg>
+            </span>
+            Kurumsal
+          </h3>
           <a href="<?= e(url('/hakkimizda')) ?>">Hakkımızda</a>
           <a href="<?= e(url('/misyon')) ?>">Misyon</a>
           <a href="<?= e(url('/musteri-memnuniyeti')) ?>">Müşteri memnuniyeti</a>
         </div>
         <div class="footer-col">
-          <h3>Sözleşmeler</h3>
+          <h3>
+            <span class="footer-col-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8"/><path d="M14 3v5h5M8 13h8M8 17h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </span>
+            Sözleşmeler
+          </h3>
           <a href="<?= e(url('/sozlesmeler/kvkk')) ?>">KVKK</a>
           <a href="<?= e(url('/sozlesmeler/gizlilik')) ?>">Gizlilik</a>
           <a href="<?= e(url('/sozlesmeler/mesafeli-satis')) ?>">Mesafeli satış</a>

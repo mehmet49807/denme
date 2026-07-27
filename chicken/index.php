@@ -157,6 +157,7 @@ $router->post('/api/orders', static function (): void {
             'customer_name' => $customerName,
             'customer_phone' => $customerPhone,
             'customer_note' => trim((string) ($payload['customer_note'] ?? '')),
+            'payment_preference' => trim((string) ($payload['payment_preference'] ?? '')),
             'discount_code' => trim((string) ($payload['discount_code'] ?? '')),
             'items' => $payload['items'] ?? [],
         ]);
@@ -166,6 +167,7 @@ $router->post('/api/orders', static function (): void {
             'status' => $order['status'],
             'total' => (float) $order['total'],
             'discount_amount' => (float) ($order['discount_amount'] ?? 0),
+            'payment_preference' => $order['payment_preference'] ?? null,
         ]]);
     } catch (Throwable $e) {
         json_response(['ok' => false, 'error' => $e->getMessage()], 422);

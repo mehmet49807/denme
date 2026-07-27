@@ -69,13 +69,22 @@ final class OrderService
         $orderCode = generate_order_code($pdo);
         $status = $source === 'online' ? 'pending' : 'accepted';
 
+        $paymentPreference = null;
+        if ($source === 'online') {
+            $pref = strtolower(trim((string) ($payload['payment_preference'] ?? '')));
+            if (!in_array($pref, ['cash', 'card'], true)) {
+                throw new InvalidArgumentException('Kapıda ödeme tercihi seçilmeli (nakit veya kart).');
+            }
+            $paymentPreference = $pref;
+        }
+
         $pdo->beginTransaction();
         try {
             $stmt = $pdo->prepare(
                 'INSERT INTO orders
                 (order_code, source, status, table_id, waiter_id, customer_id, customer_name, customer_phone, customer_note,
-                 subtotal, discount_code, discount_percent, discount_amount, total)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                 payment_preference, subtotal, discount_code, discount_percent, discount_amount, total)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
             );
             $stmt->execute([
                 $orderCode,
@@ -87,6 +96,7 @@ final class OrderService
                 $payload['customer_name'] ?? null,
                 $payload['customer_phone'] ?? null,
                 $payload['customer_note'] ?? null,
+                $paymentPreference,
                 $subtotal,
                 $discountCode,
                 $discountPercent,
@@ -103,6 +113,15 @@ final class OrderService
                 default => 'Garson siparişi oluşturuldu',
             };
             self::addEvent($pdo, $orderId, $waiterId, 'created', $label);
+            if ($paymentPreference) {
+                self::addEvent(
+                    $pdo,
+                    $orderId,
+                    $waiterId,
+                    'payment_preference',
+                    'Kapıda ödeme: ' . payment_preference_label($paymentPreference)
+                );
+            }
             if ($discountMeta) {
                 self::addEvent(
                     $pdo,

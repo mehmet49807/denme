@@ -224,6 +224,15 @@ function payment_method_label(?string $method): string
     };
 }
 
+function payment_preference_label(?string $method): string
+{
+    return match ($method) {
+        'cash', 'nakit' => 'Kapıda nakit',
+        'card', 'kart' => 'Kapıda kart',
+        default => '—',
+    };
+}
+
 function role_label(string $role): string
 {
     return match ($role) {

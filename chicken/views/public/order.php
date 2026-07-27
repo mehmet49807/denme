@@ -9,7 +9,7 @@ $welcomeCode = $welcomeCode ?? 'YENI10';
 <div class="page-shell">
   <p class="eyebrow">Online sipariş</p>
   <h1 class="page-title">Siparişini oluştur</h1>
-  <p class="muted">Ürünleri seç, bilgilerini gir, sipariş kodunla takip et.</p>
+  <p class="muted">Üye olmadan sipariş verebilirsiniz. Ürünleri seçin, bilgilerinizi girin, sipariş kodunuzla takip edin.</p>
   <?php if ($msg = flash('success')): ?>
     <div class="alert alert-ok" style="margin-top:14px"><?= e($msg) ?></div>
   <?php endif; ?>
@@ -20,11 +20,11 @@ $welcomeCode = $welcomeCode ?? 'YENI10';
     </div>
   <?php elseif (!$customer): ?>
     <div class="promo-banner" style="margin-top:14px">
-      Yeni üyelere %10 indirim.
+      Üye olmadan sipariş verebilirsiniz.
+      Üye olursanız <strong><?= e($welcomeCode) ?></strong> ile %10 indirim.
       <a href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
-      veya
-      <a href="<?= e(url('/giris')) ?>">giriş yap</a>
-      · Kod: <strong><?= e($welcomeCode) ?></strong>
+      ·
+      <a href="<?= e(url('/giris')) ?>">Giriş</a>
     </div>
   <?php endif; ?>
 
@@ -42,7 +42,7 @@ $welcomeCode = $welcomeCode ?? 'YENI10';
       <?php endforeach; ?>
     </div>
 
-    <aside class="panel cart" data-online-cart data-welcome-percent="10">
+    <aside class="panel cart" id="sepet" data-online-cart data-welcome-percent="10" data-cart-persist="chicken_online_cart">
       <div class="meta-row">
         <h2 style="margin:0;font-family:var(--font-display)">Sepet</h2>
         <span class="chip" data-cart-count>0</span>
@@ -73,11 +73,37 @@ $welcomeCode = $welcomeCode ?? 'YENI10';
           <input name="customer_phone" required placeholder="05xx..."
             value="<?= e((string) ($customer['phone'] ?? '')) ?>">
         </label>
+        <fieldset class="payment-fieldset">
+          <legend>Kapıda ödeme</legend>
+          <p class="muted small" style="margin:0 0 10px">Teslimatta nasıl ödeyeceğinizi seçin.</p>
+          <div class="payment-options">
+            <label class="payment-option">
+              <input type="radio" name="payment_preference" value="cash" required checked>
+              <span>
+                <strong>Nakit</strong>
+                <small>Kapıda nakit ödeme</small>
+              </span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment_preference" value="card" required>
+              <span>
+                <strong>Kart</strong>
+                <small>Kapıda kart ile ödeme</small>
+              </span>
+            </label>
+          </div>
+        </fieldset>
         <label>Sipariş notu
           <textarea name="customer_note" placeholder="Sipariş altına not yazın..."></textarea>
         </label>
         <button class="btn btn-primary" type="submit">Siparişi Gönder</button>
       </form>
+      <p class="cart-member-note">
+        Üye olan müşteriler <strong>YENI10</strong> kodu ile <strong>%10 indirim</strong> kazanır.
+        <?php if (!$customer): ?>
+          <a href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
+        <?php endif; ?>
+      </p>
     </aside>
   </div>
 </div>

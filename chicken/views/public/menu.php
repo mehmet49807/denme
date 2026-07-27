@@ -10,14 +10,14 @@
     <?php endforeach; ?>
   </div>
 
-  <div class="menu-grid">
+  <div class="menu-grid" data-public-menu>
     <?php foreach ($items as $item): ?>
-      <?php partial('partials/menu_item_card', ['item' => $item, 'showDescription' => true]); ?>
+      <?php partial('partials/menu_item_card', ['item' => $item, 'showDescription' => true, 'showAdd' => true]); ?>
     <?php endforeach; ?>
   </div>
 
   <div class="cta-row" style="margin-top:28px">
-    <a class="btn btn-primary" href="<?= e(url('/siparis')) ?>">Online Sipariş Ver</a>
+    <a class="btn btn-primary" href="<?= e(url('/siparis#sepet')) ?>">Sepete git / Sipariş ver</a>
     <a class="btn btn-ghost" href="<?= e(url('/takip')) ?>">Sipariş Takip</a>
   </div>
 </div>

@@ -32,6 +32,16 @@ final class SchemaSync
         }
 
         try {
+            self::ensureColumn(
+                $pdo,
+                'orders',
+                'payment_preference',
+                "ALTER TABLE orders ADD COLUMN payment_preference ENUM('cash','card') NULL DEFAULT NULL AFTER customer_note"
+            );
+        } catch (Throwable) {
+        }
+
+        try {
             $pdo->exec(
                 "ALTER TABLE orders
                  MODIFY COLUMN source ENUM('online','waiter','cashier') NOT NULL"

@@ -26,6 +26,9 @@
       </div>
       <p style="margin:16px 0">Durum: <strong data-live-status><?= e(status_label($order['status'])) ?></strong></p>
       <p class="muted small">Toplam: <?= e(money((float) $order['total'])) ?> · <?= e($order['created_at']) ?></p>
+      <?php if (!empty($order['payment_preference'])): ?>
+        <p><strong>Kapıda ödeme:</strong> <?= e(payment_preference_label((string) $order['payment_preference'])) ?></p>
+      <?php endif; ?>
       <?php if (!empty($order['customer_note'])): ?>
         <p><strong>Not:</strong> <?= e($order['customer_note']) ?></p>
       <?php endif; ?>

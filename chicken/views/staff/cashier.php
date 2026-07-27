@@ -87,7 +87,13 @@ $paidSum = array_sum(array_map(
           <div class="order-card-head">
             <div>
               <div class="order-code"><?= e($order['order_code']) ?></div>
-              <div class="small muted"><?= e($order['customer_name'] ?? '—') ?> · <?= e(status_label($order['status'])) ?></div>
+              <div class="small muted">
+                <?= e($order['customer_name'] ?? '—') ?>
+                · <?= e(status_label($order['status'])) ?>
+                <?php if (!empty($order['payment_preference'])): ?>
+                  · <?= e(payment_preference_label((string) $order['payment_preference'])) ?>
+                <?php endif; ?>
+              </div>
             </div>
             <strong class="price"><?= e(money((float) $order['total'])) ?></strong>
           </div>
