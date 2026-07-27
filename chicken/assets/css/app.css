@@ -112,6 +112,14 @@ button, input, select, textarea { font: inherit; }
   background: transparent;
   box-shadow: none;
 }
+.staff-logo {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: transparent;
+}
 .brand-inline-text {
   font-family: var(--font-display);
   font-weight: 800;
@@ -1834,6 +1842,6 @@ tr:hover td { background: rgba(232, 93, 4, 0.04); }
 }
 @media (max-width: 720px) {
   .cart-label { display: none; }
-  .hero-logo { width: 112px; height: 112px; }
-  .brand-mark-full { width: 48px; height: 48px; }
+  .hero-logo { width: 120px; height: 120px; }
+  .brand-mark-full { width: 50px; height: 50px; }
 }
