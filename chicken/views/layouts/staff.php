@@ -120,7 +120,10 @@ $sideColor = match ($role) {
 
     <div class="staff-content">
       <header class="staff-topbar">
-        <a class="brand-inline header-logo" href="<?= e($homeStaff) ?>">Chicken<span>.</span></a>
+        <a class="brand-inline header-logo" href="<?= e($homeStaff) ?>" style="display:inline-flex;align-items:center;gap:8px">
+          <img src="<?= e(url('/assets/img/logo.svg')) ?>" alt="" width="28" height="28" style="border-radius:50%">
+          Chicken<span>.</span>
+        </a>
         <nav class="header-nav">
           <?php if ($role === 'admin'): ?>
             <a class="<?= str_starts_with(current_path(), '/yonetici') ? 'active' : '' ?>" href="<?= e(url('/yonetici')) ?>">Yönetici</a>
