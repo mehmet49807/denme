@@ -13,8 +13,8 @@ foreach ($items as $item) {
 ?>
 <div class="brochure theme-<?= e($themeId) ?>" data-brochure data-theme="<?= e($themeId) ?>">
   <header class="brochure-hero">
-    <img class="brochure-logo" src="<?= e(logo_url()) ?>" alt="Chicken" width="64" height="64">
-    <p class="eyebrow">Chicken Grill</p>
+    <img class="brochure-logo" src="<?= e(logo_url()) ?>" alt="Lezzet Tavukçusu" width="88" height="88">
+    <p class="eyebrow">Lezzet Tavukçusu</p>
     <h1>Menü</h1>
     <?php if (!empty($table['label'])): ?>
       <p class="brochure-table"><?= e((string) $table['label']) ?></p>

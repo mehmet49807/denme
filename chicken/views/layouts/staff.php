@@ -129,8 +129,8 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
     <div class="staff-content">
       <header class="staff-topbar">
         <a class="brand-inline header-logo" href="<?= e($homeStaff) ?>" style="display:inline-flex;align-items:center;gap:8px">
-          <img src="<?= e(logo_url()) ?>" alt="Chicken" width="28" height="28" style="border-radius:50%">
-          Chicken<span>.</span>
+          <img class="staff-logo" src="<?= e(logo_url()) ?>" alt="Lezzet Tavukçusu" width="36" height="36">
+          <span class="brand-inline-text">Lezzet</span>
         </a>
         <nav class="header-nav">
           <?php if ($role === 'admin'): ?>
