@@ -2,9 +2,9 @@
 <div class="page-shell auth-page">
   <div class="auth-card" style="margin:0 auto;max-width:420px">
     <div class="auth-logo">
-      <img class="auth-logo-img" src="<?= e(logo_url()) ?>" alt="Lezzet Tavukçusu" width="88" height="88">
+      <img class="auth-logo-img" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="96" height="96">
     </div>
-    <p class="eyebrow">Lezzet Tavukçusu</p>
+    <p class="eyebrow">Crisp &amp; Co.</p>
     <h1>Giriş</h1>
     <p class="lede">Hesabınıza giriş yapın, sipariş verin.</p>
     <?php if ($msg = flash('error')): ?>

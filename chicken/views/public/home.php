@@ -2,10 +2,10 @@
   <div class="hero-media" aria-hidden="true"></div>
   <div class="hero-content">
     <div class="hero-brand">
-      <img class="hero-logo" src="<?= e(logo_url()) ?>" alt="Lezzet Tavukçusu" width="148" height="148">
-      <p class="eyebrow">Ustasından lezzet</p>
+      <img class="hero-logo" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="156" height="156">
+      <p class="eyebrow">Lezzetin doğal adresi</p>
     </div>
-    <h1>LEZZET TAVUKÇUSU</h1>
+    <h1>CRISP &amp; CO.</h1>
     <p class="lede">Taze ızgara tavuk, net menü ve online sipariş. Üye olmadan da sipariş verebilirsiniz.</p>
     <div class="cta-home">
       <a class="btn btn-accent" href="<?= e(url('/siparis')) ?>">Online Sipariş</a>
@@ -30,8 +30,8 @@
 </section>
 
 <section class="section section-home-about" id="hakkimizda-ozet">
-  <h2>Lezzet Tavukçusu hakkında</h2>
-  <p class="section-intro">Taze ızgara, hızlı servis ve şeffaf iletişimle sofranıza geliyoruz.</p>
+  <h2>Crisp &amp; Co. hakkında</h2>
+  <p class="section-intro">Lezzetin doğal adresi — taze ızgara, hızlı servis ve şeffaf iletişim.</p>
   <div class="about-links">
     <a class="about-link" href="<?= e(url('/hakkimizda')) ?>">
       <span class="about-link-icon" aria-hidden="true">

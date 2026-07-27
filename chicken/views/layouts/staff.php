@@ -52,7 +52,7 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title><?= e($title ?? 'Chicken Personel') ?></title>
+  <title><?= e($title ?? 'Crisp & Co. Personel') ?></title>
   <?php
     $assetRoot = dirname(__DIR__, 2) . '/assets';
     $cssVer = @filemtime($assetRoot . '/css/app.css') ?: time();
@@ -129,8 +129,8 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
     <div class="staff-content">
       <header class="staff-topbar">
         <a class="brand-inline header-logo" href="<?= e($homeStaff) ?>" style="display:inline-flex;align-items:center;gap:8px">
-          <img class="staff-logo" src="<?= e(logo_url()) ?>" alt="Lezzet Tavukçusu" width="36" height="36">
-          <span class="brand-inline-text">Lezzet</span>
+          <img class="staff-logo" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="36" height="36">
+          <span class="brand-inline-text">Crisp</span>
         </a>
         <nav class="header-nav">
           <?php if ($role === 'admin'): ?>

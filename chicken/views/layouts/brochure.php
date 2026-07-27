@@ -9,7 +9,7 @@ $themeId = preg_replace('/[^a-z0-9_-]/i', '', (string) ($themeId ?? 'classic')) 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title><?= e($title ?? 'Chicken Menü') ?></title>
+  <title><?= e($title ?? 'Crisp & Co. Menü') ?></title>
   <?php
     $assetRoot = dirname(__DIR__, 2) . '/assets';
     $cssVer = @filemtime($assetRoot . '/css/app.css') ?: time();
