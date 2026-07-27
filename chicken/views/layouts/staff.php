@@ -39,6 +39,14 @@ $sideColor = match ($role) {
     'cashier' => '#4c8dff',
     default => '#ff6a1a',
 };
+$pendingOnlineCount = (int) ($pendingOnlineCount ?? 0);
+if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
+    try {
+        $pendingOnlineCount = count(OrderService::listOnlinePending(200));
+    } catch (Throwable) {
+        $pendingOnlineCount = 0;
+    }
+}
 ?><!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -136,6 +144,10 @@ $sideColor = match ($role) {
           <?php endif; ?>
           <?php if (in_array($role, ['cashier', 'admin'], true)): ?>
             <a class="<?= is_active_path('/kasa') || str_starts_with(current_path(), '/kasa/') ? 'active' : '' ?>" href="<?= e(url('/kasa')) ?>">Kasa</a>
+            <a class="<?= is_active_path('/online-siparisler') ? 'active' : '' ?>" href="<?= e(url('/online-siparisler')) ?>">
+              Online
+              <span class="nav-badge<?= $pendingOnlineCount <= 0 ? ' is-empty' : '' ?>" data-online-badge<?= $pendingOnlineCount <= 0 ? ' hidden' : '' ?>><?= $pendingOnlineCount ?></span>
+            </a>
             <a class="<?= is_active_path('/qr') ? 'active' : '' ?>" href="<?= e(url('/qr')) ?>">QR Menü</a>
           <?php endif; ?>
           <a class="<?= is_active_path('/mutfak') ? 'active' : '' ?>" href="<?= e(url('/mutfak')) ?>">Mutfak</a>

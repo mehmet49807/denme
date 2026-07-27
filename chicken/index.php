@@ -542,7 +542,7 @@ $router->get('/mutfak', static function (): void {
          LEFT JOIN dining_tables t ON t.id = o.table_id
          WHERE oi.station = 'kitchen'
            AND oi.status IN ('queued','preparing')
-           AND o.status NOT IN ('cancelled','paid')
+           AND o.status NOT IN ('cancelled','paid','pending')
          ORDER BY oi.id ASC"
     )->fetchAll();
     view('staff/station', [
@@ -563,7 +563,7 @@ $router->get('/bar', static function (): void {
          LEFT JOIN dining_tables t ON t.id = o.table_id
          WHERE oi.station = 'bar'
            AND oi.status IN ('queued','preparing')
-           AND o.status NOT IN ('cancelled','paid')
+           AND o.status NOT IN ('cancelled','paid','pending')
          ORDER BY oi.id ASC"
     )->fetchAll();
     view('staff/station', [
@@ -597,13 +597,82 @@ $router->get('/kasa', static function (): void {
         $orders,
         static fn(array $o): bool => $o['source'] === 'online' && !in_array($o['status'], ['paid', 'cancelled'], true)
     ));
+    $pendingOnlineCount = count(array_filter(
+        $onlineOpen,
+        static fn(array $o): bool => ($o['status'] ?? '') === 'pending'
+    ));
     view('staff/cashier', [
         'title' => 'Kasa',
         'tables' => $tables,
         'orders' => $orders,
         'onlineOpen' => $onlineOpen,
+        'pendingOnlineCount' => $pendingOnlineCount,
         'user' => Auth::user(),
     ]);
+});
+
+$router->get('/online-siparisler', static function (): void {
+    Auth::requireRole('cashier', 'admin');
+    $pendingRows = OrderService::listOnlinePending(60);
+    $pending = [];
+    foreach ($pendingRows as $row) {
+        $full = OrderService::findById((int) $row['id']);
+        if ($full) {
+            $pending[] = $full;
+        }
+    }
+    $activeRows = OrderService::listOnlineActive(30);
+    $active = [];
+    foreach ($activeRows as $row) {
+        $full = OrderService::findById((int) $row['id']);
+        if ($full) {
+            $active[] = $full;
+        }
+    }
+    view('staff/online_orders', [
+        'title' => 'Online Siparişler',
+        'pending' => $pending,
+        'active' => $active,
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->post('/api/online-orders/{id}/accept', static function (string $id): void {
+    Auth::requireRole('cashier', 'admin');
+    try {
+        $order = OrderService::acceptOnlineOrder((int) $id, Auth::id());
+        json_response([
+            'ok' => true,
+            'order' => [
+                'id' => (int) $order['id'],
+                'order_code' => $order['order_code'],
+                'status' => $order['status'],
+                'status_label' => status_label((string) $order['status']),
+            ],
+        ]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
+$router->post('/api/online-orders/{id}/reject', static function (string $id): void {
+    Auth::requireRole('cashier', 'admin');
+    try {
+        $order = OrderService::findById((int) $id);
+        if (!$order || ($order['source'] ?? '') !== 'online') {
+            throw new InvalidArgumentException('Online sipariş bulunamadı.');
+        }
+        OrderService::cancelOrder((int) $id, Auth::id());
+        json_response(['ok' => true]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
+$router->get('/api/online-orders/pending-count', static function (): void {
+    Auth::requireRole('cashier', 'admin');
+    $count = count(OrderService::listOnlinePending(200));
+    json_response(['ok' => true, 'count' => $count]);
 });
 
 $router->get('/kasa/masa/{id}', static function (string $id) use ($menuCatalog): void {
@@ -776,10 +845,18 @@ $adminLiveStats = static function () use ($adminSalesSummary): array {
         "SELECT COUNT(*) FROM orders WHERE source = 'online' AND status = 'pending'"
     )->fetchColumn();
     $kitchenQueued = (int) $pdo->query(
-        "SELECT COUNT(*) FROM order_items WHERE station = 'kitchen' AND status IN ('queued','preparing')"
+        "SELECT COUNT(*) FROM order_items oi
+         JOIN orders o ON o.id = oi.order_id
+         WHERE oi.station = 'kitchen'
+           AND oi.status IN ('queued','preparing')
+           AND o.status NOT IN ('cancelled','paid','pending')"
     )->fetchColumn();
     $barQueued = (int) $pdo->query(
-        "SELECT COUNT(*) FROM order_items WHERE station = 'bar' AND status IN ('queued','preparing')"
+        "SELECT COUNT(*) FROM order_items oi
+         JOIN orders o ON o.id = oi.order_id
+         WHERE oi.station = 'bar'
+           AND oi.status IN ('queued','preparing')
+           AND o.status NOT IN ('cancelled','paid','pending')"
     )->fetchColumn();
     $recent = OrderService::listRecent([], 8);
     return [

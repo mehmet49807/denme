@@ -696,4 +696,58 @@
 
     setInterval(refreshLive, 8000);
   }
+
+  // Online order approval (cashier / admin)
+  document.querySelectorAll('[data-accept-online]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-accept-online');
+      if (!id) return;
+      if (!confirm('Sipariş onaylansın mı? Mutfak ve bar fişine düşecek.')) return;
+      btn.disabled = true;
+      try {
+        const res = await fetch(api(`/api/online-orders/${id}/accept`), { method: 'POST' });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Onaylanamadı');
+        location.reload();
+      } catch (err) {
+        alert(err.message || 'Onaylanamadı');
+        btn.disabled = false;
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-reject-online]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-reject-online');
+      if (!id) return;
+      if (!confirm('Online sipariş reddedilsin / iptal edilsin mi?')) return;
+      btn.disabled = true;
+      try {
+        const res = await fetch(api(`/api/online-orders/${id}/reject`), { method: 'POST' });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Reddedilemedi');
+        location.reload();
+      } catch (err) {
+        alert(err.message || 'Reddedilemedi');
+        btn.disabled = false;
+      }
+    });
+  });
+
+  const onlineBadge = document.querySelector('[data-online-badge]');
+  if (onlineBadge) {
+    async function refreshOnlineBadge() {
+      try {
+        const res = await fetch(api('/api/online-orders/pending-count'));
+        const data = await res.json();
+        if (!data.ok) return;
+        const n = Number(data.count || 0);
+        onlineBadge.textContent = String(n);
+        onlineBadge.hidden = n <= 0;
+        onlineBadge.classList.toggle('is-empty', n <= 0);
+      } catch (_) {}
+    }
+    refreshOnlineBadge();
+    setInterval(refreshOnlineBadge, 10000);
+  }
 })();
