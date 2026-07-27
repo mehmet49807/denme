@@ -106,7 +106,7 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     <div class="footer-inner footer-premium">
       <div class="footer-brand">
         <a class="brand footer-brand-link brand-logo-only" href="<?= e(url('/')) ?>" aria-label="Crisp &amp; Co.">
-          <img class="brand-mark brand-mark-full" src="<?= e($logoSrc) ?>" alt="Crisp &amp; Co." width="76" height="76">
+          <img class="brand-mark brand-mark-full" src="<?= e($logoSrc) ?>" alt="Crisp &amp; Co." width="88" height="88">
         </a>
         <p class="footer-tagline">Lezzetin doğal adresi · ızgara tavuk · online sipariş</p>
         <div class="footer-cta">

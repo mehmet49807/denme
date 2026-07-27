@@ -2,7 +2,7 @@
   <div class="hero-media" aria-hidden="true"></div>
   <div class="hero-content">
     <div class="hero-brand">
-      <img class="hero-logo" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="156" height="156">
+      <img class="hero-logo" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="168" height="168">
       <p class="eyebrow">Lezzetin doğal adresi</p>
     </div>
     <h1>CRISP &amp; CO.</h1>
