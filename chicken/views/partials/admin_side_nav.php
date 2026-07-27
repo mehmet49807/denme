@@ -27,7 +27,7 @@ $groups = [
         'items' => [
             ['href' => '/yonetici/personel/ekle', 'label' => 'Personel ekle', 'icon' => 'staffadd', 'color' => '#2bb3a3'],
             ['href' => '/yonetici/personel', 'label' => 'Personel takip', 'icon' => 'staff', 'color' => '#e0a33b'],
-            ['href' => '/yonetici/personel/cikar', 'label' => 'Personel çıkarma', 'icon' => 'staffremove', 'color' => '#ff7a7a'],
+            ['href' => '/yonetici/personel/cikar', 'label' => 'Garson sil', 'icon' => 'staffremove', 'color' => '#ff7a7a'],
         ],
     ],
 ];

@@ -883,7 +883,7 @@ $router->get('/yonetici/personel/cikar', static function (): void {
         ->query('SELECT id, name, username, role, is_active, created_at FROM staff ORDER BY is_active DESC, role, name')
         ->fetchAll();
     view('staff/admin_staff_remove', [
-        'title' => 'Yönetici · Personel çıkarma',
+        'title' => 'Yönetici · Garson sil',
         'staff' => $staff,
         'user' => Auth::user(),
     ]);
@@ -922,32 +922,55 @@ $router->post('/yonetici/personel', static function (): void {
 
 $router->post('/yonetici/personel/cikar', static function (): void {
     Auth::requireRole('admin');
+    $redirect = (string) input('redirect');
+    if ($redirect === '' || !str_starts_with($redirect, '/yonetici')) {
+        $redirect = '/yonetici/personel/cikar';
+    }
     if (!verify_csrf((string) input('_csrf'))) {
         flash('error', 'CSRF hatası');
-        redirect('/yonetici/personel/cikar');
+        redirect($redirect);
     }
     $staffId = (int) input('staff_id');
+    $roleGuard = trim((string) input('role_guard'));
     if ($staffId <= 0 || $staffId === (int) Auth::id()) {
         flash('error', 'Bu personel çıkarılamaz.');
-        redirect('/yonetici/personel/cikar');
+        redirect($redirect);
     }
-    $stmt = Database::pdo()->prepare('UPDATE staff SET is_active = 0, updated_at = NOW() WHERE id = ?');
+
+    $pdo = Database::pdo();
+    $stmt = $pdo->prepare('SELECT id, role, name FROM staff WHERE id = ? LIMIT 1');
     $stmt->execute([$staffId]);
-    flash('success', 'Personel pasife alındı.');
-    redirect('/yonetici/personel/cikar');
+    $member = $stmt->fetch();
+    if (!$member) {
+        flash('error', 'Personel bulunamadı.');
+        redirect($redirect);
+    }
+    if ($roleGuard !== '' && (string) $member['role'] !== $roleGuard) {
+        flash('error', 'Bu işlem yalnızca ' . role_label($roleGuard) . ' için geçerlidir.');
+        redirect($redirect);
+    }
+
+    $pdo->prepare('UPDATE staff SET is_active = 0, updated_at = NOW() WHERE id = ?')->execute([$staffId]);
+    $label = role_label((string) $member['role']);
+    flash('success', $label . ' silindi (pasife alındı): ' . (string) $member['name']);
+    redirect($redirect);
 });
 
 $router->post('/yonetici/personel/aktif', static function (): void {
     Auth::requireRole('admin');
+    $redirect = (string) input('redirect');
+    if ($redirect === '' || !str_starts_with($redirect, '/yonetici')) {
+        $redirect = '/yonetici/personel/cikar';
+    }
     if (!verify_csrf((string) input('_csrf'))) {
         flash('error', 'CSRF hatası');
-        redirect('/yonetici/personel/cikar');
+        redirect($redirect);
     }
     $staffId = (int) input('staff_id');
     $stmt = Database::pdo()->prepare('UPDATE staff SET is_active = 1, updated_at = NOW() WHERE id = ?');
     $stmt->execute([$staffId]);
     flash('success', 'Personel yeniden aktifleştirildi.');
-    redirect('/yonetici/personel/cikar');
+    redirect($redirect);
 });
 
 $router->dispatch($method, $path);

@@ -6,7 +6,7 @@
   </div>
   <div class="cta-row">
     <a class="btn btn-primary btn-sm" href="<?= e(url('/yonetici/personel/ekle')) ?>">Personel ekle</a>
-    <a class="btn btn-ghost btn-sm" href="<?= e(url('/yonetici/personel/cikar')) ?>">Çıkarma</a>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('/yonetici/personel/cikar')) ?>">Garson sil</a>
   </div>
 </div>
 
