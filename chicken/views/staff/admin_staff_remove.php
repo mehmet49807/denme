@@ -16,7 +16,7 @@ $me = (int) Auth::id();
 </div>
 
 <p class="muted" style="margin:-8px 0 16px">
-  Garson hesabı silinmez; pasife alınır ve giriş yapamaz. İsterseniz sonra tekrar aktifleştirin.
+  Garson hesabı <strong>kalıcı olarak silinir</strong>. Sipariş geçmişi durur; garson bağlantısı kaldırılır.
 </p>
 
 <section class="panel">
@@ -43,25 +43,19 @@ $me = (int) Auth::id();
             <td>
               <?php if ((int) $member['id'] === $me): ?>
                 <span class="muted small">Siz</span>
-              <?php elseif (empty($member['is_active'])): ?>
-                <form method="post" action="<?= e(url('/yonetici/personel/aktif')) ?>" style="display:inline">
-                  <?= csrf_field() ?>
-                  <input type="hidden" name="staff_id" value="<?= (int) $member['id'] ?>">
-                  <input type="hidden" name="redirect" value="/yonetici/personel/cikar">
-                  <button class="btn btn-ghost btn-sm" type="submit">Aktifleştir</button>
-                </form>
               <?php else: ?>
                 <form
                   method="post"
                   action="<?= e(url('/yonetici/personel/cikar')) ?>"
                   style="display:inline"
-                  onsubmit="return confirm('Bu garson silinsin mi? (Pasife alınır)')"
+                  onsubmit="return confirm('<?= e($member['name']) ?> hesabı KALICI silinsin mi? Bu işlem geri alınamaz.')"
                 >
                   <?= csrf_field() ?>
                   <input type="hidden" name="staff_id" value="<?= (int) $member['id'] ?>">
                   <input type="hidden" name="role_guard" value="waiter">
+                  <input type="hidden" name="hard_delete" value="1">
                   <input type="hidden" name="redirect" value="/yonetici/personel/cikar">
-                  <button class="btn btn-dark btn-sm" type="submit">Garson sil</button>
+                  <button class="btn btn-dark btn-sm" type="submit">Hesabı sil</button>
                 </form>
               <?php endif; ?>
             </td>
@@ -75,6 +69,7 @@ $me = (int) Auth::id();
 <?php if ($others): ?>
 <section class="panel" style="margin-top:18px">
   <h2 class="side-group-title" style="margin:0 0 12px">Diğer personel</h2>
+  <p class="muted small" style="margin:0 0 12px">Kasa / yönetici için pasife alma (hesap silinmez).</p>
   <div class="table-wrap">
     <table>
       <thead>
@@ -113,7 +108,7 @@ $me = (int) Auth::id();
                   <?= csrf_field() ?>
                   <input type="hidden" name="staff_id" value="<?= (int) $member['id'] ?>">
                   <input type="hidden" name="redirect" value="/yonetici/personel/cikar">
-                  <button class="btn btn-dark btn-sm" type="submit">Çıkar</button>
+                  <button class="btn btn-dark btn-sm" type="submit">Pasife al</button>
                 </form>
               <?php endif; ?>
             </td>

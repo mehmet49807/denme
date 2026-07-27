@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS orders (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_orders_table FOREIGN KEY (table_id) REFERENCES dining_tables(id),
-  CONSTRAINT fk_orders_waiter FOREIGN KEY (waiter_id) REFERENCES staff(id),
+  CONSTRAINT fk_orders_waiter FOREIGN KEY (waiter_id) REFERENCES staff(id) ON DELETE SET NULL,
   INDEX idx_orders_status (status),
   INDEX idx_orders_created (created_at),
   INDEX idx_orders_waiter (waiter_id)
