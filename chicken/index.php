@@ -9,6 +9,7 @@ require __DIR__ . '/app/OrderService.php';
 require __DIR__ . '/app/CategorySync.php';
 require __DIR__ . '/app/SchemaSync.php';
 require __DIR__ . '/app/MenuImageSync.php';
+require __DIR__ . '/app/MenuItemSync.php';
 require __DIR__ . '/app/Router.php';
 
 $config = config();
@@ -40,6 +41,8 @@ if (!$installed && $path !== '/install.php') {
 
 if ($installed) {
     SchemaSync::ensure();
+    CategorySync::ensure();
+    MenuItemSync::ensure();
     MenuImageSync::ensure();
 }
 

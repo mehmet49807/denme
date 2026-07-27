@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim((string) ($_POST['db_name'] ?? 'gonulkop_chicken'));
     $user = trim((string) ($_POST['db_user'] ?? ''));
     $pass = (string) ($_POST['db_pass'] ?? '');
-    $appUrl = rtrim(trim((string) ($_POST['app_url'] ?? 'https://chicken.gonulkoprusu.com')), '/');
+    $appUrl = rtrim(trim((string) ($_POST['app_url'] ?? 'https://gonulkoprusu.com/chicken')), '/');
 
     try {
         $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $host, $port, $name);
@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
           $guessUrl = isset($_SERVER['HTTP_HOST'])
             ? ($scheme . '://' . $_SERVER['HTTP_HOST'] . base_path())
-            : 'https://chicken.gonulkoprusu.com';
+            : 'https://gonulkoprusu.com/chicken';
         ?>
         <label>Uygulama URL
           <input name="app_url" value="<?= e($guessUrl) ?>" required>

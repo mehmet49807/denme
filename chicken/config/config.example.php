@@ -8,7 +8,7 @@ declare(strict_types=1);
  */
 return [
     'app_name' => 'Chicken',
-    'app_url' => 'https://chicken.gonulkoprusu.com',
+    'app_url' => 'https://gonulkoprusu.com/chicken',
     'timezone' => 'Europe/Istanbul',
     'db' => [
         'host' => 'localhost',
