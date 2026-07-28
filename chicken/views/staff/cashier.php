@@ -54,14 +54,27 @@ $paidSum = array_sum(array_map(
   <div class="stat"><span class="muted">Bugün tahsilat</span><strong><?= e(money($paidSum)) ?></strong></div>
 </div>
 
-<div class="table-board table-board-3d">
+<div class="table-board">
   <?php foreach ($tables as $table): ?>
-    <?php
-      partial('partials/table_3d', [
-          'table' => $table,
-          'href' => url('/kasa/masa/' . (int) $table['id']),
-      ]);
-    ?>
+    <?php $isOpen = !empty($table['is_open']); ?>
+    <a class="table-tile <?= $isOpen ? 'is-open' : 'is-free' ?>" href="<?= e(url('/kasa/masa/' . (int) $table['id'])) ?>">
+      <div class="table-tile-top">
+        <strong><?= e($table['label']) ?></strong>
+        <span class="chip <?= $isOpen ? 'kitchen' : '' ?>"><?= $isOpen ? 'Açık' : 'Boş' ?></span>
+      </div>
+      <div class="table-tile-code muted small"><?= e($table['code']) ?> · <?= (int) $table['seats'] ?> kişi</div>
+      <?php if ($isOpen): ?>
+        <div class="table-tile-meta">
+          <span><?= (int) $table['open_count'] ?> sipariş</span>
+          <strong class="price"><?= e(money((float) $table['open_total'])) ?></strong>
+        </div>
+        <?php if (!empty($table['waiter_names'])): ?>
+          <div class="muted small"><?= e(implode(', ', $table['waiter_names'])) ?></div>
+        <?php endif; ?>
+      <?php else: ?>
+        <div class="muted small">Sipariş aç / tahsilat</div>
+      <?php endif; ?>
+    </a>
   <?php endforeach; ?>
 </div>
 

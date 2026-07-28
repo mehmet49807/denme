@@ -15,20 +15,23 @@
   <div class="panel muted" style="margin-bottom:20px">Şu an açık masa yok. Aşağıdan yeni fiş açabilirsiniz.</div>
 <?php endif; ?>
 
-<div class="table-board table-board-3d">
+<div class="table-board">
   <?php foreach ($openTables as $table): ?>
-    <?php
-      ob_start();
-    ?>
+    <a class="table-tile is-open" href="<?= e(url('/garson/masa/' . (int) $table['id'])) ?>">
+      <div class="table-tile-top">
+        <strong><?= e($table['label']) ?></strong>
+        <span class="chip kitchen">Açık</span>
+      </div>
+      <div class="table-tile-code muted small"><?= e($table['code']) ?></div>
+      <div class="table-tile-meta">
+        <span><?= (int) $table['open_count'] ?> sipariş</span>
+        <strong class="price"><?= e(money((float) $table['open_total'])) ?></strong>
+      </div>
+      <?php if (!empty($table['waiter_names'])): ?>
+        <div class="muted small"><?= e(implode(', ', $table['waiter_names'])) ?></div>
+      <?php endif; ?>
       <div class="muted small" style="margin-top:6px">Sadece kendi siparişinize ekleme · iptal/kapatma yok</div>
-    <?php
-      $footer = ob_get_clean();
-      partial('partials/table_3d', [
-          'table' => $table,
-          'href' => url('/garson/masa/' . (int) $table['id']),
-          'footerHtml' => $footer,
-      ]);
-    ?>
+    </a>
   <?php endforeach; ?>
 </div>
 
