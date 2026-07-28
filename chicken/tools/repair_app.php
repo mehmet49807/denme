@@ -50,6 +50,7 @@ $files = [
     'assets/img/logo-crisp-co.png',
     'assets/img/brand-crisp-co-v4.png',
     'assets/img/brand-crisp-co-v5.png',
+    'assets/img/brand-crisp-co-v6.png',
     'assets/img/hero.svg',
     'assets/img/hero-restaurant.jpg',
 ];

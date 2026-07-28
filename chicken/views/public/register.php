@@ -6,7 +6,7 @@
 <div class="page-shell auth-page">
   <div class="auth-card" style="margin:0 auto;max-width:480px">
     <div class="auth-logo">
-      <img class="auth-logo-img" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="220" height="120">
+      <img class="auth-logo-img" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="128" height="128">
     </div>
     <p class="eyebrow">Yeni üyelik</p>
     <h1>Üye ol</h1>

@@ -2,7 +2,7 @@
   <div class="vs-hero-media" role="img" aria-label="Crisp &amp; Co. restoran salonu"></div>
   <div class="vs-hero-shade" aria-hidden="true"></div>
   <div class="vs-hero-copy">
-    <img class="vs-hero-logo" src="<?= e(logo_url()) ?>" alt="" width="220" height="120">
+    <img class="vs-hero-logo" src="<?= e(logo_url()) ?>" alt="" width="148" height="148">
     <p class="vs-tag">Lezzetin doğal adresi</p>
     <h1>Crisp &amp; Co.</h1>
     <p class="vs-sub">Modern ızgara restoranı — menüden seçin, üye olmadan sipariş verin.</p>
