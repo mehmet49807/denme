@@ -120,29 +120,34 @@ button, input, select, textarea { font: inherit; }
   animation: rise 0.8s ease both;
 }
 .auth-logo-img {
-  width: 112px;
-  height: 112px;
+  width: min(220px, 70vw);
+  height: auto;
+  max-height: 120px;
   margin: 0 auto;
-  background: #fff;
-  border-radius: 20px;
+  background: #000;
+  border-radius: 14px;
   box-shadow: 0 10px 28px rgba(18, 16, 14, 0.12);
-  padding: 4px;
+  padding: 8px 12px;
+  object-fit: contain;
 }
 .brochure-logo {
-  width: 112px;
-  height: 112px;
-  background: #fff;
-  border-radius: 20px;
+  width: min(200px, 55vw);
+  height: auto;
+  max-height: 110px;
+  background: #000;
+  border-radius: 14px;
   box-shadow: 0 10px 28px rgba(18, 16, 14, 0.12);
-  padding: 4px;
+  padding: 8px 12px;
+  object-fit: contain;
 }
 .staff-logo {
   display: block;
-  width: 36px;
-  height: 36px;
+  width: auto;
+  height: 34px;
+  max-width: 72px;
   object-fit: contain;
-  border-radius: 10px;
-  background: #fff;
+  border-radius: 8px;
+  background: #000;
 }
 .brand-inline-text {
   font-family: var(--font-display);
