@@ -1498,6 +1498,14 @@ a.table-tile-link {
   margin: 0;
   letter-spacing: -0.03em;
 }
+.brochure-menu-label {
+  margin: 6px 0 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brochure-muted, var(--muted));
+}
 .brochure-table {
   display: inline-block;
   margin: 10px 0 0;
@@ -2183,7 +2191,7 @@ a.table-tile-link {
   background:
     radial-gradient(600px 360px at 15% 10%, rgba(255, 90, 40, 0.35), transparent 55%),
     radial-gradient(540px 320px at 90% 20%, rgba(48, 180, 220, 0.28), transparent 50%),
-    radial-gradient(480px 280px at 50% 100%, rgba(120, 80, 255, 0.18), transparent 55%),
+    radial-gradient(480px 280px at 50% 100%, rgba(255, 176, 80, 0.16), transparent 55%),
     linear-gradient(165deg, #10141c 0%, #171c28 50%, #0f1218 100%);
   background-size: 140% 140%;
   animation: brochure-mesh 14s ease-in-out infinite alternate;
