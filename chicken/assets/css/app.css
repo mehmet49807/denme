@@ -1077,8 +1077,13 @@ tr:hover td { background: rgba(154, 123, 47, 0.04); }
 }
 .table-board {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+.table-board-3d {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  perspective: 900px;
 }
 .table-tile {
   display: block;
@@ -1089,7 +1094,7 @@ tr:hover td { background: rgba(154, 123, 47, 0.04); }
   border-radius: 18px;
   padding: 14px;
   min-height: 140px;
-  transition: border-color .15s ease, transform .15s ease;
+  transition: border-color .15s ease, transform .15s ease, box-shadow .2s ease;
 }
 .table-tile:hover {
   border-color: rgba(196, 163, 90,0.45);
@@ -1116,6 +1121,172 @@ tr:hover td { background: rgba(154, 123, 47, 0.04); }
   gap: 8px;
   margin-top: 14px;
   align-items: baseline;
+}
+
+/* ---- 3D masa sahnesi ---- */
+.table-3d {
+  display: grid;
+  gap: 12px;
+  padding: 16px 14px 14px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 252, 247, 0.95), transparent 55%),
+    linear-gradient(180deg, #fffdf9, #f3efe6);
+  border: 1px solid rgba(18, 16, 14, 0.08);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+.table-3d.is-open {
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(196, 163, 90, 0.22), transparent 58%),
+    linear-gradient(180deg, #fff8ea, #f4ead3);
+  border-color: rgba(184, 137, 46, 0.35);
+  box-shadow: 0 18px 40px rgba(154, 123, 47, 0.18);
+}
+.table-3d.is-free {
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,0.9), transparent 55%),
+    linear-gradient(180deg, #fbfaf7, #ebe6dc);
+}
+.table-3d:hover {
+  transform: translateY(-4px);
+  border-color: rgba(196, 163, 90, 0.5);
+}
+.table-3d-stage {
+  position: relative;
+  height: 132px;
+  display: grid;
+  place-items: center;
+  transform-style: preserve-3d;
+}
+.table-3d-shadow {
+  position: absolute;
+  width: 78%;
+  height: 22px;
+  bottom: 10px;
+  left: 11%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(18, 16, 14, 0.28), transparent 70%);
+  filter: blur(2px);
+  transform: translateZ(-20px);
+}
+.table-3d-chairs {
+  position: absolute;
+  inset: 8px 18px 18px;
+  pointer-events: none;
+}
+.table-3d-chair {
+  --angle: calc((360deg / var(--n)) * var(--i) - 90deg);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 14px;
+  margin: -7px 0 0 -9px;
+  border-radius: 5px 5px 3px 3px;
+  background: linear-gradient(180deg, #6b5844, #3f3328);
+  box-shadow:
+    0 2px 0 #2a221b,
+    0 6px 10px rgba(18, 16, 14, 0.18);
+  transform:
+    rotate(var(--angle))
+    translateY(-54px)
+    rotateX(18deg);
+  transform-origin: center center;
+}
+.table-3d-top {
+  position: relative;
+  z-index: 2;
+  width: 118px;
+  height: 78px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.35), transparent 42%),
+    radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.12), transparent 45%),
+    linear-gradient(145deg, #d7b07a 0%, #b8892e 42%, #8a6420 78%, #6d4d18 100%);
+  border: 3px solid rgba(88, 62, 24, 0.55);
+  box-shadow:
+    0 14px 0 rgba(74, 52, 22, 0.55),
+    0 22px 28px rgba(18, 16, 14, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transform: rotateX(58deg) rotateZ(-8deg);
+  transform-style: preserve-3d;
+  animation: table-3d-idle 4.8s ease-in-out infinite;
+}
+.table-3d.is-open .table-3d-top {
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.4), transparent 42%),
+    radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.1), transparent 45%),
+    linear-gradient(145deg, #e8c686 0%, #c4a35a 40%, #9a7b2f 76%, #7a5c1e 100%);
+  box-shadow:
+    0 14px 0 rgba(92, 66, 22, 0.5),
+    0 22px 30px rgba(154, 123, 47, 0.28),
+    0 0 0 6px rgba(196, 163, 90, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.table-3d-name {
+  position: relative;
+  z-index: 3;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #2a1d0f;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  transform: rotateX(-58deg) rotateZ(8deg) translateZ(8px);
+  white-space: nowrap;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.table-3d-plate {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, #e8e2d6 55%, #cfc6b6);
+  box-shadow: inset 0 0 0 2px rgba(180, 170, 150, 0.55);
+  opacity: 0.85;
+}
+.table-3d-plate:nth-child(1) { top: 18px; left: 28px; }
+.table-3d-plate:nth-child(2) { bottom: 16px; right: 26px; }
+.table-3d-dish {
+  position: absolute;
+  width: 22px;
+  height: 14px;
+  border-radius: 40% 40% 45% 45%;
+  background: linear-gradient(180deg, #d96a3a, #9a3d1c);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  top: 42%;
+  left: 38%;
+  animation: table-3d-steam 2.2s ease-in-out infinite;
+}
+.table-3d-info {
+  position: relative;
+  z-index: 2;
+}
+.table-3d .table-tile-meta {
+  margin-top: 8px;
+}
+.table-3d-footer {
+  margin-top: 4px;
+}
+.table-3d.is-inactive .table-3d-top {
+  filter: grayscale(0.55) brightness(0.92);
+}
+@keyframes table-3d-idle {
+  0%, 100% { transform: rotateX(58deg) rotateZ(-8deg) translateY(0); }
+  50% { transform: rotateX(58deg) rotateZ(-8deg) translateY(-2px); }
+}
+@keyframes table-3d-steam {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(-2px); opacity: 0.85; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .table-3d-top,
+  .table-3d-dish { animation: none; }
 }
 .order-manage { margin-bottom: 16px; }
 .item-manage-list {
@@ -1152,6 +1323,11 @@ tr:hover td { background: rgba(154, 123, 47, 0.04); }
 @media (max-width: 640px) {
   .item-note-row { grid-template-columns: 1fr; }
   .table-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .table-board-3d { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .table-3d-stage { height: 118px; }
+  .table-3d-top { width: 100px; height: 66px; }
+  .table-3d-chair { transform: rotate(var(--angle)) translateY(-46px) rotateX(18deg); }
+
 }
 .qty {
   display: inline-flex;
