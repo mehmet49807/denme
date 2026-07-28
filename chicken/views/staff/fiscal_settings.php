@@ -4,7 +4,7 @@ $company = $company ?? [];
 ?>
 <div class="panel-head">
   <div>
-    <p class="eyebrow">Kasa · Mali ayarlar</p>
+    <p class="eyebrow">Yönetici · Mali ayarlar</p>
     <h1>Firma ve KDV</h1>
   </div>
   <a class="btn btn-ghost btn-sm" href="<?= e(url('/kasa/gun-sonu')) ?>">Gün sonu</a>
