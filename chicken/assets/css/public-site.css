@@ -46,7 +46,6 @@ body[data-public-layout][data-theme="vista"]::before { content: none !important;
 
 /* Hide leftover chrome */
 body[data-public-layout][data-theme="vista"] .site-header,
-body[data-public-layout][data-theme="vista"] .cart-fab,
 body[data-public-layout][data-theme="vista"] .site-footer,
 body[data-public-layout][data-theme="vista"] .footer,
 body[data-public-layout][data-theme="vista"] .sg-shell,
@@ -718,6 +717,74 @@ body[data-public-layout][data-theme="vista"] .franchise-grid {
 @media (max-width: 640px) {
   body[data-public-layout][data-theme="vista"] .franchise-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Floating cart — bottom right, animated */
+body[data-public-layout][data-theme="vista"] .cart-fab {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  z-index: 60;
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--vs-rose);
+  color: #fff;
+  border: 0;
+  text-decoration: none;
+  box-shadow: 0 14px 32px rgba(232, 93, 117, 0.38);
+  animation: vs-cart-bob 2.4s ease-in-out infinite;
+  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+body[data-public-layout][data-theme="vista"] .cart-fab:hover,
+body[data-public-layout][data-theme="vista"] .cart-fab:focus-visible {
+  background: var(--vs-rose-deep);
+  transform: translateY(-4px) scale(1.04);
+  animation-play-state: paused;
+}
+
+body[data-public-layout][data-theme="vista"] .cart-fab .nav-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  margin: 0;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #0f2744;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(15, 39, 68, 0.25);
+}
+
+body[data-public-layout][data-theme="vista"] .cart-fab.has-items {
+  animation: vs-cart-bob 2.4s ease-in-out infinite, vs-cart-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes vs-cart-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+@keyframes vs-cart-pulse {
+  0%, 100% { box-shadow: 0 14px 32px rgba(232, 93, 117, 0.38); }
+  50% { box-shadow: 0 18px 40px rgba(232, 93, 117, 0.55), 0 0 0 8px rgba(232, 93, 117, 0.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-public-layout][data-theme="vista"] .cart-fab,
+  body[data-public-layout][data-theme="vista"] .cart-fab.has-items {
+    animation: none;
   }
 }
 
