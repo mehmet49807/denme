@@ -482,6 +482,7 @@ $router->get('/siparisler', static function (): void {
 $router->get('/masa/ekle', static function (): void {
     Auth::requireRole('waiter', 'cashier', 'admin');
     $role = Auth::role();
+    $canPickOpener = in_array($role, ['admin', 'cashier'], true);
     $back = match ($role) {
         'cashier' => '/kasa',
         'waiter' => '/siparisler',
@@ -495,7 +496,8 @@ $router->get('/masa/ekle', static function (): void {
     view('staff/table_add', [
         'title' => $label . ' · Yeni masa',
         'user' => Auth::user(),
-        'staffOptions' => TableService::staffOptions(),
+        'staffOptions' => $canPickOpener ? TableService::staffOptions() : [],
+        'canPickOpener' => $canPickOpener,
         'backUrl' => url($back),
         'formAction' => url('/masa/ekle'),
         'roleLabel' => $label,
@@ -518,24 +520,32 @@ $router->post('/masa/ekle', static function (): void {
 
     $masaNo = trim((string) input('masa_no'));
     $seats = (int) input('seats');
-    $openedByStaffId = (int) input('opened_by_staff_id');
-    $openedByName = trim((string) input('opened_by_name'));
 
-    if ($openedByStaffId > 0) {
-        $stmt = Database::pdo()->prepare(
-            'SELECT id, name FROM staff WHERE id = ? AND is_active = 1 LIMIT 1'
-        );
-        $stmt->execute([$openedByStaffId]);
-        $staff = $stmt->fetch();
-        if (!$staff) {
-            flash('error', 'Masa açan kişi bulunamadı.');
+    // Garson yalnızca kendi adıyla masa açabilir; yönetici/kasa seçebilir.
+    if ($role === 'waiter') {
+        $openedByStaffId = (int) Auth::id();
+        $openedByName = (string) (Auth::user()['name'] ?? '');
+        if ($openedByStaffId <= 0 || $openedByName === '') {
+            flash('error', 'Garson oturumu geçersiz.');
             redirect($backForm);
         }
-        $openedByName = (string) $staff['name'];
     } else {
-        $openedByStaffId = Auth::id();
-        if ($openedByName === '') {
-            $openedByName = (string) (Auth::user()['name'] ?? '');
+        $openedByStaffId = (int) input('opened_by_staff_id');
+        $openedByName = '';
+        if ($openedByStaffId > 0) {
+            $stmt = Database::pdo()->prepare(
+                'SELECT id, name FROM staff WHERE id = ? AND is_active = 1 LIMIT 1'
+            );
+            $stmt->execute([$openedByStaffId]);
+            $staff = $stmt->fetch();
+            if (!$staff) {
+                flash('error', 'Masa açan kişi bulunamadı.');
+                redirect($backForm);
+            }
+            $openedByName = (string) $staff['name'];
+        } else {
+            flash('error', 'Masa açan kişi seçin.');
+            redirect($backForm);
         }
     }
 

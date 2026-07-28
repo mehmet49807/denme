@@ -4,10 +4,12 @@
 /** @var string $backUrl */
 /** @var string $formAction */
 /** @var string $roleLabel */
+/** @var bool $canPickOpener */
 $staffOptions = $staffOptions ?? [];
 $backUrl = $backUrl ?? url('/yonetici/masalar');
 $formAction = $formAction ?? url('/masa/ekle');
 $roleLabel = $roleLabel ?? 'Yönetici';
+$canPickOpener = (bool) ($canPickOpener ?? false);
 $currentId = (int) ($user['id'] ?? 0);
 $currentName = (string) ($user['name'] ?? '');
 ?>
@@ -36,7 +38,7 @@ $currentName = (string) ($user['name'] ?? '');
       <input type="number" name="seats" min="1" max="50" value="4" required>
     </label>
     <label>Masa açan kişi
-      <?php if ($staffOptions): ?>
+      <?php if ($canPickOpener && $staffOptions): ?>
         <select name="opened_by_staff_id" required>
           <option value="">Seçin</option>
           <?php foreach ($staffOptions as $staff): ?>
@@ -57,7 +59,9 @@ $currentName = (string) ($user['name'] ?? '');
           <?php endforeach; ?>
         </select>
       <?php else: ?>
-        <input name="opened_by_name" required maxlength="120" value="<?= e($currentName) ?>">
+        <input type="text" value="<?= e($currentName) ?>" readonly>
+        <input type="hidden" name="opened_by_staff_id" value="<?= $currentId ?>">
+        <p class="muted small" style="margin:6px 0 0">Garson masayı kendi adı ile açar.</p>
       <?php endif; ?>
     </label>
     <button class="btn btn-primary" type="submit">Masayı kaydet</button>
