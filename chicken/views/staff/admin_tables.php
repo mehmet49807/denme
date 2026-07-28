@@ -7,12 +7,26 @@
   <a class="btn btn-primary btn-sm" href="<?= e(url('/yonetici/masalar/ekle')) ?>">Masa ekle</a>
 </div>
 
-<div class="table-board table-board-3d">
+<div class="table-board">
   <?php foreach ($tables as $table): ?>
     <?php
+      $isOpen = !empty($table['is_open']);
       $active = !empty($table['is_active']);
-      ob_start();
     ?>
+    <article class="table-tile <?= $isOpen ? 'is-open' : 'is-free' ?><?= !$active ? ' is-inactive' : '' ?>">
+      <div class="table-tile-top">
+        <strong><?= e($table['label']) ?></strong>
+        <span class="chip <?= $isOpen ? 'kitchen' : '' ?>">
+          <?= !$active ? 'Pasif' : ($isOpen ? 'Açık' : 'Boş') ?>
+        </span>
+      </div>
+      <div class="table-tile-code muted small"><?= e($table['code']) ?> · <?= (int) $table['seats'] ?> kişi</div>
+      <?php if ($isOpen): ?>
+        <div class="table-tile-meta">
+          <span><?= (int) $table['open_count'] ?> sipariş</span>
+          <strong class="price"><?= e(money((float) $table['open_total'])) ?></strong>
+        </div>
+      <?php endif; ?>
       <div class="cta-row" style="margin-top:12px">
         <a class="btn btn-primary btn-sm" href="<?= e(url('/yonetici/masalar/' . (int) $table['id'])) ?>">Düzenle</a>
         <?php if ($active): ?>
@@ -28,12 +42,6 @@
           <?= $active ? 'Pasife al' : 'Aktifleştir' ?>
         </button>
       </form>
-    <?php
-      $footer = ob_get_clean();
-      partial('partials/table_3d', [
-          'table' => $table,
-          'footerHtml' => $footer,
-      ]);
-    ?>
+    </article>
   <?php endforeach; ?>
 </div>
