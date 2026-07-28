@@ -504,11 +504,12 @@
     btn.addEventListener('click', async () => {
       const id = btn.getAttribute('data-close-table');
       const method = btn.getAttribute('data-method') || 'cash';
+      const redirectAttr = btn.getAttribute('data-close-redirect');
       const label = method === 'card' ? 'Kart' : 'Nakit';
       if (!confirm(`Masa ${label} ile kapatılsın mı? Açık siparişler ödenmiş sayılır.`)) return;
       try {
         await postJson(`/api/tables/${id}/close`, { payment_method: method });
-        window.location.href = api('/kasa');
+        window.location.href = redirectAttr || api('/kasa');
       } catch (err) {
         alert(err.message || 'Masa kapatılamadı');
       }

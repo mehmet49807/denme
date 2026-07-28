@@ -37,6 +37,12 @@
           <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/masa/' . (int) $table['id'])) ?>">Garson</a>
         <?php endif; ?>
       </div>
+      <?php if ($isOpen && $active): ?>
+        <?php partial('partials/table_close_buttons', [
+            'tableId' => (int) $table['id'],
+            'redirect' => url('/yonetici/masalar'),
+        ]); ?>
+      <?php endif; ?>
       <form method="post" action="<?= e(url('/yonetici/masalar/durum')) ?>" style="margin-top:10px">
         <?= csrf_field() ?>
         <input type="hidden" name="table_id" value="<?= (int) $table['id'] ?>">
