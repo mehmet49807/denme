@@ -1056,6 +1056,11 @@ $router->get('/kasa/fatura/siparis/{id}', static function (string $id): void {
         flash('error', 'Fatura için sipariş önce ödenmelidir.');
         redirect('/kasa');
     }
+    $paidDay = substr((string) ($order['paid_at'] ?? date('Y-m-d')), 0, 10);
+    if (Auth::role() === 'cashier' && $paidDay !== date('Y-m-d')) {
+        flash('error', 'Kasa yalnızca bugün ödenen siparişler için fatura kesebilir.');
+        redirect('/kasa/faturalar');
+    }
     $invoice = FiscalService::findInvoiceByOrder((int) $id);
     if ($invoice) {
         redirect('/kasa/fatura/' . (int) $invoice['id']);
@@ -1073,6 +1078,14 @@ $router->post('/kasa/fatura/siparis/{id}', static function (string $id): void {
     if (!verify_csrf((string) input('_csrf'))) {
         flash('error', 'CSRF hatası');
         redirect('/kasa/fatura/siparis/' . (int) $id);
+    }
+    $order = OrderService::findById((int) $id);
+    if ($order && Auth::role() === 'cashier') {
+        $paidDay = substr((string) ($order['paid_at'] ?? ''), 0, 10);
+        if ($paidDay !== date('Y-m-d')) {
+            flash('error', 'Kasa yalnızca bugün ödenen siparişler için fatura kesebilir.');
+            redirect('/kasa/faturalar');
+        }
     }
     try {
         $invoice = FiscalService::issueForOrder((int) $id, Auth::id(), [
