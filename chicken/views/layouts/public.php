@@ -83,13 +83,6 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     </footer>
   </div>
 
-  <nav class="vs-dock" aria-label="Mobil menü">
-    <a href="<?= e(url('/menu')) ?>">Menü</a>
-    <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
-    <a href="<?= e(url('/takip')) ?>">Takip</a>
-    <a href="<?= e(url('/hakkimizda')) ?>">Hakkımızda</a>
-  </nav>
-
   <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
   <script src="<?= e(url('/assets/js/app.js')) ?>?v=<?= e((string) $jsVer) ?>" defer></script>
 </body>
