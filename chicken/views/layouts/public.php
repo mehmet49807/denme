@@ -85,6 +85,15 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     </footer>
   </div>
 
+  <a class="cart-fab" href="<?= e(url('/siparis#sepet')) ?>" data-cart-link aria-label="Sepete git">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 6h2l1.2 10.2a2 2 0 002 1.8h7.5a2 2 0 002-1.7L20 8H7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="10" cy="20" r="1.45" fill="currentColor"/>
+      <circle cx="17" cy="20" r="1.45" fill="currentColor"/>
+    </svg>
+    <span class="nav-badge cart-badge is-empty" data-cart-badge hidden>0</span>
+  </a>
+
   <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
   <script src="<?= e(url('/assets/js/app.js')) ?>?v=<?= e((string) $jsVer) ?>" defer></script>
 </body>
