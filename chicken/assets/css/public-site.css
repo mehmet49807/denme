@@ -97,13 +97,12 @@ body[data-public-layout][data-theme="vista"] .vs-brand {
 }
 
 body[data-public-layout][data-theme="vista"] .vs-brand img {
-  width: auto;
-  height: 40px;
-  max-width: 88px;
-  border-radius: 8px;
+  width: 52px;
+  height: 52px;
+  border-radius: 0;
   object-fit: contain;
-  background: #000;
-  box-shadow: 0 6px 18px rgba(15, 39, 68, 0.12);
+  background: transparent;
+  box-shadow: none;
 }
 
 body[data-public-layout][data-theme="vista"] .vs-brand span {
@@ -289,15 +288,16 @@ body[data-public-layout][data-theme="vista"] .vs-hero-copy {
 }
 
 body[data-public-layout][data-theme="vista"] .vs-hero-logo {
-  width: min(220px, 58vw);
+  width: min(148px, 38vw);
   height: auto;
-  max-height: 120px;
-  border-radius: 14px;
+  aspect-ratio: 1;
+  max-height: 148px;
+  border-radius: 0;
   object-fit: contain;
-  background: #000;
-  padding: 8px 12px;
-  margin-bottom: 16px;
-  box-shadow: 0 16px 36px rgba(15, 39, 68, 0.14);
+  background: transparent;
+  padding: 0;
+  margin-bottom: 14px;
+  box-shadow: none;
   animation: vs-rise 0.7s ease both;
 }
 
@@ -615,11 +615,10 @@ body[data-public-layout][data-theme="vista"] .vs-footer-brand {
 }
 
 body[data-public-layout][data-theme="vista"] .vs-footer-brand img {
-  width: auto;
-  height: 44px;
-  max-width: 96px;
-  border-radius: 8px;
-  background: #000;
+  width: 48px;
+  height: 48px;
+  border-radius: 0;
+  background: transparent;
   object-fit: contain;
 }
 

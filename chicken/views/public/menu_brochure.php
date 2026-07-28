@@ -13,7 +13,7 @@ foreach ($items as $item) {
 ?>
 <div class="brochure theme-<?= e($themeId) ?>" data-brochure data-theme="<?= e($themeId) ?>">
   <header class="brochure-hero">
-    <img class="brochure-logo" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="200" height="110">
+    <img class="brochure-logo" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="120" height="120">
     <p class="eyebrow">Lezzetin doğal adresi</p>
     <h1>Menü</h1>
     <?php if (!empty($table['label'])): ?>

@@ -129,7 +129,7 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
     <div class="staff-content">
       <header class="staff-topbar">
         <a class="brand-inline header-logo" href="<?= e($homeStaff) ?>" style="display:inline-flex;align-items:center;gap:8px">
-          <img class="staff-logo" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="72" height="34">
+          <img class="staff-logo" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="40" height="40">
           <span class="brand-inline-text">Crisp</span>
         </a>
         <nav class="header-nav">

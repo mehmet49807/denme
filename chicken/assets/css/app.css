@@ -120,34 +120,31 @@ button, input, select, textarea { font: inherit; }
   animation: rise 0.8s ease both;
 }
 .auth-logo-img {
-  width: min(220px, 70vw);
-  height: auto;
-  max-height: 120px;
+  width: 128px;
+  height: 128px;
   margin: 0 auto;
-  background: #000;
-  border-radius: 14px;
-  box-shadow: 0 10px 28px rgba(18, 16, 14, 0.12);
-  padding: 8px 12px;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
   object-fit: contain;
 }
 .brochure-logo {
-  width: min(200px, 55vw);
-  height: auto;
-  max-height: 110px;
-  background: #000;
-  border-radius: 14px;
-  box-shadow: 0 10px 28px rgba(18, 16, 14, 0.12);
-  padding: 8px 12px;
+  width: 120px;
+  height: 120px;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
   object-fit: contain;
 }
 .staff-logo {
   display: block;
-  width: auto;
-  height: 34px;
-  max-width: 72px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
-  border-radius: 8px;
-  background: #000;
+  border-radius: 0;
+  background: transparent;
 }
 .brand-inline-text {
   font-family: var(--font-display);
@@ -242,13 +239,12 @@ button, input, select, textarea { font: inherit; }
   margin-bottom: 10px;
 }
 .auth-logo img {
-  width: min(220px, 70vw);
-  height: auto;
-  max-height: 120px;
-  border-radius: 14px;
-  background: #000;
+  width: 128px;
+  height: 128px;
+  border-radius: 0;
+  background: transparent;
   object-fit: contain;
-  box-shadow: 0 10px 24px rgba(18, 16, 14, 0.16);
+  box-shadow: none;
 }
 .auth-foot {
   margin-top: 18px;
@@ -1341,15 +1337,14 @@ tr:hover td { background: rgba(154, 123, 47, 0.04); }
   padding: 28px 12px 36px;
 }
 .brochure-logo {
-  width: min(200px, 55vw);
-  height: auto;
-  max-height: 110px;
+  width: 120px;
+  height: 120px;
   margin: 0 auto 12px;
-  border-radius: 14px;
-  background: #000;
+  border-radius: 0;
+  background: transparent;
   object-fit: contain;
-  padding: 8px 12px;
-  box-shadow: 0 12px 28px rgba(18, 16, 14, 0.16);
+  padding: 0;
+  box-shadow: none;
 }
 .brochure-hero h1 {
   font-family: var(--font-display);
