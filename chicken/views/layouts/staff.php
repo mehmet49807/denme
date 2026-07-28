@@ -86,7 +86,7 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
         <?php if (in_array($role, ['cashier', 'waiter'], true)): ?>
           <nav class="side-cats" style="margin-bottom:10px">
             <a
-              class="side-link<?= (
+              class="side-cat<?= (
                 ($role === 'cashier' && str_starts_with(current_path(), '/kasa'))
                 || ($role === 'waiter' && (current_path() === '/siparisler' || str_starts_with(current_path(), '/garson/masa')))
               ) ? ' active' : '' ?>"
