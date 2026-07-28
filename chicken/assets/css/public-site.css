@@ -693,6 +693,32 @@ body[data-public-layout][data-theme="vista"] .vs-footer-copy b { color: #ffb3c0;
 }
 
 
+/* Franchise page */
+body[data-public-layout][data-theme="vista"] .franchise-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  display: grid;
+  gap: 8px;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+body[data-public-layout][data-theme="vista"] .franchise-list.numbered {
+  padding-left: 1.35rem;
+}
+
+body[data-public-layout][data-theme="vista"] .franchise-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  body[data-public-layout][data-theme="vista"] .franchise-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Hide leftover docks / non-vista heroes only */
 body[data-public-layout][data-theme="vista"] .sg-hero,
 body[data-public-layout][data-theme="vista"] .bp-hero,

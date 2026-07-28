@@ -33,6 +33,12 @@ $groups = [
             ['href' => '/yonetici/personel/cikar', 'label' => 'Garson sil', 'icon' => 'staffremove', 'color' => '#ff7a7a'],
         ],
     ],
+    [
+        'title' => 'Franchise',
+        'items' => [
+            ['href' => '/yonetici/franchise', 'label' => 'Başvurular', 'icon' => 'orders', 'color' => '#4c8dff'],
+        ],
+    ],
 ];
 ?>
 <nav class="side-cats admin-side-nav" data-admin-nav>

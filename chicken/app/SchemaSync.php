@@ -93,6 +93,34 @@ final class SchemaSync
             );
         } catch (Throwable) {
         }
+
+        try {
+            self::ensureFranchiseApplications($pdo);
+        } catch (Throwable) {
+        }
+    }
+
+    private static function ensureFranchiseApplications(PDO $pdo): void
+    {
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS franchise_applications (
+              id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              full_name VARCHAR(120) NOT NULL,
+              phone VARCHAR(40) NOT NULL,
+              email VARCHAR(160) NOT NULL,
+              city VARCHAR(80) NOT NULL,
+              district VARCHAR(80) NULL,
+              budget_range VARCHAR(80) NULL,
+              experience VARCHAR(400) NULL,
+              message TEXT NULL,
+              status ENUM('new','reviewing','approved','rejected') NOT NULL DEFAULT 'new',
+              admin_note VARCHAR(500) NULL,
+              reviewed_at TIMESTAMP NULL DEFAULT NULL,
+              created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+              INDEX idx_franchise_status_created (status, created_at)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
     }
 
     private static function ensureCustomers(PDO $pdo): void
