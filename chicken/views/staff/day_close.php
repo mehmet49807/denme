@@ -132,6 +132,7 @@ $closed = !empty($summary['is_closed']);
         <thead>
           <tr>
             <th>Tarih</th>
+            <th>Tür</th>
             <th>Toplam</th>
             <th>Nakit / Kart</th>
             <th>Kapatan</th>
@@ -139,11 +140,13 @@ $closed = !empty($summary['is_closed']);
         </thead>
         <tbody>
           <?php foreach ($recent as $row): ?>
+            <?php $isAuto = !empty($row['is_auto']); ?>
             <tr>
               <td><a href="<?= e(url('/kasa/gun-sonu?date=' . urlencode((string) $row['business_date']))) ?>"><?= e((string) $row['business_date']) ?></a></td>
+              <td><?= $isAuto ? 'Otomatik' : 'Manuel' ?></td>
               <td><?= e(money((float) $row['gross_total'])) ?></td>
               <td><?= e(money((float) $row['cash_total'])) ?> / <?= e(money((float) $row['card_total'])) ?></td>
-              <td><?= e((string) ($row['closed_by_name'] ?? '—')) ?></td>
+              <td><?= e((string) ($row['closed_by_name'] ?? ($isAuto ? 'Sistem' : '—'))) ?></td>
             </tr>
           <?php endforeach; ?>
         </tbody>

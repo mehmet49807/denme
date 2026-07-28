@@ -51,9 +51,31 @@ if ($installed) {
     CategorySync::ensure();
     MenuItemSync::ensure();
     MenuImageSync::ensure();
+    // Gece 00:00 sonrası eksik gün sonlarını otomatik kapat (lazy + cron).
+    if (
+        $path === '/cron/gun-sonu'
+        || str_starts_with($path, '/kasa')
+        || str_starts_with($path, '/yonetici')
+    ) {
+        try {
+            FiscalService::ensureAutoDayCloses();
+        } catch (Throwable $e) {
+            error_log('ensureAutoDayCloses: ' . $e->getMessage());
+        }
+    }
 }
 
 $router = new Router();
+
+// Sunucu cron: her gece 00:05 civarı GET /cron/gun-sonu (auth yok, idempotent)
+$router->get('/cron/gun-sonu', static function (): void {
+    $closed = FiscalService::ensureAutoDayCloses();
+    json_response([
+        'ok' => true,
+        'message' => 'Gün sonu raporları güncellendi',
+        'closed_dates' => $closed,
+    ]);
+});
 
 $menuCatalog = static function (): array {
     $pdo = Database::pdo();
@@ -955,13 +977,31 @@ $router->post('/kasa/gun-sonu', static function (): void {
         $date = $today;
     }
     try {
-        FiscalService::closeDay($date, Auth::id(), (string) input('note'));
+        FiscalService::closeDay($date, Auth::id(), (string) input('note'), false);
         flash('success', 'Gün sonu kapatıldı: ' . $date);
         redirect('/kasa/gun-sonu?date=' . urlencode($date));
     } catch (Throwable $e) {
         flash('error', $e->getMessage());
         redirect('/kasa/gun-sonu?date=' . urlencode($role === 'cashier' ? $today : ($date !== '' ? $date : $today)));
     }
+});
+
+// Yönetici — Günü raporlar (otomatik + manuel gün sonu listesi)
+$router->get('/yonetici/gun-raporlari', static function (): void {
+    Auth::requireRole('admin');
+    $date = trim((string) ($_GET['date'] ?? ''));
+    $summary = null;
+    if ($date !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+        $summary = FiscalService::daySummary($date);
+    }
+    view('staff/admin_day_reports', [
+        'title' => 'Günü raporlar',
+        'user' => Auth::user(),
+        'reports' => FiscalService::recentDayCloses(90),
+        'date' => $date,
+        'summary' => $summary,
+        'company' => FiscalService::companyProfile(),
+    ]);
 });
 
 $router->get('/kasa/faturalar', static function (): void {

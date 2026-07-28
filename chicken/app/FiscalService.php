@@ -325,10 +325,13 @@ final class FiscalService
     }
 
     /**
-     * Gün sonu kapanışı — açık masa/sipariş varken engellenir.
+     * Gün sonu kapanışı.
+     * Manuel: açık masa/sipariş varken engellenir (bugün için).
+     * Otomatik / geçmiş gün: açık masa kontrolü atlanır (gece 00:00 kapanışı).
+     *
      * @return array day_closes row
      */
-    public static function closeDay(string $date, ?int $staffId, string $note = ''): array
+    public static function closeDay(string $date, ?int $staffId, string $note = '', bool $isAuto = false): array
     {
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
             throw new InvalidArgumentException('Geçersiz tarih.');
@@ -337,12 +340,20 @@ final class FiscalService
             throw new InvalidArgumentException('Bu gün zaten kapatılmış.');
         }
 
+        $today = date('Y-m-d');
+        $isPastDate = $date < $today;
         $summary = self::daySummary($date);
-        if ($summary['open_tables'] > 0 || $summary['open_orders'] > 0) {
+
+        // Bugünün manuel kapanışında açık masa/sipariş engeli; geçmiş gün / otomatik için değil.
+        if (!$isAuto && !$isPastDate && ($summary['open_tables'] > 0 || $summary['open_orders'] > 0)) {
             throw new InvalidArgumentException(
                 'Gün sonu için önce açık masaları/siparişleri kapatın. Açık masa: '
                 . $summary['open_tables'] . ', açık sipariş: ' . $summary['open_orders']
             );
+        }
+
+        if ($isAuto && trim($note) === '') {
+            $note = 'Otomatik gece 00:00 gün sonu';
         }
 
         $pdo = Database::pdo();
@@ -351,12 +362,12 @@ final class FiscalService
                 business_date, closed_by_staff_id,
                 paid_order_count, invoice_count,
                 cash_total, card_total, net_total, vat_total, gross_total,
-                vat_rate, note
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                vat_rate, is_auto, note
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $date,
-            $staffId,
+            $isAuto ? null : $staffId,
             $summary['paid_orders'],
             $summary['invoice_count'],
             $summary['cash_total'],
@@ -365,16 +376,48 @@ final class FiscalService
             $summary['vat_total'],
             $summary['gross_total'],
             $summary['vat_rate'],
+            $isAuto ? 1 : 0,
             trim($note) !== '' ? trim($note) : null,
         ]);
 
         return self::findDayClose($date) ?? [];
     }
 
-    /** @return list<array> */
-    public static function recentDayCloses(int $limit = 30): array
+    /**
+     * Gece 00:00 sonrası eksik gün sonlarını otomatik alır (son 14 gün).
+     * Shared hosting'de cron yoksa ilk kasa/yönetici isteğinde tetiklenir.
+     *
+     * @return list<string> kapatılan tarihler
+     */
+    public static function ensureAutoDayCloses(int $lookbackDays = 14): array
     {
-        $limit = max(1, min(100, $limit));
+        $lookbackDays = max(1, min(60, $lookbackDays));
+        $closed = [];
+        $today = date('Y-m-d');
+
+        for ($i = 1; $i <= $lookbackDays; $i++) {
+            $date = date('Y-m-d', strtotime("-{$i} day", strtotime($today . ' 12:00:00')));
+            if ($date >= $today) {
+                continue;
+            }
+            if (self::isDayClosed($date)) {
+                continue;
+            }
+            try {
+                self::closeDay($date, null, 'Otomatik gece 00:00 gün sonu', true);
+                $closed[] = $date;
+            } catch (Throwable $e) {
+                error_log('Auto day close failed for ' . $date . ': ' . $e->getMessage());
+            }
+        }
+
+        return $closed;
+    }
+
+    /** @return list<array> */
+    public static function recentDayCloses(int $limit = 60): array
+    {
+        $limit = max(1, min(200, $limit));
         return Database::pdo()->query(
             "SELECT d.*, s.name AS closed_by_name
              FROM day_closes d
