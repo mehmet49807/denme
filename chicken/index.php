@@ -10,6 +10,7 @@ require __DIR__ . '/app/DiscountService.php';
 require __DIR__ . '/app/SiteContent.php';
 require __DIR__ . '/app/BrochureService.php';
 require __DIR__ . '/app/OrderService.php';
+require __DIR__ . '/app/TableService.php';
 require __DIR__ . '/app/FranchiseService.php';
 require __DIR__ . '/app/CategorySync.php';
 require __DIR__ . '/app/SchemaSync.php';
@@ -476,6 +477,82 @@ $router->get('/siparisler', static function (): void {
         'user' => Auth::user(),
         'canManage' => Auth::role() === 'admin',
     ]);
+});
+
+$router->get('/masa/ekle', static function (): void {
+    Auth::requireRole('waiter', 'cashier', 'admin');
+    $role = Auth::role();
+    $back = match ($role) {
+        'cashier' => '/kasa',
+        'waiter' => '/siparisler',
+        default => '/yonetici/masalar',
+    };
+    $label = match ($role) {
+        'cashier' => 'Kasa',
+        'waiter' => 'Garson',
+        default => 'Yönetici',
+    };
+    view('staff/table_add', [
+        'title' => $label . ' · Yeni masa',
+        'user' => Auth::user(),
+        'staffOptions' => TableService::staffOptions(),
+        'backUrl' => url($back),
+        'formAction' => url('/masa/ekle'),
+        'roleLabel' => $label,
+    ]);
+});
+
+$router->post('/masa/ekle', static function (): void {
+    Auth::requireRole('waiter', 'cashier', 'admin');
+    $role = Auth::role();
+    $backForm = '/masa/ekle';
+    $successRedirect = match ($role) {
+        'cashier' => '/kasa',
+        'waiter' => '/siparisler',
+        default => '/yonetici/masalar',
+    };
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect($backForm);
+    }
+
+    $masaNo = trim((string) input('masa_no'));
+    $seats = (int) input('seats');
+    $openedByStaffId = (int) input('opened_by_staff_id');
+    $openedByName = trim((string) input('opened_by_name'));
+
+    if ($openedByStaffId > 0) {
+        $stmt = Database::pdo()->prepare(
+            'SELECT id, name FROM staff WHERE id = ? AND is_active = 1 LIMIT 1'
+        );
+        $stmt->execute([$openedByStaffId]);
+        $staff = $stmt->fetch();
+        if (!$staff) {
+            flash('error', 'Masa açan kişi bulunamadı.');
+            redirect($backForm);
+        }
+        $openedByName = (string) $staff['name'];
+    } else {
+        $openedByStaffId = Auth::id();
+        if ($openedByName === '') {
+            $openedByName = (string) (Auth::user()['name'] ?? '');
+        }
+    }
+
+    try {
+        $table = TableService::create($masaNo, $seats, $openedByStaffId, $openedByName);
+        flash('success', $table['label'] . ' eklendi · ' . $table['seats'] . ' kişi · Açan: ' . $openedByName);
+        if ($role === 'waiter') {
+            redirect('/garson/masa/' . $table['id']);
+        }
+        if ($role === 'cashier') {
+            redirect('/kasa/masa/' . $table['id']);
+        }
+        redirect($successRedirect);
+    } catch (Throwable $e) {
+        flash('error', $e->getMessage() !== '' ? $e->getMessage() : 'Masa eklenemedi.');
+        redirect($backForm);
+    }
 });
 
 $router->get('/garson/masa/{id}', static function (string $id) use ($menuCatalog): void {
@@ -971,36 +1048,48 @@ $router->get('/yonetici/masalar', static function (): void {
 
 $router->get('/yonetici/masalar/ekle', static function (): void {
     Auth::requireRole('admin');
-    view('staff/admin_table_add', [
+    view('staff/table_add', [
         'title' => 'Yönetici · Masa ekle',
         'user' => Auth::user(),
+        'staffOptions' => TableService::staffOptions(),
+        'backUrl' => url('/yonetici/masalar'),
+        'formAction' => url('/masa/ekle'),
+        'roleLabel' => 'Yönetici',
     ]);
 });
 
 $router->post('/yonetici/masalar/ekle', static function (): void {
+    // Eski form URL'si — ortak handler'a yönlendir
     Auth::requireRole('admin');
+    $_POST['_csrf'] = $_POST['_csrf'] ?? '';
+    // Reuse by internal redirect of POST body via shared endpoint logic
     if (!verify_csrf((string) input('_csrf'))) {
         flash('error', 'CSRF hatası');
-        redirect('/yonetici/masalar/ekle');
+        redirect('/masa/ekle');
     }
-    $code = strtoupper(trim((string) input('code')));
+    $masaNo = trim((string) (input('masa_no') ?: input('code')));
     $label = trim((string) input('label'));
-    $seats = max(1, min(50, (int) input('seats')));
-    if ($code === '' || $label === '' || !preg_match('/^[A-Z0-9_-]+$/', $code)) {
-        flash('error', 'Masa kodu veya adı geçersiz.');
-        redirect('/yonetici/masalar/ekle');
+    if ($masaNo === '' && $label !== '') {
+        $masaNo = $label;
+    }
+    $seats = (int) (input('seats') ?: 4);
+    $openedByStaffId = (int) input('opened_by_staff_id') ?: (int) Auth::id();
+    $openedByName = trim((string) (input('opened_by_name') ?: (Auth::user()['name'] ?? '')));
+    if ($openedByStaffId > 0) {
+        $stmt = Database::pdo()->prepare('SELECT name FROM staff WHERE id = ? LIMIT 1');
+        $stmt->execute([$openedByStaffId]);
+        $name = $stmt->fetchColumn();
+        if ($name) {
+            $openedByName = (string) $name;
+        }
     }
     try {
-        $token = bin2hex(random_bytes(16));
-        $stmt = Database::pdo()->prepare(
-            'INSERT INTO dining_tables (code, label, seats, is_active, qr_token) VALUES (?, ?, ?, 1, ?)'
-        );
-        $stmt->execute([$code, $label, $seats, $token]);
-        flash('success', 'Masa eklendi: ' . $label);
+        $table = TableService::create($masaNo, $seats, $openedByStaffId ?: null, $openedByName);
+        flash('success', $table['label'] . ' eklendi.');
         redirect('/yonetici/masalar');
     } catch (Throwable $e) {
-        flash('error', 'Masa eklenemedi (kod benzersiz olmalı).');
-        redirect('/yonetici/masalar/ekle');
+        flash('error', $e->getMessage() !== '' ? $e->getMessage() : 'Masa eklenemedi.');
+        redirect('/masa/ekle');
     }
 });
 

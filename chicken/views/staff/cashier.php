@@ -14,6 +14,7 @@ $paidSum = array_sum(array_map(
     <h1>Masalar</h1>
   </div>
   <div class="cta-row">
+    <a class="btn btn-primary btn-sm" href="<?= e(url('/masa/ekle')) ?>">Yeni masa</a>
     <a class="btn btn-accent btn-sm" href="<?= e(url('/online-siparisler')) ?>">
       Online siparişler
       <?php if (!empty($pendingOnlineCount)): ?>
@@ -63,6 +64,9 @@ $paidSum = array_sum(array_map(
         <span class="chip <?= $isOpen ? 'kitchen' : '' ?>"><?= $isOpen ? 'Açık' : 'Boş' ?></span>
       </div>
       <div class="table-tile-code muted small"><?= e($table['code']) ?> · <?= (int) $table['seats'] ?> kişi</div>
+      <?php if (!empty($table['opened_by_name'])): ?>
+        <div class="muted small">Açan: <?= e((string) $table['opened_by_name']) ?></div>
+      <?php endif; ?>
       <?php if ($isOpen): ?>
         <div class="table-tile-meta">
           <span><?= (int) $table['open_count'] ?> sipariş</span>

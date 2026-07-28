@@ -98,6 +98,28 @@ final class SchemaSync
             self::ensureFranchiseApplications($pdo);
         } catch (Throwable) {
         }
+
+        try {
+            self::ensureColumn(
+                $pdo,
+                'dining_tables',
+                'opened_by_name',
+                'ALTER TABLE dining_tables ADD COLUMN opened_by_name VARCHAR(120) NULL AFTER qr_token'
+            );
+            self::ensureColumn(
+                $pdo,
+                'dining_tables',
+                'opened_by_staff_id',
+                'ALTER TABLE dining_tables ADD COLUMN opened_by_staff_id INT UNSIGNED NULL AFTER opened_by_name'
+            );
+            self::ensureStaffDeleteSetNull(
+                $pdo,
+                'dining_tables',
+                'opened_by_staff_id',
+                'fk_tables_opened_by'
+            );
+        } catch (Throwable) {
+        }
     }
 
     private static function ensureFranchiseApplications(PDO $pdo): void

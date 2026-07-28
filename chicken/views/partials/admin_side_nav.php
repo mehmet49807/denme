@@ -4,7 +4,7 @@ $groups = [
         'title' => 'Masalar',
         'items' => [
             ['href' => '/yonetici/masalar', 'label' => 'Tüm masalar', 'icon' => 'tables', 'color' => '#ff6a1a'],
-            ['href' => '/yonetici/masalar/ekle', 'label' => 'Masa ekleme', 'icon' => 'add', 'color' => '#3d9a6a'],
+            ['href' => '/masa/ekle', 'label' => 'Masa ekleme', 'icon' => 'add', 'color' => '#3d9a6a'],
         ],
     ],
     [
