@@ -83,6 +83,20 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
         <p class="side-section-title">Restoran kontrol</p>
         <?php partial('partials/admin_side_nav'); ?>
       <?php else: ?>
+        <?php if (in_array($role, ['cashier', 'waiter'], true)): ?>
+          <nav class="side-cats" style="margin-bottom:10px">
+            <a
+              class="side-link<?= (
+                ($role === 'cashier' && str_starts_with(current_path(), '/kasa'))
+                || ($role === 'waiter' && (current_path() === '/siparisler' || str_starts_with(current_path(), '/garson/masa')))
+              ) ? ' active' : '' ?>"
+              href="<?= e(url($role === 'cashier' ? '/kasa' : '/siparisler')) ?>"
+            >
+              <?php partial('partials/menu_icon', ['icon' => 'tables', 'color' => '#ff6a1a']); ?>
+              <span>Tüm masalar</span>
+            </a>
+          </nav>
+        <?php endif; ?>
         <nav class="side-cats" data-side-cats>
           <button class="side-cat active" type="button" data-cat-tab="all">
             <?php partial('partials/menu_icon', ['icon' => 'all', 'color' => '#e2b457']); ?>
