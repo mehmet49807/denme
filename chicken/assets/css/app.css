@@ -242,9 +242,12 @@ button, input, select, textarea { font: inherit; }
   margin-bottom: 10px;
 }
 .auth-logo img {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: min(220px, 70vw);
+  height: auto;
+  max-height: 120px;
+  border-radius: 14px;
+  background: #000;
+  object-fit: contain;
   box-shadow: 0 10px 24px rgba(18, 16, 14, 0.16);
 }
 .auth-foot {
@@ -1338,10 +1341,14 @@ tr:hover td { background: rgba(154, 123, 47, 0.04); }
   padding: 28px 12px 36px;
 }
 .brochure-logo {
-  width: 64px;
-  height: 64px;
+  width: min(200px, 55vw);
+  height: auto;
+  max-height: 110px;
   margin: 0 auto 12px;
   border-radius: 14px;
+  background: #000;
+  object-fit: contain;
+  padding: 8px 12px;
   box-shadow: 0 12px 28px rgba(18, 16, 14, 0.16);
 }
 .brochure-hero h1 {
