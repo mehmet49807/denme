@@ -10,6 +10,7 @@ $welcomeCode = $welcomeCode ?? 'YENI10';
   <p class="eyebrow">Online sipariş</p>
   <h1 class="page-title">Siparişini oluştur</h1>
   <p class="muted">Üye olmadan sipariş verebilirsiniz. Ürünleri seçin, bilgilerinizi girin, sipariş kodunuzla takip edin.</p>
+  <p class="small muted" style="margin-top:6px">Fiyatlarımız KDV dahildir (%10 restoran yeme-içme hizmeti).</p>
   <?php if ($msg = flash('success')): ?>
     <div class="alert alert-ok" style="margin-top:14px"><?= e($msg) ?></div>
   <?php endif; ?>
