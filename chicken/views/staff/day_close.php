@@ -3,32 +3,42 @@
 /** @var array $recent */
 /** @var array $company */
 /** @var string $date */
+/** @var bool $canBrowseDates */
+/** @var bool $canManageFiscalSettings */
 $summary = $summary ?? [];
 $recent = $recent ?? [];
 $company = $company ?? [];
 $date = $date ?? date('Y-m-d');
+$canBrowseDates = (bool) ($canBrowseDates ?? false);
+$canManageFiscalSettings = (bool) ($canManageFiscalSettings ?? false);
 $closed = !empty($summary['is_closed']);
 ?>
 <div class="panel-head">
   <div>
-    <p class="eyebrow">Kasa · Mali işlemler</p>
-    <h1>Gün sonu</h1>
+    <p class="eyebrow"><?= $canBrowseDates ? 'Yönetici' : 'Kasa' ?> · Mali işlemler</p>
+    <h1>Gün sonu<?= $canBrowseDates ? '' : ' (bugün)' ?></h1>
   </div>
   <div class="cta-row">
     <a class="btn btn-ghost btn-sm" href="<?= e(url('/kasa/faturalar')) ?>">Faturalar</a>
-    <a class="btn btn-ghost btn-sm" href="<?= e(url('/kasa/fatura-ayarlar')) ?>">Firma / KDV</a>
+    <?php if ($canManageFiscalSettings): ?>
+      <a class="btn btn-ghost btn-sm" href="<?= e(url('/kasa/fatura-ayarlar')) ?>">Firma / KDV</a>
+    <?php endif; ?>
     <button class="btn btn-primary btn-sm no-print" type="button" onclick="window.print()">Yazdır</button>
   </div>
 </div>
 
-<section class="panel no-print" style="margin-bottom:16px;max-width:520px">
-  <form method="get" action="<?= e(url('/kasa/gun-sonu')) ?>" class="stack">
-    <label>İşlem tarihi
-      <input type="date" name="date" value="<?= e($date) ?>" required>
-    </label>
-    <button class="btn btn-dark btn-sm" type="submit">Özeti göster</button>
-  </form>
-</section>
+<?php if ($canBrowseDates): ?>
+  <section class="panel no-print" style="margin-bottom:16px;max-width:520px">
+    <form method="get" action="<?= e(url('/kasa/gun-sonu')) ?>" class="stack">
+      <label>İşlem tarihi
+        <input type="date" name="date" value="<?= e($date) ?>" required>
+      </label>
+      <button class="btn btn-dark btn-sm" type="submit">Özeti göster</button>
+    </form>
+  </section>
+<?php else: ?>
+  <p class="muted no-print" style="margin-top:0">Kasa yalnızca bugünün gün sonunu görür ve kapatabilir.</p>
+<?php endif; ?>
 
 <section class="panel day-close-report">
   <div class="meta-row" style="margin-bottom:12px">
@@ -114,9 +124,9 @@ $closed = !empty($summary['is_closed']);
   <?php endif; ?>
 </section>
 
-<?php if ($recent): ?>
+<?php if ($canBrowseDates && $recent): ?>
   <section class="panel no-print" style="margin-top:16px">
-    <h2 class="live-title">Son kapanışlar</h2>
+    <h2 class="live-title">Tüm kapanışlar</h2>
     <div class="table-wrap" style="margin-top:12px">
       <table>
         <thead>

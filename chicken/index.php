@@ -920,17 +920,25 @@ $router->post('/api/tables/{id}/close', static function (string $id): void {
 // Kasa / Yönetici — Fatura & Gün sonu (Türkiye satış belgesi + gün kapanışı)
 $router->get('/kasa/gun-sonu', static function (): void {
     Auth::requireRole('cashier', 'admin');
-    $date = trim((string) ($_GET['date'] ?? date('Y-m-d')));
+    $role = Auth::role();
+    $today = date('Y-m-d');
+    $date = trim((string) ($_GET['date'] ?? $today));
     if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
-        $date = date('Y-m-d');
+        $date = $today;
+    }
+    // Kasa yalnızca bugünün gün sonunu görür; yönetici tüm tarihler.
+    if ($role === 'cashier') {
+        $date = $today;
     }
     view('staff/day_close', [
         'title' => 'Gün sonu',
         'user' => Auth::user(),
         'date' => $date,
         'summary' => FiscalService::daySummary($date),
-        'recent' => FiscalService::recentDayCloses(20),
+        'recent' => $role === 'admin' ? FiscalService::recentDayCloses(30) : [],
         'company' => FiscalService::companyProfile(),
+        'canBrowseDates' => $role === 'admin',
+        'canManageFiscalSettings' => $role === 'admin',
     ]);
 });
 
@@ -940,35 +948,72 @@ $router->post('/kasa/gun-sonu', static function (): void {
         flash('error', 'CSRF hatası');
         redirect('/kasa/gun-sonu');
     }
+    $role = Auth::role();
+    $today = date('Y-m-d');
     $date = trim((string) input('date'));
+    if ($role === 'cashier') {
+        $date = $today;
+    }
     try {
         FiscalService::closeDay($date, Auth::id(), (string) input('note'));
         flash('success', 'Gün sonu kapatıldı: ' . $date);
         redirect('/kasa/gun-sonu?date=' . urlencode($date));
     } catch (Throwable $e) {
         flash('error', $e->getMessage());
-        redirect('/kasa/gun-sonu?date=' . urlencode($date !== '' ? $date : date('Y-m-d')));
+        redirect('/kasa/gun-sonu?date=' . urlencode($role === 'cashier' ? $today : ($date !== '' ? $date : $today)));
     }
 });
 
 $router->get('/kasa/faturalar', static function (): void {
     Auth::requireRole('cashier', 'admin');
-    $rows = Database::pdo()->query(
-        'SELECT i.*, o.order_code
-         FROM invoices i
-         JOIN orders o ON o.id = i.order_id
-         ORDER BY i.id DESC
-         LIMIT 100'
-    )->fetchAll();
+    $role = Auth::role();
+    $today = date('Y-m-d');
+    if ($role === 'cashier') {
+        $stmt = Database::pdo()->prepare(
+            'SELECT i.*, o.order_code
+             FROM invoices i
+             JOIN orders o ON o.id = i.order_id
+             WHERE i.invoice_date = ?
+             ORDER BY i.id DESC
+             LIMIT 100'
+        );
+        $stmt->execute([$today]);
+        $rows = $stmt->fetchAll();
+    } else {
+        $date = trim((string) ($_GET['date'] ?? ''));
+        if ($date !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            $stmt = Database::pdo()->prepare(
+                'SELECT i.*, o.order_code
+                 FROM invoices i
+                 JOIN orders o ON o.id = i.order_id
+                 WHERE i.invoice_date = ?
+                 ORDER BY i.id DESC
+                 LIMIT 200'
+            );
+            $stmt->execute([$date]);
+            $rows = $stmt->fetchAll();
+        } else {
+            $rows = Database::pdo()->query(
+                'SELECT i.*, o.order_code
+                 FROM invoices i
+                 JOIN orders o ON o.id = i.order_id
+                 ORDER BY i.id DESC
+                 LIMIT 200'
+            )->fetchAll();
+            $date = '';
+        }
+    }
     view('staff/invoices', [
         'title' => 'Satış faturaları',
         'user' => Auth::user(),
         'invoices' => $rows,
+        'canBrowseDates' => $role === 'admin',
+        'filterDate' => $role === 'admin' ? ($date ?? '') : $today,
     ]);
 });
 
 $router->get('/kasa/fatura-ayarlar', static function (): void {
-    Auth::requireRole('cashier', 'admin');
+    Auth::requireRole('admin');
     view('staff/fiscal_settings', [
         'title' => 'Firma / KDV ayarları',
         'user' => Auth::user(),
@@ -977,7 +1022,7 @@ $router->get('/kasa/fatura-ayarlar', static function (): void {
 });
 
 $router->post('/kasa/fatura-ayarlar', static function (): void {
-    Auth::requireRole('cashier', 'admin');
+    Auth::requireRole('admin');
     if (!verify_csrf((string) input('_csrf'))) {
         flash('error', 'CSRF hatası');
         redirect('/kasa/fatura-ayarlar');
@@ -1051,6 +1096,11 @@ $router->get('/kasa/fatura/{id}', static function (string $id): void {
         http_response_code(404);
         echo 'Fatura bulunamadı';
         return;
+    }
+    // Kasa yalnızca bugünün faturalarını açabilir.
+    if (Auth::role() === 'cashier' && (string) ($invoice['invoice_date'] ?? '') !== date('Y-m-d')) {
+        flash('error', 'Kasa yalnızca bugünün faturalarını görüntüleyebilir.');
+        redirect('/kasa/faturalar');
     }
     $lines = json_decode((string) ($invoice['lines_json'] ?? '[]'), true);
     view('staff/invoice', [
