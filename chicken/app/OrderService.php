@@ -667,11 +667,15 @@ final class OrderService
             if (!$menu) {
                 throw new InvalidArgumentException('Menü ürünü bulunamadı veya satışta değil.');
             }
+            $vatRate = class_exists('FiscalService')
+                ? FiscalService::normalizeVatRate($menu['vat_rate'] ?? FiscalService::DEFAULT_VAT_RATE)
+                : 10.0;
             $normalized[] = [
                 'menu_item_id' => (int) $menu['id'],
                 'item_name' => (string) $menu['name'],
                 'station' => (string) $menu['station'],
                 'unit_price' => (float) $menu['price'],
+                'vat_rate' => $vatRate,
                 'quantity' => $qty,
                 'note' => $note !== '' ? $note : null,
             ];
@@ -686,8 +690,8 @@ final class OrderService
     {
         $itemStmt = $pdo->prepare(
             'INSERT INTO order_items
-            (order_id, menu_item_id, item_name, station, unit_price, quantity, note, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+            (order_id, menu_item_id, item_name, station, unit_price, vat_rate, quantity, note, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
         );
         foreach ($normalized as $item) {
             $itemStmt->execute([
@@ -696,6 +700,7 @@ final class OrderService
                 $item['item_name'],
                 $item['station'],
                 $item['unit_price'],
+                $item['vat_rate'] ?? 10.0,
                 $item['quantity'],
                 $item['note'],
                 'queued',

@@ -70,15 +70,22 @@ if ($lines === [] && !empty($invoice['lines_json'])) {
         <tr>
           <th>Ürün / Hizmet</th>
           <th>Adet</th>
+          <th>KDV</th>
           <th>Birim (KDV dahil)</th>
           <th>Tutar</th>
         </tr>
       </thead>
       <tbody>
-        <?php foreach ($lines as $line): ?>
+        <?php
+          $vatByRate = [];
+          foreach ($lines as $line):
+            $lineRate = (float) ($line['vat_rate'] ?? $invoice['vat_rate'] ?? 10);
+            $vatByRate[(string) $lineRate] = ($vatByRate[(string) $lineRate] ?? 0) + (float) ($line['vat'] ?? 0);
+        ?>
           <tr>
             <td><?= e((string) ($line['name'] ?? '')) ?></td>
             <td><?= (int) ($line['qty'] ?? 0) ?></td>
+            <td><?= e(format_vat_rate($lineRate)) ?></td>
             <td><?= e(money((float) ($line['unit_price'] ?? 0))) ?></td>
             <td><?= e(money((float) ($line['gross'] ?? 0))) ?></td>
           </tr>
@@ -89,7 +96,14 @@ if ($lines === [] && !empty($invoice['lines_json'])) {
 
   <section class="invoice-totals">
     <div class="meta-row"><span>Matrah (KDV hariç)</span><strong><?= e(money((float) $invoice['net_total'])) ?></strong></div>
-    <div class="meta-row"><span>KDV (%<?= e(rtrim(rtrim(number_format((float) $invoice['vat_rate'], 2, ',', ''), '0'), ',')) ?>)</span><strong><?= e(money((float) $invoice['vat_total'])) ?></strong></div>
+    <?php if (count($vatByRate) > 1): ?>
+      <?php ksort($vatByRate, SORT_NUMERIC); ?>
+      <?php foreach ($vatByRate as $rateKey => $vatAmount): ?>
+        <div class="meta-row"><span>KDV (<?= e(format_vat_rate((float) $rateKey)) ?>)</span><strong><?= e(money((float) $vatAmount)) ?></strong></div>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <div class="meta-row"><span>KDV (<?= e(format_vat_rate($invoice['vat_rate'] ?? 10)) ?>)</span><strong><?= e(money((float) $invoice['vat_total'])) ?></strong></div>
+    <?php endif; ?>
     <div class="meta-row invoice-grand"><span>Genel toplam</span><strong><?= e(money((float) $invoice['gross_total'])) ?></strong></div>
     <div class="meta-row"><span>Ödeme</span><strong><?= e(payment_method_label($invoice['payment_method'] ?? null)) ?></strong></div>
   </section>

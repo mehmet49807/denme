@@ -114,6 +114,13 @@ function money(float|string $amount): string
     return number_format((float) $amount, 2, ',', '.') . ' ₺';
 }
 
+/** Türkiye KDV oranı gösterimi: %10 */
+function format_vat_rate(float|string|null $rate): string
+{
+    $value = (float) str_replace(',', '.', (string) ($rate ?? 10));
+    return '%' . rtrim(rtrim(number_format($value, 2, ',', ''), '0'), ',');
+}
+
 function csrf_token(): string
 {
     if (empty($_SESSION['_csrf'])) {

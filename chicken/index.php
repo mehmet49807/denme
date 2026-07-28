@@ -1456,6 +1456,7 @@ $router->post('/yonetici/urunler/ekle', static function (): void {
     $description = trim((string) input('description'));
     $categoryId = (int) input('category_id');
     $price = (float) input('price');
+    $vatRate = FiscalService::normalizeVatRate(input('vat_rate'));
     $station = (string) input('station');
     $sort = max(0, (int) input('sort_order'));
     $available = input('is_available') ? 1 : 0;
@@ -1468,13 +1469,14 @@ $router->post('/yonetici/urunler/ekle', static function (): void {
         $imageUrl = MenuImageSync::catalog()[$name];
     }
     Database::pdo()->prepare(
-        'INSERT INTO menu_items (category_id, name, description, price, station, is_available, image_url, sort_order)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        'INSERT INTO menu_items (category_id, name, description, price, vat_rate, station, is_available, image_url, sort_order)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
     )->execute([
         $categoryId,
         $name,
         $description !== '' ? $description : null,
         $price,
+        $vatRate,
         $station,
         $available,
         $imageUrl !== '' ? $imageUrl : null,
@@ -1527,6 +1529,7 @@ $router->post('/yonetici/urunler/{id}', static function (string $id): void {
     $description = trim((string) input('description'));
     $categoryId = (int) input('category_id');
     $price = (float) input('price');
+    $vatRate = FiscalService::normalizeVatRate(input('vat_rate'));
     $station = (string) input('station');
     $sort = max(0, (int) input('sort_order'));
     $available = input('is_available') ? 1 : 0;
@@ -1540,13 +1543,14 @@ $router->post('/yonetici/urunler/{id}', static function (string $id): void {
     }
     Database::pdo()->prepare(
         'UPDATE menu_items
-         SET category_id = ?, name = ?, description = ?, price = ?, station = ?, is_available = ?, image_url = ?, sort_order = ?
+         SET category_id = ?, name = ?, description = ?, price = ?, vat_rate = ?, station = ?, is_available = ?, image_url = ?, sort_order = ?
          WHERE id = ?'
     )->execute([
         $categoryId,
         $name,
         $description !== '' ? $description : null,
         $price,
+        $vatRate,
         $station,
         $available,
         $imageUrl !== '' ? $imageUrl : null,

@@ -8,7 +8,40 @@ declare(strict_types=1);
  */
 final class FiscalService
 {
-    public const DEFAULT_VAT_RATE = 10.0; // Restoran hizmeti yaygın KDV
+    public const DEFAULT_VAT_RATE = 10.0; // Restoran yeme-içme hizmeti (TR II sayılı liste)
+
+    /** Türkiye’de yaygın KDV oranları: %1 temel gıda, %10 indirimli, %20 genel/alkollü */
+    public const ALLOWED_VAT_RATES = [1.0, 10.0, 20.0];
+
+    /** @return list<float> */
+    public static function allowedVatRates(): array
+    {
+        return self::ALLOWED_VAT_RATES;
+    }
+
+    public static function normalizeVatRate(float|string|null $rate): float
+    {
+        $value = (float) str_replace(',', '.', (string) ($rate ?? self::DEFAULT_VAT_RATE));
+        foreach (self::ALLOWED_VAT_RATES as $allowed) {
+            if (abs($value - $allowed) < 0.001) {
+                return $allowed;
+            }
+        }
+        if ($value > 0 && $value <= 20) {
+            // En yakın yasal orana yuvarla
+            $best = self::DEFAULT_VAT_RATE;
+            $bestDiff = PHP_FLOAT_MAX;
+            foreach (self::ALLOWED_VAT_RATES as $allowed) {
+                $diff = abs($value - $allowed);
+                if ($diff < $bestDiff) {
+                    $bestDiff = $diff;
+                    $best = $allowed;
+                }
+            }
+            return $best;
+        }
+        return self::DEFAULT_VAT_RATE;
+    }
 
     /** @return array<string, string> */
     public static function companyProfile(): array
@@ -35,8 +68,7 @@ final class FiscalService
             'fiscal_city' => trim((string) ($data['city'] ?? '')),
             'fiscal_phone' => trim((string) ($data['phone'] ?? '')),
         ];
-        $vat = (float) str_replace(',', '.', (string) ($data['vat_rate'] ?? self::DEFAULT_VAT_RATE));
-        $vat = max(0, min(20, $vat));
+        $vat = self::normalizeVatRate($data['vat_rate'] ?? self::DEFAULT_VAT_RATE);
         $map['fiscal_vat_rate'] = rtrim(rtrim(number_format($vat, 2, '.', ''), '0'), '.');
 
         if ($map['fiscal_company_title'] === '') {
@@ -54,11 +86,7 @@ final class FiscalService
     public static function vatRate(): float
     {
         $raw = BrochureService::getSetting('fiscal_vat_rate', (string) self::DEFAULT_VAT_RATE);
-        $rate = (float) str_replace(',', '.', (string) $raw);
-        if ($rate < 0 || $rate > 20) {
-            return self::DEFAULT_VAT_RATE;
-        }
-        return $rate;
+        return self::normalizeVatRate($raw);
     }
 
     /**
@@ -67,7 +95,7 @@ final class FiscalService
      */
     public static function splitVat(float $grossInclusive, ?float $rate = null): array
     {
-        $rate = $rate ?? self::vatRate();
+        $rate = self::normalizeVatRate($rate ?? self::vatRate());
         $gross = round(max(0, $grossInclusive), 2);
         if ($rate <= 0) {
             return ['gross' => $gross, 'net' => $gross, 'vat' => 0.0, 'rate' => 0.0];
@@ -125,29 +153,51 @@ final class FiscalService
         }
 
         $company = self::companyProfile();
-        $rate = self::vatRate();
-        $gross = (float) $order['total'];
-        $split = self::splitVat($gross, $rate);
+        $orderGross = round((float) $order['total'], 2);
 
         $lines = [];
+        $itemsGross = 0.0;
+        $itemsNet = 0.0;
+        $itemsVat = 0.0;
+        $rateGross = [];
         foreach ($order['items'] as $item) {
             if (($item['status'] ?? '') === 'cancelled') {
                 continue;
             }
+            $lineRate = self::normalizeVatRate($item['vat_rate'] ?? self::vatRate());
             $lineGross = round((float) $item['unit_price'] * (int) $item['quantity'], 2);
-            $lineSplit = self::splitVat($lineGross, $rate);
+            $lineSplit = self::splitVat($lineGross, $lineRate);
             $lines[] = [
                 'name' => (string) $item['item_name'],
                 'qty' => (int) $item['quantity'],
                 'unit_price' => (float) $item['unit_price'],
+                'vat_rate' => $lineRate,
                 'gross' => $lineGross,
                 'net' => $lineSplit['net'],
                 'vat' => $lineSplit['vat'],
             ];
+            $itemsGross += $lineGross;
+            $itemsNet += $lineSplit['net'];
+            $itemsVat += $lineSplit['vat'];
+            $key = (string) $lineRate;
+            $rateGross[$key] = ($rateGross[$key] ?? 0) + $lineGross;
         }
         if ($lines === []) {
             throw new InvalidArgumentException('Faturada kalem yok.');
         }
+
+        // İndirim varsa satır matrah/KDV oranını sipariş toplamına oranla ölçekle
+        $scale = $itemsGross > 0 ? ($orderGross / $itemsGross) : 1.0;
+        $net = round($itemsNet * $scale, 2);
+        $vat = round($orderGross - $net, 2);
+        if ($vat < 0) {
+            $vat = 0.0;
+            $net = $orderGross;
+        }
+        // Fatura üst bilgisinde baskın (ciroya göre) KDV oranı
+        arsort($rateGross);
+        $rate = self::normalizeVatRate(array_key_first($rateGross) ?? self::vatRate());
+        $split = ['gross' => $orderGross, 'net' => $net, 'vat' => $vat, 'rate' => $rate];
 
         $buyerName = trim((string) ($buyer['name'] ?? ($order['customer_name'] ?? 'Nihai Tüketici')));
         if ($buyerName === '') {
@@ -296,7 +346,41 @@ final class FiscalService
                 $cash += $total;
             }
         }
-        $split = self::splitVat($gross);
+
+        // Satır bazlı KDV (ürün oranları); indirim için sipariş toplamına ölçekle
+        $lineStmt = $pdo->prepare(
+            "SELECT oi.vat_rate, SUM(oi.unit_price * oi.quantity) AS line_gross
+             FROM order_items oi
+             JOIN orders o ON o.id = oi.order_id
+             WHERE o.status = 'paid'
+               AND oi.status != 'cancelled'
+               AND DATE(COALESCE(o.paid_at, o.updated_at, o.created_at)) = ?
+             GROUP BY oi.vat_rate"
+        );
+        $lineStmt->execute([$date]);
+        $lineGroups = $lineStmt->fetchAll();
+        $itemsGross = 0.0;
+        $itemsNet = 0.0;
+        $rateGross = [];
+        foreach ($lineGroups as $group) {
+            $rate = self::normalizeVatRate($group['vat_rate'] ?? self::vatRate());
+            $lineGross = (float) ($group['line_gross'] ?? 0);
+            $itemsGross += $lineGross;
+            $parts = self::splitVat($lineGross, $rate);
+            $itemsNet += $parts['net'];
+            $key = (string) $rate;
+            $rateGross[$key] = ($rateGross[$key] ?? 0) + $lineGross;
+        }
+        if ($itemsGross > 0 && $gross > 0) {
+            $scale = $gross / $itemsGross;
+            $net = round($itemsNet * $scale, 2);
+            $vat = round($gross - $net, 2);
+            arsort($rateGross);
+            $primaryRate = self::normalizeVatRate(array_key_first($rateGross) ?? self::vatRate());
+            $split = ['gross' => round($gross, 2), 'net' => $net, 'vat' => max(0, $vat), 'rate' => $primaryRate];
+        } else {
+            $split = self::splitVat($gross);
+        }
 
         $invStmt = $pdo->prepare(
             'SELECT COUNT(*) AS cnt, COALESCE(SUM(gross_total),0) AS gross_sum

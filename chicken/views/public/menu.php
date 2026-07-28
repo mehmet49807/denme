@@ -2,6 +2,7 @@
   <p class="eyebrow">Dijital menü</p>
   <h1 class="page-title">Menü<?= !empty($table) ? ' · ' . e($table['label']) : '' ?></h1>
   <p class="muted">QR kod ile açılan menü. Beğendiğiniz ürünleri online siparişe taşıyabilirsiniz.</p>
+  <p class="small muted" style="margin-top:6px">Fiyatlarımız KDV dahildir. Restoran yeme-içme hizmeti %10 KDV’ye tabidir.</p>
 
   <div class="tabs" style="margin-top:22px">
     <button class="tab active" type="button" data-cat-tab="all">Tümü</button>

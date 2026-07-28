@@ -543,6 +543,20 @@ button, input, select, textarea { font: inherit; }
   align-items: center;
   gap: 8px;
 }
+.price-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  line-height: 1.15;
+}
+.price-vat {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted, #6b645c);
+  white-space: nowrap;
+}
 .price {
   color: var(--ember);
   font-weight: 700;

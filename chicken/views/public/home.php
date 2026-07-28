@@ -35,7 +35,7 @@
         <div class="vs-card-body">
           <h3><?= e((string) $item['name']) ?></h3>
           <div class="vs-card-row">
-            <span><?= e(money((float) $item['price'])) ?></span>
+            <span><?= e(money((float) $item['price'])) ?> <small class="muted">KDV dahil</small></span>
             <button
               class="vs-cta vs-cta-sm"
               type="button"

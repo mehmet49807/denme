@@ -56,6 +56,20 @@ final class SchemaSync
                 'image_url',
                 'ALTER TABLE menu_items ADD COLUMN image_url VARCHAR(255) NULL AFTER is_available'
             );
+            self::ensureColumn(
+                $pdo,
+                'menu_items',
+                'vat_rate',
+                'ALTER TABLE menu_items ADD COLUMN vat_rate DECIMAL(5,2) NOT NULL DEFAULT 10.00 AFTER price'
+            );
+            // Restoran yeme-içme hizmeti: varsayılan KDV %10 (TR)
+            $pdo->exec('UPDATE menu_items SET vat_rate = 10.00 WHERE vat_rate <= 0 OR vat_rate IS NULL');
+            self::ensureColumn(
+                $pdo,
+                'order_items',
+                'vat_rate',
+                'ALTER TABLE order_items ADD COLUMN vat_rate DECIMAL(5,2) NOT NULL DEFAULT 10.00 AFTER unit_price'
+            );
         } catch (Throwable) {
         }
 

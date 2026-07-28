@@ -29,7 +29,10 @@ $imageSrc = $image !== '' ? asset_url($image) : '';
   <div class="menu-item-body">
     <div class="meta-row">
       <span class="chip <?= e((string) $item['station']) ?>"><?= e(station_label((string) $item['station'])) ?></span>
-      <span class="price"><?= e(money((float) $item['price'])) ?></span>
+      <span class="price-wrap">
+        <span class="price"><?= e(money((float) $item['price'])) ?></span>
+        <span class="price-vat">KDV dahil<?= isset($item['vat_rate']) ? ' · ' . e(format_vat_rate($item['vat_rate'])) : '' ?></span>
+      </span>
     </div>
     <h3><?= e((string) $item['name']) ?></h3>
     <?php if ($showDescription): ?>
