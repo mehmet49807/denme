@@ -673,7 +673,10 @@ body[data-public-layout][data-theme="vista"] .vs-footer-copy b { color: #ffb3c0;
     overflow-x: auto;
     gap: 8px 16px;
   }
-  body[data-public-layout][data-theme="vista"] .vs-brand span { display: none; }
+  body[data-public-layout][data-theme="vista"] .vs-brand span {
+    display: inline;
+    font-size: 0.95rem;
+  }
   body[data-public-layout][data-theme="vista"] .vs-cards { grid-template-columns: 1fr 1fr; gap: 10px; }
 }
 
