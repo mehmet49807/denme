@@ -62,10 +62,12 @@ body[data-public-layout][data-theme="vista"] .vs-app {
   flex-direction: column;
 }
 
-/* ---------- Top bar (overlays hero on home) ---------- */
+/* ---------- Top bar ---------- */
 body[data-public-layout][data-theme="vista"] .vs-top {
-  position: sticky;
+  position: absolute;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 40;
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -73,10 +75,17 @@ body[data-public-layout][data-theme="vista"] .vs-top {
   align-items: center;
   max-width: none;
   padding: 14px 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.55) 70%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 0;
+  color: var(--vs-ink);
+}
+
+body[data-public-layout][data-theme="vista"]:not(:has(.vs-hero)) .vs-top {
+  position: sticky;
   background: rgba(248, 250, 252, 0.96);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--vs-line);
-  color: var(--vs-ink);
 }
 
 body[data-public-layout][data-theme="vista"] .vs-brand {
@@ -234,7 +243,102 @@ body[data-public-layout][data-theme="vista"] [data-cart-badge][hidden] {
   display: none !important;
 }
 
-/* Hero removed by request */
+/* ---------- Full-screen restaurant hero (light) ---------- */
+body[data-public-layout][data-theme="vista"] .vs-hero {
+  position: relative;
+  min-height: 100svh;
+  min-height: 100vh;
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--vs-ink);
+}
+
+body[data-public-layout][data-theme="vista"] .vs-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    url('../img/hero-restaurant.jpg') center / cover no-repeat;
+  transform: scale(1.02);
+  animation: vs-drift 24s ease-in-out infinite alternate;
+}
+
+body[data-public-layout][data-theme="vista"] .vs-hero-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.18) 38%, rgba(248, 250, 252, 0.72) 78%, rgba(248, 250, 252, 0.94) 100%),
+    linear-gradient(90deg, rgba(248, 250, 252, 0.55) 0%, rgba(248, 250, 252, 0.12) 55%, rgba(248, 250, 252, 0.28) 100%);
+}
+
+body[data-public-layout][data-theme="vista"] .vs-hero-copy {
+  position: relative;
+  z-index: 2;
+  max-width: var(--max);
+  width: 100%;
+  margin: 0 auto;
+  padding: 120px 18px 56px;
+  display: grid;
+  justify-items: start;
+  gap: 0;
+}
+
+body[data-public-layout][data-theme="vista"] .vs-hero-logo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #fff;
+  padding: 5px;
+  margin-bottom: 16px;
+  box-shadow: 0 16px 36px rgba(15, 39, 68, 0.14);
+  animation: vs-rise 0.7s ease both;
+}
+
+body[data-public-layout][data-theme="vista"] .vs-hero .vs-tag {
+  animation: vs-rise 0.8s ease both;
+}
+
+body[data-public-layout][data-theme="vista"] .vs-hero h1 {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.8rem, 10vw, 5rem);
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+  color: var(--vs-ink);
+  max-width: 10ch;
+  animation: vs-rise 0.9s ease both;
+}
+
+body[data-public-layout][data-theme="vista"] .vs-hero .vs-sub {
+  margin: 0 0 24px;
+  max-width: 30ch;
+  font-size: 1.08rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(15, 39, 68, 0.78);
+  animation: vs-rise 1s ease both 0.05s;
+}
+
+body[data-public-layout][data-theme="vista"] .vs-hero .vs-cta {
+  animation: vs-rise 1.05s ease both 0.08s;
+  min-width: 176px;
+}
+
+@keyframes vs-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes vs-drift {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to { transform: scale(1.07) translate3d(-1%, -0.8%, 0); }
+}
 
 /* ---------- Sections ---------- */
 body[data-public-layout][data-theme="vista"] .vs-section,
@@ -574,13 +678,15 @@ body[data-public-layout][data-theme="vista"] .vs-footer-copy b { color: #ffb3c0;
 }
 
 
-/* Neutralize legacy .hero styles if present in markup/cache */
-body[data-public-layout][data-theme="vista"] .hero,
-body[data-public-layout][data-theme="vista"] .vs-hero,
+/* Hide leftover docks / non-vista heroes only */
 body[data-public-layout][data-theme="vista"] .sg-hero,
-body[data-public-layout][data-theme="vista"] .bp-hero {
-  display: none !important;
-}
+body[data-public-layout][data-theme="vista"] .bp-hero,
 body[data-public-layout][data-theme="vista"] .vs-dock {
   display: none !important;
+}
+
+@media (max-width: 860px) {
+  body[data-public-layout][data-theme="vista"] .vs-hero-copy {
+    padding: 108px 16px 48px;
+  }
 }

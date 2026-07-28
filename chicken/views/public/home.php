@@ -1,3 +1,15 @@
+<section class="vs-hero">
+  <div class="vs-hero-media" role="img" aria-label="Crisp &amp; Co. restoran salonu"></div>
+  <div class="vs-hero-shade" aria-hidden="true"></div>
+  <div class="vs-hero-copy">
+    <img class="vs-hero-logo" src="<?= e(logo_url()) ?>" alt="" width="96" height="96">
+    <p class="vs-tag">Lezzetin doğal adresi</p>
+    <h1>Crisp &amp; Co.</h1>
+    <p class="vs-sub">Modern ızgara restoranı — menüden seçin, üye olmadan sipariş verin.</p>
+    <a class="vs-cta" href="<?= e(url('/siparis')) ?>">Online sipariş</a>
+  </div>
+</section>
+
 <section class="vs-section vs-home-start" id="menu">
   <div class="vs-section-head">
     <div>
@@ -38,7 +50,7 @@
     <?php endforeach; ?>
   </div>
   <div class="vs-home-actions">
-    <a class="vs-cta" href="<?= e(url('/siparis')) ?>">Online sipariş</a>
+    <a class="vs-cta" href="<?= e(url('/siparis')) ?>">Sepete git</a>
     <p class="vs-note">Yeni üyelere <b>YENI10</b> ile %10 indirim</p>
   </div>
 </section>
