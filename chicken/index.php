@@ -11,6 +11,7 @@ require __DIR__ . '/app/SiteContent.php';
 require __DIR__ . '/app/BrochureService.php';
 require __DIR__ . '/app/OrderService.php';
 require __DIR__ . '/app/TableService.php';
+require __DIR__ . '/app/FiscalService.php';
 require __DIR__ . '/app/FranchiseService.php';
 require __DIR__ . '/app/CategorySync.php';
 require __DIR__ . '/app/SchemaSync.php';
@@ -914,6 +915,150 @@ $router->post('/api/tables/{id}/close', static function (string $id): void {
     } catch (Throwable $e) {
         json_response(['ok' => false, 'error' => $e->getMessage()], 422);
     }
+});
+
+// Kasa / Yönetici — Fatura & Gün sonu (Türkiye satış belgesi + gün kapanışı)
+$router->get('/kasa/gun-sonu', static function (): void {
+    Auth::requireRole('cashier', 'admin');
+    $date = trim((string) ($_GET['date'] ?? date('Y-m-d')));
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+        $date = date('Y-m-d');
+    }
+    view('staff/day_close', [
+        'title' => 'Gün sonu',
+        'user' => Auth::user(),
+        'date' => $date,
+        'summary' => FiscalService::daySummary($date),
+        'recent' => FiscalService::recentDayCloses(20),
+        'company' => FiscalService::companyProfile(),
+    ]);
+});
+
+$router->post('/kasa/gun-sonu', static function (): void {
+    Auth::requireRole('cashier', 'admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/kasa/gun-sonu');
+    }
+    $date = trim((string) input('date'));
+    try {
+        FiscalService::closeDay($date, Auth::id(), (string) input('note'));
+        flash('success', 'Gün sonu kapatıldı: ' . $date);
+        redirect('/kasa/gun-sonu?date=' . urlencode($date));
+    } catch (Throwable $e) {
+        flash('error', $e->getMessage());
+        redirect('/kasa/gun-sonu?date=' . urlencode($date !== '' ? $date : date('Y-m-d')));
+    }
+});
+
+$router->get('/kasa/faturalar', static function (): void {
+    Auth::requireRole('cashier', 'admin');
+    $rows = Database::pdo()->query(
+        'SELECT i.*, o.order_code
+         FROM invoices i
+         JOIN orders o ON o.id = i.order_id
+         ORDER BY i.id DESC
+         LIMIT 100'
+    )->fetchAll();
+    view('staff/invoices', [
+        'title' => 'Satış faturaları',
+        'user' => Auth::user(),
+        'invoices' => $rows,
+    ]);
+});
+
+$router->get('/kasa/fatura-ayarlar', static function (): void {
+    Auth::requireRole('cashier', 'admin');
+    view('staff/fiscal_settings', [
+        'title' => 'Firma / KDV ayarları',
+        'user' => Auth::user(),
+        'company' => FiscalService::companyProfile(),
+    ]);
+});
+
+$router->post('/kasa/fatura-ayarlar', static function (): void {
+    Auth::requireRole('cashier', 'admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/kasa/fatura-ayarlar');
+    }
+    try {
+        FiscalService::saveCompanyProfile([
+            'title' => (string) input('title'),
+            'vkn' => (string) input('vkn'),
+            'tax_office' => (string) input('tax_office'),
+            'address' => (string) input('address'),
+            'city' => (string) input('city'),
+            'phone' => (string) input('phone'),
+            'vat_rate' => (string) input('vat_rate'),
+        ]);
+        flash('success', 'Firma / KDV bilgileri kaydedildi.');
+    } catch (Throwable $e) {
+        flash('error', $e->getMessage());
+    }
+    redirect('/kasa/fatura-ayarlar');
+});
+
+$router->get('/kasa/fatura/siparis/{id}', static function (string $id): void {
+    Auth::requireRole('cashier', 'admin');
+    $order = OrderService::findById((int) $id);
+    if (!$order) {
+        http_response_code(404);
+        echo 'Sipariş bulunamadı';
+        return;
+    }
+    if (($order['status'] ?? '') !== 'paid') {
+        flash('error', 'Fatura için sipariş önce ödenmelidir.');
+        redirect('/kasa');
+    }
+    $invoice = FiscalService::findInvoiceByOrder((int) $id);
+    if ($invoice) {
+        redirect('/kasa/fatura/' . (int) $invoice['id']);
+    }
+    view('staff/invoice_issue', [
+        'title' => 'Fatura kes',
+        'user' => Auth::user(),
+        'order' => $order,
+        'invoice' => null,
+    ]);
+});
+
+$router->post('/kasa/fatura/siparis/{id}', static function (string $id): void {
+    Auth::requireRole('cashier', 'admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/kasa/fatura/siparis/' . (int) $id);
+    }
+    try {
+        $invoice = FiscalService::issueForOrder((int) $id, Auth::id(), [
+            'name' => (string) input('buyer_name'),
+            'tax_id' => (string) input('buyer_tax_id'),
+            'tax_office' => (string) input('buyer_tax_office'),
+            'address' => (string) input('buyer_address'),
+        ]);
+        flash('success', 'Fatura kesildi: ' . $invoice['invoice_no']);
+        redirect('/kasa/fatura/' . (int) $invoice['id']);
+    } catch (Throwable $e) {
+        flash('error', $e->getMessage());
+        redirect('/kasa/fatura/siparis/' . (int) $id);
+    }
+});
+
+$router->get('/kasa/fatura/{id}', static function (string $id): void {
+    Auth::requireRole('cashier', 'admin');
+    $invoice = FiscalService::findInvoice((int) $id);
+    if (!$invoice) {
+        http_response_code(404);
+        echo 'Fatura bulunamadı';
+        return;
+    }
+    $lines = json_decode((string) ($invoice['lines_json'] ?? '[]'), true);
+    view('staff/invoice', [
+        'title' => 'Fatura ' . $invoice['invoice_no'],
+        'user' => Auth::user(),
+        'invoice' => $invoice,
+        'lines' => is_array($lines) ? $lines : [],
+    ]);
 });
 
 $router->post('/api/orders/{id}/note', static function (string $id): void {

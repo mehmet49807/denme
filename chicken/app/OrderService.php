@@ -306,6 +306,9 @@ final class OrderService
         if ($order['status'] === 'paid') {
             return;
         }
+        if (class_exists('FiscalService') && FiscalService::isDayClosed(date('Y-m-d'))) {
+            throw new InvalidArgumentException('Bugünün gün sonu kapanmıştır; tahsilat yapılamaz.');
+        }
 
         $pdo = Database::pdo();
         $pdo->prepare(

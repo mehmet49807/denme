@@ -105,13 +105,23 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
         <?php if (in_array($role, ['cashier', 'waiter'], true)): ?>
           <a
             class="side-link<?= (
-              ($role === 'cashier' && str_starts_with(current_path(), '/kasa'))
+              ($role === 'cashier' && str_starts_with(current_path(), '/kasa') && !str_starts_with(current_path(), '/kasa/gun-sonu') && !str_starts_with(current_path(), '/kasa/fatura'))
               || ($role === 'waiter' && (current_path() === '/siparisler' || str_starts_with(current_path(), '/garson/masa')))
             ) ? ' active' : '' ?>"
             href="<?= e(url($role === 'cashier' ? '/kasa' : '/siparisler')) ?>"
           >
             <?php partial('partials/menu_icon', ['icon' => 'tables', 'color' => '#ff6a1a']); ?>
             <span>Tüm masalar</span>
+          </a>
+        <?php endif; ?>
+        <?php if (in_array($role, ['cashier', 'admin'], true)): ?>
+          <a class="side-link<?= str_starts_with(current_path(), '/kasa/gun-sonu') ? ' active' : '' ?>" href="<?= e(url('/kasa/gun-sonu')) ?>">
+            <?php partial('partials/menu_icon', ['icon' => 'stats', 'color' => '#e2b457']); ?>
+            <span>Gün sonu</span>
+          </a>
+          <a class="side-link<?= str_starts_with(current_path(), '/kasa/fatura') ? ' active' : '' ?>" href="<?= e(url('/kasa/faturalar')) ?>">
+            <?php partial('partials/menu_icon', ['icon' => 'orders', 'color' => '#4c8dff']); ?>
+            <span>Faturalar</span>
           </a>
         <?php endif; ?>
         <?php if ($role === 'admin' && !$isAdminArea): ?>
@@ -159,6 +169,8 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
           <?php endif; ?>
           <?php if (in_array($role, ['cashier', 'admin'], true)): ?>
             <a class="<?= is_active_path('/kasa') || str_starts_with(current_path(), '/kasa/') ? 'active' : '' ?>" href="<?= e(url('/kasa')) ?>">Kasa</a>
+            <a class="<?= str_starts_with(current_path(), '/kasa/gun-sonu') ? 'active' : '' ?>" href="<?= e(url('/kasa/gun-sonu')) ?>">Gün sonu</a>
+            <a class="<?= str_starts_with(current_path(), '/kasa/fatura') ? 'active' : '' ?>" href="<?= e(url('/kasa/faturalar')) ?>">Faturalar</a>
             <a class="<?= is_active_path('/online-siparisler') ? 'active' : '' ?>" href="<?= e(url('/online-siparisler')) ?>">
               Online
               <span class="nav-badge<?= $pendingOnlineCount <= 0 ? ' is-empty' : '' ?>" data-online-badge<?= $pendingOnlineCount <= 0 ? ' hidden' : '' ?>><?= $pendingOnlineCount ?></span>

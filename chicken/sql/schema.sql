@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS orders (
   total DECIMAL(10,2) NOT NULL DEFAULT 0,
   paid_at TIMESTAMP NULL DEFAULT NULL,
   payment_method ENUM('cash','card') NULL,
+  invoice_id INT UNSIGNED NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_orders_table FOREIGN KEY (table_id) REFERENCES dining_tables(id),
@@ -129,6 +130,51 @@ CREATE TABLE IF NOT EXISTS order_events (
 CREATE TABLE IF NOT EXISTS settings (
   setting_key VARCHAR(80) PRIMARY KEY,
   setting_value TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS invoices (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  invoice_no VARCHAR(32) NOT NULL UNIQUE,
+  invoice_date DATE NOT NULL,
+  order_id INT UNSIGNED NOT NULL UNIQUE,
+  staff_id INT UNSIGNED NULL,
+  company_title VARCHAR(160) NOT NULL,
+  company_vkn VARCHAR(11) NULL,
+  company_tax_office VARCHAR(120) NULL,
+  company_address VARCHAR(400) NULL,
+  company_city VARCHAR(80) NULL,
+  company_phone VARCHAR(40) NULL,
+  buyer_name VARCHAR(160) NOT NULL DEFAULT 'Nihai Tüketici',
+  buyer_tax_id VARCHAR(11) NULL,
+  buyer_tax_office VARCHAR(120) NULL,
+  buyer_address VARCHAR(400) NULL,
+  vat_rate DECIMAL(5,2) NOT NULL DEFAULT 10.00,
+  net_total DECIMAL(10,2) NOT NULL,
+  vat_total DECIMAL(10,2) NOT NULL,
+  gross_total DECIMAL(10,2) NOT NULL,
+  payment_method ENUM('cash','card') NULL,
+  lines_json LONGTEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_invoices_order FOREIGN KEY (order_id) REFERENCES orders(id),
+  CONSTRAINT fk_invoices_staff FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE SET NULL,
+  INDEX idx_invoices_date (invoice_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS day_closes (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  business_date DATE NOT NULL UNIQUE,
+  closed_by_staff_id INT UNSIGNED NULL,
+  paid_order_count INT UNSIGNED NOT NULL DEFAULT 0,
+  invoice_count INT UNSIGNED NOT NULL DEFAULT 0,
+  cash_total DECIMAL(10,2) NOT NULL DEFAULT 0,
+  card_total DECIMAL(10,2) NOT NULL DEFAULT 0,
+  net_total DECIMAL(10,2) NOT NULL DEFAULT 0,
+  vat_total DECIMAL(10,2) NOT NULL DEFAULT 0,
+  gross_total DECIMAL(10,2) NOT NULL DEFAULT 0,
+  vat_rate DECIMAL(5,2) NOT NULL DEFAULT 10.00,
+  note VARCHAR(500) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_day_closes_staff FOREIGN KEY (closed_by_staff_id) REFERENCES staff(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS franchise_applications (

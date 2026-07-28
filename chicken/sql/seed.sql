@@ -67,7 +67,14 @@ INSERT INTO settings (setting_key, setting_value) VALUES
 ('restaurant_name', 'Chicken'),
 ('restaurant_tagline', 'Izgara tavuğun en iyi hali'),
 ('currency', 'TRY'),
-('order_prefix', 'CHK')
+('order_prefix', 'CHK'),
+('fiscal_company_title', 'Crisp & Co.'),
+('fiscal_vkn', ''),
+('fiscal_tax_office', ''),
+('fiscal_address', ''),
+('fiscal_city', 'Antalya'),
+('fiscal_phone', ''),
+('fiscal_vat_rate', '10')
 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);
 
 INSERT INTO discount_codes (code, label, percent, is_active) VALUES

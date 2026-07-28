@@ -493,6 +493,10 @@
       if (!confirm(`${label} ödemesi alınsın mı?`)) return;
       try {
         await postJson(`/api/orders/${id}/pay`, { payment_method: method });
+        if (confirm('Ödeme alındı. Satış faturası kesilsin mi?')) {
+          window.location.href = api(`/kasa/fatura/siparis/${id}`);
+          return;
+        }
         location.reload();
       } catch (err) {
         alert(err.message || 'Ödeme alınamadı');

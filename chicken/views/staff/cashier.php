@@ -15,6 +15,8 @@ $paidSum = array_sum(array_map(
   </div>
   <div class="cta-row">
     <a class="btn btn-primary btn-sm" href="<?= e(url('/masa/ekle')) ?>">Yeni masa</a>
+    <a class="btn btn-dark btn-sm" href="<?= e(url('/kasa/gun-sonu')) ?>">Gün sonu</a>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('/kasa/faturalar')) ?>">Faturalar</a>
     <a class="btn btn-accent btn-sm" href="<?= e(url('/online-siparisler')) ?>">
       Online siparişler
       <?php if (!empty($pendingOnlineCount)): ?>

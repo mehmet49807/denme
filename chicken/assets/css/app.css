@@ -1185,6 +1185,59 @@ a.table-tile-link {
   min-height: 48px;
 }
 
+.invoice-doc {
+  max-width: 720px;
+}
+.invoice-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.invoice-brand {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+.invoice-meta h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+}
+.invoice-buyer {
+  margin-top: 16px;
+}
+.invoice-buyer h3 {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.invoice-totals {
+  margin-top: 16px;
+  max-width: 360px;
+  margin-left: auto;
+  display: grid;
+  gap: 8px;
+}
+.invoice-grand {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  font-size: 1.05rem;
+}
+.day-close-report .stats {
+  margin: 12px 0 16px;
+}
+@media print {
+  .invoice-doc, .day-close-report {
+    box-shadow: none;
+    border: 0;
+  }
+}
+
 
 .order-manage { margin-bottom: 16px; }
 
