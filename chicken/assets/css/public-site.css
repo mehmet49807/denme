@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
+/* Fonts are loaded via <link> in layouts — avoid @import so CSS never blocks on mobile. */
 
 /* =========================================================
    VISTA — public first-screen rebuild

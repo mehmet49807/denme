@@ -17,6 +17,9 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     $jsVer = @filemtime($assetRoot . '/js/app.js') ?: time();
     $logoSrc = logo_url();
   ?>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Karla:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap">
   <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) $cssVer) ?>">
   <link rel="stylesheet" href="<?= e(url('/assets/css/public-site.css')) ?>?v=<?= e((string) $publicCssVer) ?>">
   <link rel="icon" href="<?= e($logoSrc) ?>" type="image/png">
