@@ -41,6 +41,36 @@ final class BrochureService
                 'blurb' => 'Koyu zemin, altın vurgu — akşam menüsü hissi.',
                 'default_active' => true,
             ],
+            'restoran' => [
+                'id' => 'restoran',
+                'name' => 'Restoran Broşürü',
+                'blurb' => 'Izgara dumanı ve köz ateşi — klasik restoran menü hissi.',
+                'default_active' => true,
+            ],
+            'modern' => [
+                'id' => 'modern',
+                'name' => 'Modern Broşür',
+                'blurb' => 'Keskin tipografi, ferah boşluk, çağdaş çizgi.',
+                'default_active' => true,
+            ],
+            'premium' => [
+                'id' => 'premium',
+                'name' => 'Premium Broşür',
+                'blurb' => 'Mürekkep zemin, şampanya altın — lüks akşam menüsü.',
+                'default_active' => true,
+            ],
+            'cizgili' => [
+                'id' => 'cizgili',
+                'name' => 'Çizgili Broşür',
+                'blurb' => 'Çizgili doku ve net ayırıcılar — ritmik menü düzeni.',
+                'default_active' => true,
+            ],
+            'efekli' => [
+                'id' => 'efekli',
+                'name' => 'Efekli Broşür',
+                'blurb' => 'Hareketli ışık, parıltı ve yumuşak geçiş efektleri.',
+                'default_active' => true,
+            ],
         ];
     }
 
