@@ -21,68 +21,65 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
   <link rel="stylesheet" href="<?= e(url('/assets/css/public-site.css')) ?>?v=<?= e((string) $publicCssVer) ?>">
   <link rel="icon" href="<?= e($logoSrc) ?>" type="image/png">
 </head>
-<body<?= !empty($bodyAttrs) ? ' ' . $bodyAttrs : '' ?> data-base="<?= e(base_path()) ?>" data-public-layout data-theme="daylight">
-  <header class="site-header site-header-day">
-    <div class="nav nav-day">
-      <a class="brand brand-day" href="<?= e(url('/')) ?>" aria-label="Crisp &amp; Co.">
-        <img class="brand-mark brand-mark-full" src="<?= e($logoSrc) ?>" alt="" width="44" height="44">
+<body<?= !empty($bodyAttrs) ? ' ' . $bodyAttrs : '' ?> data-base="<?= e(base_path()) ?>" data-public-layout data-theme="blueplate">
+  <header class="site-header bp-header">
+    <div class="bp-nav">
+      <a class="bp-brand" href="<?= e(url('/')) ?>">
+        <img src="<?= e($logoSrc) ?>" alt="" width="40" height="40">
+        <span>CRISP &amp; CO.</span>
       </a>
-      <nav class="nav-links" aria-label="Ana menü">
-        <a class="nav-link" href="<?= e(url('/menu')) ?>">Menü</a>
-        <a class="nav-link" href="<?= e(url('/siparis')) ?>">Sipariş</a>
-        <a class="nav-link" href="<?= e(url('/takip')) ?>">Takip</a>
-        <a class="nav-link" href="<?= e(url('/hakkimizda')) ?>">Hakkımızda</a>
+      <nav class="bp-links" aria-label="Ana menü">
+        <a href="<?= e(url('/menu')) ?>">Menü</a>
+        <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
+        <a href="<?= e(url('/takip')) ?>">Takip</a>
+        <a href="<?= e(url('/hakkimizda')) ?>">Hakkımızda</a>
       </nav>
-      <div class="nav-auth">
-        <a class="nav-icon-btn" href="<?= e(url('/siparis#sepet')) ?>" data-cart-link aria-label="Sepet">
-          <span class="cart-ico" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M4 6h2l1.2 10.2a2 2 0 002 1.8h7.5a2 2 0 002-1.7L20 8H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="10" cy="20" r="1.4" fill="currentColor"/>
-              <circle cx="17" cy="20" r="1.4" fill="currentColor"/>
-            </svg>
-          </span>
+      <div class="bp-actions">
+        <a class="bp-cart" href="<?= e(url('/siparis#sepet')) ?>" data-cart-link aria-label="Sepet">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 6h2l1.2 10.2a2 2 0 002 1.8h7.5a2 2 0 002-1.7L20 8H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="10" cy="20" r="1.4" fill="currentColor"/>
+            <circle cx="17" cy="20" r="1.4" fill="currentColor"/>
+          </svg>
           <span class="nav-badge cart-badge is-empty" data-cart-badge hidden>0</span>
         </a>
         <?php if ($customer): ?>
-          <span class="nav-user muted small"><?= e((string) $customer['name']) ?></span>
-          <form method="post" action="<?= e(url('/cikis')) ?>" style="display:inline;margin:0">
+          <span class="bp-user"><?= e((string) $customer['name']) ?></span>
+          <form method="post" action="<?= e(url('/cikis')) ?>" class="bp-logout">
             <?= csrf_field() ?>
-            <button class="btn btn-ghost btn-sm" type="submit">Çıkış</button>
+            <button type="submit">Çıkış</button>
           </form>
         <?php else: ?>
-          <a class="nav-text-link" href="<?= e(url('/giris')) ?>">Giriş</a>
-          <a class="btn btn-accent btn-sm" href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
+          <a class="bp-login" href="<?= e(url('/giris')) ?>">Giriş</a>
+          <a class="bp-join" href="<?= e(url('/uye-ol')) ?>">Üye ol</a>
         <?php endif; ?>
       </div>
     </div>
   </header>
 
-  <main class="public-main">
+  <main class="bp-main">
     <?= $content ?>
   </main>
 
-  <a class="cart-fab cart-fab-day" href="<?= e(url('/siparis#sepet')) ?>" data-cart-link aria-label="Sepete git">
-    <span class="cart-ico" aria-hidden="true">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <path d="M4 6h2l1.2 10.2a2 2 0 002 1.8h7.5a2 2 0 002-1.7L20 8H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="10" cy="20" r="1.4" fill="currentColor"/>
-        <circle cx="17" cy="20" r="1.4" fill="currentColor"/>
-      </svg>
-    </span>
+  <a class="bp-fab" href="<?= e(url('/siparis#sepet')) ?>" data-cart-link aria-label="Sepete git">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 6h2l1.2 10.2a2 2 0 002 1.8h7.5a2 2 0 002-1.7L20 8H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="10" cy="20" r="1.4" fill="currentColor"/>
+      <circle cx="17" cy="20" r="1.4" fill="currentColor"/>
+    </svg>
     <span class="nav-badge cart-badge is-empty" data-cart-badge hidden>0</span>
   </a>
 
-  <footer class="site-footer site-footer-day">
-    <div class="footer-day-inner">
-      <div class="footer-day-brand">
-        <img class="brand-mark brand-mark-full" src="<?= e($logoSrc) ?>" alt="Crisp &amp; Co." width="64" height="64">
+  <footer class="bp-footer">
+    <div class="bp-footer-inner">
+      <div class="bp-footer-brand">
+        <img src="<?= e($logoSrc) ?>" alt="Crisp &amp; Co." width="52" height="52">
         <div>
-          <strong>Crisp &amp; Co.</strong>
+          <strong>CRISP &amp; CO.</strong>
           <p>Lezzetin doğal adresi</p>
         </div>
       </div>
-      <nav class="footer-day-links" aria-label="Alt menü">
+      <nav class="bp-footer-links" aria-label="Alt menü">
         <a href="<?= e(url('/menu')) ?>">Menü</a>
         <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
         <a href="<?= e(url('/takip')) ?>">Takip</a>
@@ -91,7 +88,7 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
         <a href="<?= e(url('/sozlesmeler/kvkk')) ?>">KVKK</a>
         <a href="<?= e(url('/sozlesmeler/gizlilik')) ?>">Gizlilik</a>
       </nav>
-      <p class="footer-day-copy">© <?= date('Y') ?> Crisp &amp; Co. · Yeni üyelere <strong>YENI10</strong></p>
+      <p class="bp-footer-copy">© <?= date('Y') ?> Crisp &amp; Co. · Yeni üyelere <b>YENI10</b></p>
     </div>
   </footer>
   <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
