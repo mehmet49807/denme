@@ -4,7 +4,7 @@
     <p class="eyebrow">Yönetici · Masalar</p>
     <h1>Tüm masalar</h1>
   </div>
-  <a class="btn btn-primary btn-sm" href="<?= e(url('/yonetici/masalar/ekle')) ?>">Masa ekle</a>
+  <a class="btn btn-primary btn-sm" href="<?= e(url('/masa/ekle')) ?>">Yeni masa</a>
 </div>
 
 <div class="table-board">
@@ -21,6 +21,9 @@
         </span>
       </div>
       <div class="table-tile-code muted small"><?= e($table['code']) ?> · <?= (int) $table['seats'] ?> kişi</div>
+      <?php if (!empty($table['opened_by_name'])): ?>
+        <div class="muted small">Açan: <?= e((string) $table['opened_by_name']) ?></div>
+      <?php endif; ?>
       <?php if ($isOpen): ?>
         <div class="table-tile-meta">
           <span><?= (int) $table['open_count'] ?> sipariş</span>

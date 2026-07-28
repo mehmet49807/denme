@@ -8,6 +8,7 @@
     <p class="eyebrow">Siparişler</p>
     <h1>Açık masalar</h1>
   </div>
+  <a class="btn btn-primary btn-sm" href="<?= e(url('/masa/ekle')) ?>">Yeni masa</a>
   <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson')) ?>">Menüden ekle</a>
 </div>
 

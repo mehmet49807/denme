@@ -15,6 +15,9 @@ $openTotal = array_sum(array_map(static fn(array $o): float => (float) $o['total
   <div>
     <p class="eyebrow"><?= $mode === 'cashier' ? 'Kasa · Masa' : 'Garson · Masa' ?></p>
     <h1><?= e($table['label']) ?> <span class="muted" style="font-size:.55em">(<?= e($table['code']) ?>)</span></h1>
+    <?php if (!empty($table['opened_by_name'])): ?>
+      <p class="muted" style="margin:6px 0 0">Açan: <?= e((string) $table['opened_by_name']) ?> · <?= (int) ($table['seats'] ?? 0) ?> kişi</p>
+    <?php endif; ?>
   </div>
   <div class="cta-row">
     <a class="btn btn-ghost btn-sm" href="<?= e($back) ?>">Geri</a>

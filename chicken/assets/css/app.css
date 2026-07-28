@@ -1157,6 +1157,20 @@ tr:hover td { background: rgba(154, 123, 47, 0.04); }
   align-items: baseline;
 }
 
+.table-add-panel {
+  max-width: 420px;
+}
+.table-add-form label {
+  font-weight: 600;
+  color: var(--text);
+}
+.table-add-form input,
+.table-add-form select {
+  font-size: 1.05rem;
+  min-height: 48px;
+}
+
+
 .order-manage { margin-bottom: 16px; }
 
 .item-manage-list {
