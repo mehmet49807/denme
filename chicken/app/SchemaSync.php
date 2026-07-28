@@ -169,9 +169,16 @@ final class SchemaSync
               vat_total DECIMAL(10,2) NOT NULL DEFAULT 0,
               gross_total DECIMAL(10,2) NOT NULL DEFAULT 0,
               vat_rate DECIMAL(5,2) NOT NULL DEFAULT 10.00,
+              is_auto TINYINT(1) NOT NULL DEFAULT 0,
               note VARCHAR(500) NULL,
               created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+        self::ensureColumn(
+            $pdo,
+            'day_closes',
+            'is_auto',
+            'ALTER TABLE day_closes ADD COLUMN is_auto TINYINT(1) NOT NULL DEFAULT 0 AFTER vat_rate'
         );
         self::ensureColumn(
             $pdo,
