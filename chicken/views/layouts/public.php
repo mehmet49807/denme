@@ -25,7 +25,7 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
   <div class="vs-app">
     <header class="vs-top">
       <a class="vs-brand" href="<?= e(url('/')) ?>" aria-label="Crisp &amp; Co.">
-        <img src="<?= e($logoSrc) ?>" alt="" width="42" height="42">
+        <img src="<?= e($logoSrc) ?>" alt="" width="88" height="48">
         <span>Crisp &amp; Co.</span>
       </a>
       <nav class="vs-nav" aria-label="Ana menü">
@@ -64,7 +64,7 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     <footer class="vs-footer">
       <div class="vs-footer-inner">
         <div class="vs-footer-brand">
-          <img src="<?= e($logoSrc) ?>" alt="Crisp &amp; Co." width="48" height="48">
+          <img src="<?= e($logoSrc) ?>" alt="Crisp &amp; Co." width="96" height="52">
           <div>
             <strong>Crisp &amp; Co.</strong>
             <p>Lezzetin doğal adresi</p>
