@@ -366,6 +366,28 @@ body[data-public-layout][data-theme="vista"] .vs-section-head {
   margin-bottom: 22px;
 }
 
+body[data-public-layout][data-theme="vista"] .vs-tag {
+  margin: 0 0 8px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vs-rose-deep);
+}
+
+body[data-public-layout][data-theme="vista"] .vs-sub {
+  margin: 0;
+  max-width: 42ch;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: rgba(15, 39, 68, 0.78);
+}
+
+body[data-public-layout][data-theme="vista"] .vs-sub-dark {
+  color: var(--vs-mute);
+  margin-top: 10px;
+}
+
 body[data-public-layout][data-theme="vista"] .vs-section h2,
 body[data-public-layout][data-theme="vista"] .section h2,
 body[data-public-layout][data-theme="vista"] .page-title,
@@ -634,16 +656,6 @@ body[data-public-layout][data-theme="vista"] .vs-footer-copy {
 }
 
 body[data-public-layout][data-theme="vista"] .vs-footer-copy b { color: #ffb3c0; }
-
-@keyframes vs-rise {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes vs-drift {
-  from { transform: scale(1.02); }
-  to { transform: scale(1.06) translate(-0.8%, -0.6%); }
-}
 
 @media (max-width: 860px) {
   body[data-public-layout][data-theme="vista"] .vs-top {

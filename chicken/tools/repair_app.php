@@ -49,6 +49,7 @@ $files = [
     'assets/img/logo-crisp.png',
     'assets/img/logo-crisp-co.png',
     'assets/img/hero.svg',
+    'assets/img/hero-restaurant.jpg',
 ];
 
 function fetch_url(string $url): string
