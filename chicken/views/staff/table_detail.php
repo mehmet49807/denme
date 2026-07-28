@@ -22,8 +22,11 @@ $openTotal = array_sum(array_map(static fn(array $o): float => (float) $o['total
   <div class="cta-row">
     <a class="btn btn-ghost btn-sm" href="<?= e($back) ?>">Geri</a>
     <?php if ($canClose && $orders): ?>
-      <button class="btn btn-primary btn-sm" type="button" data-close-table="<?= (int) $table['id'] ?>" data-method="cash">Nakit kapat</button>
-      <button class="btn btn-dark btn-sm" type="button" data-close-table="<?= (int) $table['id'] ?>" data-method="card">Kart kapat</button>
+      <?php partial('partials/table_close_buttons', [
+          'tableId' => (int) $table['id'],
+          'redirect' => $mode === 'cashier' ? url('/kasa') : url('/yonetici/masalar'),
+          'wrap' => false,
+      ]); ?>
     <?php endif; ?>
   </div>
 </div>

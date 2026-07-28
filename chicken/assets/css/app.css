@@ -1130,9 +1130,22 @@ tr:hover td { background: rgba(154, 123, 47, 0.04); }
   min-height: 140px;
   transition: border-color .15s ease, transform .15s ease, box-shadow .2s ease;
 }
+a.table-tile-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
 .table-tile:hover {
   border-color: rgba(196, 163, 90,0.45);
   transform: translateY(-1px);
+}
+.table-close-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.table-close-actions .btn {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .table-tile.is-open {
   border-color: rgba(196, 163, 90,0.35);
