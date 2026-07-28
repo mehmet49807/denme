@@ -15,7 +15,8 @@ foreach ($items as $item) {
   <header class="brochure-hero">
     <img class="brochure-logo" src="<?= e(logo_url()) ?>" alt="Crisp &amp; Co." width="120" height="120">
     <p class="eyebrow">Lezzetin doğal adresi</p>
-    <h1>Menü</h1>
+    <h1>Crisp &amp; Co.</h1>
+    <p class="brochure-menu-label">Menü</p>
     <?php if (!empty($table['label'])): ?>
       <p class="brochure-table"><?= e((string) $table['label']) ?></p>
     <?php endif; ?>
