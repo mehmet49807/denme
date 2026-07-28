@@ -66,16 +66,27 @@ final class TableService
         ];
     }
 
-    /** @return list<array{id:int,name:string,role:string}> */
-    public static function staffOptions(): array
+    /**
+     * @param list<string>|null $roles
+     * @return list<array{id:int,name:string,role:string}>
+     */
+    public static function staffOptions(?array $roles = null): array
     {
-        $rows = Database::pdo()
-            ->query(
-                "SELECT id, name, role FROM staff
-                 WHERE is_active = 1 AND role IN ('waiter','cashier','admin')
-                 ORDER BY FIELD(role,'waiter','cashier','admin'), name"
-            )
-            ->fetchAll();
+        $roles = $roles ?? ['waiter', 'cashier', 'admin'];
+        $roles = array_values(array_filter($roles, static fn($r): bool => is_string($r) && $r !== ''));
+        if ($roles === []) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($roles), '?'));
+        $order = implode(',', array_map(static fn(string $r): string => Database::pdo()->quote($r), $roles));
+        $stmt = Database::pdo()->prepare(
+            "SELECT id, name, role FROM staff
+             WHERE is_active = 1 AND role IN ({$placeholders})
+             ORDER BY FIELD(role, {$order}), name"
+        );
+        $stmt->execute($roles);
+        $rows = $stmt->fetchAll();
 
         return array_map(static fn(array $r): array => [
             'id' => (int) $r['id'],
