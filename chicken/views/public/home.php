@@ -1,16 +1,15 @@
-<section class="hero hero-cedar">
+<section class="hero hero-day">
   <div class="hero-media" aria-hidden="true"></div>
-  <div class="hero-veil" aria-hidden="true"></div>
   <div class="hero-content">
     <p class="hero-kicker">Lezzetin doğal adresi</p>
-    <h1 class="hero-brand">
-      <img class="hero-logo" src="<?= e(logo_url()) ?>" alt="" width="120" height="120">
-      <span class="hero-brand-text">Crisp <em>&amp;</em> Co.</span>
+    <h1 class="hero-title">
+      <span class="hero-title-main">Crisp</span>
+      <span class="hero-title-and">&amp;</span>
+      <span class="hero-title-main">Co.</span>
     </h1>
-    <p class="lede">Izgara tavuk · doğal lezzet · üye olmadan sipariş</p>
+    <p class="lede">Izgara tavuk, doğal lezzet — üye olmadan sipariş verin.</p>
     <div class="cta-home">
       <a class="btn btn-accent" href="<?= e(url('/siparis')) ?>">Online sipariş</a>
-      <a class="btn btn-ghost" href="<?= e(url('/menu')) ?>">Menüyü gör</a>
     </div>
   </div>
 </section>
