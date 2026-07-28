@@ -32,6 +32,7 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
         <a href="<?= e(url('/menu')) ?>">Menü</a>
         <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
         <a href="<?= e(url('/takip')) ?>">Takip</a>
+        <a href="<?= e(url('/bayilik')) ?>">Franchise</a>
         <a href="<?= e(url('/hakkimizda')) ?>">Hakkımızda</a>
       </nav>
       <div class="vs-tools">
@@ -73,6 +74,7 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
           <a href="<?= e(url('/menu')) ?>">Menü</a>
           <a href="<?= e(url('/siparis')) ?>">Sipariş</a>
           <a href="<?= e(url('/takip')) ?>">Takip</a>
+          <a href="<?= e(url('/bayilik')) ?>">Franchise</a>
           <a href="<?= e(url('/hakkimizda')) ?>">Hakkımızda</a>
           <a href="<?= e(url('/misyon')) ?>">Misyon</a>
           <a href="<?= e(url('/sozlesmeler/kvkk')) ?>">KVKK</a>

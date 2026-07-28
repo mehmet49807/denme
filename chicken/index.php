@@ -10,6 +10,7 @@ require __DIR__ . '/app/DiscountService.php';
 require __DIR__ . '/app/SiteContent.php';
 require __DIR__ . '/app/BrochureService.php';
 require __DIR__ . '/app/OrderService.php';
+require __DIR__ . '/app/FranchiseService.php';
 require __DIR__ . '/app/CategorySync.php';
 require __DIR__ . '/app/SchemaSync.php';
 require __DIR__ . '/app/MenuImageSync.php';
@@ -284,6 +285,41 @@ $router->get('/misyon', static function () use ($contentPage): void {
 $router->get('/musteri-memnuniyeti', static function () use ($contentPage): void {
     $contentPage('musteri-memnuniyeti');
 });
+
+$router->get('/bayilik', static function (): void {
+    view('public/franchise', [
+        'title' => 'Franchise · Crisp & Co.',
+    ]);
+});
+
+$router->post('/bayilik', static function (): void {
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'Oturum doğrulaması başarısız. Tekrar deneyin.');
+        redirect('/bayilik#basvuru');
+    }
+    try {
+        FranchiseService::create([
+            'name' => (string) input('name'),
+            'phone' => (string) input('phone'),
+            'email' => (string) input('email'),
+            'city' => (string) input('city'),
+            'district' => (string) input('district'),
+            'budget' => (string) input('budget'),
+            'experience' => (string) input('experience'),
+            'message' => (string) input('message'),
+            'accept_terms' => input('accept_terms'),
+            'accept_kvkk' => input('accept_kvkk'),
+        ]);
+        flash('success', 'Başvurunuz alındı. Ekibimiz en kısa sürede sizinle iletişime geçecek.');
+        redirect('/bayilik#basvuru');
+    } catch (Throwable $e) {
+        flash('error', $e->getMessage());
+        view('public/franchise', [
+            'title' => 'Franchise · Crisp & Co.',
+        ]);
+    }
+});
+
 $router->get('/sozlesmeler/uyelik', static function () use ($contentPage): void {
     $contentPage('uyelik');
 });
@@ -1213,6 +1249,41 @@ $router->get('/yonetici/personel', static function (): void {
         'staff' => $staff,
         'user' => Auth::user(),
     ]);
+});
+
+$router->get('/yonetici/franchise', static function (): void {
+    Auth::requireRole('admin');
+    $filter = trim((string) input('durum'));
+    if ($filter !== '' && !in_array($filter, FranchiseService::STATUSES, true)) {
+        $filter = '';
+    }
+    view('staff/admin_franchise', [
+        'title' => 'Yönetici · Franchise başvuruları',
+        'applications' => FranchiseService::list($filter !== '' ? $filter : null),
+        'counts' => FranchiseService::countsByStatus(),
+        'filter' => $filter,
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->post('/yonetici/franchise/{id}/durum', static function (string $id): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/franchise');
+    }
+    try {
+        FranchiseService::updateStatus(
+            (int) $id,
+            (string) input('status'),
+            (string) input('admin_note')
+        );
+        flash('success', 'Başvuru durumu güncellendi.');
+    } catch (Throwable $e) {
+        flash('error', $e->getMessage());
+    }
+    $back = trim((string) input('redirect'));
+    redirect($back !== '' ? $back : '/yonetici/franchise');
 });
 
 $router->get('/yonetici/personel/ekle', static function (): void {

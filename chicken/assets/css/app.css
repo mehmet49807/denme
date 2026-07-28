@@ -551,6 +551,20 @@ button, input, select, textarea { font: inherit; }
   background: rgba(18, 16, 14, 0.06);
   color: var(--muted);
 }
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+a.chip {
+  text-decoration: none;
+  cursor: pointer;
+}
+a.chip:hover,
+a.chip.active {
+  color: var(--ink);
+  background: rgba(18, 16, 14, 0.12);
+}
 .chip.kitchen { color: #7a5c1e; background: rgba(154, 123, 47, 0.14); }
 .chip.bar { color: #1d4ed8; background: rgba(59, 130, 246, 0.12); }
 .chip.online { color: #15803d; background: rgba(31, 157, 99, 0.12); }
