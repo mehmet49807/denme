@@ -1062,6 +1062,7 @@ $router->get('/yonetici/masalar/ekle', static function (): void {
         'title' => 'Yönetici · Masa ekle',
         'user' => Auth::user(),
         'staffOptions' => TableService::staffOptions(),
+        'canPickOpener' => true,
         'backUrl' => url('/yonetici/masalar'),
         'formAction' => url('/masa/ekle'),
         'roleLabel' => 'Yönetici',
