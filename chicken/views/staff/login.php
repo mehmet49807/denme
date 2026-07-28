@@ -4,7 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e($title) ?></title>
-  <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) (@filemtime(dirname(__DIR__, 2) . '/assets/css/app.css') ?: time())) ?>">
 </head>
 <body class="auth-body" data-base="<?= e(base_path()) ?>">
   <main class="auth-card">

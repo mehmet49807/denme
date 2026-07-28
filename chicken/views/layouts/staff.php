@@ -58,6 +58,9 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
     $cssVer = @filemtime($assetRoot . '/css/app.css') ?: time();
     $jsVer = @filemtime($assetRoot . '/js/app.js') ?: time();
   ?>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
   <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) $cssVer) ?>">
 </head>
 <body data-base="<?= e(base_path()) ?>" class="staff-body<?= $isAdminArea ? ' is-admin-area' : '' ?>">
