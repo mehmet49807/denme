@@ -47,7 +47,10 @@ foreach ($items as $item) {
             <div class="brochure-item-body">
               <div class="meta-row">
                 <h3><?= e((string) $item['name']) ?></h3>
-                <span class="price"><?= e(money((float) $item['price'])) ?></span>
+                <span class="price-wrap">
+                  <span class="price"><?= e(money((float) $item['price'])) ?></span>
+                  <span class="price-vat">KDV dahil</span>
+                </span>
               </div>
               <?php if (!empty($item['description'])): ?>
                 <p><?= e((string) $item['description']) ?></p>
@@ -60,6 +63,7 @@ foreach ($items as $item) {
   <?php endforeach; ?>
 
   <footer class="brochure-foot">
+    <p class="small muted">Fiyatlarımız KDV dahildir (%10 restoran yeme-içme hizmeti).</p>
     <p>Garsonunuza sipariş verebilir veya online sipariş açabilirsiniz.</p>
     <div class="cta-row">
       <a class="btn btn-accent" href="<?= e(url('/siparis')) ?>">Online Sipariş</a>

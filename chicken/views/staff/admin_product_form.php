@@ -48,9 +48,26 @@ $isEdit = !empty($item);
         <?php endforeach; ?>
       </select>
     </label>
-    <label>Fiyat (₺)
+    <label>Fiyat (KDV dahil, ₺)
       <input type="number" name="price" required min="0" step="0.01" value="<?= e((string) ($item['price'] ?? '')) ?>">
     </label>
+    <?php
+      $vatSelected = (float) ($item['vat_rate'] ?? 10);
+      if (class_exists('FiscalService')) {
+          $vatSelected = FiscalService::normalizeVatRate($vatSelected);
+      }
+    ?>
+    <label>KDV oranı
+      <select name="vat_rate" required>
+        <option value="1" <?= abs($vatSelected - 1.0) < 0.001 ? 'selected' : '' ?>>%1 — temel gıda</option>
+        <option value="10" <?= abs($vatSelected - 10.0) < 0.001 ? 'selected' : '' ?>>%10 — restoran yeme-içme</option>
+        <option value="20" <?= abs($vatSelected - 20.0) < 0.001 ? 'selected' : '' ?>>%20 — alkollü içecek / genel</option>
+      </select>
+    </label>
+    <p class="small muted" style="margin:0">
+      Lokanta/restoran hizmetinde yemek ve alkolsüz içecekler %10; alkollü içecekler %20 KDV’ye tabidir.
+      Menü fiyatları KDV dahildir.
+    </p>
     <label>İstasyon
       <select name="station" required>
         <option value="kitchen" <?= ($item['station'] ?? 'kitchen') === 'kitchen' ? 'selected' : '' ?>>Mutfak</option>

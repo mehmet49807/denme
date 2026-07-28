@@ -11,7 +11,11 @@ $company = $company ?? [];
 </div>
 
 <section class="panel" style="max-width:560px">
-  <p class="muted" style="margin-top:0">Satış faturası ve gün sonu belgelerinde görünecek bilgiler. Restoran hizmeti için varsayılan KDV %10’dur (ayarlanabilir).</p>
+  <p class="muted" style="margin-top:0">
+    Satış faturası ve gün sonu belgelerinde görünecek bilgiler.
+    Menü ürünlerinin kendi KDV oranı vardır (restoran yeme-içme %10, alkollü içecek %20).
+    Aşağıdaki oran, ürün oranı yoksa kullanılan varsayılandır.
+  </p>
   <form method="post" action="<?= e(url('/kasa/fatura-ayarlar')) ?>" class="stack">
     <?= csrf_field() ?>
     <label>Firma ünvanı
@@ -32,8 +36,13 @@ $company = $company ?? [];
     <label>Telefon
       <input name="phone" maxlength="40" value="<?= e((string) ($company['phone'] ?? '')) ?>">
     </label>
-    <label>KDV oranı (%)
-      <input type="number" name="vat_rate" min="0" max="20" step="0.01" value="<?= e((string) ($company['vat_rate'] ?? '10')) ?>" required>
+    <label>Varsayılan KDV oranı
+      <?php $vatSelected = (float) ($company['vat_rate'] ?? 10); ?>
+      <select name="vat_rate" required>
+        <option value="1" <?= abs($vatSelected - 1.0) < 0.001 ? 'selected' : '' ?>>%1 — temel gıda</option>
+        <option value="10" <?= abs($vatSelected - 10.0) < 0.001 ? 'selected' : '' ?>>%10 — restoran yeme-içme</option>
+        <option value="20" <?= abs($vatSelected - 20.0) < 0.001 ? 'selected' : '' ?>>%20 — alkollü / genel</option>
+      </select>
     </label>
     <button class="btn btn-primary" type="submit">Kaydet</button>
   </form>

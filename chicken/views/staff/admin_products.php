@@ -19,14 +19,15 @@
           <th>Ürün</th>
           <th>Kategori</th>
           <th>İstasyon</th>
-          <th>Fiyat</th>
+          <th>Fiyat (KDV dahil)</th>
+          <th>KDV</th>
           <th>Durum</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         <?php if (!$items): ?>
-          <tr><td colspan="7" class="muted">Henüz ürün yok.</td></tr>
+          <tr><td colspan="8" class="muted">Henüz ürün yok.</td></tr>
         <?php endif; ?>
         <?php foreach ($items as $item): ?>
           <tr>
@@ -46,6 +47,7 @@
             <td><?= e($item['category_name'] ?? '—') ?></td>
             <td><?= e(station_label((string) $item['station'])) ?></td>
             <td class="price"><?= e(money((float) $item['price'])) ?></td>
+            <td><?= e(format_vat_rate($item['vat_rate'] ?? 10)) ?></td>
             <td><?= !empty($item['is_available']) ? 'Satışta' : 'Kapalı' ?></td>
             <td>
               <div class="cta-row">
