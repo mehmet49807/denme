@@ -20,6 +20,9 @@ $groups = [
         'title' => 'Satış',
         'items' => [
             ['href' => '/yonetici/istatistikler', 'label' => 'Satış istatistikleri', 'icon' => 'stats', 'color' => '#e2b457'],
+            ['href' => '/kasa/gun-sonu', 'label' => 'Gün sonu', 'icon' => 'stats', 'color' => '#9a7b2f'],
+            ['href' => '/kasa/faturalar', 'label' => 'Faturalar', 'icon' => 'orders', 'color' => '#4c8dff'],
+            ['href' => '/kasa/fatura-ayarlar', 'label' => 'Firma / KDV', 'icon' => 'menu', 'color' => '#2bb3a3'],
             ['href' => '/yonetici/siparisler', 'label' => 'Siparişler', 'icon' => 'orders', 'color' => '#4c8dff'],
             ['href' => '/online-siparisler', 'label' => 'Online siparişler', 'icon' => 'orders', 'color' => '#1f9d63'],
             ['href' => '/yonetici/personel-istatistik', 'label' => 'Kasa ve Garson', 'icon' => 'staffstats', 'color' => '#f0b429'],
