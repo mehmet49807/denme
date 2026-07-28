@@ -493,10 +493,12 @@ $router->get('/masa/ekle', static function (): void {
         'waiter' => 'Garson',
         default => 'Yönetici',
     };
+    // Kasa yönetici adına masa açamaz; yalnızca garson/kasa seçebilir.
+    $openerRoles = $role === 'cashier' ? ['waiter', 'cashier'] : ['waiter', 'cashier', 'admin'];
     view('staff/table_add', [
         'title' => $label . ' · Yeni masa',
         'user' => Auth::user(),
-        'staffOptions' => $canPickOpener ? TableService::staffOptions() : [],
+        'staffOptions' => $canPickOpener ? TableService::staffOptions($openerRoles) : [],
         'canPickOpener' => $canPickOpener,
         'backUrl' => url($back),
         'formAction' => url('/masa/ekle'),
@@ -534,12 +536,17 @@ $router->post('/masa/ekle', static function (): void {
         $openedByName = '';
         if ($openedByStaffId > 0) {
             $stmt = Database::pdo()->prepare(
-                'SELECT id, name FROM staff WHERE id = ? AND is_active = 1 LIMIT 1'
+                'SELECT id, name, role FROM staff WHERE id = ? AND is_active = 1 LIMIT 1'
             );
             $stmt->execute([$openedByStaffId]);
             $staff = $stmt->fetch();
             if (!$staff) {
                 flash('error', 'Masa açan kişi bulunamadı.');
+                redirect($backForm);
+            }
+            // Kasa, yönetici adına masa açamaz.
+            if ($role === 'cashier' && ($staff['role'] ?? '') === 'admin') {
+                flash('error', 'Kasa yönetici adına masa açamaz.');
                 redirect($backForm);
             }
             $openedByName = (string) $staff['name'];
