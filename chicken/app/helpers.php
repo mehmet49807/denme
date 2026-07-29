@@ -333,6 +333,39 @@ function source_label(string $source): string
     };
 }
 
+/**
+ * Mutfak/bar XPrinter fiş URL’si.
+ *
+ * @param array{autoprint?:bool,station?:string,items?:list<int>|string,back?:string} $opts
+ */
+function station_slip_url(int $orderId, array $opts = []): string
+{
+    $q = [];
+    if (!empty($opts['autoprint'])) {
+        $q['autoprint'] = '1';
+    }
+    $station = (string) ($opts['station'] ?? '');
+    if (in_array($station, ['kitchen', 'bar', 'all'], true) && $station !== 'all') {
+        $q['station'] = $station;
+    }
+    $items = $opts['items'] ?? null;
+    if (is_array($items) && $items !== []) {
+        $q['items'] = implode(',', array_map('intval', $items));
+    } elseif (is_string($items) && trim($items) !== '') {
+        $q['items'] = trim($items);
+    }
+    if (!empty($opts['back'])) {
+        $q['back'] = (string) $opts['back'];
+    }
+    $path = '/garson/fis/' . $orderId;
+    return $q === [] ? url($path) : url($path . '?' . http_build_query($q));
+}
+
+function slip_autoprint_enabled(): bool
+{
+    return BrochureService::getSetting('slip_autoprint', '1') !== '0';
+}
+
 function payment_method_label(?string $method): string
 {
     return match ($method) {
