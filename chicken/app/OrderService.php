@@ -150,9 +150,11 @@ final class OrderService
                 }
                 if ($hasKitchen) {
                     self::addEvent($pdo, $orderId, $waiterId, 'sent_kitchen', 'Mutfak fişi gönderildi');
+                    self::markStationSlipSent($pdo, $orderId, 'kitchen');
                 }
                 if ($hasBar) {
                     self::addEvent($pdo, $orderId, $waiterId, 'sent_bar', 'Bar fişi gönderildi');
+                    self::markStationSlipSent($pdo, $orderId, 'bar');
                 }
             }
 
@@ -202,9 +204,14 @@ final class OrderService
             }
             if ($hasKitchen) {
                 self::addEvent($pdo, $orderId, $staffId, 'sent_kitchen', 'Mutfak fişi güncellendi');
+                self::markStationSlipSent($pdo, $orderId, 'kitchen', true);
+                // Yeni ürün gelince fiş tekrar alınmalı
+                $pdo->prepare('UPDATE orders SET kitchen_slip_acked_at = NULL WHERE id = ?')->execute([$orderId]);
             }
             if ($hasBar) {
                 self::addEvent($pdo, $orderId, $staffId, 'sent_bar', 'Bar fişi güncellendi');
+                self::markStationSlipSent($pdo, $orderId, 'bar', true);
+                $pdo->prepare('UPDATE orders SET bar_slip_acked_at = NULL WHERE id = ?')->execute([$orderId]);
             }
             $pdo->commit();
         } catch (Throwable $e) {
@@ -465,7 +472,7 @@ final class OrderService
     }
 
     /**
-     * Mutfak / bar bekleyen ürün satırları.
+     * Mutfak / bar bekleyen ürün satırları (düz liste — geriye uyum).
      * @return list<array<string,mixed>>
      */
     public static function stationQueued(string $station): array
@@ -490,6 +497,194 @@ final class OrderService
         return $stmt->fetchAll() ?: [];
     }
 
+    /**
+     * Mutfak / bar detaylı sipariş panosu (fiş takibi dahil).
+     * @return list<array<string,mixed>>
+     */
+    public static function stationBoard(string $station): array
+    {
+        if (!in_array($station, ['kitchen', 'bar'], true)) {
+            throw new InvalidArgumentException('Geçersiz istasyon.');
+        }
+        $pdo = Database::pdo();
+        $sentCol = $station === 'bar' ? 'bar_slip_sent_at' : 'kitchen_slip_sent_at';
+        $ackCol = $station === 'bar' ? 'bar_slip_acked_at' : 'kitchen_slip_acked_at';
+
+        $stmt = $pdo->prepare(
+            "SELECT o.id, o.order_code, o.source, o.status, o.customer_note, o.customer_name,
+                    o.customer_phone, o.created_at, o.updated_at,
+                    o.kitchen_slip_sent_at, o.bar_slip_sent_at,
+                    o.kitchen_slip_acked_at, o.bar_slip_acked_at,
+                    t.label AS table_label, t.code AS table_code,
+                    s.name AS waiter_name
+             FROM orders o
+             LEFT JOIN dining_tables t ON t.id = o.table_id
+             LEFT JOIN staff s ON s.id = o.waiter_id
+             WHERE o.status NOT IN ('cancelled','paid','pending')
+               AND EXISTS (
+                   SELECT 1 FROM order_items oi
+                   WHERE oi.order_id = o.id
+                     AND oi.station = ?
+                     AND oi.status IN ('queued','preparing','ready')
+               )
+             ORDER BY
+               CASE
+                 WHEN o.{$sentCol} IS NOT NULL AND o.{$ackCol} IS NULL THEN 0
+                 WHEN EXISTS (
+                   SELECT 1 FROM order_items oi2
+                   WHERE oi2.order_id = o.id AND oi2.station = ?
+                     AND oi2.status IN ('queued','preparing')
+                 ) THEN 1
+                 ELSE 2
+               END,
+               o.id ASC"
+        );
+        $stmt->execute([$station, $station]);
+        $orders = $stmt->fetchAll() ?: [];
+        if ($orders === []) {
+            return [];
+        }
+
+        $ids = array_map(static fn(array $o): int => (int) $o['id'], $orders);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $itemStmt = $pdo->prepare(
+            "SELECT id, order_id, quantity, item_name, status, note, station, created_at
+             FROM order_items
+             WHERE order_id IN ({$placeholders})
+               AND station = ?
+               AND status IN ('queued','preparing','ready')
+             ORDER BY
+               FIELD(status, 'queued','preparing','ready'),
+               id ASC"
+        );
+        $itemStmt->execute([...$ids, $station]);
+        $itemsByOrder = [];
+        foreach ($itemStmt->fetchAll() ?: [] as $item) {
+            $oid = (int) $item['order_id'];
+            $itemsByOrder[$oid][] = $item;
+        }
+
+        $eventStmt = $pdo->prepare(
+            "SELECT order_id, event_type, message, created_at, staff_id
+             FROM order_events
+             WHERE order_id IN ({$placeholders})
+               AND event_type IN (?, ?, ?)
+             ORDER BY id ASC"
+        );
+        $sentType = $station === 'bar' ? 'sent_bar' : 'sent_kitchen';
+        $ackType = $station === 'bar' ? 'slip_acked_bar' : 'slip_acked_kitchen';
+        $printType = $station === 'bar' ? 'slip_printed_bar' : 'slip_printed_kitchen';
+        $eventStmt->execute([...$ids, $sentType, $ackType, $printType]);
+        $eventsByOrder = [];
+        foreach ($eventStmt->fetchAll() ?: [] as $ev) {
+            $oid = (int) $ev['order_id'];
+            $eventsByOrder[$oid][] = $ev;
+        }
+
+        $out = [];
+        foreach ($orders as $order) {
+            $oid = (int) $order['id'];
+            $items = $itemsByOrder[$oid] ?? [];
+            if ($items === []) {
+                continue;
+            }
+            $open = 0;
+            $ready = 0;
+            foreach ($items as $it) {
+                if (in_array($it['status'], ['queued', 'preparing'], true)) {
+                    $open++;
+                } elseif ($it['status'] === 'ready') {
+                    $ready++;
+                }
+            }
+            $sentAt = $station === 'bar'
+                ? ($order['bar_slip_sent_at'] ?? null)
+                : ($order['kitchen_slip_sent_at'] ?? null);
+            $ackedAt = $station === 'bar'
+                ? ($order['bar_slip_acked_at'] ?? null)
+                : ($order['kitchen_slip_acked_at'] ?? null);
+            $slipStatus = 'waiting';
+            if ($ackedAt) {
+                $slipStatus = 'acked';
+            } elseif ($sentAt) {
+                $slipStatus = 'sent';
+            }
+
+            $out[] = [
+                'id' => $oid,
+                'order_id' => $oid,
+                'order_code' => $order['order_code'],
+                'source' => $order['source'],
+                'status' => $order['status'],
+                'status_label' => status_label((string) $order['status']),
+                'table_label' => $order['table_label'] ?? null,
+                'table_code' => $order['table_code'] ?? null,
+                'waiter_name' => $order['waiter_name'] ?? null,
+                'customer_name' => $order['customer_name'] ?? null,
+                'customer_phone' => $order['customer_phone'] ?? null,
+                'customer_note' => $order['customer_note'] ?? null,
+                'created_at' => $order['created_at'],
+                'updated_at' => $order['updated_at'],
+                'slip_sent_at' => $sentAt,
+                'slip_acked_at' => $ackedAt,
+                'slip_status' => $slipStatus,
+                'slip_status_label' => match ($slipStatus) {
+                    'acked' => 'Fiş alındı',
+                    'sent' => 'Fiş gönderildi',
+                    default => 'Fiş bekleniyor',
+                },
+                'open_count' => $open,
+                'ready_count' => $ready,
+                'item_count' => count($items),
+                'items' => $items,
+                'slip_events' => $eventsByOrder[$oid] ?? [],
+                'fis_url' => station_slip_url($oid, [
+                    'station' => $station,
+                    'back' => $station === 'bar' ? '/bar' : '/mutfak',
+                ]),
+            ];
+        }
+
+        return $out;
+    }
+
+    public static function markStationSlipSent(PDO $pdo, int $orderId, string $station, bool $refresh = false): void
+    {
+        if (!in_array($station, ['kitchen', 'bar'], true)) {
+            return;
+        }
+        $col = $station === 'bar' ? 'bar_slip_sent_at' : 'kitchen_slip_sent_at';
+        if ($refresh) {
+            $pdo->prepare(
+                "UPDATE orders SET {$col} = NOW(), updated_at = NOW() WHERE id = ?"
+            )->execute([$orderId]);
+            return;
+        }
+        $pdo->prepare(
+            "UPDATE orders SET {$col} = COALESCE({$col}, NOW()), updated_at = NOW() WHERE id = ?"
+        )->execute([$orderId]);
+    }
+
+    public static function ackStationSlip(int $orderId, string $station, ?int $staffId = null): array
+    {
+        if (!in_array($station, ['kitchen', 'bar'], true)) {
+            throw new InvalidArgumentException('Geçersiz istasyon.');
+        }
+        $order = self::findById($orderId);
+        if (!$order) {
+            throw new InvalidArgumentException('Sipariş bulunamadı.');
+        }
+        $pdo = Database::pdo();
+        $col = $station === 'bar' ? 'bar_slip_acked_at' : 'kitchen_slip_acked_at';
+        $pdo->prepare(
+            "UPDATE orders SET {$col} = NOW(), updated_at = NOW() WHERE id = ?"
+        )->execute([$orderId]);
+        $type = $station === 'bar' ? 'slip_acked_bar' : 'slip_acked_kitchen';
+        $label = $station === 'bar' ? 'Bar fişi alındı' : 'Mutfak fişi alındı';
+        self::addEvent($pdo, $orderId, $staffId, $type, $label);
+        return self::findById($orderId) ?: $order;
+    }
+
     /** Canlı yenileme için kısa sürüm anahtarı */
     public static function snapshotVersion(array $rows): string
     {
@@ -498,11 +693,17 @@ final class OrderService
             $parts[] = implode(':', [
                 (string) ($row['id'] ?? ''),
                 (string) ($row['status'] ?? ''),
+                (string) ($row['slip_status'] ?? ''),
+                (string) ($row['slip_sent_at'] ?? ''),
+                (string) ($row['slip_acked_at'] ?? ''),
                 (string) ($row['open_count'] ?? ''),
+                (string) ($row['ready_count'] ?? ''),
+                (string) ($row['item_count'] ?? ''),
                 (string) ($row['open_total'] ?? ''),
                 (string) ($row['is_open'] ?? ''),
                 (string) ($row['is_active'] ?? ''),
                 (string) ($row['quantity'] ?? ''),
+                sha1(json_encode($row['items'] ?? []) ?: ''),
             ]);
         }
         return substr(sha1(implode('|', $parts)), 0, 16);
@@ -673,9 +874,11 @@ final class OrderService
             }
             if ($hasKitchen) {
                 self::addEvent($pdo, $orderId, $staffId, 'sent_kitchen', 'Mutfak fişi gönderildi');
+                self::markStationSlipSent($pdo, $orderId, 'kitchen');
             }
             if ($hasBar) {
                 self::addEvent($pdo, $orderId, $staffId, 'sent_bar', 'Bar fişi gönderildi');
+                self::markStationSlipSent($pdo, $orderId, 'bar');
             }
             $pdo->commit();
         } catch (Throwable $e) {

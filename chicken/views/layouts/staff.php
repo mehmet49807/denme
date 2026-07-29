@@ -4,9 +4,10 @@
 /** @var array|null $user */
 $role = $user['role'] ?? Auth::role();
 $isAdminArea = $role === 'admin' && str_starts_with(current_path(), '/yonetici');
+$isStationRole = in_array($role, ['kitchen', 'bar'], true);
 CategorySync::ensure();
 $staffCategories = [];
-if (!$isAdminArea) {
+if (!$isAdminArea && !$isStationRole) {
     try {
         $staffCategories = Database::pdo()
             ->query('SELECT name, slug FROM categories WHERE is_active = 1 ORDER BY sort_order, id')
@@ -19,24 +20,26 @@ $catalogBySlug = [];
 foreach (CategorySync::catalog() as $row) {
     $catalogBySlug[$row['slug']] = $row;
 }
-$homeStaff = $role === 'admin'
-    ? url('/yonetici')
-    : (in_array($role, ['waiter'], true)
-        ? url('/garson')
-        : (in_array($role, ['cashier'], true) ? url('/kasa') : url('/mutfak')));
+$homeStaff = url(staff_home_path(is_string($role) ? $role : null));
 $sideLabel = match ($role) {
     'admin' => 'Yönetici',
     'cashier' => 'Kasa',
+    'kitchen' => 'Mutfak',
+    'bar' => 'Bar',
     default => 'Garson',
 };
 $sideIcon = match ($role) {
     'admin' => 'menu',
     'cashier' => 'cashier',
+    'kitchen' => 'grill',
+    'bar' => 'drinks',
     default => 'waiter',
 };
 $sideColor = match ($role) {
     'admin' => '#e2b457',
     'cashier' => '#4c8dff',
+    'kitchen' => '#d97706',
+    'bar' => '#0d9488',
     default => '#ff6a1a',
 };
 $pendingOnlineCount = (int) ($pendingOnlineCount ?? 0);
@@ -83,7 +86,7 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
       <?php if ($isAdminArea): ?>
         <p class="side-section-title">Restoran kontrol</p>
         <?php partial('partials/admin_side_nav'); ?>
-      <?php else: ?>
+      <?php elseif (!$isStationRole): ?>
         <nav class="side-cats" data-side-cats>
           <button class="side-cat active" type="button" data-cat-tab="all">
             <?php partial('partials/menu_icon', ['icon' => 'all', 'color' => '#e2b457']); ?>
@@ -100,9 +103,17 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
             </button>
           <?php endforeach; ?>
         </nav>
+      <?php else: ?>
+        <p class="side-section-title">İstasyon</p>
       <?php endif; ?>
 
       <div class="userbox">
+        <?php if ($isStationRole): ?>
+          <a class="side-link<?= is_active_path($role === 'bar' ? '/bar' : '/mutfak') ? ' active' : '' ?>" href="<?= e(url($role === 'bar' ? '/bar' : '/mutfak')) ?>">
+            <?php partial('partials/menu_icon', ['icon' => $sideIcon, 'color' => $sideColor]); ?>
+            <span><?= e($sideLabel) ?> panosu</span>
+          </a>
+        <?php endif; ?>
         <?php if (in_array($role, ['cashier', 'waiter'], true)): ?>
           <a
             class="side-link<?= (
@@ -179,8 +190,12 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
             </a>
             <a class="<?= is_active_path('/qr') ? 'active' : '' ?>" href="<?= e(url('/qr')) ?>">QR Menü</a>
           <?php endif; ?>
-          <a class="<?= is_active_path('/mutfak') ? 'active' : '' ?>" href="<?= e(url('/mutfak')) ?>">Mutfak</a>
-          <a class="<?= is_active_path('/bar') ? 'active' : '' ?>" href="<?= e(url('/bar')) ?>">Bar</a>
+          <?php if (in_array($role, ['kitchen', 'waiter', 'cashier', 'admin'], true)): ?>
+            <a class="<?= is_active_path('/mutfak') ? 'active' : '' ?>" href="<?= e(url('/mutfak')) ?>">Mutfak</a>
+          <?php endif; ?>
+          <?php if (in_array($role, ['bar', 'waiter', 'cashier', 'admin'], true)): ?>
+            <a class="<?= is_active_path('/bar') ? 'active' : '' ?>" href="<?= e(url('/bar')) ?>">Bar</a>
+          <?php endif; ?>
         </nav>
         <button
           class="btn btn-dark btn-menu"

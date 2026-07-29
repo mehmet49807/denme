@@ -1752,6 +1752,103 @@ a.table-tile-link {
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 12px;
 }
+.station-orders {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+.station-order {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.station-order.is-sent {
+  border-color: rgba(217, 119, 6, 0.45);
+}
+.station-order.is-acked {
+  border-color: rgba(31, 157, 99, 0.4);
+}
+.station-order.is-waiting {
+  border-color: rgba(255, 106, 26, 0.45);
+}
+.station-order-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+.station-order-head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+.station-slip-meta {
+  text-align: right;
+  display: grid;
+  gap: 4px;
+}
+.slip-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.slip-chip.slip-waiting {
+  background: rgba(255, 106, 26, 0.14);
+  color: #c2410c;
+}
+.slip-chip.slip-sent {
+  background: rgba(217, 119, 6, 0.16);
+  color: #b45309;
+}
+.slip-chip.slip-acked {
+  background: rgba(31, 157, 99, 0.14);
+  color: #146c43;
+}
+.station-note {
+  margin: 0;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  font-size: 0.92rem;
+}
+.station-item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.station-item {
+  padding: 10px 0;
+  border-top: 1px dashed var(--line);
+}
+.station-item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.station-item-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+.station-item-note {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.station-item.status-ready {
+  opacity: 0.72;
+}
+.station-order-actions {
+  margin-top: 4px;
+  align-items: center;
+}
 .ticket {
   background: var(--panel);
   border: 1px solid var(--line);
