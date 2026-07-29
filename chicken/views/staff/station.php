@@ -31,7 +31,7 @@ $fmtTime = static function (?string $dt): string {
 </div>
 
 <p class="muted" style="margin-top:-4px">
-  Açık siparişler, ürün detayları ve fiş durumu bu ekranda canlı güncellenir.
+  Açık siparişler canlı güncellenir. Hazır olan fişi <strong>Fişi kapat</strong> ile panodan kaldırın.
 </p>
 
 <div
@@ -115,6 +115,13 @@ $fmtTime = static function (?string $dt): string {
             data-station="<?= e($stationKey) ?>"
           >Fişi aldım</button>
         <?php endif; ?>
+        <button
+          class="btn btn-dark btn-sm"
+          type="button"
+          data-slip-close
+          data-order-id="<?= (int) $order['id'] ?>"
+          data-station="<?= e($stationKey) ?>"
+        >Fişi kapat</button>
         <span class="muted small"><?= (int) ($order['open_count'] ?? 0) ?> açık · <?= (int) ($order['ready_count'] ?? 0) ?> hazır</span>
       </div>
     </article>

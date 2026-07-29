@@ -932,6 +932,7 @@
             <div class="cta-row station-order-actions">
               <a class="btn btn-ghost btn-sm" href="${escAttr(fisUrl)}">Fişi gör</a>
               ${ackBtn}
+              <button class="btn btn-dark btn-sm" type="button" data-slip-close data-order-id="${Number(order.id)}" data-station="${esc(station)}">Fişi kapat</button>
               <span class="muted small">${Number(order.open_count || 0)} açık · ${Number(order.ready_count || 0)} hazır</span>
             </div>
           </article>`;
@@ -1007,6 +1008,28 @@
     } catch (err) {
       alert(err.message || 'Fiş alınamadı');
       ack.disabled = false;
+    }
+  });
+
+  document.addEventListener('click', async (event) => {
+    const closeBtn = event.target.closest('[data-slip-close]');
+    if (!closeBtn) return;
+    const orderId = Number(closeBtn.getAttribute('data-order-id') || 0);
+    const station = closeBtn.getAttribute('data-station') || 'kitchen';
+    if (!orderId) return;
+    if (!confirm('Bu fiş kapatılsın mı? Ürünler tamamlandı sayılır ve panodan kalkar.')) return;
+    closeBtn.disabled = true;
+    try {
+      await postJson('/api/station/slip-close', { order_id: orderId, station });
+      const board = closeBtn.closest('[data-station-board]');
+      if (board && typeof board._refreshStation === 'function') {
+        board._refreshStation(true);
+      } else {
+        location.reload();
+      }
+    } catch (err) {
+      alert(err.message || 'Fiş kapatılamadı');
+      closeBtn.disabled = false;
     }
   });
 

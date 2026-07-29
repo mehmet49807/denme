@@ -1011,6 +1011,37 @@ $router->post('/api/station/slip-ack', static function (): void {
     }
 });
 
+$router->post('/api/station/slip-close', static function (): void {
+    Auth::requireRole('waiter', 'cashier', 'admin', 'kitchen', 'bar');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
+    $orderId = (int) ($payload['order_id'] ?? 0);
+    $station = (string) ($payload['station'] ?? '') === 'bar' ? 'bar' : 'kitchen';
+    if ($orderId <= 0) {
+        json_response(['ok' => false, 'error' => 'Geçersiz sipariş'], 422);
+    }
+    $role = Auth::role();
+    if ($role === 'kitchen' && $station !== 'kitchen') {
+        json_response(['ok' => false, 'error' => 'Yetkisiz'], 403);
+    }
+    if ($role === 'bar' && $station !== 'bar') {
+        json_response(['ok' => false, 'error' => 'Yetkisiz'], 403);
+    }
+    try {
+        $order = OrderService::closeStationSlip($orderId, $station, Auth::id());
+        json_response([
+            'ok' => true,
+            'order_id' => (int) $order['id'],
+            'closed' => true,
+        ]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
 // Cashier
 $router->get('/kasa', static function (): void {
     Auth::requireRole('cashier', 'admin');
