@@ -149,7 +149,15 @@ final class OrderService
             throw $e;
         }
 
-        return self::findById($orderId);
+        $order = self::findById($orderId);
+        if ($order && ($order['source'] ?? '') === 'online' && class_exists('WhatsAppNotify')) {
+            try {
+                WhatsAppNotify::notifyNewOnlineOrder($order);
+            } catch (Throwable $e) {
+                error_log('WhatsAppNotify: ' . $e->getMessage());
+            }
+        }
+        return $order;
     }
 
     public static function addItems(int $orderId, array $items, ?int $staffId = null): array
@@ -403,6 +411,71 @@ final class OrderService
         unset($table);
 
         return $tables;
+    }
+
+    /** Tüm masalar (pasif dahil) + açık sipariş özeti */
+    public static function tablesOverviewAll(): array
+    {
+        $pdo = Database::pdo();
+        $tables = $pdo->query('SELECT * FROM dining_tables ORDER BY id')->fetchAll();
+        $openMap = [];
+        foreach (self::tablesOverview() as $row) {
+            $openMap[(int) $row['id']] = $row;
+        }
+        foreach ($tables as &$table) {
+            $id = (int) $table['id'];
+            $open = $openMap[$id] ?? null;
+            $table['is_open'] = !empty($open['is_open']);
+            $table['open_count'] = (int) ($open['open_count'] ?? 0);
+            $table['open_total'] = (float) ($open['open_total'] ?? 0);
+            $table['waiter_names'] = $open['waiter_names'] ?? [];
+        }
+        unset($table);
+        return $tables;
+    }
+
+    /**
+     * Mutfak / bar bekleyen ürün satırları.
+     * @return list<array<string,mixed>>
+     */
+    public static function stationQueued(string $station): array
+    {
+        if (!in_array($station, ['kitchen', 'bar'], true)) {
+            throw new InvalidArgumentException('Geçersiz istasyon.');
+        }
+        $pdo = Database::pdo();
+        $stmt = $pdo->prepare(
+            "SELECT oi.id, oi.quantity, oi.item_name, oi.status, oi.note, oi.station,
+                    o.order_code, o.table_id, o.source, o.customer_note, o.created_at AS order_time,
+                    t.label AS table_label
+             FROM order_items oi
+             JOIN orders o ON o.id = oi.order_id
+             LEFT JOIN dining_tables t ON t.id = o.table_id
+             WHERE oi.station = ?
+               AND oi.status IN ('queued','preparing')
+               AND o.status NOT IN ('cancelled','paid','pending')
+             ORDER BY oi.id ASC"
+        );
+        $stmt->execute([$station]);
+        return $stmt->fetchAll() ?: [];
+    }
+
+    /** Canlı yenileme için kısa sürüm anahtarı */
+    public static function snapshotVersion(array $rows): string
+    {
+        $parts = [];
+        foreach ($rows as $row) {
+            $parts[] = implode(':', [
+                (string) ($row['id'] ?? ''),
+                (string) ($row['status'] ?? ''),
+                (string) ($row['open_count'] ?? ''),
+                (string) ($row['open_total'] ?? ''),
+                (string) ($row['is_open'] ?? ''),
+                (string) ($row['is_active'] ?? ''),
+                (string) ($row['quantity'] ?? ''),
+            ]);
+        }
+        return substr(sha1(implode('|', $parts)), 0, 16);
     }
 
     public static function openOrdersForTable(int $tableId): array

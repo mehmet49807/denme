@@ -14,6 +14,7 @@ $paidSum = array_sum(array_map(
     <h1>Masalar</h1>
   </div>
   <div class="cta-row">
+    <span class="live-chip" data-live-updated>Canlı</span>
     <a class="btn btn-primary btn-sm" href="<?= e(url('/masa/ekle')) ?>">Yeni masa</a>
     <a class="btn btn-dark btn-sm" href="<?= e(url('/kasa/gun-sonu')) ?>">Gün sonu</a>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('/kasa/faturalar')) ?>">Faturalar</a>
@@ -50,13 +51,21 @@ $paidSum = array_sum(array_map(
 </section>
 
 <div class="stats">
-  <div class="stat"><span class="muted">Açık masa</span><strong><?= (int) $openTables ?></strong></div>
-  <div class="stat"><span class="muted">Toplam masa</span><strong><?= count($tables) ?></strong></div>
+  <div class="stat"><span class="muted">Açık masa</span><strong data-stat-open-tables><?= (int) $openTables ?></strong></div>
+  <div class="stat"><span class="muted">Toplam masa</span><strong data-stat-total-tables><?= count($tables) ?></strong></div>
   <div class="stat"><span class="muted">Online açık</span><strong><?= count($onlineOpen) ?></strong></div>
   <div class="stat"><span class="muted">Bugün tahsilat</span><strong><?= e(money($paidSum)) ?></strong></div>
 </div>
 
-<div class="table-board">
+<div
+  class="table-board"
+  data-tables-board
+  data-tables-scope="active"
+  data-tables-link="/kasa/masa"
+  data-tables-redirect="<?= e(url('/kasa')) ?>"
+  data-can-close="1"
+  data-live-version="<?= e(OrderService::snapshotVersion($tables)) ?>"
+>
   <?php foreach ($tables as $table): ?>
     <?php $isOpen = !empty($table['is_open']); ?>
     <article class="table-tile <?= $isOpen ? 'is-open' : 'is-free' ?>">

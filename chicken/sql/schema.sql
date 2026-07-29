@@ -187,6 +187,7 @@ CREATE TABLE IF NOT EXISTS franchise_applications (
   email VARCHAR(160) NOT NULL,
   city VARCHAR(80) NOT NULL,
   district VARCHAR(80) NULL,
+  preferred_branch_id INT UNSIGNED NULL,
   budget_range VARCHAR(80) NULL,
   experience VARCHAR(400) NULL,
   message TEXT NULL,
@@ -196,4 +197,19 @@ CREATE TABLE IF NOT EXISTS franchise_applications (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_franchise_status_created (status, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS branches (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  city VARCHAR(80) NOT NULL,
+  phone VARCHAR(40) NULL,
+  whatsapp VARCHAR(40) NULL,
+  address VARCHAR(400) NULL,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  sort_order INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_branches_active_sort (is_active, sort_order),
+  INDEX idx_branches_city (city)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

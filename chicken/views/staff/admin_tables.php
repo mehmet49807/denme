@@ -4,10 +4,22 @@
     <p class="eyebrow">Yönetici · Masalar</p>
     <h1>Tüm masalar</h1>
   </div>
-  <a class="btn btn-primary btn-sm" href="<?= e(url('/masa/ekle')) ?>">Yeni masa</a>
+  <div class="cta-row">
+    <span class="live-chip" data-live-updated>Canlı</span>
+    <a class="btn btn-primary btn-sm" href="<?= e(url('/masa/ekle')) ?>">Yeni masa</a>
+  </div>
 </div>
 
-<div class="table-board">
+<div
+  class="table-board"
+  data-tables-board
+  data-tables-scope="admin"
+  data-tables-link="/yonetici/masalar"
+  data-tables-redirect="<?= e(url('/yonetici/masalar')) ?>"
+  data-can-close="1"
+  data-admin-mode="1"
+  data-live-version="<?= e(OrderService::snapshotVersion($tables)) ?>"
+>
   <?php foreach ($tables as $table): ?>
     <?php
       $isOpen = !empty($table['is_open']);

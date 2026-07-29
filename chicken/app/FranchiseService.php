@@ -16,6 +16,10 @@ final class FranchiseService
         $budget = trim((string) ($data['budget'] ?? ''));
         $experience = trim((string) ($data['experience'] ?? ''));
         $message = trim((string) ($data['message'] ?? ''));
+        $branchId = isset($data['preferred_branch_id']) ? (int) $data['preferred_branch_id'] : 0;
+        if ($branchId < 1) {
+            $branchId = 0;
+        }
 
         if ($name === '' || mb_strlen($name) < 3) {
             throw new InvalidArgumentException('Ad soyad en az 3 karakter olmalı.');
@@ -35,12 +39,15 @@ final class FranchiseService
         if (empty($data['accept_kvkk'])) {
             throw new InvalidArgumentException('KVKK bilgilendirmesini onaylamalısınız.');
         }
+        if ($branchId > 0 && class_exists('BranchService') && !BranchService::find($branchId)) {
+            throw new InvalidArgumentException('Seçilen şube bulunamadı.');
+        }
 
         $pdo = Database::pdo();
         $stmt = $pdo->prepare(
             'INSERT INTO franchise_applications
-              (full_name, phone, email, city, district, budget_range, experience, message, status)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+              (full_name, phone, email, city, district, preferred_branch_id, budget_range, experience, message, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $name,
@@ -48,6 +55,7 @@ final class FranchiseService
             mb_strtolower($email),
             $city,
             $district !== '' ? $district : null,
+            $branchId > 0 ? $branchId : null,
             $budget !== '' ? $budget : null,
             $experience !== '' ? $experience : null,
             $message !== '' ? $message : null,
@@ -58,23 +66,30 @@ final class FranchiseService
     }
 
     /** @return list<array<string,mixed>> */
-    public static function list(?string $status = null, int $limit = 200): array
+    public static function list(?string $status = null, int $limit = 200, ?int $branchId = null): array
     {
         $limit = max(1, min(500, $limit));
         $pdo = Database::pdo();
+        $where = ['1=1'];
+        $params = [];
         if ($status !== null && $status !== '' && in_array($status, self::STATUSES, true)) {
-            $stmt = $pdo->prepare(
-                'SELECT * FROM franchise_applications WHERE status = ? ORDER BY created_at DESC LIMIT ' . $limit
-            );
-            $stmt->execute([$status]);
-            return $stmt->fetchAll();
+            $where[] = 'f.status = ?';
+            $params[] = $status;
         }
-        return $pdo->query(
-            'SELECT * FROM franchise_applications ORDER BY
-              FIELD(status, \'new\', \'reviewing\', \'approved\', \'rejected\'),
-              created_at DESC
-             LIMIT ' . $limit
-        )->fetchAll();
+        if ($branchId !== null && $branchId > 0) {
+            $where[] = 'f.preferred_branch_id = ?';
+            $params[] = $branchId;
+        }
+        $sql = 'SELECT f.*, b.name AS branch_name, b.city AS branch_city
+                FROM franchise_applications f
+                LEFT JOIN branches b ON b.id = f.preferred_branch_id
+                WHERE ' . implode(' AND ', $where) . '
+                ORDER BY FIELD(f.status, \'new\', \'reviewing\', \'approved\', \'rejected\'),
+                         f.created_at DESC
+                LIMIT ' . $limit;
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll() ?: [];
     }
 
     public static function find(int $id): ?array

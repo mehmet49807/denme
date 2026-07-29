@@ -582,20 +582,30 @@
     });
   });
 
-  document.querySelectorAll('[data-item-status]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const itemId = btn.getAttribute('data-item-id');
-      const status = btn.getAttribute('data-item-status');
-      try {
-        await postJson('/api/station/item-status', {
-          item_id: Number(itemId),
-          status,
-        });
+  // Mutfak/bar item status — event delegation (live rebuild uyumlu)
+  document.addEventListener('click', async (event) => {
+    const btn = event.target.closest('[data-item-status]');
+    if (!btn) return;
+    event.preventDefault();
+    if (btn.disabled) return;
+    const itemId = btn.getAttribute('data-item-id');
+    const status = btn.getAttribute('data-item-status');
+    try {
+      btn.disabled = true;
+      await postJson('/api/station/item-status', {
+        item_id: Number(itemId),
+        status,
+      });
+      const board = btn.closest('[data-station-board]');
+      if (board && typeof board._refreshStation === 'function') {
+        await board._refreshStation(true);
+      } else {
         location.reload();
-      } catch (err) {
-        alert(err.message || 'Güncellenemedi');
       }
-    });
+    } catch (err) {
+      alert(err.message || 'Güncellenemedi');
+      btn.disabled = false;
+    }
   });
 
   document.querySelectorAll('[data-note-save]').forEach((btn) => {
@@ -781,5 +791,187 @@
     }
     refreshOnlineBadge();
     setInterval(refreshOnlineBadge, 10000);
+  }
+
+  const sourceLabelTr = { online: 'Online', waiter: 'Garson', cashier: 'Kasa' };
+
+  // —— Canlı mutfak / bar ——
+  document.querySelectorAll('[data-station-board]').forEach((board) => {
+    const station = board.getAttribute('data-station') || 'kitchen';
+    let version = board.getAttribute('data-live-version') || '';
+    const setUpdated = (t) => {
+      document.querySelectorAll('[data-live-updated]').forEach((el) => {
+        el.textContent = 'Canlı · ' + (t || '');
+      });
+    };
+    const renderRows = (rows) => {
+      if (!rows.length) {
+        board.innerHTML = '<div class="panel muted" data-station-empty>Bekleyen ürün yok.</div>';
+        return;
+      }
+      board.innerHTML = rows
+        .map((row) => {
+          const noteOrder = row.customer_note
+            ? `<p><strong>Sipariş notu:</strong> ${esc(row.customer_note)}</p>`
+            : '';
+          const noteItem = row.note ? `<p>${esc(row.note)}</p>` : '';
+          let actions = '';
+          if (row.status === 'queued') {
+            actions += `<button class="btn btn-primary btn-sm" type="button" data-item-id="${Number(row.id)}" data-item-status="preparing">Hazırla</button>`;
+          }
+          if (row.status === 'queued' || row.status === 'preparing') {
+            actions += `<button class="btn btn-ghost btn-sm" type="button" data-item-id="${Number(row.id)}" data-item-status="ready">Hazır</button>`;
+          }
+          return `<article class="ticket">
+            <h3>${Number(row.quantity)}× ${esc(row.item_name)}</h3>
+            <p class="muted small">${esc(row.order_code)} · ${esc(row.table_label || 'Online')} · ${esc(sourceLabelTr[row.source] || row.source)}</p>
+            ${noteOrder}${noteItem}
+            <div class="cta-row" style="margin-top:12px">${actions}</div>
+          </article>`;
+        })
+        .join('');
+    };
+    async function refreshStation(force) {
+      try {
+        const res = await fetch(api(`/api/station/${station}`));
+        const data = await res.json();
+        if (!data.ok) return;
+        setUpdated(data.updated_at);
+        if (!force && data.version && data.version === version) return;
+        version = data.version || version;
+        board.setAttribute('data-live-version', version);
+        renderRows(data.rows || []);
+      } catch (_) {}
+    }
+    board._refreshStation = refreshStation;
+    board.setAttribute('data-live-bound', '1');
+    setInterval(() => refreshStation(false), 5000);
+    document.querySelectorAll('[data-live-refresh]').forEach((btn) => {
+      btn.addEventListener('click', () => refreshStation(true));
+    });
+  });
+
+  // —— Canlı masa panoları ——
+  document.querySelectorAll('[data-tables-board]').forEach((board) => {
+    const scope = board.getAttribute('data-tables-scope') || 'active';
+    const linkBase = board.getAttribute('data-tables-link') || '/kasa/masa';
+    const redirect = board.getAttribute('data-tables-redirect') || '';
+    const canClose = board.getAttribute('data-can-close') === '1';
+    const adminMode = board.getAttribute('data-admin-mode') === '1';
+    let version = board.getAttribute('data-live-version') || '';
+    const setUpdated = (t) => {
+      document.querySelectorAll('[data-live-updated]').forEach((el) => {
+        el.textContent = 'Canlı · ' + (t || '');
+      });
+    };
+    const moneyLocal = (n) =>
+      new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(Number(n || 0));
+
+    const renderTables = (tables) => {
+      const emptyHint = document.querySelector('[data-tables-empty]');
+      if (emptyHint) emptyHint.hidden = tables.length > 0;
+      if (!tables.length && scope === 'open') {
+        board.innerHTML = '';
+        return;
+      }
+      board.innerHTML = tables
+        .map((t) => {
+          const isOpen = !!t.is_open;
+          const active = Number(t.is_active) !== 0;
+          const cls = `${isOpen ? 'is-open' : 'is-free'}${!active ? ' is-inactive' : ''}`;
+          const chip = !active ? 'Pasif' : isOpen ? 'Açık' : 'Boş';
+          const meta = isOpen
+            ? `<div class="table-tile-meta"><span>${Number(t.open_count)} sipariş</span><strong class="price">${moneyLocal(t.open_total)}</strong></div>`
+            : scope === 'active'
+              ? '<div class="muted small">Sipariş aç / tahsilat</div>'
+              : '';
+          const waiters =
+            t.waiter_names && t.waiter_names.length
+              ? `<div class="muted small">${esc(t.waiter_names.join(', '))}</div>`
+              : '';
+          const opener = t.opened_by_name
+            ? `<div class="muted small">Açan: ${esc(t.opened_by_name)}</div>`
+            : '';
+          const closeBtns =
+            canClose && isOpen && active
+              ? `<div class="cta-row table-close-btns" style="margin-top:10px">
+                  <button class="btn btn-sm btn-primary" type="button" data-close-table="${Number(t.id)}" data-method="cash" data-close-redirect="${esc(redirect)}">Nakit kapat</button>
+                  <button class="btn btn-sm btn-dark" type="button" data-close-table="${Number(t.id)}" data-method="card" data-close-redirect="${esc(redirect)}">Kart kapat</button>
+                </div>`
+              : '';
+          if (adminMode) {
+            return `<article class="table-tile ${cls}">
+              <div class="table-tile-top"><strong>${esc(t.label)}</strong><span class="chip ${isOpen ? 'kitchen' : ''}">${chip}</span></div>
+              <div class="table-tile-code muted small">${esc(t.code)} · ${Number(t.seats)} kişi</div>
+              ${opener}${meta}${waiters}
+              <div class="cta-row" style="margin-top:12px">
+                <a class="btn btn-primary btn-sm" href="${api('/yonetici/masalar/' + Number(t.id))}">Düzenle</a>
+                ${
+                  active
+                    ? `<a class="btn btn-dark btn-sm" href="${api('/kasa/masa/' + Number(t.id))}">Kasa</a>
+                       <a class="btn btn-ghost btn-sm" href="${api('/garson/masa/' + Number(t.id))}">Garson</a>`
+                    : ''
+                }
+              </div>
+              ${closeBtns}
+            </article>`;
+          }
+          return `<article class="table-tile ${cls}">
+            <a class="table-tile-link" href="${api(linkBase + '/' + Number(t.id))}">
+              <div class="table-tile-top"><strong>${esc(t.label)}</strong><span class="chip ${isOpen ? 'kitchen' : ''}">${chip}</span></div>
+              <div class="table-tile-code muted small">${esc(t.code)}${t.seats ? ' · ' + Number(t.seats) + ' kişi' : ''}</div>
+              ${opener}${meta}${waiters}
+            </a>
+            ${closeBtns}
+          </article>`;
+        })
+        .join('');
+
+      const openCount = tables.filter((t) => t.is_open).length;
+      document.querySelectorAll('[data-stat-open-tables]').forEach((el) => {
+        el.textContent = String(openCount);
+      });
+      document.querySelectorAll('[data-stat-total-tables]').forEach((el) => {
+        el.textContent = String(tables.length);
+      });
+    };
+
+    async function refreshTables(force) {
+      try {
+        const res = await fetch(api(`/api/tables/overview?scope=${encodeURIComponent(scope)}`));
+        const data = await res.json();
+        if (!data.ok) return;
+        setUpdated(data.updated_at);
+        if (!force && data.version && data.version === version) return;
+        version = data.version || version;
+        board.setAttribute('data-live-version', version);
+        renderTables(data.tables || []);
+      } catch (_) {}
+    }
+    board._refreshTables = refreshTables;
+    setInterval(() => refreshTables(false), 5000);
+  });
+
+  // —— WhatsApp yeni sipariş bildirimi ——
+  const waSeenKey = 'chicken_wa_seen_order';
+  async function pollWhatsAppPending() {
+    try {
+      const res = await fetch(api('/api/whatsapp/pending'));
+      const data = await res.json();
+      if (!data.ok || !data.enabled || !data.pending) return;
+      const pending = data.pending;
+      const id = Number(pending.order_id || 0);
+      if (!id || !pending.url) return;
+      const seen = Number(localStorage.getItem(waSeenKey) || 0);
+      if (id <= seen) return;
+      localStorage.setItem(waSeenKey, String(id));
+      if (pending.auto_open) {
+        window.open(pending.url, '_blank', 'noopener');
+      }
+    } catch (_) {}
+  }
+  if (document.querySelector('[data-online-badge], [data-online-pending-section], [data-live-stats]')) {
+    pollWhatsAppPending();
+    setInterval(pollWhatsAppPending, 8000);
   }
 })();
