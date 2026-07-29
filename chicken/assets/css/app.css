@@ -2692,19 +2692,32 @@ a.table-tile-link {
     linear-gradient(180deg, #f7fcfb 0%, #eef7f4 100%);
 }
 .brochure.theme-yanmenu .brochure-hero {
-  display: grid;
-  grid-template-columns: auto 1fr;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px 16px;
   text-align: left;
-  align-items: center;
   padding: 20px 8px 18px;
 }
 .brochure.theme-yanmenu .brochure-logo {
-  grid-row: span 4;
   margin: 0;
   width: 88px;
   height: 88px;
 }
+.brochure.theme-yanmenu .brochure-hero .eyebrow,
+.brochure.theme-yanmenu .brochure-hero h1,
+.brochure.theme-yanmenu .brochure-hero .brochure-menu-label,
+.brochure.theme-yanmenu .brochure-hero .brochure-lede,
+.brochure.theme-yanmenu .brochure-hero .brochure-table {
+  width: calc(100% - 104px);
+  margin-left: auto;
+}
+.brochure.theme-yanmenu .brochure-hero .eyebrow {
+  order: 1;
+}
+.brochure.theme-yanmenu .brochure-logo { order: 0; }
+.brochure.theme-yanmenu .brochure-hero h1 { order: 2; }
+.brochure.theme-yanmenu .brochure-hero .brochure-menu-label { order: 3; }
 .brochure.theme-yanmenu .brochure-catnav {
   border-bottom: 1px solid var(--brochure-line);
   margin-bottom: 18px;
@@ -2733,18 +2746,28 @@ a.table-tile-link {
 @media print {
   .brochure-body.theme-efekli,
   .brochure-body.theme-restoran,
-  .brochure-body.theme-premium {
+  .brochure-body.theme-premium,
+  .brochure-body.theme-tahta,
+  .brochure-body.theme-galeri,
+  .brochure-body.theme-dergi {
     background: #fff !important;
     color: #111 !important;
     animation: none !important;
   }
   .brochure.theme-efekli .brochure-hero h1,
-  .brochure.theme-efekli .price {
+  .brochure.theme-efekli .price,
+  .brochure.theme-dergi .brochure-hero,
+  .brochure.theme-dergi .brochure-hero h1,
+  .brochure.layout-gallery .brochure-item-body,
+  .brochure.layout-gallery .brochure-item-body h3,
+  .brochure.layout-gallery .brochure-item-body .price,
+  .brochure.layout-gallery .brochure-item-body p {
     color: #111 !important;
     background: none !important;
     -webkit-background-clip: unset !important;
     background-clip: unset !important;
   }
+  .brochure-catnav { position: static; }
 }
 
 
