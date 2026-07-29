@@ -39,6 +39,16 @@ $imageSrc = $image !== '' ? asset_url($image) : '';
       <p><?= e((string) ($item['description'] ?? '')) ?></p>
     <?php endif; ?>
     <?php if ($showAdd): ?>
+      <label class="menu-item-note">
+        <span class="visually-hidden">Ürün notu</span>
+        <input
+          type="text"
+          maxlength="255"
+          data-item-add-note
+          placeholder="Bu ürün için not yazın..."
+          autocomplete="off"
+        >
+      </label>
       <button
         class="btn btn-dark btn-sm"
         type="button"

@@ -1244,7 +1244,7 @@ $router->post('/api/order-items/{id}/cancel', static function (string $id): void
 });
 
 $router->post('/api/order-items/{id}/note', static function (string $id): void {
-    Auth::requireRole('waiter', 'cashier', 'admin');
+    Auth::requireRole('waiter', 'cashier', 'admin', 'kitchen', 'bar');
     $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
     if (!is_array($payload)) {
         $payload = [];
@@ -1253,7 +1253,7 @@ $router->post('/api/order-items/{id}/note', static function (string $id): void {
     $itemId = (int) $id;
     $pdo = Database::pdo();
     $stmt = $pdo->prepare(
-        'SELECT oi.id, o.waiter_id, o.status
+        'SELECT oi.id, oi.station, o.waiter_id, o.status
          FROM order_items oi
          JOIN orders o ON o.id = oi.order_id
          WHERE oi.id = ? LIMIT 1'
@@ -1263,8 +1263,15 @@ $router->post('/api/order-items/{id}/note', static function (string $id): void {
     if (!$row) {
         json_response(['ok' => false, 'error' => 'Ürün bulunamadı'], 404);
     }
-    if (Auth::role() === 'waiter' && (int) ($row['waiter_id'] ?? 0) !== (int) Auth::id()) {
+    $role = Auth::role();
+    if ($role === 'waiter' && (int) ($row['waiter_id'] ?? 0) !== (int) Auth::id()) {
         json_response(['ok' => false, 'error' => 'Sadece kendi siparişinize not yazabilirsiniz.'], 403);
+    }
+    if ($role === 'kitchen' && (string) ($row['station'] ?? '') !== 'kitchen') {
+        json_response(['ok' => false, 'error' => 'Yalnızca mutfak ürünlerine not yazabilirsiniz.'], 403);
+    }
+    if ($role === 'bar' && (string) ($row['station'] ?? '') !== 'bar') {
+        json_response(['ok' => false, 'error' => 'Yalnızca bar ürünlerine not yazabilirsiniz.'], 403);
     }
     try {
         OrderService::updateItemNote($itemId, (string) ($payload['note'] ?? ''), Auth::id());

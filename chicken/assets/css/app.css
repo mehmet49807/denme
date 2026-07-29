@@ -1170,6 +1170,39 @@ tr:hover td { background: rgba(154, 123, 47, 0.04); }
   width: 100%;
   min-height: 40px;
 }
+.menu-item-note {
+  display: block;
+  margin: 0 0 8px;
+}
+.menu-item-note input {
+  width: 100%;
+  min-height: 38px;
+  font-size: 0.88rem;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.station-item-note-edit {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.station-item-note-edit .item-note-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
 .table-board {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));

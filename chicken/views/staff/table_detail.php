@@ -99,13 +99,13 @@ $eyebrow = match (true) {
           </div>
           <?php if (!$cancelled && $allowNote): ?>
             <label class="item-note-label">
-              <?= e(station_label($line['station'])) ?> notu
+              <?= e(station_label($line['station'])) ?> · Not
               <div class="item-note-row">
                 <input
                   type="text"
                   maxlength="255"
                   value="<?= e((string) ($line['note'] ?? '')) ?>"
-                  placeholder="<?= $line['station'] === 'bar' ? 'Bar için not...' : 'Mutfak için not...' ?>"
+                  placeholder="Bu ürün için not yazın..."
                   data-item-note-input="<?= (int) $line['id'] ?>"
                 >
                 <button class="btn btn-dark btn-sm" type="button" data-item-note-save="<?= (int) $line['id'] ?>">Kaydet</button>

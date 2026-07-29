@@ -89,9 +89,19 @@ $fmtTime = static function (?string $dt): string {
               <strong><?= (int) $item['quantity'] ?>× <?= e((string) $item['item_name']) ?></strong>
               <span class="chip"><?= e($statusChip((string) $item['status'])) ?></span>
             </div>
-            <?php if (!empty($item['note'])): ?>
-              <div class="station-item-note">* <?= e((string) $item['note']) ?></div>
-            <?php endif; ?>
+            <label class="station-item-note-edit">
+              Not
+              <div class="item-note-row">
+                <input
+                  type="text"
+                  maxlength="255"
+                  value="<?= e((string) ($item['note'] ?? '')) ?>"
+                  placeholder="Ürün notu yazın..."
+                  data-item-note-input="<?= (int) $item['id'] ?>"
+                >
+                <button class="btn btn-dark btn-sm" type="button" data-item-note-save="<?= (int) $item['id'] ?>">Kaydet</button>
+              </div>
+            </label>
             <div class="cta-row" style="margin-top:8px">
               <?php if (($item['status'] ?? '') === 'queued'): ?>
                 <button class="btn btn-primary btn-sm" type="button" data-item-id="<?= (int) $item['id'] ?>" data-item-status="preparing">Hazırla</button>
