@@ -24,6 +24,30 @@ date_default_timezone_set((string) ($config['timezone'] ?? 'Europe/Istanbul'));
 session_name((string) ($config['session_name'] ?? 'chicken_session'));
 session_start();
 
+// FTP bazen qr/ klasörü bırakır; klasör varken /qr sayfası boş kalabilir.
+(static function (): void {
+    $dir = __DIR__ . '/qr';
+    if (!is_dir($dir) || is_link($dir)) {
+        return;
+    }
+    try {
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($iterator as $item) {
+            if ($item->isDir()) {
+                @rmdir($item->getPathname());
+            } else {
+                @unlink($item->getPathname());
+            }
+        }
+        @rmdir($dir);
+    } catch (Throwable) {
+        // ignore — .htaccess already forces /qr through index.php
+    }
+})();
+
 $path = current_path();
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
@@ -396,7 +420,7 @@ $router->get('/api/orders/{code}', static function (string $code): void {
 });
 
 // Menü broşürü QR (ortasında logo) — /qr altına koyma (FTP'de qr/ klasörü /qr sayfasını bozabilir)
-$router->get('/api/qr-brosur', static function (): void {
+$serveBrandedQr = static function (): void {
     try {
         $size = (int) ($_GET['size'] ?? 320);
         BrochureService::outputBrandedQrPng($size);
@@ -405,7 +429,10 @@ $router->get('/api/qr-brosur', static function (): void {
         header('Location: ' . BrochureService::plainQrRemoteUrl(null, 320), true, 302);
     }
     exit;
-});
+};
+$router->get('/api/qr-brosur', $serveBrandedQr);
+// Eski adres (geri uyumluluk); asla fiziksel qr/ dosyası yazılmaz
+$router->get('/qr/brosur.png', $serveBrandedQr);
 
 $router->get('/qr', static function (): void {
     Auth::requireRole('cashier', 'admin');

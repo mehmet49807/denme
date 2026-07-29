@@ -22,11 +22,14 @@ $base = 'https://raw.githubusercontent.com/mehmet49807/denme/' . rawurlencode($b
 
 $files = [
     'index.php',
+    '.htaccess',
     'app/helpers.php',
+    'app/BrochureService.php',
     'app/MenuImageSync.php',
     'app/MenuItemSync.php',
     'app/SchemaSync.php',
     'views/partials/menu_item_card.php',
+    'views/partials/qr_brand.php',
     'views/public/menu.php',
     'views/public/home.php',
     'views/public/order.php',
@@ -54,6 +57,25 @@ $files = [
     'assets/img/hero.svg',
     'assets/img/hero-restaurant.jpg',
 ];
+
+// FTP artifact: physical qr/ breaks /qr routing on some hosts
+$strayQr = $root . DIRECTORY_SEPARATOR . 'qr';
+if (is_dir($strayQr) && !is_link($strayQr)) {
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($strayQr, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+    foreach ($iterator as $item) {
+        if ($item->isDir()) {
+            @rmdir($item->getPathname());
+        } else {
+            @unlink($item->getPathname());
+        }
+    }
+    if (@rmdir($strayQr)) {
+        echo "removed stray qr/\n";
+    }
+}
 
 function fetch_url(string $url): string
 {
