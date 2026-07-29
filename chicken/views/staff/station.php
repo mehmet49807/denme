@@ -27,19 +27,30 @@ $fmtTime = static function (?string $dt): string {
   <div class="cta-row">
     <span class="live-chip" data-live-updated>Canlı</span>
     <button class="btn btn-ghost btn-sm" type="button" data-live-refresh>Yenile</button>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url(($stationKey === 'bar' ? '/bar' : '/mutfak') . '/fisler')) ?>">Fiş geçmişi</a>
+    <?php if (empty($kiosk)): ?>
+      <a class="btn btn-dark btn-sm" href="<?= e(url(($stationKey === 'bar' ? '/bar' : '/mutfak') . '?kiosk=1')) ?>">Kiosk</a>
+    <?php else: ?>
+      <a class="btn btn-dark btn-sm" href="<?= e(url($stationKey === 'bar' ? '/bar' : '/mutfak')) ?>">Normal</a>
+    <?php endif; ?>
   </div>
 </div>
 
 <p class="muted" style="margin-top:-4px">
-  Açık siparişler canlı güncellenir. Hazır olan fişi <strong>Fişi kapat</strong> ile panodan kaldırın.
+  <?= (int) ($waitAlertMinutes ?? 15) ?> dk üzeri açık fişler uyarı rengi alır.
+  Hazır fişi <strong>Fişi kapat</strong> ile panodan kaldırın.
 </p>
 
 <div
-  class="station-orders"
+  class="station-orders<?= !empty($kiosk) ? ' is-kiosk' : '' ?>"
   data-station-board
   data-station-mode="orders"
   data-station="<?= e($stationKey) ?>"
   data-live-version="<?= e(OrderService::snapshotVersion($orders)) ?>"
+  data-wait-alert="<?= (int) ($waitAlertMinutes ?? 15) ?>"
+  data-qz-enabled="<?= !empty($qz['enabled']) ? '1' : '0' ?>"
+  data-qz-printer="<?= e((string) (($stationKey === 'bar' ? ($qz['printer_bar'] ?? '') : ($qz['printer_kitchen'] ?? '')))) ?>"
+  <?= !empty($kiosk) ? 'data-kiosk="1"' : '' ?>
 >
   <?php if (!$orders): ?>
     <div class="panel muted" data-station-empty>Bekleyen sipariş yok.</div>
@@ -52,6 +63,9 @@ $fmtTime = static function (?string $dt): string {
           'sent' => 'is-sent',
           default => 'is-waiting',
       };
+      if (!empty($order['is_late'])) {
+          $slipClass .= ' is-late';
+      }
     ?>
     <article class="station-order ticket <?= e($slipClass) ?>" data-order-id="<?= (int) $order['id'] ?>">
       <div class="station-order-head">
@@ -64,6 +78,7 @@ $fmtTime = static function (?string $dt): string {
               · <?= e((string) $order['waiter_name']) ?>
             <?php endif; ?>
             · <?= e($fmtTime($order['created_at'] ?? null)) ?>
+            · <strong><?= (int) ($order['wait_minutes'] ?? 0) ?> dk</strong>
           </p>
         </div>
         <div class="station-slip-meta">

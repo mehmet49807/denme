@@ -50,11 +50,22 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
         $pendingOnlineCount = 0;
     }
 }
+$isKiosk = isset($_GET['kiosk']) && (string) $_GET['kiosk'] !== '0'
+    && in_array($role, ['kitchen', 'bar'], true);
+$qzCfg = class_exists('OpsService') ? OpsService::qzConfig() : ['enabled' => false];
+$currentShift = null;
+if (Auth::check() && class_exists('OpsService')) {
+    try {
+        $currentShift = OpsService::currentShift((int) Auth::id());
+    } catch (Throwable) {
+        $currentShift = null;
+    }
+}
 ?><!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover<?= $isKiosk ? ', user-scalable=no' : '' ?>">
   <title><?= e($title ?? 'Crisp & Co. Personel') ?></title>
   <?php
     $assetRoot = dirname(__DIR__, 2) . '/assets';
@@ -66,9 +77,16 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
   <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) $cssVer) ?>">
   <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
+  <?php if (!empty($qzCfg['enabled'])): ?>
+    <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.5/qz-tray.js" defer></script>
+  <?php endif; ?>
 </head>
-<body data-base="<?= e(base_path()) ?>" class="staff-body<?= $isAdminArea ? ' is-admin-area' : '' ?>">
-  <div class="layout-staff<?= $isAdminArea ? ' admin-area' : '' ?>" data-staff-layout<?= $isAdminArea ? ' data-admin-area' : '' ?><?= ($isAdminArea && current_path() === '/yonetici') ? ' data-admin-home-nav' : '' ?>>
+<body
+  data-base="<?= e(base_path()) ?>"
+  class="staff-body<?= $isAdminArea ? ' is-admin-area' : '' ?><?= $isKiosk ? ' is-kiosk' : '' ?>"
+  <?= in_array($role, ['waiter', 'cashier', 'admin'], true) ? 'data-waiter-ready="1"' : '' ?>
+>
+  <div class="layout-staff<?= $isAdminArea ? ' admin-area' : '' ?><?= $isKiosk ? ' is-kiosk' : '' ?>" data-staff-layout<?= $isAdminArea ? ' data-admin-area' : '' ?><?= ($isAdminArea && current_path() === '/yonetici') ? ' data-admin-home-nav' : '' ?><?= $isKiosk ? ' data-kiosk="1"' : '' ?>>
     <div class="side-backdrop" data-nav-close hidden></div>
 
     <aside class="side" id="staff-side" aria-hidden="true">
@@ -154,6 +172,13 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
             <span>Garson</span>
           </a>
         <?php endif; ?>
+        <?php if ($currentShift): ?>
+          <button class="side-link" type="button" data-shift-close style="margin-top:10px">
+            <?php partial('partials/menu_icon', ['icon' => 'stats', 'color' => '#e2b457']); ?>
+            <span>Vardiya kapat</span>
+          </button>
+          <p class="muted small" style="margin:4px 10px 0">Açık: <?= e((string) ($currentShift['opened_at'] ?? '')) ?></p>
+        <?php endif; ?>
         <form method="post" action="<?= e(url('/personel/cikis')) ?>" style="margin-top:10px">
           <?= csrf_field() ?>
           <button class="side-link" type="submit">
@@ -215,9 +240,15 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
       </main>
     </div>
   </div>
+  <div class="ready-toast-host" data-ready-toast-host aria-live="polite"></div>
   <script>
     window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;
     window.CHICKEN_CSRF = <?= json_encode(csrf_token(), JSON_UNESCAPED_UNICODE) ?>;
+    window.CHICKEN_QZ = <?= json_encode([
+        'enabled' => !empty($qzCfg['enabled']),
+        'printer_kitchen' => (string) ($qzCfg['printer_kitchen'] ?? ''),
+        'printer_bar' => (string) ($qzCfg['printer_bar'] ?? ''),
+    ], JSON_UNESCAPED_UNICODE) ?>;
   </script>
   <script src="<?= e(url('/assets/js/app.js')) ?>?v=<?= e((string) $jsVer) ?>" defer></script>
 </body>

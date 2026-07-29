@@ -15,6 +15,7 @@ require __DIR__ . '/app/FiscalService.php';
 require __DIR__ . '/app/FranchiseService.php';
 require __DIR__ . '/app/BranchService.php';
 require __DIR__ . '/app/WhatsAppNotify.php';
+require __DIR__ . '/app/OpsService.php';
 require __DIR__ . '/app/CategorySync.php';
 require __DIR__ . '/app/SchemaSync.php';
 require __DIR__ . '/app/MenuImageSync.php';
@@ -123,7 +124,8 @@ $menuCatalog = static function (): array {
          JOIN categories c ON c.id = m.category_id
          WHERE m.is_available = 1
          ORDER BY c.sort_order, m.sort_order, m.id'
-    )->fetchAll();
+    )->fetchAll() ?: [];
+    $items = OpsService::applyBranchPricesToItems($items);
     return compact('categories', 'items');
 };
 
@@ -193,6 +195,9 @@ $router->get('/siparis', static function () use ($menuCatalog): void {
         'items' => $catalog['items'],
         'customer' => CustomerAuth::user(),
         'welcomeCode' => DiscountService::WELCOME_CODE,
+        'deliveryZones' => OpsService::deliveryZones(),
+        'minTotal' => OpsService::minOnlineTotal(),
+        'etaMinutes' => OpsService::etaMinutes(),
     ]);
 });
 
@@ -207,6 +212,60 @@ $router->post('/api/orders', static function (): void {
         $customerPhone = trim((string) ($payload['customer_phone'] ?? ''));
         if ($customerName === '' || $customerPhone === '') {
             json_response(['ok' => false, 'error' => 'Ad ve telefon zorunlu.'], 422);
+        }
+        $zoneName = trim((string) ($payload['delivery_zone'] ?? ''));
+        $deliveryAddress = trim((string) ($payload['delivery_address'] ?? ''));
+        $zones = OpsService::deliveryZones();
+        $zoneFee = 0.0;
+        $zoneMin = OpsService::minOnlineTotal();
+        if ($zones !== []) {
+            if ($zoneName === '') {
+                json_response(['ok' => false, 'error' => 'Teslimat bölgesi seçin.'], 422);
+            }
+            $matched = null;
+            foreach ($zones as $z) {
+                if (strcasecmp($z['name'], $zoneName) === 0) {
+                    $matched = $z;
+                    break;
+                }
+            }
+            if (!$matched) {
+                json_response(['ok' => false, 'error' => 'Geçersiz teslimat bölgesi.'], 422);
+            }
+            $zoneFee = (float) $matched['fee'];
+            $zoneMin = max($zoneMin, (float) $matched['min_total']);
+            if ($deliveryAddress === '') {
+                json_response(['ok' => false, 'error' => 'Teslimat adresi gerekli.'], 422);
+            }
+        }
+        // Minimum sepet: ürün tutarı (teslimat ücreti sayılmaz) — oluşturmadan önce kontrol
+        if ($zoneMin > 0) {
+            $est = 0.0;
+            $branchId = OpsService::posBranchId();
+            $pdoEst = Database::pdo();
+            foreach ($payload['items'] ?? [] as $raw) {
+                if (!is_array($raw)) {
+                    continue;
+                }
+                $menuId = (int) ($raw['menu_item_id'] ?? 0);
+                $qty = max(1, (int) ($raw['quantity'] ?? 1));
+                if ($menuId <= 0) {
+                    continue;
+                }
+                $st = $pdoEst->prepare('SELECT price FROM menu_items WHERE id = ? AND is_available = 1 LIMIT 1');
+                $st->execute([$menuId]);
+                $price = $st->fetchColumn();
+                if ($price === false) {
+                    continue;
+                }
+                $est += OpsService::branchPrice($menuId, $branchId, (float) $price) * $qty;
+            }
+            if ($est < $zoneMin) {
+                json_response([
+                    'ok' => false,
+                    'error' => 'Minimum sepet tutarı ' . number_format($zoneMin, 2, ',', '.') . ' ₺',
+                ], 422);
+            }
         }
         $customer = CustomerAuth::user();
         if ($customer) {
@@ -224,6 +283,20 @@ $router->post('/api/orders', static function (): void {
             'discount_code' => trim((string) ($payload['discount_code'] ?? '')),
             'items' => $payload['items'] ?? [],
         ]);
+        $eta = OpsService::etaMinutes();
+        Database::pdo()->prepare(
+            'UPDATE orders
+             SET delivery_zone = ?, delivery_address = ?, delivery_fee = ?, eta_minutes = ?, total = total + ?, updated_at = NOW()
+             WHERE id = ?'
+        )->execute([
+            $zoneName !== '' ? $zoneName : null,
+            $deliveryAddress !== '' ? $deliveryAddress : null,
+            $zoneFee,
+            $eta,
+            $zoneFee,
+            (int) $order['id'],
+        ]);
+        $order = OrderService::findById((int) $order['id']) ?: $order;
         json_response(['ok' => true, 'order' => [
             'id' => (int) $order['id'],
             'order_code' => $order['order_code'],
@@ -231,6 +304,8 @@ $router->post('/api/orders', static function (): void {
             'total' => (float) $order['total'],
             'discount_amount' => (float) ($order['discount_amount'] ?? 0),
             'payment_preference' => $order['payment_preference'] ?? null,
+            'eta_minutes' => (int) ($order['eta_minutes'] ?? $eta),
+            'delivery_fee' => (float) ($order['delivery_fee'] ?? 0),
         ]]);
     } catch (Throwable $e) {
         json_response(['ok' => false, 'error' => $e->getMessage()], 422);
@@ -854,6 +929,7 @@ $router->get('/garson/fis/{id}', static function (string $id): void {
         'backUrl' => url($backPath),
         'backPath' => $backPath,
         'onlyItemIds' => $onlyItemIds,
+        'qz' => OpsService::qzConfig(),
     ]);
 });
 
@@ -861,21 +937,51 @@ $router->get('/garson/fis/{id}', static function (string $id): void {
 $router->get('/mutfak', static function (): void {
     require_station_access('kitchen');
     $orders = OrderService::stationBoard('kitchen');
+    $kiosk = isset($_GET['kiosk']) && (string) $_GET['kiosk'] !== '0';
     view('staff/station', [
         'title' => 'Mutfak Ekranı',
         'station' => 'kitchen',
         'orders' => $orders,
         'user' => Auth::user(),
+        'kiosk' => $kiosk,
+        'qz' => OpsService::qzConfig(),
+        'waitAlertMinutes' => OpsService::waitAlertMinutes(),
     ]);
 });
 
 $router->get('/bar', static function (): void {
     require_station_access('bar');
     $orders = OrderService::stationBoard('bar');
+    $kiosk = isset($_GET['kiosk']) && (string) $_GET['kiosk'] !== '0';
     view('staff/station', [
         'title' => 'Bar Ekranı',
         'station' => 'bar',
         'orders' => $orders,
+        'user' => Auth::user(),
+        'kiosk' => $kiosk,
+        'qz' => OpsService::qzConfig(),
+        'waitAlertMinutes' => OpsService::waitAlertMinutes(),
+    ]);
+});
+
+$router->get('/mutfak/fisler', static function (): void {
+    require_station_access('kitchen');
+    $limit = (int) BrochureService::getSetting('slip_history_limit', '30');
+    view('staff/slip_history', [
+        'title' => 'Mutfak fiş geçmişi',
+        'station' => 'kitchen',
+        'rows' => OpsService::slipHistory('kitchen', $limit),
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/bar/fisler', static function (): void {
+    require_station_access('bar');
+    $limit = (int) BrochureService::getSetting('slip_history_limit', '30');
+    view('staff/slip_history', [
+        'title' => 'Bar fiş geçmişi',
+        'station' => 'bar',
+        'rows' => OpsService::slipHistory('bar', $limit),
         'user' => Auth::user(),
     ]);
 });
@@ -973,7 +1079,11 @@ $router->post('/api/station/item-status', static function (): void {
             json_response(['ok' => false, 'error' => 'Bu ürün sizin istasyonunuza ait değil.'], 403);
         }
     }
-    $stmt = $pdo->prepare('UPDATE order_items SET status = ? WHERE id = ?');
+    $stmt = $pdo->prepare(
+        $status === 'ready'
+            ? 'UPDATE order_items SET status = ?, ready_at = NOW() WHERE id = ?'
+            : 'UPDATE order_items SET status = ? WHERE id = ?'
+    );
     $stmt->execute([$status, $itemId]);
     json_response(['ok' => true]);
 });
@@ -1040,6 +1150,86 @@ $router->post('/api/station/slip-close', static function (): void {
     } catch (Throwable $e) {
         json_response(['ok' => false, 'error' => $e->getMessage()], 422);
     }
+});
+
+$router->post('/api/orders/{id}/move-table', static function (string $id): void {
+    Auth::requireRole('waiter', 'cashier', 'admin');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
+    try {
+        $order = OrderService::moveOrderToTable((int) $id, (int) ($payload['table_id'] ?? 0), Auth::id());
+        json_response(['ok' => true, 'order_id' => (int) $order['id'], 'table_id' => (int) ($order['table_id'] ?? 0)]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
+$router->post('/api/tables/merge', static function (): void {
+    Auth::requireRole('cashier', 'admin', 'waiter');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
+    try {
+        $count = OrderService::mergeTables(
+            (int) ($payload['from_table_id'] ?? 0),
+            (int) ($payload['to_table_id'] ?? 0),
+            Auth::id()
+        );
+        json_response(['ok' => true, 'moved_orders' => $count]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
+$router->post('/api/order-items/{id}/split', static function (string $id): void {
+    Auth::requireRole('waiter', 'cashier', 'admin');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
+    try {
+        $order = OrderService::splitItem(
+            (int) $id,
+            (int) ($payload['quantity'] ?? 1),
+            (string) ($payload['note'] ?? ''),
+            Auth::id()
+        );
+        json_response(['ok' => true, 'order_id' => (int) ($order['id'] ?? 0)]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
+});
+
+$router->get('/api/waiter/ready-items', static function (): void {
+    Auth::requireRole('waiter', 'cashier', 'admin');
+    $role = Auth::role();
+    $rows = OpsService::readyItemsForWaiter(
+        Auth::id(),
+        in_array($role, ['cashier', 'admin'], true)
+    );
+    json_response([
+        'ok' => true,
+        'version' => OrderService::snapshotVersion($rows),
+        'rows' => $rows,
+        'updated_at' => date('H:i:s'),
+    ]);
+});
+
+$router->post('/api/staff/shift/close', static function (): void {
+    Auth::requireRole('waiter', 'cashier', 'admin', 'kitchen', 'bar');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
+    $shift = OpsService::closeShift((int) Auth::id());
+    json_response(['ok' => true, 'shift' => $shift]);
 });
 
 // Cashier
@@ -1819,6 +2009,10 @@ $router->post('/yonetici/urunler/ekle', static function (): void {
     $sort = max(0, (int) input('sort_order'));
     $available = input('is_available') ? 1 : 0;
     $imageUrl = trim((string) input('image_url'));
+    $stockQtyRaw = trim((string) input('stock_qty'));
+    $stockAlertRaw = trim((string) input('stock_alert_qty'));
+    $stockQty = $stockQtyRaw === '' ? null : max(0, (float) str_replace(',', '.', $stockQtyRaw));
+    $stockAlert = $stockAlertRaw === '' ? null : max(0, (float) str_replace(',', '.', $stockAlertRaw));
     if ($name === '' || $categoryId <= 0 || $price < 0 || !in_array($station, ['kitchen', 'bar'], true)) {
         flash('error', 'Ürün bilgileri geçersiz.');
         redirect('/yonetici/urunler/ekle');
@@ -1827,8 +2021,8 @@ $router->post('/yonetici/urunler/ekle', static function (): void {
         $imageUrl = MenuImageSync::catalog()[$name];
     }
     Database::pdo()->prepare(
-        'INSERT INTO menu_items (category_id, name, description, price, vat_rate, station, is_available, image_url, sort_order)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        'INSERT INTO menu_items (category_id, name, description, price, vat_rate, station, is_available, stock_qty, stock_alert_qty, image_url, sort_order)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     )->execute([
         $categoryId,
         $name,
@@ -1837,6 +2031,8 @@ $router->post('/yonetici/urunler/ekle', static function (): void {
         $vatRate,
         $station,
         $available,
+        $stockQty,
+        $stockAlert,
         $imageUrl !== '' ? $imageUrl : null,
         $sort,
     ]);
@@ -1874,6 +2070,8 @@ $router->get('/yonetici/urunler/{id}', static function (string $id): void {
         'item' => $item,
         'categories' => $categories,
         'user' => Auth::user(),
+        'branches' => BranchService::listAll(),
+        'branchPrices' => OpsService::branchPricesForItem((int) $id),
     ]);
 });
 
@@ -1892,6 +2090,10 @@ $router->post('/yonetici/urunler/{id}', static function (string $id): void {
     $sort = max(0, (int) input('sort_order'));
     $available = input('is_available') ? 1 : 0;
     $imageUrl = trim((string) input('image_url'));
+    $stockQtyRaw = trim((string) input('stock_qty'));
+    $stockAlertRaw = trim((string) input('stock_alert_qty'));
+    $stockQty = $stockQtyRaw === '' ? null : max(0, (float) str_replace(',', '.', $stockQtyRaw));
+    $stockAlert = $stockAlertRaw === '' ? null : max(0, (float) str_replace(',', '.', $stockAlertRaw));
     if ($name === '' || $categoryId <= 0 || $price < 0 || !in_array($station, ['kitchen', 'bar'], true)) {
         flash('error', 'Ürün bilgileri geçersiz.');
         redirect('/yonetici/urunler/' . (int) $id);
@@ -1901,7 +2103,7 @@ $router->post('/yonetici/urunler/{id}', static function (string $id): void {
     }
     Database::pdo()->prepare(
         'UPDATE menu_items
-         SET category_id = ?, name = ?, description = ?, price = ?, vat_rate = ?, station = ?, is_available = ?, image_url = ?, sort_order = ?
+         SET category_id = ?, name = ?, description = ?, price = ?, vat_rate = ?, station = ?, is_available = ?, stock_qty = ?, stock_alert_qty = ?, image_url = ?, sort_order = ?
          WHERE id = ?'
     )->execute([
         $categoryId,
@@ -1911,10 +2113,16 @@ $router->post('/yonetici/urunler/{id}', static function (string $id): void {
         $vatRate,
         $station,
         $available,
+        $stockQty,
+        $stockAlert,
         $imageUrl !== '' ? $imageUrl : null,
         $sort,
         (int) $id,
     ]);
+    $branchPrices = input('branch_price');
+    if (is_array($branchPrices)) {
+        OpsService::saveBranchPrices((int) $id, $branchPrices);
+    }
     flash('success', 'Ürün güncellendi.');
     redirect('/yonetici/urunler');
 });
@@ -1931,7 +2139,70 @@ $router->get('/yonetici/istatistikler', static function () use ($adminSalesSumma
         'dayStats' => $adminSalesSummary($dayStart, $dayEnd),
         'monthLabel' => date('F Y'),
         'user' => Auth::user(),
+        'topToday' => OpsService::topSellingProducts($dayStart, $dayEnd, 10),
+        'topMonth' => OpsService::topSellingProducts($monthStart, $monthEnd, 10),
+        'stockAlerts' => OpsService::stockAlerts(),
     ]);
+});
+
+$router->get('/yonetici/operasyon', static function (): void {
+    Auth::requireRole('admin');
+    view('staff/ops_settings', [
+        'title' => 'Operasyon ayarları',
+        'user' => Auth::user(),
+        'qz' => OpsService::qzConfig(),
+        'waitAlert' => OpsService::waitAlertMinutes(),
+        'eta' => OpsService::etaMinutes(),
+        'minTotal' => BrochureService::getSetting('online_min_total', '0'),
+        'zones' => OpsService::deliveryZones(),
+        'historyLimit' => (int) BrochureService::getSetting('slip_history_limit', '30'),
+        'waCustomer' => BrochureService::getSetting('whatsapp_customer_status', '1') === '1',
+        'loginLogs' => OpsService::recentLoginLogs(40),
+        'stockAlerts' => OpsService::stockAlerts(),
+        'branches' => BranchService::listAll(),
+        'posBranchId' => (int) BrochureService::getSetting('pos_branch_id', '0'),
+        'currentShift' => OpsService::currentShift((int) Auth::id()),
+    ]);
+});
+
+$router->post('/yonetici/operasyon', static function (): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/operasyon');
+    }
+    BrochureService::setSetting('qz_enabled', input('qz_enabled') ? '1' : '0');
+    BrochureService::setSetting('qz_printer_kitchen', trim((string) input('qz_printer_kitchen')));
+    BrochureService::setSetting('qz_printer_bar', trim((string) input('qz_printer_bar')));
+    BrochureService::setSetting('station_wait_alert_minutes', (string) max(5, min(120, (int) input('station_wait_alert_minutes'))));
+    BrochureService::setSetting('slip_history_limit', (string) max(5, min(100, (int) input('slip_history_limit'))));
+    BrochureService::setSetting('online_eta_minutes', (string) max(10, min(180, (int) input('online_eta_minutes'))));
+    BrochureService::setSetting('online_min_total', (string) max(0, (float) str_replace(',', '.', (string) input('online_min_total'))));
+    BrochureService::setSetting('whatsapp_customer_status', input('whatsapp_customer_status') ? '1' : '0');
+    $posBranch = (int) input('pos_branch_id');
+    if ($posBranch > 0 && !BranchService::find($posBranch)) {
+        $posBranch = 0;
+    }
+    BrochureService::setSetting('pos_branch_id', (string) $posBranch);
+    $zones = [];
+    foreach (preg_split('/\R+/', (string) input('delivery_zones')) ?: [] as $line) {
+        $line = trim($line);
+        if ($line === '') {
+            continue;
+        }
+        $parts = array_map('trim', explode('|', $line));
+        if (($parts[0] ?? '') === '') {
+            continue;
+        }
+        $zones[] = [
+            'name' => $parts[0],
+            'min_total' => (float) str_replace(',', '.', (string) ($parts[1] ?? '0')),
+            'fee' => (float) str_replace(',', '.', (string) ($parts[2] ?? '0')),
+        ];
+    }
+    BrochureService::setSetting('delivery_zones_json', json_encode($zones, JSON_UNESCAPED_UNICODE) ?: '[]');
+    flash('success', 'Operasyon ayarları kaydedildi.');
+    redirect('/yonetici/operasyon');
 });
 
 $router->get('/yonetici/siparisler', static function (): void {

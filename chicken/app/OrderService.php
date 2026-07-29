@@ -17,7 +17,15 @@ final class OrderService
             throw new InvalidArgumentException('Geçersiz sipariş kaynağı.');
         }
 
-        $normalized = self::normalizeItems($pdo, $items);
+        $branchId = isset($payload['branch_id']) ? (int) $payload['branch_id'] : 0;
+        if ($branchId <= 0 && class_exists('OpsService')) {
+            $branchId = (int) (OpsService::posBranchId() ?? 0);
+        }
+        if ($branchId <= 0) {
+            $branchId = 0;
+        }
+
+        $normalized = self::normalizeItems($pdo, $items, $branchId > 0 ? $branchId : null);
         $subtotal = array_sum(array_map(
             static fn(array $i): float => $i['unit_price'] * $i['quantity'],
             $normalized
@@ -105,6 +113,11 @@ final class OrderService
             ]);
             $orderId = (int) $pdo->lastInsertId();
 
+            if ($branchId > 0) {
+                $pdo->prepare('UPDATE orders SET branch_id = ? WHERE id = ?')
+                    ->execute([$branchId, $orderId]);
+            }
+
             self::insertItems($pdo, $orderId, $normalized);
 
             $label = match ($source) {
@@ -186,7 +199,8 @@ final class OrderService
             throw new InvalidArgumentException('Kapalı veya iptal siparişe ürün eklenemez.');
         }
 
-        $normalized = self::normalizeItems($pdo, $items);
+        $orderBranch = !empty($order['branch_id']) ? (int) $order['branch_id'] : null;
+        $normalized = self::normalizeItems($pdo, $items, $orderBranch);
         $pdo->beginTransaction();
         try {
             $newItemIds = self::insertItems($pdo, $orderId, $normalized);
@@ -610,6 +624,17 @@ final class OrderService
                 $slipStatus = 'sent';
             }
 
+            $waitFrom = $sentAt ?: ($order['created_at'] ?? null);
+            $waitMinutes = 0;
+            if ($waitFrom) {
+                $ts = strtotime((string) $waitFrom);
+                if ($ts) {
+                    $waitMinutes = (int) max(0, floor((time() - $ts) / 60));
+                }
+            }
+            $alertMins = class_exists('OpsService') ? OpsService::waitAlertMinutes() : 15;
+            $isLate = $open > 0 && $waitMinutes >= $alertMins;
+
             $out[] = [
                 'id' => $oid,
                 'order_id' => $oid,
@@ -636,6 +661,9 @@ final class OrderService
                 'open_count' => $open,
                 'ready_count' => $ready,
                 'item_count' => count($items),
+                'wait_minutes' => $waitMinutes,
+                'wait_alert_minutes' => $alertMins,
+                'is_late' => $isLate,
                 'items' => $items,
                 'slip_events' => $eventsByOrder[$oid] ?? [],
                 'fis_url' => station_slip_url($oid, [
@@ -880,6 +908,16 @@ final class OrderService
         $stmt = $pdo->prepare('UPDATE orders SET status = ?, updated_at = NOW() WHERE id = ?');
         $stmt->execute([$status, $orderId]);
         self::addEvent($pdo, $orderId, $staffId, 'status_' . $status, 'Durum: ' . status_label($status));
+        if (class_exists('WhatsAppNotify')) {
+            try {
+                $fresh = self::findById($orderId);
+                if ($fresh && ($fresh['source'] ?? '') === 'online') {
+                    WhatsAppNotify::notifyCustomerStatus($fresh);
+                }
+            } catch (Throwable $e) {
+                error_log('WhatsApp customer status: ' . $e->getMessage());
+            }
+        }
     }
 
     /**
@@ -939,7 +977,15 @@ final class OrderService
             throw $e;
         }
 
-        return self::findById($orderId) ?: $order;
+        $fresh = self::findById($orderId) ?: $order;
+        if (class_exists('WhatsAppNotify')) {
+            try {
+                WhatsAppNotify::notifyCustomerStatus($fresh);
+            } catch (Throwable $e) {
+                error_log('WhatsApp customer status: ' . $e->getMessage());
+            }
+        }
+        return $fresh;
     }
 
     /** @return list<array> */
@@ -1033,8 +1079,11 @@ final class OrderService
         return $stmt->fetchAll();
     }
 
-    private static function normalizeItems(PDO $pdo, array $items): array
+    private static function normalizeItems(PDO $pdo, array $items, ?int $branchId = null): array
     {
+        if ($branchId === null && class_exists('OpsService')) {
+            $branchId = OpsService::posBranchId();
+        }
         $normalized = [];
         foreach ($items as $raw) {
             $menuId = (int) ($raw['menu_item_id'] ?? 0);
@@ -1052,11 +1101,15 @@ final class OrderService
             $vatRate = class_exists('FiscalService')
                 ? FiscalService::normalizeVatRate($menu['vat_rate'] ?? FiscalService::DEFAULT_VAT_RATE)
                 : 10.0;
+            $unitPrice = (float) $menu['price'];
+            if ($branchId && class_exists('OpsService')) {
+                $unitPrice = OpsService::branchPrice((int) $menu['id'], $branchId, $unitPrice);
+            }
             $normalized[] = [
                 'menu_item_id' => (int) $menu['id'],
                 'item_name' => (string) $menu['name'],
                 'station' => (string) $menu['station'],
-                'unit_price' => (float) $menu['price'],
+                'unit_price' => $unitPrice,
                 'vat_rate' => $vatRate,
                 'quantity' => $qty,
                 'note' => $note !== '' ? $note : null,
@@ -1134,5 +1187,127 @@ final class OrderService
             throw new InvalidArgumentException('Ödeme yöntemi Nakit veya Kart olmalı.');
         }
         return $map[$method];
+    }
+
+    public static function moveOrderToTable(int $orderId, int $targetTableId, ?int $staffId = null): array
+    {
+        $order = self::findById($orderId);
+        if (!$order) {
+            throw new InvalidArgumentException('Sipariş bulunamadı.');
+        }
+        if (in_array($order['status'], ['paid', 'cancelled'], true)) {
+            throw new InvalidArgumentException('Kapalı sipariş taşınamaz.');
+        }
+        $table = self::findTable($targetTableId);
+        if (!$table) {
+            throw new InvalidArgumentException('Hedef masa bulunamadı.');
+        }
+        if ((int) ($order['table_id'] ?? 0) === $targetTableId) {
+            return $order;
+        }
+        $pdo = Database::pdo();
+        $pdo->prepare('UPDATE orders SET table_id = ?, updated_at = NOW() WHERE id = ?')
+            ->execute([$targetTableId, $orderId]);
+        self::addEvent(
+            $pdo,
+            $orderId,
+            $staffId,
+            'table_moved',
+            'Masa taşındı → ' . (string) ($table['label'] ?? $targetTableId)
+        );
+        return self::findById($orderId) ?: $order;
+    }
+
+    /** Kaynak masadaki açık siparişleri hedef masaya taşır. */
+    public static function mergeTables(int $fromTableId, int $toTableId, ?int $staffId = null): int
+    {
+        if ($fromTableId === $toTableId) {
+            throw new InvalidArgumentException('Aynı masa birleştirilemez.');
+        }
+        $from = self::findTable($fromTableId);
+        $to = self::findTable($toTableId);
+        if (!$from || !$to) {
+            throw new InvalidArgumentException('Masa bulunamadı.');
+        }
+        $orders = self::openOrdersForTable($fromTableId);
+        $count = 0;
+        foreach ($orders as $order) {
+            self::moveOrderToTable((int) $order['id'], $toTableId, $staffId);
+            $count++;
+        }
+        if ($count === 0) {
+            throw new InvalidArgumentException('Kaynak masada açık sipariş yok.');
+        }
+        return $count;
+    }
+
+    /**
+     * Ürün satırını böler: mevcut miktardan ayırıp yeni satır (farklı not ile) oluşturur.
+     */
+    public static function splitItem(int $itemId, int $splitQty, string $note = '', ?int $staffId = null): array
+    {
+        $splitQty = max(1, $splitQty);
+        $pdo = Database::pdo();
+        $stmt = $pdo->prepare(
+            'SELECT oi.*, o.status AS order_status
+             FROM order_items oi
+             JOIN orders o ON o.id = oi.order_id
+             WHERE oi.id = ? LIMIT 1'
+        );
+        $stmt->execute([$itemId]);
+        $item = $stmt->fetch();
+        if (!$item) {
+            throw new InvalidArgumentException('Ürün bulunamadı.');
+        }
+        if (in_array($item['order_status'], ['paid', 'cancelled'], true)) {
+            throw new InvalidArgumentException('Kapalı siparişte ürün bölünemez.');
+        }
+        if (($item['status'] ?? '') === 'cancelled') {
+            throw new InvalidArgumentException('İptal ürün bölünemez.');
+        }
+        $qty = (int) $item['quantity'];
+        if ($splitQty >= $qty) {
+            throw new InvalidArgumentException('Bölünecek miktar mevcut adetten küçük olmalı.');
+        }
+
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare('UPDATE order_items SET quantity = ? WHERE id = ?')
+                ->execute([$qty - $splitQty, $itemId]);
+            $ins = $pdo->prepare(
+                'INSERT INTO order_items
+                (order_id, menu_item_id, item_name, station, unit_price, vat_rate, quantity, note, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            );
+            $note = trim($note);
+            $ins->execute([
+                (int) $item['order_id'],
+                $item['menu_item_id'],
+                $item['item_name'],
+                $item['station'],
+                $item['unit_price'],
+                $item['vat_rate'] ?? 10,
+                $splitQty,
+                $note !== '' ? $note : null,
+                $item['status'] === 'ready' ? 'queued' : $item['status'],
+            ]);
+            $newId = (int) $pdo->lastInsertId();
+            self::addEvent(
+                $pdo,
+                (int) $item['order_id'],
+                $staffId,
+                'item_split',
+                (string) $item['item_name'] . ' bölündü (' . $splitQty . ' adet)'
+            );
+            self::recalcTotals($pdo, (int) $item['order_id']);
+            $pdo->commit();
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $e;
+        }
+
+        return self::findById((int) $item['order_id']) ?: [];
     }
 }

@@ -3,14 +3,20 @@
 /** @var array $items */
 /** @var array|null $customer */
 /** @var string $welcomeCode */
+/** @var list<array> $deliveryZones */
+/** @var float|int|string $minTotal */
+/** @var int $etaMinutes */
 $customer = $customer ?? null;
 $welcomeCode = $welcomeCode ?? 'YENI10';
+$deliveryZones = $deliveryZones ?? [];
+$minTotal = (float) ($minTotal ?? 0);
+$etaMinutes = (int) ($etaMinutes ?? 35);
 ?>
 <div class="page-shell">
   <p class="eyebrow">Online sipariş</p>
   <h1 class="page-title">Siparişini oluştur</h1>
   <p class="muted">Üye olmadan sipariş verebilirsiniz. Ürünleri seçin, bilgilerinizi girin, sipariş kodunuzla takip edin.</p>
-  <p class="small muted" style="margin-top:6px">Fiyatlarımız KDV dahildir (%10 restoran yeme-içme hizmeti).</p>
+  <p class="small muted" style="margin-top:6px">Fiyatlarımız KDV dahildir (%10 restoran yeme-içme hizmeti). Tahmini hazırlık ~<?= $etaMinutes ?> dk<?php if ($minTotal > 0): ?> · Min. sepet <?= e(money($minTotal)) ?><?php endif; ?>.</p>
   <?php if ($msg = flash('success')): ?>
     <div class="alert alert-ok" style="margin-top:14px"><?= e($msg) ?></div>
   <?php endif; ?>
@@ -94,11 +100,43 @@ $welcomeCode = $welcomeCode ?? 'YENI10';
             </label>
           </div>
         </fieldset>
+        <?php if ($deliveryZones): ?>
+          <label>Teslimat bölgesi
+            <select name="delivery_zone" required data-delivery-zone>
+              <option value="">Seçin</option>
+              <?php foreach ($deliveryZones as $z): ?>
+                <option
+                  value="<?= e((string) $z['name']) ?>"
+                  data-min="<?= e((string) ($z['min_total'] ?? 0)) ?>"
+                  data-fee="<?= e((string) ($z['fee'] ?? 0)) ?>"
+                >
+                  <?= e((string) $z['name']) ?>
+                  <?php if ((float) ($z['fee'] ?? 0) > 0): ?> (+<?= e(money((float) $z['fee'])) ?>)<?php endif; ?>
+                  <?php if ((float) ($z['min_total'] ?? 0) > 0): ?> · min <?= e(money((float) $z['min_total'])) ?><?php endif; ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </label>
+          <label>Teslimat adresi
+            <textarea name="delivery_address" rows="2" required placeholder="Mahalle, sokak, kapı no"></textarea>
+          </label>
+        <?php endif; ?>
         <label>Sipariş notu
           <textarea name="customer_note" placeholder="Sipariş altına not yazın..."></textarea>
         </label>
+        <p class="muted small" data-online-min-hint style="margin:0">
+          Tahmini hazırlık ~<?= $etaMinutes ?> dk
+          <?php if ($minTotal > 0): ?> · Min. sepet <?= e(money($minTotal)) ?><?php endif; ?>
+        </p>
         <button class="btn btn-primary" type="submit">Siparişi Gönder</button>
       </form>
+      <script>
+        window.CrispOnline = {
+          minTotal: <?= json_encode($minTotal) ?>,
+          etaMinutes: <?= (int) $etaMinutes ?>,
+          deliveryZones: <?= json_encode($deliveryZones, JSON_UNESCAPED_UNICODE) ?>
+        };
+      </script>
       <p class="cart-member-note">
         Üye olan müşteriler <strong>YENI10</strong> kodu ile <strong>%10 indirim</strong> kazanır.
         <?php if (!$customer): ?>

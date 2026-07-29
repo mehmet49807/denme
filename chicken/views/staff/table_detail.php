@@ -96,6 +96,14 @@ $eyebrow = match (true) {
             <?php if ($canCancel && !$cancelled): ?>
               <button class="btn btn-ghost btn-sm" type="button" data-cancel-item="<?= (int) $line['id'] ?>">İptal</button>
             <?php endif; ?>
+            <?php if (!$cancelled && (int) $line['quantity'] > 1 && $allowNote): ?>
+              <button
+                class="btn btn-ghost btn-sm"
+                type="button"
+                data-split-item="<?= (int) $line['id'] ?>"
+                data-split-max="<?= (int) $line['quantity'] - 1 ?>"
+              >Böl</button>
+            <?php endif; ?>
           </div>
           <?php if (!$cancelled && $allowNote): ?>
             <label class="item-note-label">
@@ -135,8 +143,46 @@ $eyebrow = match (true) {
       <?php endif; ?>
       <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>">Fiş</a>
     </div>
+
+    <?php if ($allowAdd || $canPay || $role === 'admin' || $role === 'cashier'): ?>
+      <div class="stack" style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)">
+        <label>Masaya taşı
+          <div class="item-note-row">
+            <select data-move-table-select>
+              <option value="">Hedef masa</option>
+              <?php foreach (OrderService::tablesOverview() as $t): ?>
+                <?php if ((int) $t['id'] === (int) $table['id']) {
+                    continue;
+                } ?>
+                <option value="<?= (int) $t['id'] ?>"><?= e((string) $t['label']) ?></option>
+              <?php endforeach; ?>
+            </select>
+            <button class="btn btn-ghost btn-sm" type="button" data-move-order="<?= (int) $order['id'] ?>">Taşı</button>
+          </div>
+        </label>
+      </div>
+    <?php endif; ?>
   </article>
 <?php endforeach; ?>
+
+<?php if (($canPay || $role === 'admin' || $role === 'cashier' || $mode === 'waiter') && $orders): ?>
+<section class="panel" style="margin:18px 0">
+  <h2 style="margin:0 0 10px;font-family:var(--font-display)">Masa birleştir</h2>
+  <p class="muted small">Bu masadaki açık siparişleri başka masaya taşıyın.</p>
+  <div class="item-note-row">
+    <select data-merge-to-table>
+      <option value="">Hedef masa</option>
+      <?php foreach (OrderService::tablesOverview() as $t): ?>
+        <?php if ((int) $t['id'] === (int) $table['id']) {
+            continue;
+        } ?>
+        <option value="<?= (int) $t['id'] ?>"><?= e((string) $t['label']) ?></option>
+      <?php endforeach; ?>
+    </select>
+    <button class="btn btn-dark btn-sm" type="button" data-merge-tables data-from-table="<?= (int) $table['id'] ?>">Birleştir</button>
+  </div>
+</section>
+<?php endif; ?>
 
 <div class="panel" style="margin-top:8px" id="order-builder" data-table-order-builder>
   <div class="panel-head" style="margin-bottom:12px">

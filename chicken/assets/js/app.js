@@ -378,6 +378,9 @@
       isEmpty() {
         return state.size === 0;
       },
+      subtotal() {
+        return [...state.values()].reduce((sum, i) => sum + i.price * i.qty, 0);
+      },
     };
   }
 
@@ -409,6 +412,28 @@
 
   const onlineForm = document.querySelector('[data-online-form]');
   if (onlineForm && onlineCart) {
+    const onlineCfg = window.CrispOnline || {};
+    const zoneSelect = onlineForm.querySelector('[data-delivery-zone], select[name="delivery_zone"]');
+    const minHint = document.querySelector('[data-online-min-hint]');
+    const updateMinHint = () => {
+      if (!minHint) return;
+      let min = Number(onlineCfg.minTotal || 0);
+      let fee = 0;
+      const opt = zoneSelect?.selectedOptions?.[0];
+      if (opt) {
+        const zMin = Number(opt.getAttribute('data-min') || 0);
+        fee = Number(opt.getAttribute('data-fee') || 0);
+        if (zMin > min) min = zMin;
+      }
+      const eta = Number(onlineCfg.etaMinutes || 35);
+      let text = `Tahmini hazırlık ~${eta} dk`;
+      if (min > 0) text += ` · Min. sepet ${money(min)}`;
+      if (fee > 0) text += ` · Teslimat ${money(fee)}`;
+      minHint.textContent = text;
+    };
+    if (zoneSelect) zoneSelect.addEventListener('change', updateMinHint);
+    updateMinHint();
+
     onlineForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (onlineCart.isEmpty()) {
@@ -421,12 +446,35 @@
         alert('Kapıda ödeme tercihinizi seçin (nakit veya kart).');
         return;
       }
+      const deliveryZone = String(fd.get('delivery_zone') || '').trim();
+      const deliveryAddress = String(fd.get('delivery_address') || '').trim();
+      if (zoneSelect && !deliveryZone) {
+        alert('Teslimat bölgesi seçin.');
+        return;
+      }
+      if (zoneSelect && !deliveryAddress) {
+        alert('Teslimat adresi gerekli.');
+        return;
+      }
+      let minRequired = Number(onlineCfg.minTotal || 0);
+      const opt = zoneSelect?.selectedOptions?.[0];
+      if (opt) {
+        const zMin = Number(opt.getAttribute('data-min') || 0);
+        if (zMin > minRequired) minRequired = zMin;
+      }
+      const sub = Number(onlineCart.subtotal() || 0);
+      if (minRequired > 0 && sub < minRequired) {
+        alert(`Minimum sepet tutarı ${money(minRequired)}`);
+        return;
+      }
       const body = {
         customer_name: String(fd.get('customer_name') || ''),
         customer_phone: String(fd.get('customer_phone') || ''),
         customer_note: String(fd.get('customer_note') || ''),
         discount_code: String(fd.get('discount_code') || '').trim(),
         payment_preference: paymentPreference,
+        delivery_zone: deliveryZone,
+        delivery_address: deliveryAddress,
         items: onlineCart.payload(),
       };
       if (!body.customer_name || !body.customer_phone) {
@@ -804,12 +852,67 @@
     });
   });
 
-  // XPrinter mutfak/bar fiş otomatik yazdırma
+  // QZ Tray + XPrinter mutfak/bar fiş yazdırma
+  async function ensureQzConnected() {
+    if (!window.qz || !window.qz.websocket) return false;
+    try {
+      if (!window.qz.websocket.isActive()) {
+        await window.qz.websocket.connect();
+      }
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  async function printSlipsViaQz(root) {
+    const qzCfg = window.CHICKEN_QZ || {};
+    const enabled =
+      root.getAttribute('data-qz-enabled') === '1' || !!qzCfg.enabled;
+    if (!enabled || !window.qz) return false;
+    const printers = {
+      kitchen:
+        root.getAttribute('data-qz-printer-kitchen') ||
+        qzCfg.printer_kitchen ||
+        '',
+      bar: root.getAttribute('data-qz-printer-bar') || qzCfg.printer_bar || '',
+    };
+    if (!printers.kitchen && !printers.bar) return false;
+    const ok = await ensureQzConnected();
+    if (!ok) return false;
+    const tickets = [...root.querySelectorAll('[data-xp-station]')];
+    if (!tickets.length) return false;
+    for (const ticket of tickets) {
+      const station = ticket.getAttribute('data-xp-station') || 'kitchen';
+      const printer = printers[station] || printers.kitchen || printers.bar;
+      if (!printer) continue;
+      const html =
+        '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' +
+        'body{font-family:monospace;font-size:12px;margin:0;padding:4px}' +
+        '.xp-center{text-align:center}.xp-row{display:flex;justify-content:space-between}' +
+        '.xp-sep{margin:4px 0}.xp-item{margin:4px 0}.xp-brand{font-weight:700}' +
+        '</style></head><body>' +
+        ticket.outerHTML +
+        '</body></html>';
+      const config = window.qz.configs.create(printer);
+      await window.qz.print(config, [
+        { type: 'pixel', format: 'html', flavor: 'plain', data: html },
+      ]);
+    }
+    return true;
+  }
+
   const xpSlips = document.querySelector('[data-xp-slips]');
   if (xpSlips) {
     const hasSlips = xpSlips.getAttribute('data-has-slips') === '1';
-    const runPrint = () => {
+    const runPrint = async () => {
       if (!hasSlips) return;
+      try {
+        const usedQz = await printSlipsViaQz(xpSlips);
+        if (usedQz) return;
+      } catch (_) {
+        /* fallback */
+      }
       window.print();
     };
     const printBtn = document.querySelector('[data-xp-print]');
@@ -835,11 +938,15 @@
         setTimeout(goBack, 400);
       };
       window.addEventListener('afterprint', after);
-      setTimeout(() => {
-        if (statusEl) statusEl.textContent = 'Yazıcı diyaloğu açıldı…';
-        runPrint();
+      setTimeout(async () => {
+        if (statusEl) statusEl.textContent = 'Yazdırılıyor…';
+        await runPrint();
+        // QZ sessiz yazdırmada afterprint gelmez
+        const qzOn = xpSlips.getAttribute('data-qz-enabled') === '1';
+        if (qzOn) {
+          setTimeout(after, 800);
+        }
       }, 350);
-      // Bazı tarayıcılarda afterprint gelmez — güvenlik zamanlayıcısı
       setTimeout(() => {
         if (!returned && document.visibilityState === 'visible') {
           after();
@@ -916,6 +1023,8 @@
       board.innerHTML = orders
         .map((order) => {
           const slip = order.slip_status || 'waiting';
+          const lateClass = order.is_late ? ' is-late' : '';
+          const waitMin = Number(order.wait_minutes || 0);
           const noteOrder = order.customer_note
             ? `<p class="station-note"><strong>Sipariş notu:</strong> ${esc(order.customer_note)}</p>`
             : '';
@@ -953,7 +1062,7 @@
               ? `<button class="btn btn-accent btn-sm" type="button" data-slip-ack data-order-id="${Number(order.id)}" data-station="${esc(station)}">Fişi aldım</button>`
               : '';
           const fisUrl = order.fis_url || api(`/garson/fis/${Number(order.id)}?station=${station}`);
-          return `<article class="station-order ticket is-${esc(slip)}" data-order-id="${Number(order.id)}">
+          return `<article class="station-order ticket is-${esc(slip)}${lateClass}" data-order-id="${Number(order.id)}">
             <div class="station-order-head">
               <div>
                 <h3>${esc(order.order_code)}</h3>
@@ -962,6 +1071,7 @@
                   · ${esc(sourceLabelTr[order.source] || order.source)}
                   ${order.waiter_name ? ` · ${esc(order.waiter_name)}` : ''}
                   · ${esc(fmtHm(order.created_at))}
+                  · <strong>${waitMin} dk</strong>
                 </p>
               </div>
               <div class="station-slip-meta">
@@ -1200,5 +1310,177 @@
   if (document.querySelector('[data-online-badge], [data-online-pending-section], [data-live-stats]')) {
     pollWhatsAppPending();
     setInterval(pollWhatsAppPending, 8000);
+  }
+
+  // —— Masa taşı / birleştir / ürün böl ——
+  document.addEventListener('click', async (event) => {
+    const moveBtn = event.target.closest('[data-move-order]');
+    if (moveBtn) {
+      const orderId = Number(moveBtn.getAttribute('data-move-order') || 0);
+      const wrap = moveBtn.closest('label') || moveBtn.parentElement;
+      const select = wrap?.querySelector('[data-move-table-select]') || document.querySelector('[data-move-table-select]');
+      const tableId = Number(select?.value || 0);
+      if (!orderId || !tableId) {
+        alert('Hedef masa seçin.');
+        return;
+      }
+      if (!confirm('Sipariş bu masaya taşınsın mı?')) return;
+      moveBtn.disabled = true;
+      try {
+        await postJson(`/api/orders/${orderId}/move-table`, { table_id: tableId });
+        location.reload();
+      } catch (err) {
+        alert(err.message || 'Taşınamadı');
+        moveBtn.disabled = false;
+      }
+      return;
+    }
+
+    const mergeBtn = event.target.closest('[data-merge-tables]');
+    if (mergeBtn) {
+      const fromId = Number(mergeBtn.getAttribute('data-from-table') || 0);
+      const wrap = mergeBtn.closest('.item-note-row') || mergeBtn.parentElement;
+      const select = wrap?.querySelector('[data-merge-to-table]') || document.querySelector('[data-merge-to-table]');
+      const toId = Number(select?.value || 0);
+      if (!fromId || !toId) {
+        alert('Hedef masa seçin.');
+        return;
+      }
+      if (!confirm('Masalar birleştirilsin mi? Açık siparişler hedef masaya taşınır.')) return;
+      mergeBtn.disabled = true;
+      try {
+        await postJson('/api/tables/merge', { from_table_id: fromId, to_table_id: toId });
+        const path = window.location.pathname || '';
+        if (path.includes('/kasa/masa/')) {
+          location.href = api(`/kasa/masa/${toId}`);
+        } else {
+          location.href = api(`/garson/masa/${toId}`);
+        }
+      } catch (err) {
+        alert(err.message || 'Birleştirilemedi');
+        mergeBtn.disabled = false;
+      }
+      return;
+    }
+
+    const splitBtn = event.target.closest('[data-split-item]');
+    if (splitBtn) {
+      const itemId = Number(splitBtn.getAttribute('data-split-item') || 0);
+      const maxQty = Number(splitBtn.getAttribute('data-split-max') || 1);
+      if (!itemId || maxQty < 1) return;
+      const qtyRaw = prompt(`Kaç adet ayrılsın? (1–${maxQty})`, '1');
+      if (qtyRaw === null) return;
+      const quantity = Math.max(1, Math.min(maxQty, parseInt(qtyRaw, 10) || 0));
+      if (!quantity) {
+        alert('Geçersiz miktar.');
+        return;
+      }
+      const note = prompt('Ayrılan ürün için not (örn. az sos):', '') || '';
+      splitBtn.disabled = true;
+      try {
+        await postJson(`/api/order-items/${itemId}/split`, { quantity, note });
+        location.reload();
+      } catch (err) {
+        alert(err.message || 'Bölünemedi');
+        splitBtn.disabled = false;
+      }
+    }
+  });
+
+  // —— Vardiya kapat ——
+  document.querySelectorAll('[data-shift-close]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('Vardiya kapatılsın mı?')) return;
+      btn.disabled = true;
+      try {
+        await postJson('/api/staff/shift/close', {});
+        alert('Vardiya kapatıldı.');
+        location.reload();
+      } catch (err) {
+        alert(err.message || 'Vardiya kapatılamadı');
+        btn.disabled = false;
+      }
+    });
+  });
+
+  // —— Garson: hazır ürün ses / bildirim ——
+  function playReadyBeep() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = 880;
+      g.gain.value = 0.08;
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      setTimeout(() => {
+        o.stop();
+        ctx.close();
+      }, 220);
+    } catch (_) {}
+  }
+
+  function showReadyToast(rows) {
+    const host = document.querySelector('[data-ready-toast-host]');
+    if (!host || !rows.length) return;
+    const first = rows[0];
+    const el = document.createElement('div');
+    el.className = 'ready-toast';
+    el.innerHTML = `<strong>Hazır</strong><span>${esc(first.table_label || 'Masa')} · ${Number(first.quantity)}× ${esc(first.item_name)}</span>`;
+    host.prepend(el);
+    setTimeout(() => el.remove(), 8000);
+  }
+
+  if (document.body.hasAttribute('data-waiter-ready')) {
+    const seenKey = 'chicken_ready_seen';
+    let seen = {};
+    try {
+      seen = JSON.parse(localStorage.getItem(seenKey) || '{}') || {};
+    } catch (_) {
+      seen = {};
+    }
+    async function pollReadyItems() {
+      try {
+        const res = await fetch(api('/api/waiter/ready-items'));
+        const data = await res.json();
+        if (!data.ok) return;
+        const rows = data.rows || [];
+        const fresh = [];
+        const nextSeen = {};
+        rows.forEach((row) => {
+          const id = String(row.id);
+          nextSeen[id] = 1;
+          if (!seen[id]) fresh.push(row);
+        });
+        if (Object.keys(seen).length && fresh.length) {
+          playReadyBeep();
+          showReadyToast(fresh);
+          if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+            const f = fresh[0];
+            new Notification('Ürün hazır', {
+              body: `${f.table_label || 'Masa'} · ${f.quantity}× ${f.item_name}`,
+            });
+          }
+        }
+        seen = nextSeen;
+        localStorage.setItem(seenKey, JSON.stringify(seen));
+      } catch (_) {}
+    }
+    if ('Notification' in window && Notification.permission === 'default') {
+      try {
+        Notification.requestPermission();
+      } catch (_) {}
+    }
+    pollReadyItems();
+    setInterval(pollReadyItems, 6000);
+  }
+
+  // Kiosk: tam ekran ipucu (tablet)
+  if (document.body.classList.contains('is-kiosk')) {
+    document.documentElement.classList.add('is-kiosk');
   }
 })();

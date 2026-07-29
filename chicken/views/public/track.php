@@ -26,6 +26,19 @@
       </div>
       <p style="margin:16px 0">Durum: <strong data-live-status><?= e(status_label($order['status'])) ?></strong></p>
       <p class="muted small">Toplam: <?= e(money((float) $order['total'])) ?> · <?= e($order['created_at']) ?></p>
+      <?php if (!empty($order['eta_minutes']) && !in_array($order['status'], ['ready', 'served', 'paid', 'cancelled'], true)): ?>
+        <p><strong>Tahmini süre:</strong> ~<?= (int) $order['eta_minutes'] ?> dk</p>
+      <?php endif; ?>
+      <?php if (!empty($order['delivery_zone'])): ?>
+        <p><strong>Bölge:</strong> <?= e((string) $order['delivery_zone']) ?>
+          <?php if ((float) ($order['delivery_fee'] ?? 0) > 0): ?>
+            · Teslimat: <?= e(money((float) $order['delivery_fee'])) ?>
+          <?php endif; ?>
+        </p>
+      <?php endif; ?>
+      <?php if (!empty($order['delivery_address'])): ?>
+        <p><strong>Adres:</strong> <?= e((string) $order['delivery_address']) ?></p>
+      <?php endif; ?>
       <?php if (!empty($order['payment_preference'])): ?>
         <p><strong>Kapıda ödeme:</strong> <?= e(payment_preference_label((string) $order['payment_preference'])) ?></p>
       <?php endif; ?>

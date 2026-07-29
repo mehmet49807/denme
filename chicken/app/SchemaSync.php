@@ -151,6 +151,11 @@ final class SchemaSync
         }
 
         try {
+            self::ensureOpsUpgrade($pdo);
+        } catch (Throwable) {
+        }
+
+        try {
             // Eski marka adı kalmışsa Crisp & Co. ile hizala
             $pdo->prepare(
                 "UPDATE settings SET setting_value = 'Crisp & Co.'
@@ -468,6 +473,116 @@ final class SchemaSync
                  VALUES (?, ?, ?, ?, ?, 1)'
             );
             $ins->execute([$name, $username, $hash, $role, $pin]);
+        }
+    }
+
+    private static function ensureOpsUpgrade(PDO $pdo): void
+    {
+        self::ensureColumn(
+            $pdo,
+            'menu_items',
+            'stock_qty',
+            'ALTER TABLE menu_items ADD COLUMN stock_qty DECIMAL(10,2) NULL DEFAULT NULL AFTER is_available'
+        );
+        self::ensureColumn(
+            $pdo,
+            'menu_items',
+            'stock_alert_qty',
+            'ALTER TABLE menu_items ADD COLUMN stock_alert_qty DECIMAL(10,2) NULL DEFAULT NULL AFTER stock_qty'
+        );
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'delivery_zone',
+            'ALTER TABLE orders ADD COLUMN delivery_zone VARCHAR(120) NULL DEFAULT NULL AFTER customer_note'
+        );
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'delivery_address',
+            'ALTER TABLE orders ADD COLUMN delivery_address VARCHAR(400) NULL DEFAULT NULL AFTER delivery_zone'
+        );
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'delivery_fee',
+            'ALTER TABLE orders ADD COLUMN delivery_fee DECIMAL(10,2) NOT NULL DEFAULT 0 AFTER delivery_address'
+        );
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'eta_minutes',
+            'ALTER TABLE orders ADD COLUMN eta_minutes INT UNSIGNED NULL DEFAULT NULL AFTER delivery_fee'
+        );
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'branch_id',
+            'ALTER TABLE orders ADD COLUMN branch_id INT UNSIGNED NULL DEFAULT NULL AFTER table_id'
+        );
+        self::ensureColumn(
+            $pdo,
+            'order_items',
+            'ready_at',
+            'ALTER TABLE order_items ADD COLUMN ready_at DATETIME NULL DEFAULT NULL AFTER status'
+        );
+
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS staff_login_logs (
+              id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              staff_id INT UNSIGNED NULL,
+              username VARCHAR(80) NOT NULL DEFAULT '',
+              role VARCHAR(40) NOT NULL DEFAULT '',
+              event_type ENUM('login','logout') NOT NULL,
+              ip_address VARCHAR(64) NULL,
+              created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              INDEX idx_login_logs_created (created_at),
+              INDEX idx_login_logs_staff (staff_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS staff_shifts (
+              id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              staff_id INT UNSIGNED NOT NULL,
+              opened_at DATETIME NOT NULL,
+              closed_at DATETIME NULL DEFAULT NULL,
+              note VARCHAR(255) NULL,
+              created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              INDEX idx_shifts_staff_open (staff_id, closed_at)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS menu_item_branch_prices (
+              id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+              menu_item_id INT UNSIGNED NOT NULL,
+              branch_id INT UNSIGNED NOT NULL,
+              price DECIMAL(10,2) NOT NULL,
+              updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+              UNIQUE KEY uq_menu_branch (menu_item_id, branch_id),
+              INDEX idx_branch_price_branch (branch_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+
+        // Varsayılan ops ayarları
+        $defaults = [
+            'station_wait_alert_minutes' => '15',
+            'online_eta_minutes' => '35',
+            'online_min_total' => '0',
+            'delivery_zones_json' => '[]',
+            'qz_enabled' => '0',
+            'qz_printer_kitchen' => '',
+            'qz_printer_bar' => '',
+            'whatsapp_customer_status' => '1',
+            'slip_history_limit' => '30',
+            'pos_branch_id' => '0',
+        ];
+        foreach ($defaults as $key => $value) {
+            $check = $pdo->prepare('SELECT 1 FROM settings WHERE setting_key = ? LIMIT 1');
+            $check->execute([$key]);
+            if (!$check->fetchColumn()) {
+                $pdo->prepare('INSERT INTO settings (setting_key, setting_value) VALUES (?, ?)')
+                    ->execute([$key, $value]);
+            }
         }
     }
 }
