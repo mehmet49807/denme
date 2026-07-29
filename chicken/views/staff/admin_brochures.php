@@ -15,7 +15,9 @@
 </div>
 
 <p class="muted" style="margin-top:-8px">
-  Temayı seçin veya pasife alın. Pasif temalar müşteriye gösterilmez. Menü içeriği ürünlerden otomatik gelir.
+  Temayı seçin veya pasife alın. Pasif temalar müşteriye gösterilmez.
+  Yeni temalar farklı düzenler kullanır: kart, dergi, tahta, galeri, yan menü.
+  Menü içeriği ürünlerden otomatik gelir.
 </p>
 
 <div class="theme-grid" style="margin-top:20px">
