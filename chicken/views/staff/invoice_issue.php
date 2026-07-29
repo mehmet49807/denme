@@ -5,20 +5,23 @@ $invoice = $invoice ?? null;
 ?>
 <div class="panel-head">
   <div>
-    <p class="eyebrow">Fatura kes</p>
+    <p class="eyebrow">Satış fişi kes</p>
     <h1><?= e((string) $order['order_code']) ?></h1>
   </div>
   <a class="btn btn-ghost btn-sm" href="<?= e(url('/kasa')) ?>">Geri</a>
 </div>
 
 <?php if ($invoice): ?>
-  <div class="alert alert-ok">Bu sipariş için fatura kesilmiş: <a href="<?= e(url('/kasa/fatura/' . (int) $invoice['id'])) ?>"><?= e((string) $invoice['invoice_no']) ?></a></div>
+  <div class="alert alert-ok">Bu sipariş için satış fişi kesilmiş: <a href="<?= e(url('/kasa/fatura/' . (int) $invoice['id'])) ?>"><?= e((string) $invoice['invoice_no']) ?></a></div>
 <?php endif; ?>
 
 <section class="panel" style="max-width:520px">
   <p class="muted" style="margin-top:0">
     Toplam: <strong><?= e(money((float) $order['total'])) ?></strong>
     · Ödeme: <?= e(payment_method_label($order['payment_method'] ?? null)) ?>
+  </p>
+  <p class="small muted">
+    Türkiye formatında satış fişi (KDV dahil). GİB e-Fatura değildir; işletme içi bilgi / satış kaydı belgesidir.
   </p>
   <form method="post" action="<?= e(url('/kasa/fatura/siparis/' . (int) $order['id'])) ?>" class="stack">
     <?= csrf_field() ?>
@@ -35,7 +38,7 @@ $invoice = $invoice ?? null;
         <textarea name="buyer_address" rows="2"></textarea>
     </label>
     <button class="btn btn-primary" type="submit" <?= $invoice ? 'disabled' : '' ?>>
-      <?= $invoice ? 'Fatura kesildi' : 'Fatura kes' ?>
+      <?= $invoice ? 'Satış fişi kesildi' : 'Satış fişi kes' ?>
     </button>
   </form>
 </section>

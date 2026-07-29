@@ -275,7 +275,7 @@ final class FiscalService
                 $orderId,
                 $staffId,
                 'invoice_issued',
-                'Satış faturası kesildi: ' . $invoiceNo
+                'Satış fişi kesildi: ' . $invoiceNo
             );
             $pdo->commit();
         } catch (Throwable $e) {

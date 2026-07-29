@@ -12,7 +12,7 @@ $company = $company ?? [];
 
 <section class="panel" style="max-width:560px">
   <p class="muted" style="margin-top:0">
-    Satış faturası ve gün sonu belgelerinde görünecek bilgiler.
+    Satış fişi ve gün sonu belgelerinde görünecek bilgiler.
     Menü ürünlerinin kendi KDV oranı vardır (restoran yeme-içme %10, alkollü içecek %20).
     Aşağıdaki oran, ürün oranı yoksa kullanılan varsayılandır.
   </p>

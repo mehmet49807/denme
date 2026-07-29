@@ -122,7 +122,7 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
           </a>
           <a class="side-link<?= str_starts_with(current_path(), '/kasa/fatura') ? ' active' : '' ?>" href="<?= e(url('/kasa/faturalar')) ?>">
             <?php partial('partials/menu_icon', ['icon' => 'orders', 'color' => '#4c8dff']); ?>
-            <span>Faturalar</span>
+            <span>Satış fişleri</span>
           </a>
         <?php endif; ?>
         <?php if ($role === 'admin' && !$isAdminArea): ?>

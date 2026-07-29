@@ -1444,6 +1444,193 @@ a.table-tile-link {
 .slip ul { margin: 0; padding-left: 18px; }
 .slip li { margin: 6px 0; }
 
+/* Türkiye satış fişi (80mm termal benzeri) */
+.tr-fis-wrap {
+  max-width: 360px;
+  margin: 0 auto 24px;
+}
+.tr-fis-slip-card {
+  max-width: 360px;
+}
+.tr-fis-preview-label {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.tr-fis {
+  background: #fff;
+  color: #111;
+  border: 1px dashed #bbb;
+  border-radius: 8px;
+  padding: 14px 12px 16px;
+  font-family: "IBM Plex Mono", "Courier New", ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.tr-fis-head {
+  text-align: center;
+  margin-bottom: 6px;
+}
+.tr-fis-brand {
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+  font-family: var(--font-display), sans-serif;
+}
+.tr-fis-line {
+  color: #333;
+}
+.tr-fis-title {
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  padding: 4px 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.95rem;
+}
+.tr-fis-rule {
+  border-top: 1px dashed #999;
+  margin: 8px 0;
+}
+.tr-fis-meta {
+  display: grid;
+  gap: 3px;
+}
+.tr-fis-meta > div,
+.tr-fis-totals > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tr-fis-meta span,
+.tr-fis-totals span {
+  color: #444;
+}
+.tr-fis-items {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+.tr-fis-items th,
+.tr-fis-items td {
+  padding: 4px 2px;
+  vertical-align: top;
+  border: 0;
+}
+.tr-fis-items thead th {
+  border-bottom: 1px solid #ccc;
+  font-weight: 700;
+  text-align: left;
+}
+.tr-fis-col-qty,
+.tr-fis-col-kdv,
+.tr-fis-col-amt {
+  text-align: right;
+  white-space: nowrap;
+}
+.tr-fis-unit {
+  color: #666;
+  font-size: 10.5px;
+  margin-top: 1px;
+}
+.tr-fis-totals {
+  display: grid;
+  gap: 3px;
+}
+.tr-fis-grand {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid #222;
+  font-size: 1.05em;
+}
+.tr-fis-buyer {
+  text-align: left;
+}
+.tr-fis-buyer-title {
+  font-weight: 700;
+  margin-bottom: 2px;
+  letter-spacing: 0.06em;
+}
+.tr-fis-foot {
+  text-align: center;
+  margin-top: 4px;
+}
+.tr-fis-thanks {
+  margin: 6px 0 2px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  font-family: var(--font-display), sans-serif;
+}
+.tr-fis-brand-foot {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+.tr-fis-legal,
+.tr-fis-print {
+  margin: 0;
+  color: #555;
+  font-size: 10px;
+  line-height: 1.4;
+}
+.tr-fis-print { margin-top: 6px; }
+
+.tr-station-slip .tr-station-head {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.tr-station-slip .tr-station-head h2 {
+  margin: 4px 0 0;
+  letter-spacing: 0.08em;
+}
+.tr-station-meta {
+  display: grid;
+  gap: 3px;
+  font-size: 0.86rem;
+}
+.tr-station-meta > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tr-station-meta span { color: var(--muted); }
+.tr-station-note {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+}
+.tr-station-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.tr-station-list li {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.tr-station-list li:last-child { border-bottom: 0; }
+
+@media print {
+  .tr-fis-wrap,
+  .tr-fis-slip-card {
+    max-width: 80mm;
+    margin: 0 auto;
+  }
+  .tr-fis {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    width: 72mm;
+  }
+  .tr-station-slip,
+  .tr-fis-slip-card {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+  .invoice-doc { display: none !important; }
+}
+
 .station-board {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
