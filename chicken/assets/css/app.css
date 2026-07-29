@@ -1547,6 +1547,63 @@ a.table-tile-link {
   padding: 12px;
   border: 1px solid var(--line);
 }
+/* Logolu menü broşürü QR */
+.qr-brand {
+  --qr-size: 240px;
+  position: relative;
+  width: var(--qr-size);
+  height: var(--qr-size);
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  box-sizing: border-box;
+}
+.qr-brand-code {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+}
+.qr-brand-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 28%;
+  height: 28%;
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 14px;
+  background: #fff;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1px rgba(20, 17, 14, 0.1), 0 8px 18px rgba(20, 17, 14, 0.14);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+.qr-brand-logo img {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  display: block;
+}
+@media print {
+  .qr-brand {
+    border: 0;
+    box-shadow: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .qr-brand-logo {
+    box-shadow: none;
+    border-color: #fff;
+  }
+}
 
 /* Brochure menu */
 .brochure-body {
@@ -1830,10 +1887,15 @@ a.table-tile-link {
   align-items: center;
   flex-wrap: wrap;
 }
-.qr-embed .qr-single-img {
+.qr-embed .qr-single-img,
+.qr-embed .qr-brand {
   width: 140px;
   height: 140px;
   padding: 8px;
+}
+.qr-embed .qr-brand {
+  --qr-size: 140px;
+  margin: 0;
 }
 
 /* Brochure theme admin cards */

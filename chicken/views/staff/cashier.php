@@ -33,13 +33,12 @@ $paidSum = array_sum(array_map(
     <span class="chip">Görüntüleme</span>
   </div>
   <div class="qr-embed-row">
-    <img
-      class="qr-single-img"
-      src="<?= e(BrochureService::qrImageUrl(null, 160)) ?>"
-      alt="QR Menü"
-      width="140"
-      height="140"
-    >
+    <?php partial('partials/qr_brand', [
+        'qrImageUrl' => BrochureService::qrImageUrl(null, 160),
+        'logoUrl' => logo_url(),
+        'size' => 140,
+        'alt' => 'QR Menü',
+    ]); ?>
     <div>
       <p class="muted" style="margin:0 0 10px">Yalnızca görüntüleme — yazdırıp kullanabilirsiniz. Tema düzenlemesi yöneticide.</p>
       <div class="cta-row">
