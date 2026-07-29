@@ -55,6 +55,47 @@ def ensure_dir(ftp: FTP, remote_dir: str) -> None:
             pass
 
 
+def remove_remote_tree(ftp: FTP, path: str) -> None:
+    """Delete a remote file or directory tree (best-effort)."""
+    try:
+        ftp.delete(path)
+        print("deleted file", path, flush=True)
+        return
+    except error_perm:
+        pass
+    try:
+        names = ftp.nlst(path)
+    except error_perm as exc:
+        print("skip remove", path, exc, flush=True)
+        return
+    for name in names:
+        leaf = name.rstrip("/").split("/")[-1]
+        if leaf in {".", ".."}:
+            continue
+        child = name if name.startswith(path.rstrip("/")) else f"{path.rstrip('/')}/{leaf}"
+        if child.rstrip("/") == path.rstrip("/"):
+            continue
+        remove_remote_tree(ftp, child)
+    try:
+        ftp.rmd(path)
+        print("removed dir", path, flush=True)
+    except error_perm as exc:
+        print("rmd fail", path, exc, flush=True)
+
+
+def remove_stray_qr_dir(ftp: FTP, base: str) -> None:
+    """Remove accidental qr/ folder that breaks /qr front-controller routing."""
+    remote = f"{base.rstrip('/')}/qr"
+    print("cleanup stray qr dir", remote, flush=True)
+    remove_remote_tree(ftp, remote)
+    # relative fallback when cwd is already base
+    try:
+        ftp.cwd(base)
+        remove_remote_tree(ftp, "qr")
+    except Exception as exc:  # noqa: BLE001
+        print("rel qr cleanup", type(exc).__name__, exc, flush=True)
+
+
 def connect(user: str, password: str, attempts: int = 12) -> FTP:
     last: Exception | None = None
     for i in range(attempts):
@@ -327,7 +368,15 @@ def main() -> int:
             if not bases:
                 raise RuntimeError("Could not locate/create chicken document root")
             for base in bases:
+                try:
+                    remove_stray_qr_dir(ftp, base)
+                except Exception as exc:  # noqa: BLE001
+                    print("qr cleanup failed", type(exc).__name__, exc, flush=True)
                 ftp = upload_tree(ftp, user, password, base)
+                try:
+                    remove_stray_qr_dir(ftp, base)
+                except Exception as exc:  # noqa: BLE001
+                    print("qr cleanup failed", type(exc).__name__, exc, flush=True)
                 uploaded_bases.append(f"{label}:{base}")
             try:
                 ftp.quit()
