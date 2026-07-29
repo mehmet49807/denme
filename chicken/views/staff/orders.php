@@ -8,15 +8,26 @@
     <p class="eyebrow">Siparişler</p>
     <h1>Açık masalar</h1>
   </div>
-  <a class="btn btn-primary btn-sm" href="<?= e(url('/masa/ekle')) ?>">Yeni masa</a>
-  <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson')) ?>">Menüden ekle</a>
+  <div class="cta-row">
+    <span class="live-chip" data-live-updated>Canlı</span>
+    <a class="btn btn-primary btn-sm" href="<?= e(url('/masa/ekle')) ?>">Yeni masa</a>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson')) ?>">Menüden ekle</a>
+  </div>
 </div>
 
 <?php if (!$openTables): ?>
-  <div class="panel muted" style="margin-bottom:20px">Şu an açık masa yok. Aşağıdan yeni fiş açabilirsiniz.</div>
+  <div class="panel muted" style="margin-bottom:20px" data-tables-empty>Şu an açık masa yok. Aşağıdan yeni fiş açabilirsiniz.</div>
 <?php endif; ?>
 
-<div class="table-board">
+<div
+  class="table-board"
+  data-tables-board
+  data-tables-scope="open"
+  data-tables-link="/garson/masa"
+  data-tables-redirect="<?= e(url('/siparisler')) ?>"
+  data-can-close="<?= !empty($canManage) ? '1' : '0' ?>"
+  data-live-version="<?= e(OrderService::snapshotVersion($openTables)) ?>"
+>
   <?php foreach ($openTables as $table): ?>
     <article class="table-tile is-open">
       <a class="table-tile-link" href="<?= e(url('/garson/masa/' . (int) $table['id'])) ?>">

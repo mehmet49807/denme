@@ -64,6 +64,19 @@
           <input name="district" autocomplete="address-level3" placeholder="İlçe" value="<?= e((string) ($_POST['district'] ?? '')) ?>">
         </label>
       </div>
+      <?php $branches = $branches ?? []; $selectedBranch = (string) ($_POST['preferred_branch_id'] ?? ''); ?>
+      <?php if ($branches): ?>
+        <label>Tercih edilen şube / bölge
+          <select name="preferred_branch_id">
+            <option value="">Seçiniz (opsiyonel)</option>
+            <?php foreach ($branches as $b): ?>
+              <option value="<?= (int) $b['id'] ?>" <?= $selectedBranch === (string) $b['id'] ? 'selected' : '' ?>>
+                <?= e((string) $b['name']) ?> — <?= e((string) $b['city']) ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+        </label>
+      <?php endif; ?>
       <label>Yaklaşık yatırım bütçesi
         <select name="budget">
           <?php

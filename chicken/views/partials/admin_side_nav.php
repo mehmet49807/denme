@@ -41,6 +41,8 @@ $groups = [
         'title' => 'Franchise',
         'items' => [
             ['href' => '/yonetici/franchise', 'label' => 'Başvurular', 'icon' => 'orders', 'color' => '#4c8dff'],
+            ['href' => '/yonetici/franchise/subeler', 'label' => 'Şubeler', 'icon' => 'tables', 'color' => '#e85d04'],
+            ['href' => '/yonetici/franchise/whatsapp', 'label' => 'WhatsApp', 'icon' => 'orders', 'color' => '#1f9d63'],
         ],
     ],
 ];

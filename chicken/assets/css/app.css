@@ -1524,6 +1524,27 @@ a.table-tile-link {
 .live-chip {
   background: rgba(31, 157, 99, 0.12);
   color: #146c43;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.live-chip::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #1f9d63;
+  box-shadow: 0 0 0 0 rgba(31, 157, 99, 0.55);
+  animation: live-pulse 1.6s ease-out infinite;
+}
+@keyframes live-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(31, 157, 99, 0.45); }
+  70% { box-shadow: 0 0 0 8px rgba(31, 157, 99, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(31, 157, 99, 0); }
 }
 .live-title {
   margin: 0;

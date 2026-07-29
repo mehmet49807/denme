@@ -10,6 +10,7 @@ $active = $active ?? [];
     <h1>Online Siparişler</h1>
   </div>
   <div class="cta-row">
+    <span class="live-chip" data-live-updated>Canlı</span>
     <span class="chip <?= $pending ? 'kitchen' : '' ?>" data-pending-count><?= count($pending) ?> bekleyen</span>
     <button class="btn btn-ghost btn-sm" type="button" onclick="location.reload()">Yenile</button>
   </div>
@@ -17,6 +18,9 @@ $active = $active ?? [];
 
 <p class="muted" style="margin-top:-8px">
   Onayladığınız sipariş mutfak ve bar fişine düşer. Onaylanmadan istasyonlara gitmez.
+  <?php if (!empty($whatsappEnabled)): ?>
+    WhatsApp bildirimi açık — yeni siparişte otomatik hatırlatma gelir.
+  <?php endif; ?>
 </p>
 
 <section class="panel" style="margin-top:18px" data-online-pending-section>
@@ -67,6 +71,9 @@ $active = $active ?? [];
           <div class="cta-row" style="margin-top:12px">
             <button class="btn btn-accent btn-sm" type="button" data-accept-online="<?= (int) $order['id'] ?>">Onayla · Mutfak/Bar</button>
             <button class="btn btn-dark btn-sm" type="button" data-reject-online="<?= (int) $order['id'] ?>">Reddet</button>
+            <?php if (!empty($order['whatsapp_url'])): ?>
+              <a class="btn btn-ghost btn-sm" href="<?= e((string) $order['whatsapp_url']) ?>" target="_blank" rel="noopener">WhatsApp</a>
+            <?php endif; ?>
             <a class="btn btn-ghost btn-sm" href="<?= e(url('/garson/fis/' . (int) $order['id'])) ?>">Fiş önizle</a>
           </div>
         </article>

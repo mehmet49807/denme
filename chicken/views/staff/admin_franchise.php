@@ -12,6 +12,8 @@ $filter = $filter ?? '';
     <h1>Franchise başvuruları</h1>
   </div>
   <div class="cta-row">
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('/yonetici/franchise/subeler')) ?>">Şubeler</a>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('/yonetici/franchise/whatsapp')) ?>">WhatsApp</a>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('/bayilik')) ?>" target="_blank" rel="noopener">Kamu sayfası</a>
   </div>
 </div>
@@ -23,13 +25,33 @@ $filter = $filter ?? '';
   <div class="alert alert-error"><?= e($msg) ?></div>
 <?php endif; ?>
 
+<?php
+  $branchId = (int) ($branchId ?? 0);
+  $branches = $branches ?? [];
+?>
 <div class="chips" style="margin:8px 0 16px">
-  <a class="chip <?= $filter === '' ? 'active' : '' ?>" href="<?= e(url('/yonetici/franchise')) ?>">Tümü (<?= (int) $counts['all'] ?>)</a>
-  <a class="chip <?= $filter === 'new' ? 'active' : '' ?>" href="<?= e(url('/yonetici/franchise?durum=new')) ?>">Yeni (<?= (int) $counts['new'] ?>)</a>
-  <a class="chip <?= $filter === 'reviewing' ? 'active' : '' ?>" href="<?= e(url('/yonetici/franchise?durum=reviewing')) ?>">İnceleniyor (<?= (int) $counts['reviewing'] ?>)</a>
-  <a class="chip <?= $filter === 'approved' ? 'active' : '' ?>" href="<?= e(url('/yonetici/franchise?durum=approved')) ?>">Onaylı (<?= (int) $counts['approved'] ?>)</a>
-  <a class="chip <?= $filter === 'rejected' ? 'active' : '' ?>" href="<?= e(url('/yonetici/franchise?durum=rejected')) ?>">Red (<?= (int) $counts['rejected'] ?>)</a>
+  <a class="chip <?= $filter === '' ? 'active' : '' ?>" href="<?= e(url('/yonetici/franchise' . ($branchId ? '?sube=' . $branchId : ''))) ?>">Tümü (<?= (int) $counts['all'] ?>)</a>
+  <a class="chip <?= $filter === 'new' ? 'active' : '' ?>" href="<?= e(url('/yonetici/franchise?durum=new' . ($branchId ? '&sube=' . $branchId : ''))) ?>">Yeni (<?= (int) $counts['new'] ?>)</a>
+  <a class="chip <?= $filter === 'reviewing' ? 'active' : '' ?>" href="<?= e(url('/yonetici/franchise?durum=reviewing' . ($branchId ? '&sube=' . $branchId : ''))) ?>">İnceleniyor (<?= (int) $counts['reviewing'] ?>)</a>
+  <a class="chip <?= $filter === 'approved' ? 'active' : '' ?>" href="<?= e(url('/yonetici/franchise?durum=approved' . ($branchId ? '&sube=' . $branchId : ''))) ?>">Onaylı (<?= (int) $counts['approved'] ?>)</a>
+  <a class="chip <?= $filter === 'rejected' ? 'active' : '' ?>" href="<?= e(url('/yonetici/franchise?durum=rejected' . ($branchId ? '&sube=' . $branchId : ''))) ?>">Red (<?= (int) $counts['rejected'] ?>)</a>
 </div>
+
+<?php if ($branches): ?>
+  <form method="get" action="<?= e(url('/yonetici/franchise')) ?>" class="cta-row" style="margin:0 0 16px;align-items:center">
+    <?php if ($filter !== ''): ?><input type="hidden" name="durum" value="<?= e($filter) ?>"><?php endif; ?>
+    <label class="small muted" style="margin:0">Şube filtresi
+      <select name="sube" onchange="this.form.submit()">
+        <option value="0">Tüm şubeler</option>
+        <?php foreach ($branches as $b): ?>
+          <option value="<?= (int) $b['id'] ?>" <?= $branchId === (int) $b['id'] ? 'selected' : '' ?>>
+            <?= e((string) $b['name']) ?> (<?= e((string) $b['city']) ?>)
+          </option>
+        <?php endforeach; ?>
+      </select>
+    </label>
+  </form>
+<?php endif; ?>
 
 <section class="panel">
   <?php if (!$applications): ?>
@@ -43,6 +65,7 @@ $filter = $filter ?? '';
             <th>Aday</th>
             <th>İletişim</th>
             <th>Şehir</th>
+            <th>Şube</th>
             <th>Bütçe</th>
             <th>Durum</th>
             <th>Tarih</th>
@@ -71,6 +94,12 @@ $filter = $filter ?? '';
                 <?= e((string) $row['city']) ?>
                 <?php if (!empty($row['district'])): ?>
                   <div class="small muted"><?= e((string) $row['district']) ?></div>
+                <?php endif; ?>
+              </td>
+              <td class="small">
+                <?= e((string) ($row['branch_name'] ?? '—')) ?>
+                <?php if (!empty($row['branch_city'])): ?>
+                  <div class="muted"><?= e((string) $row['branch_city']) ?></div>
                 <?php endif; ?>
               </td>
               <td class="small"><?= e((string) ($row['budget_range'] ?: '—')) ?></td>

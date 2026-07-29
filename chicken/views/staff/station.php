@@ -1,14 +1,27 @@
+<?php
+/** @var string $station */
+/** @var array $rows */
+$stationKey = $station === 'bar' ? 'bar' : 'kitchen';
+?>
 <div class="panel-head">
   <div>
     <p class="eyebrow">İstasyon</p>
-    <h1><?= $station === 'bar' ? 'Bar' : 'Mutfak' ?> ekranı</h1>
+    <h1><?= $stationKey === 'bar' ? 'Bar' : 'Mutfak' ?> ekranı</h1>
   </div>
-  <button class="btn btn-ghost btn-sm" type="button" onclick="location.reload()">Yenile</button>
+  <div class="cta-row">
+    <span class="live-chip" data-live-updated>Canlı</span>
+    <button class="btn btn-ghost btn-sm" type="button" data-live-refresh>Yenile</button>
+  </div>
 </div>
 
-<div class="station-board">
+<div
+  class="station-board"
+  data-station-board
+  data-station="<?= e($stationKey) ?>"
+  data-live-version="<?= e(OrderService::snapshotVersion($rows)) ?>"
+>
   <?php if (!$rows): ?>
-    <div class="panel muted">Bekleyen ürün yok.</div>
+    <div class="panel muted" data-station-empty>Bekleyen ürün yok.</div>
   <?php endif; ?>
   <?php foreach ($rows as $row): ?>
     <article class="ticket">

@@ -13,6 +13,8 @@ require __DIR__ . '/app/OrderService.php';
 require __DIR__ . '/app/TableService.php';
 require __DIR__ . '/app/FiscalService.php';
 require __DIR__ . '/app/FranchiseService.php';
+require __DIR__ . '/app/BranchService.php';
+require __DIR__ . '/app/WhatsAppNotify.php';
 require __DIR__ . '/app/CategorySync.php';
 require __DIR__ . '/app/SchemaSync.php';
 require __DIR__ . '/app/MenuImageSync.php';
@@ -349,6 +351,7 @@ $router->get('/musteri-memnuniyeti', static function () use ($contentPage): void
 $router->get('/bayilik', static function (): void {
     view('public/franchise', [
         'title' => 'Franchise · Crisp & Co.',
+        'branches' => BranchService::listActive(),
     ]);
 });
 
@@ -364,6 +367,7 @@ $router->post('/bayilik', static function (): void {
             'email' => (string) input('email'),
             'city' => (string) input('city'),
             'district' => (string) input('district'),
+            'preferred_branch_id' => (int) input('preferred_branch_id', 0),
             'budget' => (string) input('budget'),
             'experience' => (string) input('experience'),
             'message' => (string) input('message'),
@@ -376,6 +380,7 @@ $router->post('/bayilik', static function (): void {
         flash('error', $e->getMessage());
         view('public/franchise', [
             'title' => 'Franchise · Crisp & Co.',
+            'branches' => BranchService::listActive(),
         ]);
     }
 });
@@ -756,17 +761,7 @@ $router->get('/garson/fis/{id}', static function (string $id): void {
 // Station boards
 $router->get('/mutfak', static function (): void {
     Auth::requireRole('waiter', 'cashier', 'admin');
-    $pdo = Database::pdo();
-    $rows = $pdo->query(
-        "SELECT oi.*, o.order_code, o.table_id, t.label AS table_label, o.source, o.customer_note, o.created_at AS order_time
-         FROM order_items oi
-         JOIN orders o ON o.id = oi.order_id
-         LEFT JOIN dining_tables t ON t.id = o.table_id
-         WHERE oi.station = 'kitchen'
-           AND oi.status IN ('queued','preparing')
-           AND o.status NOT IN ('cancelled','paid','pending')
-         ORDER BY oi.id ASC"
-    )->fetchAll();
+    $rows = OrderService::stationQueued('kitchen');
     view('staff/station', [
         'title' => 'Mutfak Ekranı',
         'station' => 'kitchen',
@@ -777,22 +772,80 @@ $router->get('/mutfak', static function (): void {
 
 $router->get('/bar', static function (): void {
     Auth::requireRole('waiter', 'cashier', 'admin');
-    $pdo = Database::pdo();
-    $rows = $pdo->query(
-        "SELECT oi.*, o.order_code, o.table_id, t.label AS table_label, o.source, o.customer_note, o.created_at AS order_time
-         FROM order_items oi
-         JOIN orders o ON o.id = oi.order_id
-         LEFT JOIN dining_tables t ON t.id = o.table_id
-         WHERE oi.station = 'bar'
-           AND oi.status IN ('queued','preparing')
-           AND o.status NOT IN ('cancelled','paid','pending')
-         ORDER BY oi.id ASC"
-    )->fetchAll();
+    $rows = OrderService::stationQueued('bar');
     view('staff/station', [
         'title' => 'Bar Ekranı',
         'station' => 'bar',
         'rows' => $rows,
         'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/api/station/{station}', static function (string $station): void {
+    Auth::requireRole('waiter', 'cashier', 'admin');
+    $station = $station === 'bar' ? 'bar' : ($station === 'kitchen' ? 'kitchen' : '');
+    if ($station === '') {
+        json_response(['ok' => false, 'error' => 'Geçersiz istasyon'], 422);
+    }
+    $rows = OrderService::stationQueued($station);
+    json_response([
+        'ok' => true,
+        'station' => $station,
+        'version' => OrderService::snapshotVersion($rows),
+        'updated_at' => date('H:i:s'),
+        'rows' => $rows,
+    ]);
+});
+
+$router->get('/api/tables/overview', static function (): void {
+    Auth::requireRole('waiter', 'cashier', 'admin');
+    $scope = trim((string) input('scope', 'active'));
+    if (!in_array($scope, ['open', 'active', 'admin'], true)) {
+        $scope = 'active';
+    }
+    if ($scope === 'admin') {
+        Auth::requireRole('admin');
+        $tables = OrderService::tablesOverviewAll();
+    } elseif ($scope === 'open') {
+        $tables = array_values(array_filter(
+            OrderService::tablesOverview(),
+            static fn(array $t): bool => !empty($t['is_open'])
+        ));
+    } else {
+        $tables = OrderService::tablesOverview();
+    }
+    $slim = array_map(static function (array $t): array {
+        return [
+            'id' => (int) $t['id'],
+            'label' => (string) $t['label'],
+            'code' => (string) $t['code'],
+            'seats' => (int) ($t['seats'] ?? 0),
+            'is_active' => (int) ($t['is_active'] ?? 1),
+            'is_open' => !empty($t['is_open']),
+            'open_count' => (int) ($t['open_count'] ?? 0),
+            'open_total' => (float) ($t['open_total'] ?? 0),
+            'waiter_names' => $t['waiter_names'] ?? [],
+            'opened_by_name' => (string) ($t['opened_by_name'] ?? ''),
+        ];
+    }, $tables);
+    json_response([
+        'ok' => true,
+        'scope' => $scope,
+        'version' => OrderService::snapshotVersion($slim),
+        'updated_at' => date('H:i:s'),
+        'tables' => $slim,
+        'can_close' => in_array(Auth::role(), ['cashier', 'admin'], true),
+        'role' => Auth::role(),
+    ]);
+});
+
+$router->get('/api/whatsapp/pending', static function (): void {
+    Auth::requireRole('cashier', 'admin');
+    $pending = WhatsAppNotify::pendingPayload();
+    json_response([
+        'ok' => true,
+        'enabled' => WhatsAppNotify::isEnabled(),
+        'pending' => $pending,
     ]);
 });
 
@@ -844,6 +897,9 @@ $router->get('/online-siparisler', static function (): void {
     foreach ($pendingRows as $row) {
         $full = OrderService::findById((int) $row['id']);
         if ($full) {
+            $full['whatsapp_url'] = WhatsAppNotify::isEnabled()
+                ? WhatsAppNotify::orderChatUrl($full)
+                : '';
             $pending[] = $full;
         }
     }
@@ -859,6 +915,7 @@ $router->get('/online-siparisler', static function (): void {
         'title' => 'Online Siparişler',
         'pending' => $pending,
         'active' => $active,
+        'whatsappEnabled' => WhatsAppNotify::isEnabled(),
         'user' => Auth::user(),
     ]);
 });
@@ -1407,24 +1464,9 @@ $router->get('/api/admin/live-stats', static function () use ($adminLiveStats): 
 
 $router->get('/yonetici/masalar', static function (): void {
     Auth::requireRole('admin');
-    $pdo = Database::pdo();
-    $all = $pdo->query('SELECT * FROM dining_tables ORDER BY id')->fetchAll();
-    $openMap = [];
-    foreach (OrderService::tablesOverview() as $row) {
-        $openMap[(int) $row['id']] = $row;
-    }
-    foreach ($all as &$table) {
-        $id = (int) $table['id'];
-        $open = $openMap[$id] ?? null;
-        $table['is_open'] = $open['is_open'] ?? false;
-        $table['open_count'] = $open['open_count'] ?? 0;
-        $table['open_total'] = $open['open_total'] ?? 0;
-        $table['waiter_names'] = $open['waiter_names'] ?? [];
-    }
-    unset($table);
     view('staff/admin_tables', [
         'title' => 'Yönetici · Masalar',
-        'tables' => $all,
+        'tables' => OrderService::tablesOverviewAll(),
         'user' => Auth::user(),
     ]);
 });
@@ -1734,13 +1776,125 @@ $router->get('/yonetici/franchise', static function (): void {
     if ($filter !== '' && !in_array($filter, FranchiseService::STATUSES, true)) {
         $filter = '';
     }
+    $branchId = (int) input('sube', 0);
     view('staff/admin_franchise', [
         'title' => 'Yönetici · Franchise başvuruları',
-        'applications' => FranchiseService::list($filter !== '' ? $filter : null),
+        'applications' => FranchiseService::list($filter !== '' ? $filter : null, 200, $branchId > 0 ? $branchId : null),
         'counts' => FranchiseService::countsByStatus(),
         'filter' => $filter,
+        'branchId' => $branchId,
+        'branches' => BranchService::listAll(),
         'user' => Auth::user(),
     ]);
+});
+
+$router->get('/yonetici/franchise/subeler', static function (): void {
+    Auth::requireRole('admin');
+    view('staff/admin_branches', [
+        'title' => 'Yönetici · Şubeler',
+        'branches' => BranchService::listAll(),
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->get('/yonetici/franchise/subeler/ekle', static function (): void {
+    Auth::requireRole('admin');
+    view('staff/admin_branch_form', [
+        'title' => 'Yönetici · Şube ekle',
+        'branch' => null,
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->post('/yonetici/franchise/subeler/ekle', static function (): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/franchise/subeler/ekle');
+    }
+    try {
+        BranchService::create([
+            'name' => (string) input('name'),
+            'city' => (string) input('city'),
+            'phone' => (string) input('phone'),
+            'whatsapp' => (string) input('whatsapp'),
+            'address' => (string) input('address'),
+            'is_active' => input('is_active') ? 1 : 0,
+            'sort_order' => (int) input('sort_order', 0),
+        ]);
+        flash('success', 'Şube eklendi.');
+        redirect('/yonetici/franchise/subeler');
+    } catch (Throwable $e) {
+        flash('error', $e->getMessage());
+        redirect('/yonetici/franchise/subeler/ekle');
+    }
+});
+
+$router->get('/yonetici/franchise/subeler/{id}', static function (string $id): void {
+    Auth::requireRole('admin');
+    $branch = BranchService::find((int) $id);
+    if (!$branch) {
+        flash('error', 'Şube bulunamadı.');
+        redirect('/yonetici/franchise/subeler');
+    }
+    view('staff/admin_branch_form', [
+        'title' => 'Yönetici · Şube düzenle',
+        'branch' => $branch,
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->post('/yonetici/franchise/subeler/{id}', static function (string $id): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/franchise/subeler/' . (int) $id);
+    }
+    try {
+        BranchService::update((int) $id, [
+            'name' => (string) input('name'),
+            'city' => (string) input('city'),
+            'phone' => (string) input('phone'),
+            'whatsapp' => (string) input('whatsapp'),
+            'address' => (string) input('address'),
+            'is_active' => input('is_active') ? 1 : 0,
+            'sort_order' => (int) input('sort_order', 0),
+        ]);
+        flash('success', 'Şube güncellendi.');
+        redirect('/yonetici/franchise/subeler');
+    } catch (Throwable $e) {
+        flash('error', $e->getMessage());
+        redirect('/yonetici/franchise/subeler/' . (int) $id);
+    }
+});
+
+$router->get('/yonetici/franchise/whatsapp', static function (): void {
+    Auth::requireRole('admin');
+    view('staff/admin_whatsapp', [
+        'title' => 'Yönetici · WhatsApp bildirim',
+        'enabled' => BrochureService::getSetting('whatsapp_enabled', '0') === '1',
+        'number' => (string) BrochureService::getSetting('whatsapp_notify_number', ''),
+        'autoOpen' => BrochureService::getSetting('whatsapp_auto_open', '1') === '1',
+        'apiToken' => (string) BrochureService::getSetting('whatsapp_api_token', ''),
+        'phoneNumberId' => (string) BrochureService::getSetting('whatsapp_phone_number_id', ''),
+        'pending' => WhatsAppNotify::pendingPayload(),
+        'user' => Auth::user(),
+    ]);
+});
+
+$router->post('/yonetici/franchise/whatsapp', static function (): void {
+    Auth::requireRole('admin');
+    if (!verify_csrf((string) input('_csrf'))) {
+        flash('error', 'CSRF hatası');
+        redirect('/yonetici/franchise/whatsapp');
+    }
+    BrochureService::setSetting('whatsapp_enabled', input('whatsapp_enabled') ? '1' : '0');
+    BrochureService::setSetting('whatsapp_notify_number', trim((string) input('whatsapp_notify_number')));
+    BrochureService::setSetting('whatsapp_auto_open', input('whatsapp_auto_open') ? '1' : '0');
+    BrochureService::setSetting('whatsapp_api_token', trim((string) input('whatsapp_api_token')));
+    BrochureService::setSetting('whatsapp_phone_number_id', trim((string) input('whatsapp_phone_number_id')));
+    flash('success', 'WhatsApp bildirim ayarları kaydedildi.');
+    redirect('/yonetici/franchise/whatsapp');
 });
 
 $router->post('/yonetici/franchise/{id}/durum', static function (string $id): void {
