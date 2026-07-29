@@ -1208,7 +1208,7 @@ $router->get('/kasa/faturalar', static function (): void {
         }
     }
     view('staff/invoices', [
-        'title' => 'Satış faturaları',
+        'title' => 'Satış fişleri',
         'user' => Auth::user(),
         'invoices' => $rows,
         'canBrowseDates' => $role === 'admin',
@@ -1257,12 +1257,12 @@ $router->get('/kasa/fatura/siparis/{id}', static function (string $id): void {
         return;
     }
     if (($order['status'] ?? '') !== 'paid') {
-        flash('error', 'Fatura için sipariş önce ödenmelidir.');
+        flash('error', 'Satış fişi için sipariş önce ödenmelidir.');
         redirect('/kasa');
     }
     $paidDay = substr((string) ($order['paid_at'] ?? date('Y-m-d')), 0, 10);
     if (Auth::role() === 'cashier' && $paidDay !== date('Y-m-d')) {
-        flash('error', 'Kasa yalnızca bugün ödenen siparişler için fatura kesebilir.');
+        flash('error', 'Kasa yalnızca bugün ödenen siparişler için satış fişi kesebilir.');
         redirect('/kasa/faturalar');
     }
     $invoice = FiscalService::findInvoiceByOrder((int) $id);
@@ -1270,7 +1270,7 @@ $router->get('/kasa/fatura/siparis/{id}', static function (string $id): void {
         redirect('/kasa/fatura/' . (int) $invoice['id']);
     }
     view('staff/invoice_issue', [
-        'title' => 'Fatura kes',
+        'title' => 'Satış fişi kes',
         'user' => Auth::user(),
         'order' => $order,
         'invoice' => null,
@@ -1287,7 +1287,7 @@ $router->post('/kasa/fatura/siparis/{id}', static function (string $id): void {
     if ($order && Auth::role() === 'cashier') {
         $paidDay = substr((string) ($order['paid_at'] ?? ''), 0, 10);
         if ($paidDay !== date('Y-m-d')) {
-            flash('error', 'Kasa yalnızca bugün ödenen siparişler için fatura kesebilir.');
+            flash('error', 'Kasa yalnızca bugün ödenen siparişler için satış fişi kesebilir.');
             redirect('/kasa/faturalar');
         }
     }
@@ -1298,7 +1298,7 @@ $router->post('/kasa/fatura/siparis/{id}', static function (string $id): void {
             'tax_office' => (string) input('buyer_tax_office'),
             'address' => (string) input('buyer_address'),
         ]);
-        flash('success', 'Fatura kesildi: ' . $invoice['invoice_no']);
+        flash('success', 'Satış fişi kesildi: ' . $invoice['invoice_no']);
         redirect('/kasa/fatura/' . (int) $invoice['id']);
     } catch (Throwable $e) {
         flash('error', $e->getMessage());
@@ -1311,7 +1311,7 @@ $router->get('/kasa/fatura/{id}', static function (string $id): void {
     $invoice = FiscalService::findInvoice((int) $id);
     if (!$invoice) {
         http_response_code(404);
-        echo 'Fatura bulunamadı';
+        echo 'Satış fişi bulunamadı';
         return;
     }
     // Kasa yalnızca bugünün faturalarını açabilir.
@@ -1321,7 +1321,7 @@ $router->get('/kasa/fatura/{id}', static function (string $id): void {
     }
     $lines = json_decode((string) ($invoice['lines_json'] ?? '[]'), true);
     view('staff/invoice', [
-        'title' => 'Fatura ' . $invoice['invoice_no'],
+        'title' => 'Satış fişi ' . $invoice['invoice_no'],
         'user' => Auth::user(),
         'invoice' => $invoice,
         'lines' => is_array($lines) ? $lines : [],

@@ -9,7 +9,7 @@ $filterDate = (string) ($filterDate ?? date('Y-m-d'));
 <div class="panel-head">
   <div>
     <p class="eyebrow"><?= $canBrowseDates ? 'Yönetici' : 'Kasa' ?></p>
-    <h1>Satış faturaları<?= $canBrowseDates ? '' : ' (bugün)' ?></h1>
+    <h1>Satış fişleri<?= $canBrowseDates ? '' : ' (bugün)' ?></h1>
   </div>
   <div class="cta-row">
     <a class="btn btn-primary btn-sm" href="<?= e(url('/kasa/gun-sonu')) ?>">Gün sonu</a>
@@ -35,14 +35,14 @@ $filterDate = (string) ($filterDate ?? date('Y-m-d'));
 <section class="panel">
   <?php if (!$invoices): ?>
     <p class="muted" style="margin:0">
-      <?= $canBrowseDates ? 'Kayıtlı fatura yok.' : 'Bugün kesilmiş fatura yok.' ?>
+      <?= $canBrowseDates ? 'Kayıtlı satış fişi yok.' : 'Bugün kesilmiş satış fişi yok.' ?>
     </p>
   <?php else: ?>
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>Fatura No</th>
+            <th>Fiş No</th>
             <th>Tarih</th>
             <th>Alıcı</th>
             <th>Sipariş</th>
