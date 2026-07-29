@@ -449,10 +449,6 @@
         window.location.href = data.print_url;
         return;
       }
-      if (data.order && data.order.id) {
-        window.location.href = api(`/garson/fis/${data.order.id}?autoprint=1`);
-        return;
-      }
       location.reload();
     } catch (err) {
       alert(err.message || 'Hata');
@@ -750,7 +746,7 @@
     btn.addEventListener('click', async () => {
       const id = btn.getAttribute('data-accept-online');
       if (!id) return;
-      if (!confirm('Sipariş onaylansın mı? Mutfak ve bar fişi yazdırılacak.')) return;
+      if (!confirm('Sipariş onaylansın mı? Ürünü olan mutfak/bar fişleri yazdırılacak.')) return;
       btn.disabled = true;
       try {
         const data = await postJson(`/api/online-orders/${id}/accept`, {});
@@ -769,7 +765,9 @@
   // XPrinter mutfak/bar fiş otomatik yazdırma
   const xpSlips = document.querySelector('[data-xp-slips]');
   if (xpSlips) {
+    const hasSlips = xpSlips.getAttribute('data-has-slips') === '1';
     const runPrint = () => {
+      if (!hasSlips) return;
       window.print();
     };
     const printBtn = document.querySelector('[data-xp-print]');
@@ -779,7 +777,7 @@
         runPrint();
       });
     }
-    if (xpSlips.getAttribute('data-autoprint') === '1') {
+    if (hasSlips && xpSlips.getAttribute('data-autoprint') === '1') {
       const back = xpSlips.getAttribute('data-print-back') || '';
       const statusEl = document.querySelector('[data-autoprint-status]');
       const goBack = () => {

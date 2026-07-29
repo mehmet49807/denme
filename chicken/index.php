@@ -731,19 +731,21 @@ $router->post('/api/staff/orders', static function (): void {
             }
             $order = OrderService::addItems($targetOrderId, $items, Auth::id());
             $newIds = $order['new_item_ids'] ?? [];
-            $printUrl = slip_autoprint_enabled()
-                ? station_slip_url((int) $order['id'], [
-                    'autoprint' => true,
-                    'items' => $newIds,
+            $printUrl = station_slip_url_for_order(
+                $order,
+                $newIds,
+                [
+                    'autoprint' => slip_autoprint_enabled(),
                     'back' => $back,
-                ])
-                : station_slip_url((int) $order['id'], ['items' => $newIds, 'back' => $back]);
+                ]
+            );
             json_response([
                 'ok' => true,
                 'order' => $order,
                 'new_item_ids' => $newIds,
                 'print_url' => $printUrl,
-                'autoprint' => slip_autoprint_enabled(),
+                'autoprint' => $printUrl !== null && slip_autoprint_enabled(),
+                'slip_stations' => order_slip_station_counts($order, $newIds),
             ]);
         }
 
@@ -755,14 +757,20 @@ $router->post('/api/staff/orders', static function (): void {
             'customer_note' => trim((string) ($payload['customer_note'] ?? '')),
             'items' => $items,
         ]);
-        $printUrl = slip_autoprint_enabled()
-            ? station_slip_url((int) $order['id'], ['autoprint' => true, 'back' => $back])
-            : station_slip_url((int) $order['id'], ['back' => $back]);
+        $printUrl = station_slip_url_for_order(
+            $order,
+            null,
+            [
+                'autoprint' => slip_autoprint_enabled(),
+                'back' => $back,
+            ]
+        );
         json_response([
             'ok' => true,
             'order' => $order,
             'print_url' => $printUrl,
-            'autoprint' => slip_autoprint_enabled(),
+            'autoprint' => $printUrl !== null && slip_autoprint_enabled(),
+            'slip_stations' => order_slip_station_counts($order),
         ]);
     } catch (Throwable $e) {
         json_response(['ok' => false, 'error' => $e->getMessage()], 422);
@@ -985,12 +993,14 @@ $router->post('/api/online-orders/{id}/accept', static function (string $id): vo
     require_json_csrf($payload);
     try {
         $order = OrderService::acceptOnlineOrder((int) $id, Auth::id());
-        $printUrl = slip_autoprint_enabled()
-            ? station_slip_url((int) $order['id'], [
-                'autoprint' => true,
+        $printUrl = station_slip_url_for_order(
+            $order,
+            null,
+            [
+                'autoprint' => slip_autoprint_enabled(),
                 'back' => '/online-siparisler',
-            ])
-            : station_slip_url((int) $order['id'], ['back' => '/online-siparisler']);
+            ]
+        );
         json_response([
             'ok' => true,
             'order' => [
@@ -1000,7 +1010,8 @@ $router->post('/api/online-orders/{id}/accept', static function (string $id): vo
                 'status_label' => status_label((string) $order['status']),
             ],
             'print_url' => $printUrl,
-            'autoprint' => slip_autoprint_enabled(),
+            'autoprint' => $printUrl !== null && slip_autoprint_enabled(),
+            'slip_stations' => order_slip_station_counts($order),
         ]);
     } catch (Throwable $e) {
         json_response(['ok' => false, 'error' => $e->getMessage()], 422);

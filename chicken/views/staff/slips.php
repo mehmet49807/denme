@@ -49,6 +49,10 @@ if ($stationFilter === 'kitchen') {
 }
 $showKitchen = $kitchenItems !== [];
 $showBar = $barItems !== [];
+$hasPrintable = $showKitchen || $showBar;
+if ($autoPrint && !$hasPrintable) {
+    $autoPrint = false;
+}
 $fisQs = static function (string $station) use ($order, $onlyItemIds, $backPath): string {
     return station_slip_url((int) $order['id'], [
         'station' => $station,
@@ -61,8 +65,9 @@ $fisQs = static function (string $station) use ($order, $onlyItemIds, $backPath)
   class="xp-slips-page"
   data-xp-slips
   data-paper="<?= e($paper) ?>"
-  <?= $autoPrint ? 'data-autoprint="1"' : '' ?>
+  <?= $autoPrint && $hasPrintable ? 'data-autoprint="1"' : '' ?>
   data-print-back="<?= e($backUrl) ?>"
+  data-has-slips="<?= $hasPrintable ? '1' : '0' ?>"
 >
   <div class="panel-head no-print">
     <div>
@@ -70,11 +75,13 @@ $fisQs = static function (string $station) use ($order, $onlyItemIds, $backPath)
       <h1><?= e($order['order_code']) ?></h1>
     </div>
     <div class="cta-row">
-      <button class="btn btn-primary btn-sm" type="button" data-xp-print>Yazdır</button>
-      <?php if (($order['kitchen_items'] ?? []) !== []): ?>
+      <?php if ($hasPrintable): ?>
+        <button class="btn btn-primary btn-sm" type="button" data-xp-print>Yazdır</button>
+      <?php endif; ?>
+      <?php if ($showKitchen): ?>
         <a class="btn btn-ghost btn-sm" href="<?= e($fisQs('kitchen')) ?>">Sadece mutfak</a>
       <?php endif; ?>
-      <?php if (($order['bar_items'] ?? []) !== []): ?>
+      <?php if ($showBar): ?>
         <a class="btn btn-ghost btn-sm" href="<?= e($fisQs('bar')) ?>">Sadece bar</a>
       <?php endif; ?>
       <a class="btn btn-ghost btn-sm" href="<?= e($backUrl) ?>">Geri</a>
@@ -83,7 +90,7 @@ $fisQs = static function (string $station) use ($order, $onlyItemIds, $backPath)
 
   <p class="muted no-print" style="margin-top:-6px">
     XPrinter / termal yazıcı uyumlu (<?= e($paper) ?>mm).
-    Garson siparişinde otomatik yazdırılır; online siparişte kasa/yönetici onayından sonra yazdırılır.
+    Ürünü olmayan istasyon için fiş yazdırılmaz.
   </p>
 
   <div class="panel no-print" style="margin-bottom:16px">
@@ -111,12 +118,12 @@ $fisQs = static function (string $station) use ($order, $onlyItemIds, $backPath)
       ]); ?>
     <?php endif; ?>
 
-    <?php if (!$showKitchen && !$showBar): ?>
-      <div class="panel muted no-print">Bu siparişte yazdırılacak mutfak/bar ürünü yok.</div>
+    <?php if (!$hasPrintable): ?>
+      <div class="panel muted no-print">Bu siparişte yazdırılacak mutfak/bar ürünü yok. Fiş gönderilmedi.</div>
     <?php endif; ?>
   </div>
 
-  <?php if ($autoPrint): ?>
+  <?php if ($autoPrint && $hasPrintable): ?>
     <p class="no-print muted small" data-autoprint-status>Yazdırma penceresi açılıyor…</p>
   <?php endif; ?>
 </div>
