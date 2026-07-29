@@ -41,6 +41,7 @@
         <?php partial('partials/table_close_buttons', [
             'tableId' => (int) $table['id'],
             'redirect' => url('/yonetici/masalar'),
+            'label' => 'Masa kapat',
         ]); ?>
       <?php endif; ?>
       <form method="post" action="<?= e(url('/yonetici/masalar/durum')) ?>" style="margin-top:10px">

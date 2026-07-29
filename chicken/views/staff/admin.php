@@ -89,6 +89,7 @@ $recent = $live['recent'] ?? [];
                 <th>Sipariş</th>
                 <th>Tutar</th>
                 <th>Garson</th>
+                <th class="no-print">Masa kapat</th>
               </tr>
             </thead>
             <tbody>
@@ -98,6 +99,13 @@ $recent = $live['recent'] ?? [];
                   <td><?= (int) ($t['open_count'] ?? 0) ?></td>
                   <td><?= e(money((float) ($t['open_total'] ?? 0))) ?></td>
                   <td class="small muted"><?= e(implode(', ', $t['waiter_names'] ?? []) ?: '—') ?></td>
+                  <td class="no-print">
+                    <?php partial('partials/table_close_buttons', [
+                        'tableId' => (int) ($t['id'] ?? 0),
+                        'redirect' => url('/yonetici'),
+                        'wrap' => false,
+                    ]); ?>
+                  </td>
                 </tr>
               <?php endforeach; ?>
             </tbody>

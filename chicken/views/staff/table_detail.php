@@ -8,12 +8,24 @@
 /** @var bool $canClose */
 /** @var callable $canAddToOrder */
 /** @var callable $canEditItemNote */
-$back = $mode === 'cashier' ? url('/kasa') : url('/siparisler');
+$canClose = (bool) ($canClose ?? false);
+$role = Auth::role();
+$back = $mode === 'cashier'
+    ? url('/kasa')
+    : ($role === 'admin' ? url('/yonetici/masalar') : url('/siparisler'));
+$closeRedirect = $mode === 'cashier'
+    ? url('/kasa')
+    : ($role === 'admin' ? url('/yonetici/masalar') : url('/siparisler'));
 $openTotal = array_sum(array_map(static fn(array $o): float => (float) $o['total'], $orders));
+$eyebrow = match (true) {
+    $mode === 'cashier' => 'Kasa · Masa',
+    $role === 'admin' => 'Yönetici · Masa',
+    default => 'Garson · Masa',
+};
 ?>
 <div class="panel-head">
   <div>
-    <p class="eyebrow"><?= $mode === 'cashier' ? 'Kasa · Masa' : 'Garson · Masa' ?></p>
+    <p class="eyebrow"><?= e($eyebrow) ?></p>
     <h1><?= e($table['label']) ?> <span class="muted" style="font-size:.55em">(<?= e($table['code']) ?>)</span></h1>
     <?php if (!empty($table['opened_by_name'])): ?>
       <p class="muted" style="margin:6px 0 0">Açan: <?= e((string) $table['opened_by_name']) ?> · <?= (int) ($table['seats'] ?? 0) ?> kişi</p>
@@ -21,13 +33,6 @@ $openTotal = array_sum(array_map(static fn(array $o): float => (float) $o['total
   </div>
   <div class="cta-row">
     <a class="btn btn-ghost btn-sm" href="<?= e($back) ?>">Geri</a>
-    <?php if ($canClose && $orders): ?>
-      <?php partial('partials/table_close_buttons', [
-          'tableId' => (int) $table['id'],
-          'redirect' => $mode === 'cashier' ? url('/kasa') : url('/yonetici/masalar'),
-          'wrap' => false,
-      ]); ?>
-    <?php endif; ?>
   </div>
 </div>
 
@@ -36,6 +41,21 @@ $openTotal = array_sum(array_map(static fn(array $o): float => (float) $o['total
   <div class="stat"><span class="muted">Masa toplam</span><strong><?= e(money($openTotal)) ?></strong></div>
   <div class="stat"><span class="muted">Durum</span><strong><?= $orders ? 'Açık' : 'Boş' ?></strong></div>
 </div>
+
+<?php if ($canClose && $orders): ?>
+  <section class="panel table-close-panel" style="margin-bottom:18px">
+    <div class="meta-row" style="margin-bottom:10px">
+      <strong>Masa kapat</strong>
+      <span class="small muted">Yalnızca kasa / yönetici · açık siparişler ödenir</span>
+    </div>
+    <?php partial('partials/table_close_buttons', [
+        'tableId' => (int) $table['id'],
+        'redirect' => $closeRedirect,
+        'wrap' => true,
+        'label' => 'Ödeme ile kapat',
+    ]); ?>
+  </section>
+<?php endif; ?>
 
 <?php if (!$orders): ?>
   <div class="panel muted" style="margin-bottom:20px">Bu masada açık sipariş yok. Aşağıdan yeni sipariş açabilirsiniz.</div>

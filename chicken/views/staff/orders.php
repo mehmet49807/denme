@@ -18,21 +18,32 @@
 
 <div class="table-board">
   <?php foreach ($openTables as $table): ?>
-    <a class="table-tile is-open" href="<?= e(url('/garson/masa/' . (int) $table['id'])) ?>">
-      <div class="table-tile-top">
-        <strong><?= e($table['label']) ?></strong>
-        <span class="chip kitchen">Açık</span>
-      </div>
-      <div class="table-tile-code muted small"><?= e($table['code']) ?></div>
-      <div class="table-tile-meta">
-        <span><?= (int) $table['open_count'] ?> sipariş</span>
-        <strong class="price"><?= e(money((float) $table['open_total'])) ?></strong>
-      </div>
-      <?php if (!empty($table['waiter_names'])): ?>
-        <div class="muted small"><?= e(implode(', ', $table['waiter_names'])) ?></div>
+    <article class="table-tile is-open">
+      <a class="table-tile-link" href="<?= e(url('/garson/masa/' . (int) $table['id'])) ?>">
+        <div class="table-tile-top">
+          <strong><?= e($table['label']) ?></strong>
+          <span class="chip kitchen">Açık</span>
+        </div>
+        <div class="table-tile-code muted small"><?= e($table['code']) ?></div>
+        <div class="table-tile-meta">
+          <span><?= (int) $table['open_count'] ?> sipariş</span>
+          <strong class="price"><?= e(money((float) $table['open_total'])) ?></strong>
+        </div>
+        <?php if (!empty($table['waiter_names'])): ?>
+          <div class="muted small"><?= e(implode(', ', $table['waiter_names'])) ?></div>
+        <?php endif; ?>
+        <?php if (empty($canManage)): ?>
+          <div class="muted small" style="margin-top:6px">Sadece kendi siparişinize ekleme · iptal/kapatma yok</div>
+        <?php endif; ?>
+      </a>
+      <?php if (!empty($canManage)): ?>
+        <?php partial('partials/table_close_buttons', [
+            'tableId' => (int) $table['id'],
+            'redirect' => url('/siparisler'),
+            'label' => 'Masa kapat',
+        ]); ?>
       <?php endif; ?>
-      <div class="muted small" style="margin-top:6px">Sadece kendi siparişinize ekleme · iptal/kapatma yok</div>
-    </a>
+    </article>
   <?php endforeach; ?>
 </div>
 
