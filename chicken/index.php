@@ -395,29 +395,44 @@ $router->get('/api/orders/{code}', static function (string $code): void {
     ]]);
 });
 
-// Menü broşürü QR (ortasında logo) — yazdırma/indirme için auth gerekmez
-$router->get('/qr/brosur.png', static function (): void {
-    $size = (int) ($_GET['size'] ?? 320);
-    BrochureService::outputBrandedQrPng($size);
+// Menü broşürü QR (ortasında logo) — /qr altına koyma (FTP'de qr/ klasörü /qr sayfasını bozabilir)
+$router->get('/api/qr-brosur', static function (): void {
+    try {
+        $size = (int) ($_GET['size'] ?? 320);
+        BrochureService::outputBrandedQrPng($size);
+    } catch (Throwable $e) {
+        error_log('qr-brosur: ' . $e->getMessage());
+        header('Location: ' . BrochureService::plainQrRemoteUrl(null, 320), true, 302);
+    }
     exit;
 });
 
 $router->get('/qr', static function (): void {
     Auth::requireRole('cashier', 'admin');
-    $brochureUrl = BrochureService::brochurePublicUrl();
-    $qrImageUrl = BrochureService::qrImageUrl($brochureUrl);
-    $selectedId = BrochureService::selectedThemeId();
-    $selectedName = BrochureService::catalog()[$selectedId]['name'] ?? $selectedId;
-    view('staff/qr', [
-        'title' => 'QR Menü',
-        'brochureUrl' => $brochureUrl,
-        'qrImageUrl' => $qrImageUrl,
-        'logoUrl' => logo_url(),
-        'qrDownloadUrl' => BrochureService::qrBrandedDownloadUrl(480),
-        'canEdit' => Auth::role() === 'admin',
-        'selectedThemeName' => $selectedName,
-        'user' => Auth::user(),
-    ]);
+    try {
+        $brochureUrl = BrochureService::brochurePublicUrl();
+        $qrImageUrl = BrochureService::qrImageUrl($brochureUrl, 320);
+        $selectedId = BrochureService::selectedThemeId();
+        $selectedName = BrochureService::catalog()[$selectedId]['name'] ?? $selectedId;
+        view('staff/qr', [
+            'title' => 'QR Menü',
+            'brochureUrl' => $brochureUrl,
+            'qrImageUrl' => $qrImageUrl,
+            'logoUrl' => logo_url(),
+            'qrDownloadUrl' => BrochureService::qrBrandedDownloadUrl(480),
+            'canEdit' => Auth::role() === 'admin',
+            'selectedThemeName' => $selectedName,
+            'user' => Auth::user(),
+        ]);
+    } catch (Throwable $e) {
+        error_log('qr page: ' . $e->getMessage());
+        http_response_code(500);
+        echo '<!DOCTYPE html><html lang="tr"><meta charset="utf-8"><body style="font-family:sans-serif;padding:24px">';
+        echo '<h1>QR Menü geçici olarak açılamadı</h1>';
+        echo '<p>' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '</p>';
+        echo '<p><a href="' . htmlspecialchars(url('/kasa'), ENT_QUOTES, 'UTF-8') . '">Kasaya dön</a></p>';
+        echo '</body></html>';
+    }
 });
 
 $router->get('/yonetici/brosurler', static function (): void {

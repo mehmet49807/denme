@@ -80,6 +80,6 @@
   ]); ?>
   <div class="small muted" style="margin-top:10px;word-break:break-all"><?= e($brochureUrl) ?></div>
   <div class="cta-row" style="margin-top:12px">
-    <a class="btn btn-accent btn-sm" href="<?= e(BrochureService::qrBrandedDownloadUrl(480)) ?>" target="_blank" rel="noopener" download="crisp-co-menu-qr.png">Logolu QR indir</a>
+    <a class="btn btn-accent btn-sm" href="<?= e(BrochureService::qrBrandedDownloadUrl(480)) ?>" target="_blank" rel="noopener">Logolu QR indir</a>
   </div>
 </section>
