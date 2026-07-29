@@ -650,6 +650,42 @@ input, select, textarea {
   background: #fff;
   color: var(--text);
   padding: 12px 14px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  width: auto;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: #9a7b2f;
+}
+.check-row {
+  display: flex !important;
+  gap: 10px;
+  align-items: flex-start;
+  min-width: 0;
+  max-width: 100%;
+  cursor: pointer;
+}
+.check-row > span {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.4;
+}
+.check-row > input[type="checkbox"] {
+  margin-top: 3px;
+}
+.panel,
+.stack,
+.panel-head,
+.main {
+  min-width: 0;
+  max-width: 100%;
 }
 input:focus, select:focus, textarea:focus {
   outline: 2px solid rgba(154, 123, 47, 0.28);
@@ -1975,6 +2011,9 @@ body.is-kiosk .station-orders.is-kiosk {
   .main {
     padding: 14px 12px calc(28px + env(safe-area-inset-bottom));
   }
+  .layout-staff .panel {
+    padding: 16px 14px;
+  }
   .panel-head h1 { font-size: 1.55rem; }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .stat { padding: 12px; }
@@ -2310,16 +2349,26 @@ body.is-kiosk .station-orders.is-kiosk {
 }
 .check-line {
   display: grid;
-  grid-template-columns: 18px 1fr;
+  grid-template-columns: 18px minmax(0, 1fr);
   gap: 10px;
   align-items: start;
   color: var(--muted);
   font-size: 0.88rem;
   line-height: 1.4;
+  min-width: 0;
+  max-width: 100%;
 }
 .check-line input {
   width: 18px;
   height: 18px;
+  margin-top: 2px;
+}
+.check-line > span,
+.check-line > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
   margin-top: 2px;
   accent-color: var(--ember);
 }

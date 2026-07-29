@@ -105,7 +105,7 @@ $isEdit = !empty($item);
     <label>Stok uyarı eşiği
       <input type="number" name="stock_alert_qty" min="0" step="0.01" value="<?= e((string) ($item['stock_alert_qty'] ?? '')) ?>" placeholder="Örn. 5">
     </label>
-    <label class="meta-row" style="align-items:center;gap:10px">
+    <label class="check-row">
       <input type="checkbox" name="is_available" value="1" <?= !isset($item['is_available']) || !empty($item['is_available']) ? 'checked' : '' ?>>
       <span>Satışta</span>
     </label>

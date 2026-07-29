@@ -21,8 +21,8 @@ foreach ($zones as $z) {
   <form method="post" action="<?= e(url('/yonetici/operasyon')) ?>" class="stack">
     <?= csrf_field() ?>
     <p class="eyebrow" style="margin:0">Yazıcı / istasyon</p>
-    <label style="display:flex;gap:10px;align-items:flex-start">
-      <input type="checkbox" name="qz_enabled" value="1" <?= !empty($qz['enabled']) ? 'checked' : '' ?> style="margin-top:4px">
+    <label class="check-row">
+      <input type="checkbox" name="qz_enabled" value="1" <?= !empty($qz['enabled']) ? 'checked' : '' ?>>
       <span>QZ Tray ile sessiz yazdır (mutfak/bar ayrı yazıcı)</span>
     </label>
     <label>Mutfak yazıcı adı (QZ)
@@ -63,8 +63,8 @@ foreach ($zones as $z) {
     <label>Teslimat bölgeleri <span class="muted small">(satır: Bölge|MinTutar|Ücret)</span>
       <textarea name="delivery_zones" rows="4" placeholder="Lara|250|30&#10;Konyaaltı|300|40"><?= e(trim($zonesText)) ?></textarea>
     </label>
-    <label style="display:flex;gap:10px;align-items:flex-start">
-      <input type="checkbox" name="whatsapp_customer_status" value="1" <?= !empty($waCustomer) ? 'checked' : '' ?> style="margin-top:4px">
+    <label class="check-row">
+      <input type="checkbox" name="whatsapp_customer_status" value="1" <?= !empty($waCustomer) ? 'checked' : '' ?>>
       <span>Online sipariş durumu müşteriye WhatsApp (Cloud API)</span>
     </label>
 
