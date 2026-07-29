@@ -62,6 +62,7 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
   <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) $cssVer) ?>">
+  <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
 </head>
 <body data-base="<?= e(base_path()) ?>" class="staff-body<?= $isAdminArea ? ' is-admin-area' : '' ?>">
   <div class="layout-staff<?= $isAdminArea ? ' admin-area' : '' ?>" data-staff-layout<?= $isAdminArea ? ' data-admin-area' : '' ?><?= ($isAdminArea && current_path() === '/yonetici') ? ' data-admin-home-nav' : '' ?>>
@@ -143,6 +144,7 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
           </a>
         <?php endif; ?>
         <form method="post" action="<?= e(url('/personel/cikis')) ?>" style="margin-top:10px">
+          <?= csrf_field() ?>
           <button class="side-link" type="submit">
             <?php partial('partials/menu_icon', ['icon' => 'logout', 'color' => '#ff7a7a']); ?>
             <span>Çıkış</span>
@@ -198,7 +200,10 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
       </main>
     </div>
   </div>
-  <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
+  <script>
+    window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;
+    window.CHICKEN_CSRF = <?= json_encode(csrf_token(), JSON_UNESCAPED_UNICODE) ?>;
+  </script>
   <script src="<?= e(url('/assets/js/app.js')) ?>?v=<?= e((string) $jsVer) ?>" defer></script>
 </body>
 </html>

@@ -1,6 +1,11 @@
 <?php
-/** Partial: passive Google auth button (visible, not wired yet). */
+/** Partial: Google auth — hidden until OAuth is wired. */
 /** @var string $label */
+/** @var bool $forceShow */
+$forceShow = !empty($forceShow);
+if (!$forceShow) {
+    return;
+}
 $label = $label ?? 'Google ile devam et';
 ?>
 <button

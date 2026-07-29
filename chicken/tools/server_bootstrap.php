@@ -6,15 +6,7 @@ declare(strict_types=1);
  * Temporary server-side bootstrap: copy chicken app into subdomain docroot if visible.
  * Delete after use.
  */
-header('Content-Type: text/plain; charset=utf-8');
-
-$key = $_GET['key'] ?? '';
-$expected = $_GET['expect'] ?? '';
-if ($expected === '' || !hash_equals($expected, $key)) {
-    http_response_code(403);
-    echo "forbidden\n";
-    exit;
-}
+require __DIR__ . '/_ops_gate.php';
 
 $source = realpath(__DIR__ . '/..');
 if ($source === false) {

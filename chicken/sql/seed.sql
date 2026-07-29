@@ -65,7 +65,7 @@ INSERT INTO menu_items (category_id, name, description, price, vat_rate, station
 
 
 INSERT INTO settings (setting_key, setting_value) VALUES
-('restaurant_name', 'Chicken'),
+('restaurant_name', 'Crisp & Co.'),
 ('restaurant_tagline', 'Izgara tavuğun en iyi hali'),
 ('currency', 'TRY'),
 ('order_prefix', 'CHK'),

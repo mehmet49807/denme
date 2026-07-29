@@ -186,9 +186,29 @@ final class FiscalService
             throw new InvalidArgumentException('Faturada kalem yok.');
         }
 
-        // İndirim varsa satır matrah/KDV oranını sipariş toplamına oranla ölçekle
+        // İndirim varsa satır matrah/KDV/tutarlarını sipariş toplamına oranla ölçekle
         $scale = $itemsGross > 0 ? ($orderGross / $itemsGross) : 1.0;
-        $net = round($itemsNet * $scale, 2);
+        if (abs($scale - 1.0) > 0.00001) {
+            foreach ($lines as &$line) {
+                $line['gross'] = round((float) $line['gross'] * $scale, 2);
+                $line['unit_price'] = (int) $line['qty'] > 0
+                    ? round($line['gross'] / (int) $line['qty'], 2)
+                    : (float) $line['unit_price'];
+                $scaled = self::splitVat((float) $line['gross'], (float) $line['vat_rate']);
+                $line['net'] = $scaled['net'];
+                $line['vat'] = $scaled['vat'];
+            }
+            unset($line);
+            $itemsNet = array_sum(array_column($lines, 'net'));
+            $itemsVat = array_sum(array_column($lines, 'vat'));
+            $itemsGross = array_sum(array_column($lines, 'gross'));
+            $rateGross = [];
+            foreach ($lines as $line) {
+                $key = (string) $line['vat_rate'];
+                $rateGross[$key] = ($rateGross[$key] ?? 0) + (float) $line['gross'];
+            }
+        }
+        $net = round($itemsNet, 2);
         $vat = round($orderGross - $net, 2);
         if ($vat < 0) {
             $vat = 0.0;

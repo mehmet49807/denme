@@ -36,6 +36,7 @@ final class Auth
             return false;
         }
         unset($user['password_hash']);
+        session_regenerate_id(true);
         $_SESSION['staff'] = $user;
         return true;
     }

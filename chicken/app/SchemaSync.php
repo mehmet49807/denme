@@ -139,6 +139,15 @@ final class SchemaSync
             self::ensureFiscalTables($pdo);
         } catch (Throwable) {
         }
+
+        try {
+            // Eski marka adı kalmışsa Crisp & Co. ile hizala
+            $pdo->prepare(
+                "UPDATE settings SET setting_value = 'Crisp & Co.'
+                 WHERE setting_key = 'restaurant_name' AND setting_value IN ('Chicken', 'chicken')"
+            )->execute();
+        } catch (Throwable) {
+        }
     }
 
     private static function ensureFiscalTables(PDO $pdo): void

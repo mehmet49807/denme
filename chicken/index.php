@@ -21,8 +21,7 @@ require __DIR__ . '/app/Router.php';
 
 $config = config();
 date_default_timezone_set((string) ($config['timezone'] ?? 'Europe/Istanbul'));
-session_name((string) ($config['session_name'] ?? 'chicken_session'));
-session_start();
+start_app_session();
 
 // FTP bazen qr/ klasörü bırakır; klasör varken /qr sayfası boş kalabilir.
 (static function (): void {
@@ -51,19 +50,30 @@ session_start();
 $path = current_path();
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-// Allow installer even if DB is missing
-if ($path === '/install') {
-    redirect('/install.php');
-}
-if ($path === '/install.php') {
-    require __DIR__ . '/install.php';
-    exit;
-}
-
 try {
     $installed = Database::isInstalled();
 } catch (Throwable) {
     $installed = false;
+}
+
+// Allow installer only when DB is not installed (or ops secret unlock).
+if ($path === '/install') {
+    redirect('/install.php');
+}
+if ($path === '/install.php') {
+    if ($installed) {
+        $unlock = (string) ($_GET['key'] ?? $_POST['ops_key'] ?? '');
+        $secret = ops_secret();
+        if ($secret === '' || !hash_equals($secret, $unlock)) {
+            http_response_code(403);
+            echo '<!DOCTYPE html><html lang="tr"><meta charset="utf-8"><body style="font-family:sans-serif;padding:24px">';
+            echo '<h1>Kurulum kilitli</h1><p>Sistem zaten kurulu. Yeniden kurulum için ops anahtarı gerekir.</p>';
+            echo '</body></html>';
+            exit;
+        }
+    }
+    require __DIR__ . '/install.php';
+    exit;
 }
 
 if (!$installed && $path !== '/install.php') {
@@ -91,8 +101,9 @@ if ($installed) {
 
 $router = new Router();
 
-// Sunucu cron: her gece 00:05 civarı GET /cron/gun-sonu (auth yok, idempotent)
+// Sunucu cron: her gece 00:05 civarı GET /cron/gun-sonu?key=OPS_SECRET
 $router->get('/cron/gun-sonu', static function (): void {
+    require_ops_secret();
     $closed = FiscalService::ensureAutoDayCloses();
     json_response([
         'ok' => true,
@@ -117,7 +128,7 @@ $menuCatalog = static function (): array {
 $router->get('/', static function () use ($menuCatalog): void {
     $catalog = $menuCatalog();
     view('public/home', [
-        'title' => 'Chicken — Izgara Tavuk',
+        'title' => 'Crisp & Co. — Izgara Tavuk',
         'categories' => $catalog['categories'],
         'items' => $catalog['items'],
     ]);
@@ -160,7 +171,7 @@ $router->get('/menu/brosur', static function () use ($menuCatalog): void {
     }
 
     view('public/menu_brochure', [
-        'title' => 'Chicken Menü Broşürü',
+        'title' => 'Crisp & Co. Menü Broşürü',
         'categories' => $catalog['categories'],
         'items' => $catalog['items'],
         'table' => $table,
@@ -188,6 +199,7 @@ $router->post('/api/orders', static function (): void {
     if (!is_array($payload)) {
         json_response(['ok' => false, 'error' => 'Geçersiz istek'], 400);
     }
+    require_json_csrf($payload);
     try {
         $customerName = trim((string) ($payload['customer_name'] ?? ''));
         $customerPhone = trim((string) ($payload['customer_phone'] ?? ''));
@@ -388,6 +400,7 @@ $router->get('/sozlesmeler/mesafeli-satis', static function () use ($contentPage
 });
 
 $router->post('/cikis', static function (): void {
+    require_csrf((string) input('_csrf'));
     CustomerAuth::logout();
     redirect('/');
 });
@@ -523,6 +536,7 @@ $router->post('/personel/giris', static function (): void {
 });
 
 $router->post('/personel/cikis', static function (): void {
+    require_csrf((string) input('_csrf'));
     Auth::logout();
     redirect('/giris');
 });
@@ -691,6 +705,7 @@ $router->post('/api/staff/orders', static function (): void {
     if (!is_array($payload)) {
         json_response(['ok' => false, 'error' => 'Geçersiz istek'], 400);
     }
+    require_json_csrf($payload);
 
     $role = Auth::role();
     $targetOrderId = (int) ($payload['order_id'] ?? 0);
@@ -784,6 +799,10 @@ $router->get('/bar', static function (): void {
 $router->post('/api/station/item-status', static function (): void {
     Auth::requireRole('waiter', 'cashier', 'admin');
     $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
     $itemId = (int) ($payload['item_id'] ?? 0);
     $status = (string) ($payload['status'] ?? '');
     if (!in_array($status, ['preparing', 'ready', 'served', 'cancelled'], true)) {
@@ -846,6 +865,11 @@ $router->get('/online-siparisler', static function (): void {
 
 $router->post('/api/online-orders/{id}/accept', static function (string $id): void {
     Auth::requireRole('cashier', 'admin');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
     try {
         $order = OrderService::acceptOnlineOrder((int) $id, Auth::id());
         json_response([
@@ -864,6 +888,11 @@ $router->post('/api/online-orders/{id}/accept', static function (string $id): vo
 
 $router->post('/api/online-orders/{id}/reject', static function (string $id): void {
     Auth::requireRole('cashier', 'admin');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
     try {
         $order = OrderService::findById((int) $id);
         if (!$order || ($order['source'] ?? '') !== 'online') {
@@ -910,6 +939,10 @@ $router->get('/kasa/masa/{id}', static function (string $id) use ($menuCatalog):
 $router->post('/api/orders/{id}/status', static function (string $id): void {
     Auth::requireRole('cashier', 'admin', 'waiter');
     $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
     $status = (string) ($payload['status'] ?? '');
     if (Auth::role() === 'waiter' && in_array($status, ['paid', 'cancelled'], true)) {
         json_response(['ok' => false, 'error' => 'Garson sipariş iptal edemez veya tahsilat yapamaz.'], 403);
@@ -925,6 +958,10 @@ $router->post('/api/orders/{id}/status', static function (string $id): void {
 $router->post('/api/orders/{id}/pay', static function (string $id): void {
     Auth::requireRole('cashier', 'admin');
     $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
     try {
         OrderService::payOrder((int) $id, (string) ($payload['payment_method'] ?? ''), Auth::id());
         json_response(['ok' => true]);
@@ -935,6 +972,11 @@ $router->post('/api/orders/{id}/pay', static function (string $id): void {
 
 $router->post('/api/orders/{id}/cancel', static function (string $id): void {
     Auth::requireRole('cashier', 'admin');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
     try {
         OrderService::cancelOrder((int) $id, Auth::id());
         json_response(['ok' => true]);
@@ -945,6 +987,11 @@ $router->post('/api/orders/{id}/cancel', static function (string $id): void {
 
 $router->post('/api/order-items/{id}/cancel', static function (string $id): void {
     Auth::requireRole('cashier', 'admin');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
     try {
         OrderService::cancelItem((int) $id, Auth::id());
         json_response(['ok' => true]);
@@ -956,6 +1003,10 @@ $router->post('/api/order-items/{id}/cancel', static function (string $id): void
 $router->post('/api/order-items/{id}/note', static function (string $id): void {
     Auth::requireRole('waiter', 'cashier', 'admin');
     $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
     $itemId = (int) $id;
     $pdo = Database::pdo();
     $stmt = $pdo->prepare(
@@ -983,6 +1034,10 @@ $router->post('/api/order-items/{id}/note', static function (string $id): void {
 $router->post('/api/tables/{id}/close', static function (string $id): void {
     Auth::requireRole('cashier', 'admin');
     $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
     try {
         OrderService::closeTable((int) $id, (string) ($payload['payment_method'] ?? ''), Auth::id());
         json_response(['ok' => true]);
@@ -1219,6 +1274,17 @@ $router->get('/kasa/fatura/{id}', static function (string $id): void {
 $router->post('/api/orders/{id}/note', static function (string $id): void {
     Auth::requireRole('cashier', 'admin', 'waiter');
     $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
+    $order = OrderService::findById((int) $id);
+    if (!$order) {
+        json_response(['ok' => false, 'error' => 'Sipariş bulunamadı'], 404);
+    }
+    if (Auth::role() === 'waiter' && (int) ($order['waiter_id'] ?? 0) !== (int) Auth::id()) {
+        json_response(['ok' => false, 'error' => 'Sadece kendi siparişinize not yazabilirsiniz.'], 403);
+    }
     $note = (string) ($payload['note'] ?? '');
     try {
         OrderService::updateNote((int) $id, $note, Auth::id());
@@ -1693,8 +1759,11 @@ $router->post('/yonetici/franchise/{id}/durum', static function (string $id): vo
     } catch (Throwable $e) {
         flash('error', $e->getMessage());
     }
-    $back = trim((string) input('redirect'));
-    redirect($back !== '' ? $back : '/yonetici/franchise');
+    $back = safe_internal_path((string) input('redirect'), '/yonetici/franchise');
+    if (!str_starts_with($back, '/yonetici')) {
+        $back = '/yonetici/franchise';
+    }
+    redirect($back);
 });
 
 $router->get('/yonetici/personel/ekle', static function (): void {
@@ -1719,7 +1788,7 @@ $router->get('/yonetici/personel/cikar', static function (): void {
 
 $router->post('/yonetici/personel', static function (): void {
     Auth::requireRole('admin');
-    $redirect = (string) input('redirect');
+    $redirect = safe_internal_path((string) input('redirect'), '/yonetici/personel');
     if ($redirect === '' || !str_starts_with($redirect, '/yonetici')) {
         $redirect = '/yonetici/personel/ekle';
     }
@@ -1750,7 +1819,7 @@ $router->post('/yonetici/personel', static function (): void {
 
 $router->post('/yonetici/personel/cikar', static function (): void {
     Auth::requireRole('admin');
-    $redirect = (string) input('redirect');
+    $redirect = safe_internal_path((string) input('redirect'), '/yonetici/personel');
     if ($redirect === '' || !str_starts_with($redirect, '/yonetici')) {
         $redirect = '/yonetici/personel/cikar';
     }
@@ -1811,7 +1880,7 @@ $router->post('/yonetici/personel/cikar', static function (): void {
 
 $router->post('/yonetici/personel/aktif', static function (): void {
     Auth::requireRole('admin');
-    $redirect = (string) input('redirect');
+    $redirect = safe_internal_path((string) input('redirect'), '/yonetici/personel');
     if ($redirect === '' || !str_starts_with($redirect, '/yonetici')) {
         $redirect = '/yonetici/personel/cikar';
     }

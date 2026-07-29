@@ -6,15 +6,7 @@ declare(strict_types=1);
  * Emergency repair: pull critical app files from GitHub when FTP left empty files.
  * Delete after use if desired.
  */
-header('Content-Type: text/plain; charset=utf-8');
-
-$key = (string) ($_GET['key'] ?? '');
-$expected = (string) ($_GET['expect'] ?? '');
-if ($expected === '' || !hash_equals($expected, $key)) {
-    http_response_code(403);
-    echo "forbidden\n";
-    exit;
-}
+require __DIR__ . '/_ops_gate.php';
 
 $root = dirname(__DIR__);
 $branch = (string) ($_GET['branch'] ?? 'cursor/chicken-restaurant-site-7a42');

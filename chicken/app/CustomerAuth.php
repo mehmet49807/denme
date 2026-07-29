@@ -38,6 +38,7 @@ final class CustomerAuth
             return false;
         }
         unset($user['password_hash']);
+        session_regenerate_id(true);
         $_SESSION['customer'] = $user;
         return true;
     }
@@ -85,6 +86,7 @@ final class CustomerAuth
             'is_active' => 1,
             'welcome_discount_used' => 0,
         ];
+        session_regenerate_id(true);
         $_SESSION['customer'] = $user;
         return $user;
     }

@@ -20,11 +20,11 @@ final class SiteContent
         return [
             'hakkimizda' => [
                 'title' => 'Hakkımızda',
-                'eyebrow' => 'Chicken',
+                'eyebrow' => 'Crisp & Co.',
                 'heading' => 'Hakkımızda',
                 'sections' => [
                     [
-                        'body' => "Chicken; taze ürün, dikkatli ızgara ve hızlı servis anlayışıyla çalışan bir restoran markasıdır. Mutfak ve bar ekiplerimiz siparişleri ayrı istasyonlarda hazırlar; her siparişin benzersiz bir takip kodu vardır.",
+                        'body' => "Crisp & Co.; taze ürün, dikkatli ızgara ve hızlı servis anlayışıyla çalışan bir restoran markasıdır. Mutfak ve bar ekiplerimiz siparişleri ayrı istasyonlarda hazırlar; her siparişin benzersiz bir takip kodu vardır.",
                     ],
                     [
                         'title' => 'Neler sunuyoruz?',
@@ -34,7 +34,7 @@ final class SiteContent
             ],
             'misyon' => [
                 'title' => 'Misyonumuz',
-                'eyebrow' => 'Chicken',
+                'eyebrow' => 'Crisp & Co.',
                 'heading' => 'Misyonumuz',
                 'sections' => [
                     [
@@ -48,7 +48,7 @@ final class SiteContent
             ],
             'musteri-memnuniyeti' => [
                 'title' => 'Müşteri Memnuniyeti',
-                'eyebrow' => 'Chicken',
+                'eyebrow' => 'Crisp & Co.',
                 'heading' => 'Müşteri memnuniyeti',
                 'sections' => [
                     [
@@ -66,7 +66,7 @@ final class SiteContent
                 'heading' => 'Üyelik Sözleşmesi',
                 'sections' => [
                     [
-                        'body' => "Bu Üyelik Sözleşmesi (“Sözleşme”), Chicken restoranının dijital üyelik hizmetlerini kullanan gerçek kişi üye (“Üye”) ile Chicken (“İşletme”) arasında akdedilmiştir. Üyelik oluşturmakla bu sözleşmenin hükümlerini kabul etmiş sayılırsınız.",
+                        'body' => "Bu Üyelik Sözleşmesi (“Sözleşme”), Crisp & Co. restoranının dijital üyelik hizmetlerini kullanan gerçek kişi üye (“Üye”) ile Crisp & Co. (“İşletme”) arasında akdedilmiştir. Üyelik oluşturmakla bu sözleşmenin hükümlerini kabul etmiş sayılırsınız.",
                     ],
                     [
                         'title' => '1. Konu',
@@ -100,7 +100,7 @@ final class SiteContent
                 'heading' => 'Kullanım Koşulları',
                 'sections' => [
                     [
-                        'body' => "Chicken dijital platformlarını (web sitesi ve ilgili arayüzler) kullanarak aşağıdaki kullanım koşullarını kabul etmiş olursunuz.",
+                        'body' => "Crisp & Co. dijital platformlarını (web sitesi ve ilgili arayüzler) kullanarak aşağıdaki kullanım koşullarını kabul etmiş olursunuz.",
                     ],
                     [
                         'title' => '1. Genel',
@@ -126,7 +126,7 @@ final class SiteContent
                 'heading' => 'KVKK Aydınlatma Metni',
                 'sections' => [
                     [
-                        'body' => "6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca veri sorumlusu sıfatıyla Chicken; kimlik, iletişim, işlem güvenliği ve sipariş verilerinizi aşağıda açıklanan çerçevede işleyebilir.",
+                        'body' => "6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca veri sorumlusu sıfatıyla Crisp & Co.; kimlik, iletişim, işlem güvenliği ve sipariş verilerinizi aşağıda açıklanan çerçevede işleyebilir.",
                     ],
                     [
                         'title' => '1. İşlenen veriler',
@@ -174,7 +174,7 @@ final class SiteContent
                 'heading' => 'Gizlilik Politikası',
                 'sections' => [
                     [
-                        'body' => "Bu Gizlilik Politikası; Chicken’ın dijital kanallarında toplanan bilgilerin nasıl korunduğunu açıklar. KVKK Aydınlatma Metni ile birlikte okunmalıdır.",
+                        'body' => "Bu Gizlilik Politikası; Crisp & Co.’nun dijital kanallarında toplanan bilgilerin nasıl korunduğunu açıklar. KVKK Aydınlatma Metni ile birlikte okunmalıdır.",
                     ],
                     [
                         'title' => '1. Toplanan bilgiler',
@@ -200,7 +200,7 @@ final class SiteContent
                 'heading' => 'Mesafeli Satış Sözleşmesi',
                 'sections' => [
                     [
-                        'body' => "6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği kapsamında; online sipariş veren tüketici (“Alıcı”) ile Chicken (“Satıcı”) arasında aşağıdaki koşullar geçerlidir.",
+                        'body' => "6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği kapsamında; online sipariş veren tüketici (“Alıcı”) ile Crisp & Co. (“Satıcı”) arasında aşağıdaki koşullar geçerlidir.",
                     ],
                     [
                         'title' => '1. Taraflar ve konu',
