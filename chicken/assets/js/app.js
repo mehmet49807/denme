@@ -175,6 +175,7 @@
     const welcomePercent = Number(root?.getAttribute('data-welcome-percent') || 10);
     const state = new Map();
     let meta = { table_id: '', note: '' };
+    const lineKey = (menuId, note) => `${Number(menuId)}::${String(note || '').trim()}`;
 
     if (persistKey) {
       const saved = readStorage(persistKey);
@@ -182,13 +183,16 @@
       meta.note = saved.note;
       saved.items.forEach((item) => {
         if (!item || !item.id) return;
-        state.set(Number(item.id), {
+        const note = typeof item.note === 'string' ? item.note : '';
+        const key = item.key || lineKey(item.id, note);
+        state.set(key, {
+          key,
           id: Number(item.id),
           name: String(item.name || 'Ürün'),
           price: Number(item.price || 0),
           station: item.station === 'bar' ? 'bar' : 'kitchen',
           qty: Math.max(1, Number(item.qty || 1)),
-          note: typeof item.note === 'string' ? item.note : '',
+          note,
         });
       });
       if (tableSelect && meta.table_id) tableSelect.value = meta.table_id;
@@ -220,21 +224,21 @@
           ? items
               .map(
                 (item) => `
-          <div class="cart-line" data-id="${item.id}">
+          <div class="cart-line" data-line-key="${escAttr(item.key)}">
             <div class="cart-line-main">
               <div>
                 <strong>${item.name}</strong>
                 <div class="muted small">${money(item.price)} · ${item.station === 'bar' ? 'Bar' : 'Mutfak'}</div>
               </div>
               <div class="qty">
-                <button type="button" data-dec="${item.id}">−</button>
+                <button type="button" data-dec="${escAttr(item.key)}">−</button>
                 <span>${item.qty}</span>
-                <button type="button" data-inc="${item.id}">+</button>
+                <button type="button" data-inc="${escAttr(item.key)}">+</button>
               </div>
             </div>
             <label class="cart-item-note">
-              ${item.station === 'bar' ? 'Bar' : 'Mutfak'} notu
-              <input type="text" maxlength="255" data-item-cart-note="${item.id}" value="${escAttr(item.note || '')}" placeholder="Bu ürün için not...">
+              Not
+              <input type="text" maxlength="255" data-item-cart-note="${escAttr(item.key)}" value="${escAttr(item.note || '')}" placeholder="Bu ürün için not...">
             </label>
           </div>`
               )
@@ -261,28 +265,50 @@
         if (!(t instanceof HTMLElement)) return;
         const inc = t.getAttribute('data-inc');
         const dec = t.getAttribute('data-dec');
-        if (inc && state.has(Number(inc))) {
-          state.get(Number(inc)).qty += 1;
+        if (inc && state.has(inc)) {
+          state.get(inc).qty += 1;
           render();
         }
-        if (dec && state.has(Number(dec))) {
-          const item = state.get(Number(dec));
+        if (dec && state.has(dec)) {
+          const item = state.get(dec);
           item.qty -= 1;
-          if (item.qty <= 0) state.delete(Number(dec));
+          if (item.qty <= 0) state.delete(dec);
           render();
         }
       });
       root.addEventListener('input', (e) => {
         const t = e.target;
         if (!(t instanceof HTMLInputElement)) return;
-        const id = t.getAttribute('data-item-cart-note');
-        if (id && state.has(Number(id))) {
-          state.get(Number(id)).note = t.value || '';
+        const key = t.getAttribute('data-item-cart-note');
+        if (key && state.has(key)) {
+          state.get(key).note = t.value || '';
           persist();
         }
         if (t === discountInput || t.hasAttribute('data-discount-code')) {
           render();
         }
+      });
+      root.addEventListener('change', (e) => {
+        const t = e.target;
+        if (!(t instanceof HTMLInputElement)) return;
+        const key = t.getAttribute('data-item-cart-note');
+        if (!key || !state.has(key)) return;
+        const item = state.get(key);
+        const nextNote = String(t.value || '').trim();
+        item.note = nextNote;
+        const nextKey = lineKey(item.id, nextNote);
+        if (nextKey === key) {
+          persist();
+          return;
+        }
+        state.delete(key);
+        if (state.has(nextKey)) {
+          state.get(nextKey).qty += item.qty;
+        } else {
+          item.key = nextKey;
+          state.set(nextKey, item);
+        }
+        render();
       });
       if (tableSelect) {
         tableSelect.addEventListener('change', () => {
@@ -305,8 +331,15 @@
           const name = btn.getAttribute('data-name') || 'Ürün';
           const price = Number(btn.getAttribute('data-price') || 0);
           const station = btn.getAttribute('data-station') || 'kitchen';
-          if (!state.has(id)) state.set(id, { id, name, price, station, qty: 0, note: '' });
-          state.get(id).qty += 1;
+          const card = btn.closest('.menu-item');
+          const noteField = card ? card.querySelector('[data-item-add-note]') : null;
+          const note = noteField ? String(noteField.value || '').trim() : '';
+          const key = lineKey(id, note);
+          if (!state.has(key)) {
+            state.set(key, { key, id, name, price, station, qty: 0, note });
+          }
+          state.get(key).qty += 1;
+          if (noteField) noteField.value = '';
           render();
           btn.classList.add('is-added');
           setTimeout(() => btn.classList.remove('is-added'), 350);
@@ -547,24 +580,33 @@
     });
   });
 
-  document.querySelectorAll('[data-item-note-save]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const id = btn.getAttribute('data-item-note-save');
-      const input = document.querySelector(`[data-item-note-input="${id}"]`);
-      if (!input) return;
-      btn.disabled = true;
-      try {
-        await postJson(`/api/order-items/${id}/note`, { note: input.value || '' });
-        btn.textContent = 'Kaydedildi';
-        setTimeout(() => {
-          btn.textContent = 'Kaydet';
-        }, 1200);
-      } catch (err) {
-        alert(err.message || 'Not kaydedilemedi');
-      } finally {
-        btn.disabled = false;
+  document.addEventListener('click', async (event) => {
+    const btn = event.target.closest('[data-item-note-save]');
+    if (!btn) return;
+    const id = btn.getAttribute('data-item-note-save');
+    if (!id) return;
+    const scope = btn.closest('[data-item-row], .station-item, .item-manage') || document;
+    const input =
+      scope.querySelector(`[data-item-note-input="${id}"]`) ||
+      document.querySelector(`[data-item-note-input="${id}"]`);
+    if (!input) return;
+    btn.disabled = true;
+    try {
+      await postJson(`/api/order-items/${id}/note`, { note: input.value || '' });
+      btn.textContent = 'Kaydedildi';
+      setTimeout(() => {
+        btn.textContent = 'Kaydet';
+      }, 1200);
+      const board = btn.closest('[data-station-board]');
+      if (board && typeof board._refreshStation === 'function') {
+        // Not panoda kalsın; soft refresh
+        board._refreshStation(true);
       }
-    });
+    } catch (err) {
+      alert(err.message || 'Not kaydedilemedi');
+    } finally {
+      btn.disabled = false;
+    }
   });
 
   document.querySelectorAll('[data-status-btn]').forEach((btn) => {
@@ -890,15 +932,18 @@
               if (item.status === 'queued' || item.status === 'preparing') {
                 actions += `<button class="btn btn-ghost btn-sm" type="button" data-item-id="${Number(item.id)}" data-item-status="ready">Hazır</button>`;
               }
-              const itemNote = item.note
-                ? `<div class="station-item-note">* ${esc(item.note)}</div>`
-                : '';
               return `<li class="station-item status-${esc(item.status)}">
                 <div class="station-item-main">
                   <strong>${Number(item.quantity)}× ${esc(item.item_name)}</strong>
                   <span class="chip">${esc(itemStatusTr[item.status] || item.status)}</span>
                 </div>
-                ${itemNote}
+                <label class="station-item-note-edit">
+                  Not
+                  <div class="item-note-row">
+                    <input type="text" maxlength="255" value="${escAttr(item.note || '')}" placeholder="Ürün notu yazın..." data-item-note-input="${Number(item.id)}">
+                    <button class="btn btn-dark btn-sm" type="button" data-item-note-save="${Number(item.id)}">Kaydet</button>
+                  </div>
+                </label>
                 <div class="cta-row" style="margin-top:8px">${actions}</div>
               </li>`;
             })
