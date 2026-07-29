@@ -715,6 +715,10 @@ $router->post('/api/staff/orders', static function (): void {
     $role = Auth::role();
     $targetOrderId = (int) ($payload['order_id'] ?? 0);
     $items = $payload['items'] ?? [];
+    $back = trim((string) ($payload['back'] ?? ''));
+    if ($back === '' || !str_starts_with($back, '/')) {
+        $back = $role === 'cashier' ? '/kasa' : ($role === 'admin' ? '/yonetici' : '/garson');
+    }
 
     try {
         if ($targetOrderId > 0) {
@@ -726,7 +730,21 @@ $router->post('/api/staff/orders', static function (): void {
                 json_response(['ok' => false, 'error' => 'Sadece kendi siparişinize ürün ekleyebilirsiniz.'], 403);
             }
             $order = OrderService::addItems($targetOrderId, $items, Auth::id());
-            json_response(['ok' => true, 'order' => $order]);
+            $newIds = $order['new_item_ids'] ?? [];
+            $printUrl = slip_autoprint_enabled()
+                ? station_slip_url((int) $order['id'], [
+                    'autoprint' => true,
+                    'items' => $newIds,
+                    'back' => $back,
+                ])
+                : station_slip_url((int) $order['id'], ['items' => $newIds, 'back' => $back]);
+            json_response([
+                'ok' => true,
+                'order' => $order,
+                'new_item_ids' => $newIds,
+                'print_url' => $printUrl,
+                'autoprint' => slip_autoprint_enabled(),
+            ]);
         }
 
         $source = $role === 'cashier' ? 'cashier' : 'waiter';
@@ -737,7 +755,15 @@ $router->post('/api/staff/orders', static function (): void {
             'customer_note' => trim((string) ($payload['customer_note'] ?? '')),
             'items' => $items,
         ]);
-        json_response(['ok' => true, 'order' => $order]);
+        $printUrl = slip_autoprint_enabled()
+            ? station_slip_url((int) $order['id'], ['autoprint' => true, 'back' => $back])
+            : station_slip_url((int) $order['id'], ['back' => $back]);
+        json_response([
+            'ok' => true,
+            'order' => $order,
+            'print_url' => $printUrl,
+            'autoprint' => slip_autoprint_enabled(),
+        ]);
     } catch (Throwable $e) {
         json_response(['ok' => false, 'error' => $e->getMessage()], 422);
     }
@@ -751,10 +777,40 @@ $router->get('/garson/fis/{id}', static function (string $id): void {
         echo 'Fiş bulunamadı';
         return;
     }
+    $station = strtolower(trim((string) ($_GET['station'] ?? 'all')));
+    if (!in_array($station, ['kitchen', 'bar', 'all'], true)) {
+        $station = 'all';
+    }
+    $autoPrint = isset($_GET['autoprint']) && (string) $_GET['autoprint'] !== '0';
+    $backPath = trim((string) ($_GET['back'] ?? ''));
+    $base = base_path();
+    if ($base !== '' && str_starts_with($backPath, $base)) {
+        $backPath = substr($backPath, strlen($base)) ?: '/';
+    }
+    if ($backPath === '' || !str_starts_with($backPath, '/')) {
+        $role = Auth::role();
+        $backPath = $role === 'cashier' ? '/kasa' : ($role === 'admin' ? '/yonetici' : '/garson');
+    }
+    $onlyItemIds = [];
+    $itemsRaw = trim((string) ($_GET['items'] ?? ''));
+    if ($itemsRaw !== '') {
+        foreach (explode(',', $itemsRaw) as $rawId) {
+            $iid = (int) trim($rawId);
+            if ($iid > 0) {
+                $onlyItemIds[] = $iid;
+            }
+        }
+        $onlyItemIds = array_values(array_unique($onlyItemIds));
+    }
     view('staff/slips', [
         'title' => 'Sipariş Fişleri #' . $order['order_code'],
         'order' => $order,
         'user' => Auth::user(),
+        'autoPrint' => $autoPrint,
+        'stationFilter' => $station,
+        'backUrl' => url($backPath),
+        'backPath' => $backPath,
+        'onlyItemIds' => $onlyItemIds,
     ]);
 });
 
@@ -929,6 +985,12 @@ $router->post('/api/online-orders/{id}/accept', static function (string $id): vo
     require_json_csrf($payload);
     try {
         $order = OrderService::acceptOnlineOrder((int) $id, Auth::id());
+        $printUrl = slip_autoprint_enabled()
+            ? station_slip_url((int) $order['id'], [
+                'autoprint' => true,
+                'back' => '/online-siparisler',
+            ])
+            : station_slip_url((int) $order['id'], ['back' => '/online-siparisler']);
         json_response([
             'ok' => true,
             'order' => [
@@ -937,6 +999,8 @@ $router->post('/api/online-orders/{id}/accept', static function (string $id): vo
                 'status' => $order['status'],
                 'status_label' => status_label((string) $order['status']),
             ],
+            'print_url' => $printUrl,
+            'autoprint' => slip_autoprint_enabled(),
         ]);
     } catch (Throwable $e) {
         json_response(['ok' => false, 'error' => $e->getMessage()], 422);
@@ -1222,6 +1286,8 @@ $router->get('/kasa/fatura-ayarlar', static function (): void {
         'title' => 'Firma / KDV ayarları',
         'user' => Auth::user(),
         'company' => FiscalService::companyProfile(),
+        'slipAutoprint' => BrochureService::getSetting('slip_autoprint', '1') !== '0',
+        'slipPaperWidth' => BrochureService::getSetting('slip_paper_width', '80') === '58' ? '58' : '80',
     ]);
 });
 
@@ -1241,7 +1307,10 @@ $router->post('/kasa/fatura-ayarlar', static function (): void {
             'phone' => (string) input('phone'),
             'vat_rate' => (string) input('vat_rate'),
         ]);
-        flash('success', 'Firma / KDV bilgileri kaydedildi.');
+        BrochureService::setSetting('slip_autoprint', input('slip_autoprint') ? '1' : '0');
+        $paper = (string) input('slip_paper_width') === '58' ? '58' : '80';
+        BrochureService::setSetting('slip_paper_width', $paper);
+        flash('success', 'Firma / KDV ve fiş yazıcı ayarları kaydedildi.');
     } catch (Throwable $e) {
         flash('error', $e->getMessage());
     }

@@ -69,7 +69,7 @@ $active = $active ?? [];
             <?php endforeach; ?>
           </ul>
           <div class="cta-row" style="margin-top:12px">
-            <button class="btn btn-accent btn-sm" type="button" data-accept-online="<?= (int) $order['id'] ?>">Onayla · Mutfak/Bar</button>
+            <button class="btn btn-accent btn-sm" type="button" data-accept-online="<?= (int) $order['id'] ?>">Onayla · Fiş yazdır</button>
             <button class="btn btn-dark btn-sm" type="button" data-reject-online="<?= (int) $order['id'] ?>">Reddet</button>
             <?php if (!empty($order['whatsapp_url'])): ?>
               <a class="btn btn-ghost btn-sm" href="<?= e((string) $order['whatsapp_url']) ?>" target="_blank" rel="noopener">WhatsApp</a>

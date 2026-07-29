@@ -434,24 +434,26 @@
     const btn = form.querySelector('button[type="submit"]');
     if (btn) btn.disabled = true;
     try {
+      const backPath =
+        (window.location.pathname || '').replace(base, '') || '/garson';
       const body = {
         table_id: tableId,
         order_id: orderId || undefined,
         customer_note: note,
         items: cart.payload(),
+        back: backPath.startsWith('/') ? backPath : `/${backPath}`,
       };
       const data = await postJson('/api/staff/orders', body);
       cart.clear();
-      if (orderId) {
-        location.reload();
+      if (data.print_url) {
+        window.location.href = data.print_url;
         return;
       }
-      const tablePage = document.querySelector('[data-table-order-builder]');
-      if (tablePage && tableId) {
-        location.reload();
+      if (data.order && data.order.id) {
+        window.location.href = api(`/garson/fis/${data.order.id}?autoprint=1`);
         return;
       }
-      window.location.href = api(`/garson/fis/${data.order.id}`);
+      location.reload();
     } catch (err) {
       alert(err.message || 'Hata');
     } finally {
@@ -743,15 +745,19 @@
     setInterval(refreshLive, 8000);
   }
 
-  // Online order approval (cashier / admin)
+  // Online order approval (cashier / admin) → mutfak/bar fişi
   document.querySelectorAll('[data-accept-online]').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const id = btn.getAttribute('data-accept-online');
       if (!id) return;
-      if (!confirm('Sipariş onaylansın mı? Mutfak ve bar fişine düşecek.')) return;
+      if (!confirm('Sipariş onaylansın mı? Mutfak ve bar fişi yazdırılacak.')) return;
       btn.disabled = true;
       try {
-        await postJson(`/api/online-orders/${id}/accept`, {});
+        const data = await postJson(`/api/online-orders/${id}/accept`, {});
+        if (data.print_url) {
+          window.location.href = data.print_url;
+          return;
+        }
         location.reload();
       } catch (err) {
         alert(err.message || 'Onaylanamadı');
@@ -759,6 +765,48 @@
       }
     });
   });
+
+  // XPrinter mutfak/bar fiş otomatik yazdırma
+  const xpSlips = document.querySelector('[data-xp-slips]');
+  if (xpSlips) {
+    const runPrint = () => {
+      window.print();
+    };
+    const printBtn = document.querySelector('[data-xp-print]');
+    if (printBtn) {
+      printBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        runPrint();
+      });
+    }
+    if (xpSlips.getAttribute('data-autoprint') === '1') {
+      const back = xpSlips.getAttribute('data-print-back') || '';
+      const statusEl = document.querySelector('[data-autoprint-status]');
+      const goBack = () => {
+        if (back) {
+          window.location.href = back;
+        }
+      };
+      let returned = false;
+      const after = () => {
+        if (returned) return;
+        returned = true;
+        if (statusEl) statusEl.textContent = 'Yazdırma tamamlandı, geri dönülüyor…';
+        setTimeout(goBack, 400);
+      };
+      window.addEventListener('afterprint', after);
+      setTimeout(() => {
+        if (statusEl) statusEl.textContent = 'Yazıcı diyaloğu açıldı…';
+        runPrint();
+      }, 350);
+      // Bazı tarayıcılarda afterprint gelmez — güvenlik zamanlayıcısı
+      setTimeout(() => {
+        if (!returned && document.visibilityState === 'visible') {
+          after();
+        }
+      }, 120000);
+    }
+  }
 
   document.querySelectorAll('[data-reject-online]').forEach((btn) => {
     btn.addEventListener('click', async () => {

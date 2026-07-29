@@ -1,6 +1,10 @@
 <?php
 /** @var array $company */
+/** @var bool $slipAutoprint */
+/** @var string $slipPaperWidth */
 $company = $company ?? [];
+$slipAutoprint = !isset($slipAutoprint) || !empty($slipAutoprint);
+$slipPaperWidth = ($slipPaperWidth ?? '80') === '58' ? '58' : '80';
 ?>
 <div class="panel-head">
   <div>
@@ -44,6 +48,24 @@ $company = $company ?? [];
         <option value="20" <?= abs($vatSelected - 20.0) < 0.001 ? 'selected' : '' ?>>%20 — alkollü / genel</option>
       </select>
     </label>
+
+    <hr style="border:0;border-top:1px solid var(--line);margin:8px 0">
+    <p class="eyebrow" style="margin:0">Mutfak / bar XPrinter</p>
+    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
+      <input type="checkbox" name="slip_autoprint" value="1" <?= $slipAutoprint ? 'checked' : '' ?> style="margin-top:4px">
+      <span>Garson siparişi ve online onay sonrası otomatik yazdır</span>
+    </label>
+    <label>Fiş kağıt genişliği
+      <select name="slip_paper_width">
+        <option value="80" <?= $slipPaperWidth === '80' ? 'selected' : '' ?>>80mm (çoğu XPrinter)</option>
+        <option value="58" <?= $slipPaperWidth === '58' ? 'selected' : '' ?>>58mm</option>
+      </select>
+    </label>
+    <p class="muted small" style="margin:0">
+      Otomatik yazdırma, personel bilgisayarındaki yazıcı diyaloğunu açar.
+      XPrinter’ı Windows’ta varsayılan yazıcı yapın; tarayıcıda “bu site için yazıcıyı hatırla” seçeneğini kullanın.
+    </p>
+
     <button class="btn btn-primary" type="submit">Kaydet</button>
   </form>
 </section>

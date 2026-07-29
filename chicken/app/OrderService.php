@@ -174,7 +174,7 @@ final class OrderService
         $normalized = self::normalizeItems($pdo, $items);
         $pdo->beginTransaction();
         try {
-            self::insertItems($pdo, $orderId, $normalized);
+            $newItemIds = self::insertItems($pdo, $orderId, $normalized);
             self::recalcTotals($pdo, $orderId);
             $count = array_sum(array_map(static fn(array $i): int => $i['quantity'], $normalized));
             self::addEvent($pdo, $orderId, $staffId, 'items_added', $count . ' ürün eklendi');
@@ -186,7 +186,11 @@ final class OrderService
             throw $e;
         }
 
-        return self::findById($orderId);
+        $order = self::findById($orderId);
+        if ($order) {
+            $order['new_item_ids'] = $newItemIds;
+        }
+        return $order ?: ['id' => $orderId, 'new_item_ids' => $newItemIds];
     }
 
     public static function cancelOrder(int $orderId, ?int $staffId = null): void
@@ -768,13 +772,15 @@ final class OrderService
         return $normalized;
     }
 
-    private static function insertItems(PDO $pdo, int $orderId, array $normalized): void
+    /** @return list<int> newly inserted order_item ids */
+    private static function insertItems(PDO $pdo, int $orderId, array $normalized): array
     {
         $itemStmt = $pdo->prepare(
             'INSERT INTO order_items
             (order_id, menu_item_id, item_name, station, unit_price, vat_rate, quantity, note, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
         );
+        $ids = [];
         foreach ($normalized as $item) {
             $itemStmt->execute([
                 $orderId,
@@ -787,7 +793,9 @@ final class OrderService
                 $item['note'],
                 'queued',
             ]);
+            $ids[] = (int) $pdo->lastInsertId();
         }
+        return $ids;
     }
 
     private static function recalcTotals(PDO $pdo, int $orderId): void
