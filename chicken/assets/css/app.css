@@ -326,7 +326,6 @@ button, input, select, textarea { font: inherit; }
   max-width: 34ch;
   margin: 16px 0 24px;
   line-height: 1.55;
-  animation: rise 1s ease both 0.1s;
 }
 .hero .lede {
   color: rgba(246, 243, 236, 0.86);
@@ -336,12 +335,16 @@ button, input, select, textarea { font: inherit; }
   padding: 0;
   backdrop-filter: none;
   max-width: 32ch;
+  animation: rise 1s ease both 0.1s;
 }
 .cta-row {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   align-items: center;
+}
+/* Hero CTA only — staff/admin rows must not start at opacity:0 */
+.hero .cta-row {
   animation: rise 1.1s ease both 0.18s;
 }
 .cta-home {
@@ -401,26 +404,40 @@ button, input, select, textarea { font: inherit; }
   border-color: rgba(196, 163, 90, 0.55);
   background: rgba(196, 163, 90, 0.12);
 }
+/* Varsayılan: açık zemin (personel / paneller). Koyu alanlar aşağıda override. */
 .btn-ghost {
+  background: #fff;
+  border-color: var(--line);
+  color: var(--text);
+}
+.btn-ghost:hover {
+  background: #f6f3ec;
+  border-color: rgba(154, 123, 47, 0.35);
+}
+.hero .btn-ghost,
+.site-footer .btn-ghost,
+.nav .btn-ghost,
+.brochure .btn-ghost {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(246, 243, 236, 0.28);
   color: #fffcf7;
 }
-.hero .btn-ghost:hover {
+.hero .btn-ghost:hover,
+.site-footer .btn-ghost:hover,
+.nav .btn-ghost:hover,
+.brochure .btn-ghost:hover {
   background: rgba(255, 255, 255, 0.14);
   border-color: rgba(227, 199, 122, 0.5);
-}
-.section .btn-ghost,
-.page-shell .btn-ghost,
-.footer .btn-ghost,
-.auth-card .btn-ghost {
-  background: #fffcf7;
-  border-color: var(--line);
-  color: var(--text);
+  color: #fff;
 }
 .btn-dark {
   background: #1a1f24;
   border-color: #1a1f24;
+  color: #fff;
+}
+.btn-dark:hover {
+  background: #2a3138;
+  border-color: #2a3138;
   color: #fff;
 }
 .btn-sm { padding: 8px 14px; font-size: 0.92rem; }
@@ -996,6 +1013,31 @@ textarea { min-height: 90px; resize: vertical; }
   padding: 24px;
   overflow-x: hidden;
   max-width: 100%;
+  color: var(--text);
+}
+/* Personel / yönetici: metin ve buton kontrastı garanti */
+.layout-staff,
+.staff-body {
+  color: var(--text);
+}
+.layout-staff .muted,
+.staff-body .muted {
+  color: var(--muted);
+}
+.layout-staff .btn-ghost,
+.staff-body .btn-ghost {
+  background: #fff;
+  border-color: var(--line);
+  color: var(--text);
+}
+.layout-staff h1,
+.layout-staff h2,
+.layout-staff h3,
+.layout-staff .panel-head h1,
+.staff-body h1,
+.staff-body h2,
+.staff-body h3 {
+  color: var(--text);
 }
 
 .order-card-list {
@@ -1136,14 +1178,16 @@ tr:hover td { background: rgba(154, 123, 47, 0.04); }
   max-width: 100%;
 }
 .table-tile {
-  display: block;
+  display: flex;
+  flex-direction: column;
   text-decoration: none;
-  color: inherit;
+  color: var(--text);
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 18px;
   padding: 14px;
   min-height: 140px;
+  overflow: visible;
   transition: border-color .15s ease, transform .15s ease, box-shadow .2s ease;
 }
 a.table-tile-link {
@@ -1155,9 +1199,28 @@ a.table-tile-link {
   border-color: rgba(196, 163, 90,0.45);
   transform: translateY(-1px);
 }
+.table-tile .cta-row {
+  position: relative;
+  z-index: 1;
+  gap: 8px;
+}
+.table-tile .cta-row .btn {
+  flex: 1 1 auto;
+  min-width: 5.5rem;
+  justify-content: center;
+  text-align: center;
+}
+.table-tile .btn,
+.table-tile a.btn,
+.table-tile button.btn {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
 .table-close-actions {
   display: grid;
   gap: 6px;
+  position: relative;
+  z-index: 1;
 }
 .table-close-label {
   font-size: 0.72rem;
@@ -1184,8 +1247,14 @@ a.table-tile-link {
   background: linear-gradient(180deg, rgba(196, 163, 90,0.12), rgba(255, 252, 247, 0.98));
 }
 .table-tile.is-inactive {
-  opacity: 0.65;
-  filter: grayscale(0.35);
+  opacity: 1;
+  filter: none;
+  background: #f0eeea;
+  border-style: dashed;
+}
+.table-tile.is-inactive .table-tile-top strong,
+.table-tile.is-inactive .table-tile-code {
+  color: var(--muted);
 }
 .table-tile-top {
   display: flex;
