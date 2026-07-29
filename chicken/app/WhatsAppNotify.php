@@ -36,37 +36,36 @@ final class WhatsAppNotify
     public static function buildOrderMessage(array $order): string
     {
         $code = (string) ($order['order_code'] ?? '');
-        $name = trim((string) ($order['customer_name'] ?? 'Misafir'));
-        $phone = trim((string) ($order['customer_phone'] ?? ''));
-        $total = number_format((float) ($order['total'] ?? 0), 2, ',', '.');
-        $pref = match ((string) ($order['payment_preference'] ?? '')) {
-            'card' => 'Kart',
-            'cash' => 'Nakit',
-            default => '—',
-        };
+        $status = (string) ($order['status'] ?? '');
+        $statusText = function_exists('status_label')
+            ? status_label($status)
+            : $status;
         $note = trim((string) ($order['customer_note'] ?? ''));
+
         $lines = [
-            'Crisp & Co. — Yeni online sipariş',
-            'Kod: ' . $code,
-            'Müşteri: ' . $name,
-            'Tel: ' . $phone,
-            'Tutar: ' . $total . ' ₺',
-            'Ödeme: Kapıda ' . $pref,
+            'Sipariş kodu: ' . $code,
+            'Sipariş durumu: ' . $statusText,
+            'Ürünler:',
         ];
-        if ($note !== '') {
-            $lines[] = 'Not: ' . $note;
-        }
+
         $items = $order['items'] ?? [];
-        if (is_array($items) && $items !== []) {
-            $lines[] = 'Ürünler:';
+        $hasItem = false;
+        if (is_array($items)) {
             foreach ($items as $item) {
                 if (($item['status'] ?? '') === 'cancelled') {
                     continue;
                 }
+                $hasItem = true;
                 $lines[] = '• ' . (int) ($item['quantity'] ?? 1) . '× ' . (string) ($item['item_name'] ?? '');
             }
         }
-        $lines[] = 'Panel: ' . url('/online-siparisler');
+        if (!$hasItem) {
+            $lines[] = '• —';
+        }
+
+        $lines[] = 'Not: ' . ($note !== '' ? $note : '—');
+        $lines[] = 'Teşekkürler, afiyet olsun!';
+
         return implode("\n", $lines);
     }
 
