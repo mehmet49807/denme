@@ -318,7 +318,7 @@ final class BrochureService
     public static function qrBrandedDownloadUrl(int $size = 320): string
     {
         $size = max(120, min(800, $size));
-        return url('/qr/brosur.png') . '?size=' . $size;
+        return url('/api/qr-brosur') . '?size=' . $size;
     }
 
     /** Düz (logosuz) yüksek ECC QR URL */
@@ -388,68 +388,77 @@ final class BrochureService
         $brochureUrl = self::brochurePublicUrl();
         $logo = self::logoAsset();
 
-        // 1) GD ile yerelde logo göm
-        if ($logo && function_exists('imagecreatefromstring') && function_exists('imagecreatetruecolor')) {
-            $qrBin = self::fetchBinary(self::plainQrRemoteUrl($brochureUrl, $size));
-            if ($qrBin !== null) {
-                $qr = @imagecreatefromstring($qrBin);
-                $mark = @imagecreatefrompng($logo[0]);
-                if ($qr !== false && $mark !== false) {
-                    $qrW = imagesx($qr);
-                    $qrH = imagesy($qr);
-                    $logoTarget = (int) max(24, round(min($qrW, $qrH) * 0.26));
-                    $pad = (int) max(4, round($logoTarget * 0.12));
-                    $box = $logoTarget + ($pad * 2);
-                    $x0 = (int) (($qrW - $box) / 2);
-                    $y0 = (int) (($qrH - $box) / 2);
+        try {
+            // 1) GD ile yerelde logo göm
+            if ($logo && function_exists('imagecreatefromstring') && function_exists('imagecopyresampled')) {
+                $qrBin = self::fetchBinary(self::plainQrRemoteUrl($brochureUrl, $size));
+                if ($qrBin !== null) {
+                    $qr = @imagecreatefromstring($qrBin);
+                    $mark = @imagecreatefrompng($logo[0]);
+                    if ($qr !== false && $mark !== false) {
+                        $qrW = imagesx($qr);
+                        $qrH = imagesy($qr);
+                        $logoTarget = (int) max(24, round(min($qrW, $qrH) * 0.26));
+                        $pad = (int) max(4, round($logoTarget * 0.12));
+                        $box = $logoTarget + ($pad * 2);
+                        $x0 = (int) (($qrW - $box) / 2);
+                        $y0 = (int) (($qrH - $box) / 2);
 
-                    // Beyaz yuvarlak/kare zemin (okunabilirlik)
-                    $white = imagecolorallocate($qr, 255, 255, 255);
-                    imagefilledrectangle($qr, $x0, $y0, $x0 + $box - 1, $y0 + $box - 1, $white);
+                        $white = imagecolorallocate($qr, 255, 255, 255);
+                        if ($white !== false) {
+                            imagefilledrectangle($qr, $x0, $y0, $x0 + $box - 1, $y0 + $box - 1, $white);
+                        }
 
-                    $srcW = imagesx($mark);
-                    $srcH = imagesy($mark);
-                    imagecopyresampled(
-                        $qr,
-                        $mark,
-                        $x0 + $pad,
-                        $y0 + $pad,
-                        0,
-                        0,
-                        $logoTarget,
-                        $logoTarget,
-                        $srcW,
-                        $srcH
-                    );
+                        imagecopyresampled(
+                            $qr,
+                            $mark,
+                            $x0 + $pad,
+                            $y0 + $pad,
+                            0,
+                            0,
+                            $logoTarget,
+                            $logoTarget,
+                            imagesx($mark),
+                            imagesy($mark)
+                        );
 
-                    header('Content-Type: image/png');
-                    header('Cache-Control: public, max-age=300');
-                    header('X-QR-Brand: gd');
-                    imagepng($qr);
-                    imagedestroy($qr);
-                    imagedestroy($mark);
-                    return;
-                }
-                if (isset($qr) && ($qr instanceof \GdImage || is_resource($qr))) {
-                    imagedestroy($qr);
-                }
-                if (isset($mark) && ($mark instanceof \GdImage || is_resource($mark))) {
-                    imagedestroy($mark);
+                        if (!headers_sent()) {
+                            header('Content-Type: image/png');
+                            header('Cache-Control: public, max-age=300');
+                            header('X-QR-Brand: gd');
+                        }
+                        imagepng($qr);
+                        imagedestroy($qr);
+                        imagedestroy($mark);
+                        return;
+                    }
+                    if ($qr !== false) {
+                        imagedestroy($qr);
+                    }
+                    if ($mark !== false) {
+                        imagedestroy($mark);
+                    }
                 }
             }
+
+            // 2) QuickChart merkez logolu QR
+            $qc = self::fetchBinary(self::quickChartQrUrl($brochureUrl, $size));
+            if ($qc !== null) {
+                if (!headers_sent()) {
+                    header('Content-Type: image/png');
+                    header('Cache-Control: public, max-age=300');
+                    header('X-QR-Brand: quickchart');
+                }
+                echo $qc;
+                return;
+            }
+        } catch (Throwable $e) {
+            error_log('outputBrandedQrPng: ' . $e->getMessage());
         }
 
-        // 2) QuickChart merkez logolu QR
-        $qc = self::fetchBinary(self::quickChartQrUrl($brochureUrl, $size));
-        if ($qc !== null) {
-            header('Content-Type: image/png');
-            header('Cache-Control: public, max-age=300');
-            header('X-QR-Brand: quickchart');
-            echo $qc;
-            return;
+        // 3) Son çare: düz QR
+        if (!headers_sent()) {
+            header('Location: ' . self::plainQrRemoteUrl($brochureUrl, $size), true, 302);
         }
-
-        // 3) Son çare: düz QR’a yönlendir
-        header('Location: ' . self::plainQrRemoteUrl($brochureUrl, $size), true, 302);
     }
 }

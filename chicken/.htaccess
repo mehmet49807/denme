@@ -18,6 +18,11 @@ RewriteRule ^(config|app|sql|storage)/ - [F,L]
   </FilesMatch>
 </IfModule>
 
+# QR menü her zaman front controller'dan geçsin
+# (FTP bazen qr/ klasörü bırakır; klasör varken /qr beyaz/boş kalır)
+RewriteRule ^qr/?$ index.php [L,QSA]
+RewriteRule ^qr/brosur\.png$ index.php [L,QSA]
+
 # Front controller
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
