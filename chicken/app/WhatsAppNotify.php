@@ -36,15 +36,27 @@ final class WhatsAppNotify
     public static function buildOrderMessage(array $order): string
     {
         $code = (string) ($order['order_code'] ?? '');
+        $name = trim((string) ($order['customer_name'] ?? 'Misafir'));
+        $phone = trim((string) ($order['customer_phone'] ?? ''));
+        $total = number_format((float) ($order['total'] ?? 0), 2, ',', '.');
+        $pref = match ((string) ($order['payment_preference'] ?? '')) {
+            'card' => 'Kapıda kart',
+            'cash' => 'Kapıda nakit',
+            default => '—',
+        };
         $status = (string) ($order['status'] ?? '');
-        $statusText = function_exists('status_label')
-            ? status_label($status)
-            : $status;
+        $statusText = function_exists('status_label') ? status_label($status) : $status;
         $note = trim((string) ($order['customer_note'] ?? ''));
 
         $lines = [
-            'Sipariş kodu: ' . $code,
-            'Sipariş durumu: ' . $statusText,
+            'Crisp & Co. — Yeni online sipariş',
+            'Kod: ' . $code,
+            'Müşteri: ' . ($name !== '' ? $name : '—'),
+            'Tel: ' . ($phone !== '' ? $phone : '—'),
+            'Tutar: ' . $total . ' ₺',
+            'Ödeme: ' . $pref,
+            'Sipariş durumu: ' . ($statusText !== '' ? $statusText : '—'),
+            'Not: ' . ($note !== '' ? $note : '—'),
             'Ürünler:',
         ];
 
@@ -63,8 +75,9 @@ final class WhatsAppNotify
             $lines[] = '• —';
         }
 
-        $lines[] = 'Not: ' . ($note !== '' ? $note : '—');
-        $lines[] = 'Teşekkürler, afiyet olsun!';
+        $lines[] = '';
+        $lines[] = 'Siparişiniz alındı. Afiyet olsun! 🌿';
+        $lines[] = 'Crisp & Co. — lezzetin doğal adresi.';
 
         return implode("\n", $lines);
     }
