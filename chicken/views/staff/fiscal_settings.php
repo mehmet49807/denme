@@ -51,8 +51,8 @@ $slipPaperWidth = ($slipPaperWidth ?? '80') === '58' ? '58' : '80';
 
     <hr style="border:0;border-top:1px solid var(--line);margin:8px 0">
     <p class="eyebrow" style="margin:0">Mutfak / bar XPrinter</p>
-    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer">
-      <input type="checkbox" name="slip_autoprint" value="1" <?= $slipAutoprint ? 'checked' : '' ?> style="margin-top:4px">
+    <label class="check-row">
+      <input type="checkbox" name="slip_autoprint" value="1" <?= $slipAutoprint ? 'checked' : '' ?>>
       <span>Garson siparişi ve online onay sonrası otomatik yazdır</span>
     </label>
     <label>Fiş kağıt genişliği
