@@ -139,8 +139,21 @@ final class OrderService
             }
 
             if ($source !== 'online') {
-                self::addEvent($pdo, $orderId, $waiterId, 'sent_kitchen', 'Mutfak fişi gönderildi');
-                self::addEvent($pdo, $orderId, $waiterId, 'sent_bar', 'Bar fişi gönderildi');
+                $hasKitchen = false;
+                $hasBar = false;
+                foreach ($normalized as $row) {
+                    if (($row['station'] ?? '') === 'bar') {
+                        $hasBar = true;
+                    } else {
+                        $hasKitchen = true;
+                    }
+                }
+                if ($hasKitchen) {
+                    self::addEvent($pdo, $orderId, $waiterId, 'sent_kitchen', 'Mutfak fişi gönderildi');
+                }
+                if ($hasBar) {
+                    self::addEvent($pdo, $orderId, $waiterId, 'sent_bar', 'Bar fişi gönderildi');
+                }
             }
 
             $pdo->commit();
@@ -178,8 +191,21 @@ final class OrderService
             self::recalcTotals($pdo, $orderId);
             $count = array_sum(array_map(static fn(array $i): int => $i['quantity'], $normalized));
             self::addEvent($pdo, $orderId, $staffId, 'items_added', $count . ' ürün eklendi');
-            self::addEvent($pdo, $orderId, $staffId, 'sent_kitchen', 'Mutfak fişi güncellendi');
-            self::addEvent($pdo, $orderId, $staffId, 'sent_bar', 'Bar fişi güncellendi');
+            $hasKitchen = false;
+            $hasBar = false;
+            foreach ($normalized as $row) {
+                if (($row['station'] ?? '') === 'bar') {
+                    $hasBar = true;
+                } else {
+                    $hasKitchen = true;
+                }
+            }
+            if ($hasKitchen) {
+                self::addEvent($pdo, $orderId, $staffId, 'sent_kitchen', 'Mutfak fişi güncellendi');
+            }
+            if ($hasBar) {
+                self::addEvent($pdo, $orderId, $staffId, 'sent_bar', 'Bar fişi güncellendi');
+            }
             $pdo->commit();
         } catch (Throwable $e) {
             $pdo->rollBack();
@@ -633,8 +659,24 @@ final class OrderService
             $pdo->prepare('UPDATE orders SET status = ?, updated_at = NOW() WHERE id = ? AND status = ?')
                 ->execute(['accepted', $orderId, 'pending']);
             self::addEvent($pdo, $orderId, $staffId, 'status_accepted', 'Online sipariş onaylandı');
-            self::addEvent($pdo, $orderId, $staffId, 'sent_kitchen', 'Mutfak fişi gönderildi');
-            self::addEvent($pdo, $orderId, $staffId, 'sent_bar', 'Bar fişi gönderildi');
+            $hasKitchen = false;
+            $hasBar = false;
+            foreach ($order['active_items'] ?? $order['items'] ?? [] as $row) {
+                if (($row['status'] ?? '') === 'cancelled') {
+                    continue;
+                }
+                if (($row['station'] ?? '') === 'bar') {
+                    $hasBar = true;
+                } elseif (($row['station'] ?? '') === 'kitchen') {
+                    $hasKitchen = true;
+                }
+            }
+            if ($hasKitchen) {
+                self::addEvent($pdo, $orderId, $staffId, 'sent_kitchen', 'Mutfak fişi gönderildi');
+            }
+            if ($hasBar) {
+                self::addEvent($pdo, $orderId, $staffId, 'sent_bar', 'Bar fişi gönderildi');
+            }
             $pdo->commit();
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) {

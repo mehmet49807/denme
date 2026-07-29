@@ -366,6 +366,79 @@ function slip_autoprint_enabled(): bool
     return BrochureService::getSetting('slip_autoprint', '1') !== '0';
 }
 
+/**
+ * Yazdırılacak mutfak/bar kalemlerini sayar. Boş istasyon fişi üretilmez.
+ *
+ * @param list<int>|null $onlyItemIds null = tüm aktif kalemler
+ * @return array{kitchen:int,bar:int,has_any:bool,station:string}
+ */
+function order_slip_station_counts(array $order, ?array $onlyItemIds = null): array
+{
+    $onlyMap = [];
+    if (is_array($onlyItemIds) && $onlyItemIds !== []) {
+        foreach ($onlyItemIds as $oid) {
+            $id = (int) $oid;
+            if ($id > 0) {
+                $onlyMap[$id] = true;
+            }
+        }
+    }
+
+    $countStation = static function (array $rows) use ($onlyMap): int {
+        $n = 0;
+        foreach ($rows as $r) {
+            if ((int) ($r['quantity'] ?? 0) <= 0) {
+                continue;
+            }
+            if (($r['status'] ?? '') === 'cancelled') {
+                continue;
+            }
+            if ($onlyMap !== [] && empty($onlyMap[(int) ($r['id'] ?? 0)])) {
+                continue;
+            }
+            $n++;
+        }
+        return $n;
+    };
+
+    $kitchen = $countStation($order['kitchen_items'] ?? []);
+    $bar = $countStation($order['bar_items'] ?? []);
+    $station = 'all';
+    if ($kitchen > 0 && $bar === 0) {
+        $station = 'kitchen';
+    } elseif ($bar > 0 && $kitchen === 0) {
+        $station = 'bar';
+    }
+
+    return [
+        'kitchen' => $kitchen,
+        'bar' => $bar,
+        'has_any' => ($kitchen + $bar) > 0,
+        'station' => $station,
+    ];
+}
+
+/**
+ * Ürünü olan istasyonlar için fiş URL’si; hiç ürün yoksa null.
+ *
+ * @param list<int>|null $onlyItemIds
+ * @param array{autoprint?:bool,back?:string} $opts
+ */
+function station_slip_url_for_order(array $order, ?array $onlyItemIds = null, array $opts = []): ?string
+{
+    $counts = order_slip_station_counts($order, $onlyItemIds);
+    if (!$counts['has_any']) {
+        return null;
+    }
+
+    return station_slip_url((int) $order['id'], [
+        'autoprint' => !empty($opts['autoprint']),
+        'station' => $counts['station'],
+        'items' => $onlyItemIds ?? [],
+        'back' => (string) ($opts['back'] ?? ''),
+    ]);
+}
+
 function payment_method_label(?string $method): string
 {
     return match ($method) {
