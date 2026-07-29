@@ -36,6 +36,9 @@
             <span class="chip">Pasif</span>
           <?php endif; ?>
         </div>
+        <?php if (!empty($theme['layout_label'])): ?>
+          <div class="small" style="margin:4px 0 2px"><span class="chip"><?= e((string) $theme['layout_label']) ?> düzen</span></div>
+        <?php endif; ?>
         <p class="muted small"><?= e($theme['blurb']) ?></p>
         <div class="cta-row" style="margin-top:12px">
           <?php if (!empty($theme['is_active']) && empty($theme['is_selected'])): ?>
