@@ -2362,15 +2362,13 @@ body.is-kiosk .station-orders.is-kiosk {
   width: 18px;
   height: 18px;
   margin-top: 2px;
+  accent-color: var(--ember);
 }
 .check-line > span,
 .check-line > div {
   min-width: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
-}
-  margin-top: 2px;
-  accent-color: var(--ember);
 }
 .check-line a {
   color: var(--ember);
