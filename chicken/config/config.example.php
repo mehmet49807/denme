@@ -7,7 +7,8 @@ declare(strict_types=1);
  * config.local.php is gitignored.
  */
 return [
-    'app_name' => 'Chicken',
+    'app_name' => 'Crisp & Co.',
+    'ops_secret' => 'change-me-ops-secret',
     'app_url' => 'https://gonulkoprusu.com/chicken',
     'timezone' => 'Europe/Istanbul',
     'db' => [

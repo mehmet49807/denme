@@ -23,6 +23,7 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
   <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= e((string) $cssVer) ?>">
   <link rel="stylesheet" href="<?= e(url('/assets/css/public-site.css')) ?>?v=<?= e((string) $publicCssVer) ?>">
   <link rel="icon" href="<?= e($logoSrc) ?>" type="image/png">
+  <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
 </head>
 <body<?= !empty($bodyAttrs) ? ' ' . $bodyAttrs : '' ?> data-base="<?= e(base_path()) ?>" data-public-layout data-theme="vista">
   <div class="vs-app">
@@ -97,7 +98,10 @@ $customer = class_exists('CustomerAuth') ? CustomerAuth::user() : null;
     <span class="nav-badge cart-badge is-empty" data-cart-badge hidden>0</span>
   </a>
 
-  <script>window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;</script>
+  <script>
+    window.CHICKEN_BASE = <?= json_encode(base_path(), JSON_UNESCAPED_SLASHES) ?>;
+    window.CHICKEN_CSRF = <?= json_encode(csrf_token(), JSON_UNESCAPED_UNICODE) ?>;
+  </script>
   <script src="<?= e(url('/assets/js/app.js')) ?>?v=<?= e((string) $jsVer) ?>" defer></script>
 </body>
 </html>

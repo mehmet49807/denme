@@ -3,15 +3,34 @@
 declare(strict_types=1);
 
 /**
- * One-time installer. Delete or protect after setup.
+ * One-time installer. Locked after DB is installed unless ops_secret is provided.
  */
 require __DIR__ . '/app/helpers.php';
+require __DIR__ . '/app/Database.php';
 
 date_default_timezone_set((string) config('timezone', 'Europe/Istanbul'));
 
 $messages = [];
 $errors = [];
 $done = false;
+$defaultPasswords = [];
+
+try {
+    $alreadyInstalled = Database::isInstalled();
+} catch (Throwable) {
+    $alreadyInstalled = false;
+}
+if ($alreadyInstalled) {
+    $unlock = (string) ($_GET['key'] ?? $_POST['ops_key'] ?? '');
+    $secret = ops_secret();
+    if ($secret === '' || !hash_equals($secret, $unlock)) {
+        http_response_code(403);
+        echo '<!DOCTYPE html><html lang="tr"><meta charset="utf-8"><body style="font-family:sans-serif;padding:24px">';
+        echo '<h1>Kurulum kilitli</h1><p>Sistem zaten kurulu. Yeniden kurulum için ops anahtarı gerekir.</p>';
+        echo '</body></html>';
+        exit;
+    }
+}
 
 if (!function_exists('run_sql_file')) {
     function run_sql_file(PDO $pdo, string $path): void
@@ -49,35 +68,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $messages[] = 'Menü zaten mevcut, seed atlandı.';
         }
 
-        $defaults = [
-            ['Yönetici', 'admin', 'Admin123!', 'admin', '0000'],
-            ['Kasa', 'kasa', 'Kasa123!', 'cashier', '1111'],
-            ['Garson Ayşe', 'garson1', 'Garson123!', 'waiter', '2222'],
-            ['Garson Mehmet', 'garson2', 'Garson123!', 'waiter', '3333'],
-        ];
-        $upsert = $pdo->prepare(
-            'INSERT INTO staff (name, username, password_hash, role, pin, is_active)
-             VALUES (?, ?, ?, ?, ?, 1)
-             ON DUPLICATE KEY UPDATE
-               name = VALUES(name),
-               password_hash = VALUES(password_hash),
-               role = VALUES(role),
-               pin = VALUES(pin),
-               is_active = 1'
-        );
-        foreach ($defaults as $row) {
-            $upsert->execute([
-                $row[0],
-                $row[1],
-                password_hash($row[2], PASSWORD_DEFAULT),
-                $row[3],
-                $row[4],
-            ]);
+        $staffCount = (int) $pdo->query('SELECT COUNT(*) FROM staff')->fetchColumn();
+        $defaultPasswords = [];
+        if ($staffCount === 0) {
+            $defaults = [
+                ['Yönetici', 'admin', 'admin', '0000'],
+                ['Kasa', 'kasa', 'cashier', '1111'],
+                ['Garson Ayşe', 'garson1', 'waiter', '2222'],
+                ['Garson Mehmet', 'garson2', 'waiter', '3333'],
+            ];
+            $insertStaff = $pdo->prepare(
+                'INSERT INTO staff (name, username, password_hash, role, pin, is_active)
+                 VALUES (?, ?, ?, ?, ?, 1)'
+            );
+            foreach ($defaults as $row) {
+                $plain = bin2hex(random_bytes(4)) . 'Aa1!';
+                $defaultPasswords[] = [$row[1], $plain, $row[2]];
+                $insertStaff->execute([
+                    $row[0],
+                    $row[1],
+                    password_hash($plain, PASSWORD_DEFAULT),
+                    $row[2],
+                    $row[3],
+                ]);
+            }
+            $messages[] = 'Personel hesapları oluşturuldu (parolalar aşağıda — bir kez gösterilir).';
+        } else {
+            $messages[] = 'Personel zaten mevcut; parolalar değiştirilmedi.';
         }
-        $messages[] = 'Personel hesapları hazır.';
 
+        $opsSecret = bin2hex(random_bytes(24));
         $local = "<?php\n\ndeclare(strict_types=1);\n\nreturn [\n"
             . "    'app_url' => " . var_export($appUrl, true) . ",\n"
+            . "    'ops_secret' => " . var_export($opsSecret, true) . ",\n"
             . "    'db' => [\n"
             . "        'host' => " . var_export($host, true) . ",\n"
             . "        'port' => {$port},\n"
@@ -103,12 +126,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Chicken Kurulum</title>
+  <title>Crisp &amp; Co. Kurulum</title>
   <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
 </head>
 <body class="auth-body">
   <main class="auth-card">
-    <p class="eyebrow">Chicken</p>
+    <p class="eyebrow">Crisp &amp; Co.</p>
     <h1>Kurulum</h1>
     <p class="lede">Veritabanını oluşturur, örnek menüyü yükler ve personel hesaplarını hazırlar.</p>
 
@@ -121,14 +144,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php if ($done): ?>
       <div class="stack">
-        <p><strong>Giriş bilgileri</strong></p>
-        <ul>
-          <li>Yönetici: admin / Admin123!</li>
-          <li>Kasa: kasa / Kasa123!</li>
-          <li>Garson: garson1 / Garson123!</li>
-        </ul>
+        <?php if (!empty($defaultPasswords)): ?>
+          <p><strong>Giriş bilgileri (bir kez gösterilir)</strong></p>
+          <ul>
+            <?php foreach ($defaultPasswords as $cred): ?>
+              <li><?= e($cred[2]) ?>: <code><?= e($cred[0]) ?></code> / <code><?= e($cred[1]) ?></code></li>
+            <?php endforeach; ?>
+          </ul>
+        <?php endif; ?>
+        <p class="muted small">Ops anahtarı <code>config.local.php</code> içinde <code>ops_secret</code> olarak kaydedildi (cron/tools için).</p>
         <a class="btn btn-primary" href="<?= e(url('/')) ?>">Siteye git</a>
-        <a class="btn btn-ghost" href="<?= e(url('/personel/giris')) ?>">Personel girişi</a>
+        <a class="btn btn-ghost" href="<?= e(url('/giris')) ?>">Personel girişi</a>
         <p class="muted small">Güvenlik için kurulumdan sonra <code>install.php</code> dosyasını silin.</p>
       </div>
     <?php else: ?>

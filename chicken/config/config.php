@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 $defaults = [
-    'app_name' => 'Chicken',
+    'app_name' => 'Crisp & Co.',
     'app_url' => 'https://gonulkoprusu.com/chicken',
     'timezone' => 'Europe/Istanbul',
     'db' => [
@@ -15,6 +15,8 @@ $defaults = [
         'charset' => 'utf8mb4',
     ],
     'session_name' => 'chicken_session',
+    // Cron + tools: CHICKEN_OPS_SECRET env veya config.local.php
+    'ops_secret' => getenv('CHICKEN_OPS_SECRET') ?: '',
 ];
 
 $localFile = __DIR__ . '/config.local.php';

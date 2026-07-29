@@ -389,16 +389,15 @@ final class MenuItemSync
             return;
         }
 
-        $find = $pdo->prepare('SELECT id FROM menu_items WHERE name = ? LIMIT 1');
+        // Yalnızca eksik ürünleri ekle; yönetici fiyat/stok/KDV düzenlemelerini ezme.
+        $find = $pdo->prepare('SELECT id, image_url FROM menu_items WHERE name = ? LIMIT 1');
         $insert = $pdo->prepare(
             'INSERT INTO menu_items
              (category_id, name, description, price, vat_rate, station, is_available, image_url, sort_order)
              VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)'
         );
-        $update = $pdo->prepare(
-            'UPDATE menu_items
-             SET category_id = ?, description = ?, price = ?, vat_rate = ?, station = ?, image_url = ?, sort_order = ?, is_available = 1
-             WHERE id = ?'
+        $fillImage = $pdo->prepare(
+            'UPDATE menu_items SET image_url = ? WHERE id = ? AND (image_url IS NULL OR image_url = \'\')'
         );
 
         foreach (self::catalog() as $item) {
@@ -414,18 +413,13 @@ final class MenuItemSync
             }
             try {
                 $find->execute([$name]);
-                $id = $find->fetchColumn();
-                if ($id) {
-                    $update->execute([
-                        $categoryId,
-                        $item['description'],
-                        $item['price'],
-                        $vatRate,
-                        $item['station'],
-                        $item['image_url'],
-                        $item['sort_order'],
-                        (int) $id,
-                    ]);
+                $existing = $find->fetch();
+                if ($existing) {
+                    $img = trim((string) ($existing['image_url'] ?? ''));
+                    $catalogImg = trim((string) ($item['image_url'] ?? ''));
+                    if ($img === '' && $catalogImg !== '') {
+                        $fillImage->execute([$catalogImg, (int) $existing['id']]);
+                    }
                 } else {
                     $insert->execute([
                         $categoryId,

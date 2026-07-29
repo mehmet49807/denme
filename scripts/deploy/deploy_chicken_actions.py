@@ -178,13 +178,26 @@ def list_files() -> list[Path]:
     return priority_paths + other + images
 
 
+def ops_secret_value(db_pass: str) -> str:
+    import hashlib
+
+    secret = os.environ.get("CHICKEN_OPS_SECRET", "").strip()
+    if secret:
+        return secret
+    return hashlib.sha256(("chicken-ops|" + db_pass).encode("utf-8")).hexdigest()
+
+
 def write_config(ftp: FTP, base: str) -> None:
     db_pass = os.environ.get("CHICKEN_DB_PASS", "")
     if not db_pass:
         return
+    ops_secret = ops_secret_value(db_pass)
     cfg = (
         "<?php\n\ndeclare(strict_types=1);\n\nreturn [\n"
         "    'app_url' => 'https://gonulkoprusu.com/chicken',\n"
+        "    'ops_secret' => "
+        + repr(ops_secret)
+        + ",\n"
         "    'db' => [\n"
         "        'host' => 'localhost',\n"
         "        'port' => 3306,\n"
@@ -294,35 +307,8 @@ def find_chicken_base(ftp: FTP, label: str) -> str | None:
 
 
 def bootstrap_subdomain() -> None:
-    import secrets as _secrets
-    import urllib.request
-
-    token = _secrets.token_urlsafe(16)
-    bootstrap_urls = [
-        f"https://gonulkoprusu.com/public_html/chicken/tools/server_bootstrap.php?key={token}&expect={token}",
-        f"https://gonulkoprusu.com/chicken/tools/server_bootstrap.php?key={token}&expect={token}",
-    ]
-    for url in bootstrap_urls:
-        try:
-            print("bootstrap try", url.split("?")[0])
-            req = urllib.request.Request(
-                url,
-                headers={
-                    "User-Agent": (
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                        "AppleWebKit/537.36 (KHTML, like Gecko) "
-                        "Chrome/126.0.0.0 Safari/537.36"
-                    ),
-                    "Accept": "text/plain,*/*",
-                },
-            )
-            with urllib.request.urlopen(req, timeout=90) as resp:
-                body = resp.read().decode("utf-8", "replace")
-            print(body[:2000])
-            if "COPIED=" in body or "\nOK\n" in body or body.strip().endswith("OK"):
-                break
-        except Exception as exc:  # noqa: BLE001
-            print("bootstrap failed", type(exc).__name__, exc)
+    # tools/ is blocked by .htaccess in production; FTP upload is the source of truth.
+    print("bootstrap skipped (tools/ blocked; FTP deploy complete)", flush=True)
 
 
 def main() -> int:

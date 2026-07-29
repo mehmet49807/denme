@@ -7,8 +7,8 @@ RewriteCond %{HTTP_HOST} ^chicken\.gonulkoprusu\.com$ [NC]
 RewriteCond %{HTTPS} !=on
 RewriteRule ^(.*)$ https://gonulkoprusu.com/chicken/$1 [R=302,L,QSA]
 
-# Block sensitive paths
-RewriteRule ^(config|app|sql|storage)/ - [F,L]
+# Block sensitive paths (tools = emergency scripts; not public)
+RewriteRule ^(config|app|sql|storage|tools)/ - [F,L]
 
 # Short cache for brand logos so updates show quickly
 <IfModule mod_headers.c>

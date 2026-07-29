@@ -9,6 +9,29 @@
       .replace(/"/g, '&quot;')
       .replace(/</g, '&lt;');
 
+  function csrfToken() {
+    if (typeof window.CHICKEN_CSRF === 'string' && window.CHICKEN_CSRF) {
+      return window.CHICKEN_CSRF;
+    }
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute('content') || '' : '';
+  }
+
+  async function postJson(path, body) {
+    const payload = Object.assign({}, body || {}, { _csrf: csrfToken() });
+    const res = await fetch(api(path), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken(),
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'İşlem başarısız');
+    return data;
+  }
+
   const staffLayout = document.querySelector('[data-staff-layout]');
   const toggleButtons = document.querySelectorAll('[data-nav-toggle]');
   const sidePanel = document.querySelector('#staff-side');
@@ -380,13 +403,7 @@
       const btn = onlineForm.querySelector('button[type="submit"]');
       if (btn) btn.disabled = true;
       try {
-        const res = await fetch(api('/api/orders'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        if (!data.ok) throw new Error(data.error || 'Sipariş alınamadı');
+        const data = await postJson('/api/orders', body);
         onlineCart.clear();
         window.location.href = api(`/takip?code=${encodeURIComponent(data.order.order_code)}`);
       } catch (err) {
@@ -423,13 +440,7 @@
         customer_note: note,
         items: cart.payload(),
       };
-      const res = await fetch(api('/api/staff/orders'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error || 'Sipariş gönderilemedi');
+      const data = await postJson('/api/staff/orders', body);
       cart.clear();
       if (orderId) {
         location.reload();
@@ -473,17 +484,6 @@
       if (builder) builder.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
-
-  async function postJson(path, body) {
-    const res = await fetch(api(path), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body || {}),
-    });
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error || 'İşlem başarısız');
-    return data;
-  }
 
   document.querySelectorAll('[data-pay-order]').forEach((btn) => {
     btn.addEventListener('click', async () => {
@@ -573,17 +573,12 @@
     btn.addEventListener('click', async () => {
       const id = btn.getAttribute('data-order-id');
       const status = btn.getAttribute('data-status-btn');
-      const res = await fetch(api(`/api/orders/${id}/status`), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-      });
-      const data = await res.json();
-      if (!data.ok) {
-        alert(data.error || 'Güncellenemedi');
-        return;
+      try {
+        await postJson(`/api/orders/${id}/status`, { status });
+        location.reload();
+      } catch (err) {
+        alert(err.message || 'Güncellenemedi');
       }
-      location.reload();
     });
   });
 
@@ -591,17 +586,15 @@
     btn.addEventListener('click', async () => {
       const itemId = btn.getAttribute('data-item-id');
       const status = btn.getAttribute('data-item-status');
-      const res = await fetch(api('/api/station/item-status'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ item_id: Number(itemId), status }),
-      });
-      const data = await res.json();
-      if (!data.ok) {
-        alert(data.error || 'Güncellenemedi');
-        return;
+      try {
+        await postJson('/api/station/item-status', {
+          item_id: Number(itemId),
+          status,
+        });
+        location.reload();
+      } catch (err) {
+        alert(err.message || 'Güncellenemedi');
       }
-      location.reload();
     });
   });
 
@@ -615,13 +608,7 @@
       btn.disabled = true;
       if (statusEl) statusEl.textContent = 'Kaydediliyor...';
       try {
-        const res = await fetch(api(`/api/orders/${id}/note`), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ note: input.value || '' }),
-        });
-        const data = await res.json();
-        if (!data.ok) throw new Error(data.error || 'Not kaydedilemedi');
+        await postJson(`/api/orders/${id}/note`, { note: input.value || '' });
         if (statusEl) statusEl.textContent = 'Kaydedildi';
         setTimeout(() => {
           if (statusEl) statusEl.textContent = '';
@@ -754,9 +741,7 @@
       if (!confirm('Sipariş onaylansın mı? Mutfak ve bar fişine düşecek.')) return;
       btn.disabled = true;
       try {
-        const res = await fetch(api(`/api/online-orders/${id}/accept`), { method: 'POST' });
-        const data = await res.json();
-        if (!data.ok) throw new Error(data.error || 'Onaylanamadı');
+        await postJson(`/api/online-orders/${id}/accept`, {});
         location.reload();
       } catch (err) {
         alert(err.message || 'Onaylanamadı');
@@ -772,9 +757,7 @@
       if (!confirm('Online sipariş reddedilsin / iptal edilsin mi?')) return;
       btn.disabled = true;
       try {
-        const res = await fetch(api(`/api/online-orders/${id}/reject`), { method: 'POST' });
-        const data = await res.json();
-        if (!data.ok) throw new Error(data.error || 'Reddedilemedi');
+        await postJson(`/api/online-orders/${id}/reject`, {});
         location.reload();
       } catch (err) {
         alert(err.message || 'Reddedilemedi');

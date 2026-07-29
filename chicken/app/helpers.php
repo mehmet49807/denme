@@ -141,6 +141,95 @@ function verify_csrf(?string $token): bool
         && hash_equals($_SESSION['_csrf'], $token);
 }
 
+/** JSON API CSRF: body `_csrf` or `X-CSRF-Token` header. */
+function request_csrf_token(): ?string
+{
+    $header = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+    if (is_string($header) && $header !== '') {
+        return $header;
+    }
+    return null;
+}
+
+function require_csrf(?string $token = null): void
+{
+    $token = $token ?? (string) (input('_csrf') ?: request_csrf_token() ?: '');
+    if (!verify_csrf($token)) {
+        if (str_starts_with(current_path(), '/api/')) {
+            json_response(['ok' => false, 'error' => 'CSRF doğrulaması başarısız'], 419);
+        }
+        flash('error', 'Oturum doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.');
+        redirect('/');
+    }
+}
+
+function require_json_csrf(?array $payload = null): void
+{
+    $token = null;
+    if (is_array($payload) && isset($payload['_csrf'])) {
+        $token = (string) $payload['_csrf'];
+    }
+    if ($token === null || $token === '') {
+        $token = request_csrf_token();
+    }
+    if (!verify_csrf($token)) {
+        json_response(['ok' => false, 'error' => 'CSRF doğrulaması başarısız'], 419);
+    }
+}
+
+function ops_secret(): string
+{
+    $secret = trim((string) config('ops_secret', ''));
+    if ($secret === '') {
+        $secret = trim((string) (getenv('CHICKEN_OPS_SECRET') ?: ''));
+    }
+    return $secret;
+}
+
+function require_ops_secret(?string $provided = null): void
+{
+    $secret = ops_secret();
+    $provided = $provided ?? (string) ($_GET['key'] ?? $_SERVER['HTTP_X_OPS_KEY'] ?? '');
+    if ($secret === '' || !hash_equals($secret, $provided)) {
+        http_response_code(403);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['ok' => false, 'error' => 'Forbidden'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
+/** Only allow same-app relative redirects (anti open-redirect). */
+function safe_internal_path(?string $path, string $fallback = '/'): string
+{
+    $path = trim((string) $path);
+    if ($path === '' || str_starts_with($path, '//') || str_contains($path, '://')) {
+        return $fallback;
+    }
+    if (!str_starts_with($path, '/')) {
+        $path = '/' . $path;
+    }
+    return $path;
+}
+
+function start_app_session(): void
+{
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        return;
+    }
+    $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443)
+        || (strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https');
+    session_name((string) config('session_name', 'chicken_session'));
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => base_path() !== '' ? base_path() . '/' : '/',
+        'secure' => $secure,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+    session_start();
+}
+
 function request_is_post(): bool
 {
     return strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST';

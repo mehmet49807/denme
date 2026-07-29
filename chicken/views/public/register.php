@@ -19,9 +19,6 @@
       <div class="alert alert-error"><?= e($msg) ?></div>
     <?php endif; ?>
 
-    <?php partial('partials/google_auth_button', ['label' => 'Google ile üye ol']); ?>
-    <div class="auth-divider"><span>veya e-posta ile</span></div>
-
     <form method="post" action="<?= e(url('/uye-ol')) ?>" class="stack">
       <?= csrf_field() ?>
       <label>Ad Soyad
