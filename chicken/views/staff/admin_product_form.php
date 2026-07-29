@@ -51,6 +51,28 @@ $isEdit = !empty($item);
     <label>Fiyat (KDV dahil, ₺)
       <input type="number" name="price" required min="0" step="0.01" value="<?= e((string) ($item['price'] ?? '')) ?>">
     </label>
+    <?php if ($isEdit && !empty($branches)): ?>
+      <fieldset class="stack" style="margin:0;padding:0;border:0">
+        <legend class="eyebrow" style="margin:0">Şube fiyatları <span class="muted small">(boş = varsayılan)</span></legend>
+        <?php
+          $branchPrices = $branchPrices ?? [];
+          foreach ($branches as $b):
+              $bid = (int) $b['id'];
+              $bp = $branchPrices[$bid] ?? '';
+        ?>
+          <label><?= e((string) $b['name']) ?>
+            <input
+              type="number"
+              name="branch_price[<?= $bid ?>]"
+              min="0"
+              step="0.01"
+              value="<?= $bp !== '' ? e((string) $bp) : '' ?>"
+              placeholder="<?= e((string) ($item['price'] ?? '')) ?>"
+            >
+          </label>
+        <?php endforeach; ?>
+      </fieldset>
+    <?php endif; ?>
     <?php
       $vatSelected = (float) ($item['vat_rate'] ?? 10);
       if (class_exists('FiscalService')) {
@@ -76,6 +98,12 @@ $isEdit = !empty($item);
     </label>
     <label>Sıra
       <input type="number" name="sort_order" min="0" max="999" value="<?= (int) ($item['sort_order'] ?? 0) ?>">
+    </label>
+    <label>Stok miktarı <span class="muted small">(boş = takip yok)</span>
+      <input type="number" name="stock_qty" min="0" step="0.01" value="<?= e((string) ($item['stock_qty'] ?? '')) ?>" placeholder="Örn. 40">
+    </label>
+    <label>Stok uyarı eşiği
+      <input type="number" name="stock_alert_qty" min="0" step="0.01" value="<?= e((string) ($item['stock_alert_qty'] ?? '')) ?>" placeholder="Örn. 5">
     </label>
     <label class="meta-row" style="align-items:center;gap:10px">
       <input type="checkbox" name="is_available" value="1" <?= !isset($item['is_available']) || !empty($item['is_available']) ? 'checked' : '' ?>>

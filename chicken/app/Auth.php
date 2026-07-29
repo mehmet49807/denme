@@ -38,11 +38,33 @@ final class Auth
         unset($user['password_hash']);
         session_regenerate_id(true);
         $_SESSION['staff'] = $user;
+        if (class_exists('OpsService')) {
+            OpsService::logStaffLogin((int) $user['id'], (string) $user['username'], (string) $user['role']);
+            try {
+                OpsService::openShift((int) $user['id']);
+            } catch (Throwable) {
+            }
+        }
         return true;
     }
 
     public static function logout(): void
     {
+        $user = self::user();
+        if ($user && class_exists('OpsService')) {
+            $staffId = (int) ($user['id'] ?? 0);
+            try {
+                if ($staffId > 0) {
+                    OpsService::closeShift($staffId);
+                }
+            } catch (Throwable) {
+            }
+            OpsService::logStaffLogout(
+                $staffId,
+                (string) ($user['username'] ?? ''),
+                (string) ($user['role'] ?? '')
+            );
+        }
         unset($_SESSION['staff']);
     }
 

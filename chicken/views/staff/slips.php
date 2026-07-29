@@ -16,6 +16,7 @@ if ($backPath === '' || !str_starts_with($backPath, '/')) {
     $backPath = '/garson';
 }
 $paper = BrochureService::getSetting('slip_paper_width', '80') === '58' ? '58' : '80';
+$qz = is_array($qz ?? null) ? $qz : OpsService::qzConfig();
 $onlyItemIds = is_array($onlyItemIds ?? null) ? $onlyItemIds : [];
 $onlyMap = [];
 foreach ($onlyItemIds as $oid) {
@@ -68,6 +69,9 @@ $fisQs = static function (string $station) use ($order, $onlyItemIds, $backPath)
   <?= $autoPrint && $hasPrintable ? 'data-autoprint="1"' : '' ?>
   data-print-back="<?= e($backUrl) ?>"
   data-has-slips="<?= $hasPrintable ? '1' : '0' ?>"
+  data-qz-enabled="<?= !empty($qz['enabled']) ? '1' : '0' ?>"
+  data-qz-printer-kitchen="<?= e((string) ($qz['printer_kitchen'] ?? '')) ?>"
+  data-qz-printer-bar="<?= e((string) ($qz['printer_bar'] ?? '')) ?>"
 >
   <div class="panel-head no-print">
     <div>

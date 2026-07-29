@@ -137,11 +137,11 @@ final class WhatsAppNotify
         ];
     }
 
-    private static function tryCloudApi(string $message): void
+    private static function tryCloudApi(string $message, ?string $toOverride = null): void
     {
         $token = trim((string) BrochureService::getSetting('whatsapp_api_token', ''));
         $phoneId = trim((string) BrochureService::getSetting('whatsapp_phone_number_id', ''));
-        $to = self::notifyNumber();
+        $to = $toOverride !== null ? self::digitsOnly($toOverride) : self::notifyNumber();
         if ($token === '' || $phoneId === '' || $to === '') {
             return;
         }
@@ -175,5 +175,48 @@ final class WhatsAppNotify
         if ($code >= 400) {
             error_log('WhatsApp Cloud API HTTP ' . $code . ' ' . (string) $resp);
         }
+    }
+
+    public static function customerStatusEnabled(): bool
+    {
+        return self::isEnabled() && BrochureService::getSetting('whatsapp_customer_status', '1') === '1';
+    }
+
+    public static function buildCustomerStatusMessage(array $order): string
+    {
+        $code = (string) ($order['order_code'] ?? '');
+        $status = status_label((string) ($order['status'] ?? ''));
+        $eta = (int) ($order['eta_minutes'] ?? 0);
+        if ($eta <= 0 && class_exists('OpsService')) {
+            $eta = OpsService::etaMinutes();
+        }
+        $lines = [
+            'Crisp & Co. — Sipariş güncellemesi',
+            'Kod: ' . $code,
+            'Durum: ' . $status,
+        ];
+        if ($eta > 0 && !in_array(($order['status'] ?? ''), ['ready', 'served', 'paid', 'cancelled'], true)) {
+            $lines[] = 'Tahmini süre: ~' . $eta . ' dk';
+        }
+        if (($order['status'] ?? '') === 'ready') {
+            $lines[] = 'Siparişiniz hazır!';
+        } elseif (($order['status'] ?? '') === 'accepted') {
+            $lines[] = 'Siparişiniz mutfağa iletildi.';
+        }
+        $lines[] = 'Afiyet olsun!';
+        return implode("\n", $lines);
+    }
+
+    /** Müşteri telefonuna durum bildirimi (Cloud API varsa). */
+    public static function notifyCustomerStatus(array $order): void
+    {
+        if (!self::customerStatusEnabled()) {
+            return;
+        }
+        $phone = self::digitsOnly((string) ($order['customer_phone'] ?? ''));
+        if ($phone === '') {
+            return;
+        }
+        self::tryCloudApi(self::buildCustomerStatusMessage($order), $phone);
     }
 }
