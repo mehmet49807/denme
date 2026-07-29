@@ -23,10 +23,15 @@
       <select name="role" required>
         <option value="waiter">Garson</option>
         <option value="cashier">Kasa</option>
+        <option value="kitchen">Mutfak</option>
+        <option value="bar">Bar</option>
         <option value="admin">Yönetici (tüm yetkiler)</option>
       </select>
     </label>
-    <p class="muted small">Yönetici: masa, kasa, garson, mutfak, bar ve personel işlemlerinin tamamı.</p>
+    <p class="muted small">
+      Mutfak / Bar: kendi istasyon ekranı, sipariş detayı ve fiş takibi.
+      Yönetici: masa, kasa, garson, mutfak, bar ve personel işlemlerinin tamamı.
+    </p>
     <button class="btn btn-primary" type="submit">Personeli kaydet</button>
   </form>
 </section>

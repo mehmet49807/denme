@@ -2,7 +2,9 @@ INSERT INTO staff (name, username, password_hash, role, pin, is_active) VALUES
 ('Yönetici', 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', '0000', 1),
 ('Kasa', 'kasa', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'cashier', '1111', 1),
 ('Garson Ayşe', 'garson1', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'waiter', '2222', 1),
-('Garson Mehmet', 'garson2', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'waiter', '3333', 1)
+('Garson Mehmet', 'garson2', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'waiter', '3333', 1),
+('Mutfak', 'mutfak', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'kitchen', '4444', 1),
+('Bar', 'bar', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'bar', '5555', 1)
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 
 INSERT INTO dining_tables (code, label, seats, qr_token) VALUES

@@ -243,8 +243,38 @@ function staff_home_path(?string $role): string
         'admin' => '/yonetici',
         'cashier' => '/kasa',
         'waiter' => '/garson',
+        'kitchen' => '/mutfak',
+        'bar' => '/bar',
         default => '/garson',
     };
+}
+
+/** @return list<string> */
+function station_access_roles(string $station): array
+{
+    $base = ['waiter', 'cashier', 'admin'];
+    if ($station === 'bar') {
+        return array_merge($base, ['bar']);
+    }
+    return array_merge($base, ['kitchen']);
+}
+
+function require_station_access(string $station): void
+{
+    $station = $station === 'bar' ? 'bar' : 'kitchen';
+    Auth::requireRole(...station_access_roles($station));
+    $role = Auth::role();
+    $denied = ($role === 'kitchen' && $station !== 'kitchen')
+        || ($role === 'bar' && $station !== 'bar');
+    if (!$denied) {
+        return;
+    }
+    $path = current_path();
+    if (str_starts_with($path, '/api/')) {
+        json_response(['ok' => false, 'error' => 'Yetkisiz'], 403);
+    }
+    flash('error', $role === 'bar' ? 'Yalnızca bar ekranına erişebilirsiniz.' : 'Yalnızca mutfak ekranına erişebilirsiniz.');
+    redirect($role === 'bar' ? '/bar' : '/mutfak');
 }
 
 $router->get('/giris', static function (): void {
@@ -778,7 +808,7 @@ $router->post('/api/staff/orders', static function (): void {
 });
 
 $router->get('/garson/fis/{id}', static function (string $id): void {
-    Auth::requireRole('waiter', 'cashier', 'admin');
+    Auth::requireRole('waiter', 'cashier', 'admin', 'kitchen', 'bar');
     $order = OrderService::findById((int) $id);
     if (!$order) {
         http_response_code(404);
@@ -789,6 +819,12 @@ $router->get('/garson/fis/{id}', static function (string $id): void {
     if (!in_array($station, ['kitchen', 'bar', 'all'], true)) {
         $station = 'all';
     }
+    $role = Auth::role();
+    if ($role === 'kitchen') {
+        $station = 'kitchen';
+    } elseif ($role === 'bar') {
+        $station = 'bar';
+    }
     $autoPrint = isset($_GET['autoprint']) && (string) $_GET['autoprint'] !== '0';
     $backPath = trim((string) ($_GET['back'] ?? ''));
     $base = base_path();
@@ -796,8 +832,7 @@ $router->get('/garson/fis/{id}', static function (string $id): void {
         $backPath = substr($backPath, strlen($base)) ?: '/';
     }
     if ($backPath === '' || !str_starts_with($backPath, '/')) {
-        $role = Auth::role();
-        $backPath = $role === 'cashier' ? '/kasa' : ($role === 'admin' ? '/yonetici' : '/garson');
+        $backPath = staff_home_path($role);
     }
     $onlyItemIds = [];
     $itemsRaw = trim((string) ($_GET['items'] ?? ''));
@@ -824,40 +859,42 @@ $router->get('/garson/fis/{id}', static function (string $id): void {
 
 // Station boards
 $router->get('/mutfak', static function (): void {
-    Auth::requireRole('waiter', 'cashier', 'admin');
-    $rows = OrderService::stationQueued('kitchen');
+    require_station_access('kitchen');
+    $orders = OrderService::stationBoard('kitchen');
     view('staff/station', [
         'title' => 'Mutfak Ekranı',
         'station' => 'kitchen',
-        'rows' => $rows,
+        'orders' => $orders,
         'user' => Auth::user(),
     ]);
 });
 
 $router->get('/bar', static function (): void {
-    Auth::requireRole('waiter', 'cashier', 'admin');
-    $rows = OrderService::stationQueued('bar');
+    require_station_access('bar');
+    $orders = OrderService::stationBoard('bar');
     view('staff/station', [
         'title' => 'Bar Ekranı',
         'station' => 'bar',
-        'rows' => $rows,
+        'orders' => $orders,
         'user' => Auth::user(),
     ]);
 });
 
 $router->get('/api/station/{station}', static function (string $station): void {
-    Auth::requireRole('waiter', 'cashier', 'admin');
     $station = $station === 'bar' ? 'bar' : ($station === 'kitchen' ? 'kitchen' : '');
     if ($station === '') {
         json_response(['ok' => false, 'error' => 'Geçersiz istasyon'], 422);
     }
-    $rows = OrderService::stationQueued($station);
+    require_station_access($station);
+    $orders = OrderService::stationBoard($station);
     json_response([
         'ok' => true,
         'station' => $station,
-        'version' => OrderService::snapshotVersion($rows),
+        'version' => OrderService::snapshotVersion($orders),
         'updated_at' => date('H:i:s'),
-        'rows' => $rows,
+        'orders' => $orders,
+        // Geriye uyum: düz satırlar da gönder
+        'rows' => OrderService::stationQueued($station),
     ]);
 });
 
@@ -914,7 +951,7 @@ $router->get('/api/whatsapp/pending', static function (): void {
 });
 
 $router->post('/api/station/item-status', static function (): void {
-    Auth::requireRole('waiter', 'cashier', 'admin');
+    Auth::requireRole('waiter', 'cashier', 'admin', 'kitchen', 'bar');
     $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
     if (!is_array($payload)) {
         $payload = [];
@@ -922,13 +959,56 @@ $router->post('/api/station/item-status', static function (): void {
     require_json_csrf($payload);
     $itemId = (int) ($payload['item_id'] ?? 0);
     $status = (string) ($payload['status'] ?? '');
-    if (!in_array($status, ['preparing', 'ready', 'served', 'cancelled'], true)) {
+    if ($itemId <= 0 || !in_array($status, ['preparing', 'ready', 'served', 'cancelled'], true)) {
         json_response(['ok' => false, 'error' => 'Geçersiz durum'], 422);
     }
     $pdo = Database::pdo();
+    $role = Auth::role();
+    if (in_array($role, ['kitchen', 'bar'], true)) {
+        $want = $role === 'bar' ? 'bar' : 'kitchen';
+        $check = $pdo->prepare('SELECT station FROM order_items WHERE id = ? LIMIT 1');
+        $check->execute([$itemId]);
+        $row = $check->fetch();
+        if (!$row || (string) $row['station'] !== $want) {
+            json_response(['ok' => false, 'error' => 'Bu ürün sizin istasyonunuza ait değil.'], 403);
+        }
+    }
     $stmt = $pdo->prepare('UPDATE order_items SET status = ? WHERE id = ?');
     $stmt->execute([$status, $itemId]);
     json_response(['ok' => true]);
+});
+
+$router->post('/api/station/slip-ack', static function (): void {
+    Auth::requireRole('waiter', 'cashier', 'admin', 'kitchen', 'bar');
+    $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
+    if (!is_array($payload)) {
+        $payload = [];
+    }
+    require_json_csrf($payload);
+    $orderId = (int) ($payload['order_id'] ?? 0);
+    $station = (string) ($payload['station'] ?? '') === 'bar' ? 'bar' : 'kitchen';
+    if ($orderId <= 0) {
+        json_response(['ok' => false, 'error' => 'Geçersiz sipariş'], 422);
+    }
+    $role = Auth::role();
+    if ($role === 'kitchen' && $station !== 'kitchen') {
+        json_response(['ok' => false, 'error' => 'Yetkisiz'], 403);
+    }
+    if ($role === 'bar' && $station !== 'bar') {
+        json_response(['ok' => false, 'error' => 'Yetkisiz'], 403);
+    }
+    try {
+        $order = OrderService::ackStationSlip($orderId, $station, Auth::id());
+        json_response([
+            'ok' => true,
+            'order_id' => (int) $order['id'],
+            'slip_acked_at' => $station === 'bar'
+                ? ($order['bar_slip_acked_at'] ?? null)
+                : ($order['kitchen_slip_acked_at'] ?? null),
+        ]);
+    } catch (Throwable $e) {
+        json_response(['ok' => false, 'error' => $e->getMessage()], 422);
+    }
 });
 
 // Cashier
@@ -2034,7 +2114,7 @@ $router->post('/yonetici/personel', static function (): void {
     $username = trim((string) input('username'));
     $password = (string) input('password');
     $role = (string) input('role');
-    if ($name === '' || $username === '' || strlen($password) < 6 || !in_array($role, ['admin', 'cashier', 'waiter'], true)) {
+    if ($name === '' || $username === '' || strlen($password) < 6 || !in_array($role, ['admin', 'cashier', 'waiter', 'kitchen', 'bar'], true)) {
         flash('error', 'Personel bilgileri geçersiz.');
         redirect($redirect);
     }

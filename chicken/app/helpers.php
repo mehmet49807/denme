@@ -463,6 +463,8 @@ function role_label(string $role): string
         'admin' => 'Yönetici',
         'cashier' => 'Kasa',
         'waiter' => 'Garson',
+        'kitchen' => 'Mutfak',
+        'bar' => 'Bar',
         default => $role,
     };
 }

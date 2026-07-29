@@ -146,6 +146,11 @@ final class SchemaSync
         }
 
         try {
+            self::ensureKitchenBarRoles($pdo);
+        } catch (Throwable) {
+        }
+
+        try {
             // Eski marka adı kalmışsa Crisp & Co. ile hizala
             $pdo->prepare(
                 "UPDATE settings SET setting_value = 'Crisp & Co.'
@@ -407,5 +412,62 @@ final class SchemaSync
             return;
         }
         $pdo->exec($alterSql);
+    }
+
+    /** Mutfak / bar personel rolleri + sipariş fiş takip alanları */
+    private static function ensureKitchenBarRoles(PDO $pdo): void
+    {
+        try {
+            $pdo->exec(
+                "ALTER TABLE staff
+                 MODIFY COLUMN role ENUM('admin','cashier','waiter','kitchen','bar') NOT NULL"
+            );
+        } catch (Throwable) {
+        }
+
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'kitchen_slip_sent_at',
+            'ALTER TABLE orders ADD COLUMN kitchen_slip_sent_at DATETIME NULL DEFAULT NULL AFTER paid_at'
+        );
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'bar_slip_sent_at',
+            'ALTER TABLE orders ADD COLUMN bar_slip_sent_at DATETIME NULL DEFAULT NULL AFTER kitchen_slip_sent_at'
+        );
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'kitchen_slip_acked_at',
+            'ALTER TABLE orders ADD COLUMN kitchen_slip_acked_at DATETIME NULL DEFAULT NULL AFTER bar_slip_sent_at'
+        );
+        self::ensureColumn(
+            $pdo,
+            'orders',
+            'bar_slip_acked_at',
+            'ALTER TABLE orders ADD COLUMN bar_slip_acked_at DATETIME NULL DEFAULT NULL AFTER kitchen_slip_acked_at'
+        );
+
+        // Varsayılan mutfak / bar kullanıcıları (yoksa)
+        $hash = password_hash('password', PASSWORD_DEFAULT);
+        foreach (
+            [
+                ['Mutfak', 'mutfak', 'kitchen', '4444'],
+                ['Bar', 'bar', 'bar', '5555'],
+            ] as [$name, $username, $role, $pin]
+        ) {
+            $check = $pdo->prepare('SELECT id FROM staff WHERE username = ? LIMIT 1');
+            $check->execute([$username]);
+            if ($check->fetch()) {
+                continue;
+            }
+            $ins = $pdo->prepare(
+                'INSERT INTO staff (name, username, password_hash, role, pin, is_active)
+                 VALUES (?, ?, ?, ?, ?, 1)'
+            );
+            $ins->execute([$name, $username, $hash, $role, $pin]);
+        }
     }
 }

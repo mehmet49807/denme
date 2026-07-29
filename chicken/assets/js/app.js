@@ -840,15 +840,103 @@
   }
 
   const sourceLabelTr = { online: 'Online', waiter: 'Garson', cashier: 'Kasa' };
+  const itemStatusTr = { queued: 'Sırada', preparing: 'Hazırlanıyor', ready: 'Hazır' };
+  const slipStatusTr = {
+    waiting: 'Fiş bekleniyor',
+    sent: 'Fiş gönderildi',
+    acked: 'Fiş alındı',
+  };
+  const fmtHm = (dt) => {
+    if (!dt) return '—';
+    const d = new Date(String(dt).replace(' ', 'T'));
+    if (Number.isNaN(d.getTime())) {
+      const m = String(dt).match(/(\d{2}:\d{2})/);
+      return m ? m[1] : String(dt);
+    }
+    return d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+  };
 
-  // —— Canlı mutfak / bar ——
+  // —— Canlı mutfak / bar (sipariş detay + fiş takibi) ——
   document.querySelectorAll('[data-station-board]').forEach((board) => {
     const station = board.getAttribute('data-station') || 'kitchen';
+    const mode = board.getAttribute('data-station-mode') || 'orders';
     let version = board.getAttribute('data-live-version') || '';
     const setUpdated = (t) => {
       document.querySelectorAll('[data-live-updated]').forEach((el) => {
         el.textContent = 'Canlı · ' + (t || '');
       });
+    };
+    const renderOrders = (orders) => {
+      if (!orders.length) {
+        board.innerHTML = '<div class="panel muted" data-station-empty>Bekleyen sipariş yok.</div>';
+        return;
+      }
+      board.innerHTML = orders
+        .map((order) => {
+          const slip = order.slip_status || 'waiting';
+          const noteOrder = order.customer_note
+            ? `<p class="station-note"><strong>Sipariş notu:</strong> ${esc(order.customer_note)}</p>`
+            : '';
+          const customer =
+            order.customer_name && order.source === 'online'
+              ? `<p class="small muted">Müşteri: ${esc(order.customer_name)}</p>`
+              : '';
+          const items = (order.items || [])
+            .map((item) => {
+              let actions = '';
+              if (item.status === 'queued') {
+                actions += `<button class="btn btn-primary btn-sm" type="button" data-item-id="${Number(item.id)}" data-item-status="preparing">Hazırla</button>`;
+              }
+              if (item.status === 'queued' || item.status === 'preparing') {
+                actions += `<button class="btn btn-ghost btn-sm" type="button" data-item-id="${Number(item.id)}" data-item-status="ready">Hazır</button>`;
+              }
+              const itemNote = item.note
+                ? `<div class="station-item-note">* ${esc(item.note)}</div>`
+                : '';
+              return `<li class="station-item status-${esc(item.status)}">
+                <div class="station-item-main">
+                  <strong>${Number(item.quantity)}× ${esc(item.item_name)}</strong>
+                  <span class="chip">${esc(itemStatusTr[item.status] || item.status)}</span>
+                </div>
+                ${itemNote}
+                <div class="cta-row" style="margin-top:8px">${actions}</div>
+              </li>`;
+            })
+            .join('');
+          const ackBtn =
+            slip !== 'acked'
+              ? `<button class="btn btn-accent btn-sm" type="button" data-slip-ack data-order-id="${Number(order.id)}" data-station="${esc(station)}">Fişi aldım</button>`
+              : '';
+          const fisUrl = order.fis_url || api(`/garson/fis/${Number(order.id)}?station=${station}`);
+          return `<article class="station-order ticket is-${esc(slip)}" data-order-id="${Number(order.id)}">
+            <div class="station-order-head">
+              <div>
+                <h3>${esc(order.order_code)}</h3>
+                <p class="muted small" style="margin:4px 0 0">
+                  ${esc(order.table_label || 'Online / Paket')}
+                  · ${esc(sourceLabelTr[order.source] || order.source)}
+                  ${order.waiter_name ? ` · ${esc(order.waiter_name)}` : ''}
+                  · ${esc(fmtHm(order.created_at))}
+                </p>
+              </div>
+              <div class="station-slip-meta">
+                <span class="slip-chip slip-${esc(slip)}">${esc(order.slip_status_label || slipStatusTr[slip] || slip)}</span>
+                <div class="small muted">
+                  Gönderim: <strong>${esc(fmtHm(order.slip_sent_at))}</strong>
+                  · Alındı: <strong>${esc(fmtHm(order.slip_acked_at))}</strong>
+                </div>
+              </div>
+            </div>
+            ${noteOrder}${customer}
+            <ul class="station-item-list">${items}</ul>
+            <div class="cta-row station-order-actions">
+              <a class="btn btn-ghost btn-sm" href="${escAttr(fisUrl)}">Fişi gör</a>
+              ${ackBtn}
+              <span class="muted small">${Number(order.open_count || 0)} açık · ${Number(order.ready_count || 0)} hazır</span>
+            </div>
+          </article>`;
+        })
+        .join('');
     };
     const renderRows = (rows) => {
       if (!rows.length) {
@@ -886,7 +974,11 @@
         if (!force && data.version && data.version === version) return;
         version = data.version || version;
         board.setAttribute('data-live-version', version);
-        renderRows(data.rows || []);
+        if (mode === 'orders') {
+          renderOrders(data.orders || []);
+        } else {
+          renderRows(data.rows || []);
+        }
       } catch (_) {}
     }
     board._refreshStation = refreshStation;
@@ -895,6 +987,27 @@
     document.querySelectorAll('[data-live-refresh]').forEach((btn) => {
       btn.addEventListener('click', () => refreshStation(true));
     });
+  });
+
+  document.addEventListener('click', async (event) => {
+    const ack = event.target.closest('[data-slip-ack]');
+    if (!ack) return;
+    const orderId = Number(ack.getAttribute('data-order-id') || 0);
+    const station = ack.getAttribute('data-station') || 'kitchen';
+    if (!orderId) return;
+    ack.disabled = true;
+    try {
+      await postJson('/api/station/slip-ack', { order_id: orderId, station });
+      const board = ack.closest('[data-station-board]');
+      if (board && typeof board._refreshStation === 'function') {
+        board._refreshStation(true);
+      } else {
+        location.reload();
+      }
+    } catch (err) {
+      alert(err.message || 'Fiş alınamadı');
+      ack.disabled = false;
+    }
   });
 
   // —— Canlı masa panoları ——
