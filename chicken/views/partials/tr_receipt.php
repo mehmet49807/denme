@@ -59,7 +59,7 @@ $pay = payment_method_label($invoice['payment_method'] ?? null);
   <div class="tr-fis-meta">
     <div><span>Fiş No</span><strong><?= e((string) ($invoice['invoice_no'] ?? '')) ?></strong></div>
     <div><span>Tarih</span><strong><?= e($dateLabel) ?></strong></div>
-    <div><span>Saat</span><strong><?= e(date('H:i', strtotime($printedAt) ?: time())) ?></strong></div>
+    <div><span>Saat</span><strong><?= e($timeLabel) ?></strong></div>
     <?php if (!empty($invoice['order_code'])): ?>
       <div><span>Sipariş</span><strong><?= e((string) $invoice['order_code']) ?></strong></div>
     <?php endif; ?>

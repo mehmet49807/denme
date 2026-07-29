@@ -172,7 +172,7 @@ if ($pendingOnlineCount <= 0 && in_array($role, ['cashier', 'admin'], true)) {
           <?php if (in_array($role, ['cashier', 'admin'], true)): ?>
             <a class="<?= is_active_path('/kasa') || str_starts_with(current_path(), '/kasa/') ? 'active' : '' ?>" href="<?= e(url('/kasa')) ?>">Kasa</a>
             <a class="<?= str_starts_with(current_path(), '/kasa/gun-sonu') ? 'active' : '' ?>" href="<?= e(url('/kasa/gun-sonu')) ?>">Gün sonu</a>
-            <a class="<?= str_starts_with(current_path(), '/kasa/fatura') ? 'active' : '' ?>" href="<?= e(url('/kasa/faturalar')) ?>">Faturalar</a>
+            <a class="<?= str_starts_with(current_path(), '/kasa/fatura') ? 'active' : '' ?>" href="<?= e(url('/kasa/faturalar')) ?>">Satış fişleri</a>
             <a class="<?= is_active_path('/online-siparisler') ? 'active' : '' ?>" href="<?= e(url('/online-siparisler')) ?>">
               Online
               <span class="nav-badge<?= $pendingOnlineCount <= 0 ? ' is-empty' : '' ?>" data-online-badge<?= $pendingOnlineCount <= 0 ? ' hidden' : '' ?>><?= $pendingOnlineCount ?></span>
