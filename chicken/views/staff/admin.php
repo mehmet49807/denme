@@ -27,13 +27,12 @@ $recent = $live['recent'] ?? [];
     <a class="btn btn-ghost btn-sm" href="<?= e(url('/yonetici/brosurler')) ?>">Tema düzenle</a>
   </div>
   <div class="qr-embed-row">
-    <img
-      class="qr-single-img"
-      src="<?= e(BrochureService::qrImageUrl(null, 160)) ?>"
-      alt="QR Menü"
-      width="140"
-      height="140"
-    >
+    <?php partial('partials/qr_brand', [
+        'qrImageUrl' => BrochureService::qrImageUrl(null, 160),
+        'logoUrl' => logo_url(),
+        'size' => 140,
+        'alt' => 'QR Menü',
+    ]); ?>
     <div>
       <p class="muted" style="margin:0 0 10px">Müşteri okutunca seçili broşür teması + güncel menü açılır.</p>
       <div class="cta-row">

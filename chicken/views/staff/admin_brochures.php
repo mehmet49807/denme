@@ -71,7 +71,15 @@
 </div>
 
 <section class="panel" style="margin-top:20px;max-width:420px">
-  <strong style="display:block;margin-bottom:10px">QR (seçili tema)</strong>
-  <img class="qr-single-img" src="<?= e($qrImageUrl) ?>" alt="QR" width="200" height="200">
+  <strong style="display:block;margin-bottom:10px">QR (seçili tema · logolu)</strong>
+  <?php partial('partials/qr_brand', [
+      'qrImageUrl' => $qrImageUrl,
+      'logoUrl' => logo_url(),
+      'size' => 200,
+      'alt' => 'Menü Broşürü QR',
+  ]); ?>
   <div class="small muted" style="margin-top:10px;word-break:break-all"><?= e($brochureUrl) ?></div>
+  <div class="cta-row" style="margin-top:12px">
+    <a class="btn btn-accent btn-sm" href="<?= e(BrochureService::qrBrandedDownloadUrl(480)) ?>" target="_blank" rel="noopener" download="crisp-co-menu-qr.png">Logolu QR indir</a>
+  </div>
 </section>

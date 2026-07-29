@@ -395,6 +395,13 @@ $router->get('/api/orders/{code}', static function (string $code): void {
     ]]);
 });
 
+// Menü broşürü QR (ortasında logo) — yazdırma/indirme için auth gerekmez
+$router->get('/qr/brosur.png', static function (): void {
+    $size = (int) ($_GET['size'] ?? 320);
+    BrochureService::outputBrandedQrPng($size);
+    exit;
+});
+
 $router->get('/qr', static function (): void {
     Auth::requireRole('cashier', 'admin');
     $brochureUrl = BrochureService::brochurePublicUrl();
@@ -405,6 +412,8 @@ $router->get('/qr', static function (): void {
         'title' => 'QR Menü',
         'brochureUrl' => $brochureUrl,
         'qrImageUrl' => $qrImageUrl,
+        'logoUrl' => logo_url(),
+        'qrDownloadUrl' => BrochureService::qrBrandedDownloadUrl(480),
         'canEdit' => Auth::role() === 'admin',
         'selectedThemeName' => $selectedName,
         'user' => Auth::user(),
