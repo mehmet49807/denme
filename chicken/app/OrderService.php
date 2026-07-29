@@ -685,6 +685,57 @@ final class OrderService
         return self::findById($orderId) ?: $order;
     }
 
+    /**
+     * İstasyon fişini kapat: ilgili ürünleri served yapar, panodan düşer.
+     */
+    public static function closeStationSlip(int $orderId, string $station, ?int $staffId = null): array
+    {
+        if (!in_array($station, ['kitchen', 'bar'], true)) {
+            throw new InvalidArgumentException('Geçersiz istasyon.');
+        }
+        $order = self::findById($orderId);
+        if (!$order) {
+            throw new InvalidArgumentException('Sipariş bulunamadı.');
+        }
+        if (in_array($order['status'] ?? '', ['cancelled', 'paid'], true)) {
+            throw new InvalidArgumentException('Kapalı veya iptal sipariş fişi kapatılamaz.');
+        }
+
+        $pdo = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $upd = $pdo->prepare(
+                "UPDATE order_items
+                 SET status = 'served'
+                 WHERE order_id = ?
+                   AND station = ?
+                   AND status IN ('queued','preparing','ready')"
+            );
+            $upd->execute([$orderId, $station]);
+            $closed = $upd->rowCount();
+
+            $ackCol = $station === 'bar' ? 'bar_slip_acked_at' : 'kitchen_slip_acked_at';
+            $pdo->prepare(
+                "UPDATE orders
+                 SET {$ackCol} = COALESCE({$ackCol}, NOW()), updated_at = NOW()
+                 WHERE id = ?"
+            )->execute([$orderId]);
+
+            $type = $station === 'bar' ? 'slip_closed_bar' : 'slip_closed_kitchen';
+            $label = ($station === 'bar' ? 'Bar' : 'Mutfak') . ' fişi kapatıldı'
+                . ($closed > 0 ? " ({$closed} ürün)" : '');
+            self::addEvent($pdo, $orderId, $staffId, $type, $label);
+            $pdo->commit();
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $e;
+        }
+
+        return self::findById($orderId) ?: $order;
+    }
+
     /** Canlı yenileme için kısa sürüm anahtarı */
     public static function snapshotVersion(array $rows): string
     {
