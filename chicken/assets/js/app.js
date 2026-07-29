@@ -504,20 +504,23 @@
     });
   });
 
-  document.querySelectorAll('[data-close-table]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const id = btn.getAttribute('data-close-table');
-      const method = btn.getAttribute('data-method') || 'cash';
-      const redirectAttr = btn.getAttribute('data-close-redirect');
-      const label = method === 'card' ? 'Kart' : 'Nakit';
-      if (!confirm(`Masa ${label} ile kapatılsın mı? Açık siparişler ödenmiş sayılır.`)) return;
-      try {
-        await postJson(`/api/tables/${id}/close`, { payment_method: method });
-        window.location.href = redirectAttr || api('/kasa');
-      } catch (err) {
-        alert(err.message || 'Masa kapatılamadı');
-      }
-    });
+  // Event delegation — canlı yönetici paneli yeniden çizince de çalışır
+  document.addEventListener('click', async (event) => {
+    const btn = event.target.closest('[data-close-table]');
+    if (!btn) return;
+    event.preventDefault();
+    const id = btn.getAttribute('data-close-table');
+    const method = btn.getAttribute('data-method') || 'cash';
+    const redirectAttr = btn.getAttribute('data-close-redirect');
+    const label = method === 'card' ? 'Kart' : 'Nakit';
+    if (!id) return;
+    if (!confirm(`Masa ${label} ile kapatılsın mı? Açık siparişler ödenmiş sayılır.`)) return;
+    try {
+      await postJson(`/api/tables/${id}/close`, { payment_method: method });
+      window.location.href = redirectAttr || api('/kasa');
+    } catch (err) {
+      alert(err.message || 'Masa kapatılamadı');
+    }
   });
 
   document.querySelectorAll('[data-cancel-order]').forEach((btn) => {
@@ -700,14 +703,21 @@
         const tablesWrap = liveRoot.querySelector('[data-open-tables]');
         if (tablesWrap) {
           const rows = live.open_tables || [];
+          const closeRedirect = api('/yonetici');
           tablesWrap.innerHTML = rows.length
-            ? `<table><thead><tr><th>Masa</th><th>Sipariş</th><th>Tutar</th><th>Garson</th></tr></thead><tbody>${rows
+            ? `<table><thead><tr><th>Masa</th><th>Sipariş</th><th>Tutar</th><th>Garson</th><th>Masa kapat</th></tr></thead><tbody>${rows
                 .map(
                   (t) => `<tr>
                   <td><strong>${esc(t.label)}</strong></td>
                   <td>${Number(t.open_count || 0)}</td>
                   <td>${moneyTr(t.open_total)}</td>
                   <td class="small muted">${esc((t.waiter_names || []).join(', ') || '—')}</td>
+                  <td>
+                    <div class="cta-row table-close-btns">
+                      <button class="btn btn-sm btn-primary" type="button" data-close-table="${Number(t.id)}" data-method="cash" data-close-redirect="${esc(closeRedirect)}">Nakit kapat</button>
+                      <button class="btn btn-sm btn-dark" type="button" data-close-table="${Number(t.id)}" data-method="card" data-close-redirect="${esc(closeRedirect)}">Kart kapat</button>
+                    </div>
+                  </td>
                 </tr>`
                 )
                 .join('')}</tbody></table>`

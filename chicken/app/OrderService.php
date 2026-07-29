@@ -342,6 +342,15 @@ final class OrderService
         foreach ($ids as $orderId) {
             self::payOrder($orderId, $method, $staffId);
         }
+        // Masa açılış bilgilerini temizle
+        try {
+            $pdo->prepare(
+                'UPDATE dining_tables
+                 SET opened_by_staff_id = NULL, opened_by_name = NULL
+                 WHERE id = ?'
+            )->execute([$tableId]);
+        } catch (Throwable) {
+        }
         self::addEvent(
             $pdo,
             $ids[0],

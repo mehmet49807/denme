@@ -1156,12 +1156,28 @@ a.table-tile-link {
   transform: translateY(-1px);
 }
 .table-close-actions {
+  display: grid;
+  gap: 6px;
+}
+.table-close-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.table-close-btns {
   flex-wrap: wrap;
   gap: 8px;
 }
+.table-close-btns .btn,
 .table-close-actions .btn {
   flex: 1 1 auto;
   min-width: 0;
+}
+.table-close-panel {
+  border-color: rgba(196, 163, 90, 0.35);
+  background: linear-gradient(180deg, rgba(196, 163, 90, 0.1), var(--panel));
 }
 .table-tile.is-open {
   border-color: rgba(196, 163, 90,0.35);

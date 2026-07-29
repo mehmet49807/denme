@@ -86,6 +86,7 @@ $paidSum = array_sum(array_map(
         <?php partial('partials/table_close_buttons', [
             'tableId' => (int) $table['id'],
             'redirect' => url('/kasa'),
+            'label' => 'Masa kapat',
         ]); ?>
       <?php endif; ?>
     </article>

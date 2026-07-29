@@ -615,9 +615,10 @@ $router->get('/garson/masa/{id}', static function (string $id) use ($menuCatalog
         'categories' => $catalog['categories'],
         'user' => Auth::user(),
         'mode' => 'waiter',
-        'canPay' => false,
+        'canPay' => $role === 'admin',
         'canCancel' => $role === 'admin',
-        'canClose' => false,
+        // Masa kapatma yalnızca yönetici / kasa — garson bu rotada kapatamaz.
+        'canClose' => $role === 'admin',
         'canAddToOrder' => static function (array $order) use ($role, $uid): bool {
             if ($role === 'admin') {
                 return true;
