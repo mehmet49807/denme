@@ -12,12 +12,6 @@ class Post extends Model
         'user_id', 'image_url', 'caption', 'likes_count', 'is_active',
     ];
 
-    protected static function booted(): void
-    {
-        static::created(function (Post $post) {
-            \App\Jobs\RunAiModerationJob::dispatchAfterResponse('post', $post->id);
-        });
-    }
 
     public function user(): BelongsTo
     {

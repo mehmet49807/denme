@@ -1,17 +1,13 @@
 @extends('layouts.admin')
 
 @section('title', 'Denetim Kuyruğu')
-@section('lead', 'Bekleyen şikayetler, AI bayrakları, profil onayları ve galeri örnekleri.')
+@section('lead', 'Bekleyen şikayetler, profil onayları ve galeri örnekleri.')
 
 @section('content')
 <div class="admin-stat-grid admin-stat-grid--compact">
     <div class="admin-stat-card admin-stat-card--gold">
         <div class="admin-stat-value">{{ $counts['reports'] }}</div>
         <div class="admin-stat-label">Bekleyen Şikayet</div>
-    </div>
-    <div class="admin-stat-card admin-stat-card--violet">
-        <div class="admin-stat-value">{{ $counts['ai_flags'] }}</div>
-        <div class="admin-stat-label">AI Bayrak</div>
     </div>
     <div class="admin-stat-card admin-stat-card--emerald">
         <div class="admin-stat-value">{{ $counts['profiles'] }}</div>
@@ -39,24 +35,6 @@
             </div>
         @empty
             <p class="admin-ops-empty">Bekleyen şikayet yok.</p>
-        @endforelse
-    </section>
-
-    <section class="admin-panel admin-panel--glass">
-        <div class="admin-panel-head">
-            <h3 class="admin-panel-title">AI Bayrakları</h3>
-            <a href="{{ route('admin.ai') }}" class="btn btn-outline btn-sm">AI Denetim</a>
-        </div>
-        @forelse($aiFlags as $flag)
-            <div class="admin-ops-row">
-                <div>
-                    <strong>{{ $flag->user->username ?? '—' }}</strong>
-                    <span class="admin-ops-meta">{{ $flag->categoryLabel() }} · {{ $flag->contentTypeLabel() }}</span>
-                </div>
-                <span class="admin-badge admin-badge--{{ $flag->severity === 'high' ? 'danger' : 'warn' }}">{{ $flag->severity }}</span>
-            </div>
-        @empty
-            <p class="admin-ops-empty">Bekleyen AI bayrağı yok.</p>
         @endforelse
     </section>
 

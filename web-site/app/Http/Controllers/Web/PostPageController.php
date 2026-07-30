@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Like;
 use App\Models\Post;
-use App\Services\AiModerationService;
+use App\Services\ContentPolicyService;
 use App\Services\MediaUploadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -16,7 +16,7 @@ class PostPageController extends Controller
 {
     public function __construct(
         private MediaUploadService $mediaUpload,
-        private AiModerationService $moderation,
+        private ContentPolicyService $moderation,
     ) {}
 
     public function store(Request $request): RedirectResponse|JsonResponse
@@ -31,7 +31,7 @@ class PostPageController extends Controller
         ]);
 
         if (! empty($validated['caption'])) {
-            $this->moderation->validateOutgoingText($validated['caption'], 'post');
+            $this->moderation->validateTextOrFail($validated['caption'], 'post');
         }
 
         $imageUrl = null;
@@ -92,7 +92,7 @@ class PostPageController extends Controller
         $caption = $caption === '' ? null : $caption;
 
         if ($caption !== null) {
-            $this->moderation->validateOutgoingText($caption, 'post');
+            $this->moderation->validateTextOrFail($caption, 'post');
         }
 
         $post->forceFill(['caption' => $caption])->save();

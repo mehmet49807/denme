@@ -43,22 +43,6 @@
                 <span>Değişiklikler hemen yansısın</span>
             </button>
         </form>
-        <form method="POST" action="{{ route('admin.seo.openrouter-refresh') }}" class="admin-seo-link-card admin-seo-link-card--action admin-seo-link-card--openrouter">
-            @csrf
-            <button type="submit" class="admin-seo-cache-btn">
-                <span class="admin-seo-link-icon">🤖</span>
-                <strong>OpenRouter Türkçe SEO Güncelle</strong>
-                <span>
-                    Haftalık görev: Pazartesi 09:20 · Model: {{ $openRouterModel }}
-                    @if($openRouterLastUpdated)
-                        · Son: {{ $openRouterLastUpdated }}
-                    @endif
-                    @unless($openRouterConfigured)
-                        · API anahtarı bekleniyor
-                    @endunless
-                </span>
-            </button>
-        </form>
     </div>
 
     <form method="POST" action="{{ route('admin.seo.update') }}" class="admin-seo-form">

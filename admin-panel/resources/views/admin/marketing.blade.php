@@ -151,8 +151,7 @@
         <li><a href="{{ route('admin.emails') }}">E-posta kampanyaları</a></li>
         <li><a href="{{ route('admin.broadcasts') }}">Duyurular</a></li>
         <li><a href="{{ route('admin.referrals') }}">Davet / Referans</a></li>
-        <li><a href="{{ route('admin.ai') }}">AI → Blog / SSS yayınla</a></li>
-    </ul>
+            </ul>
     <p class="admin-package-card__sub">
         Haftalık ritim: 2 şehir postu · 1 güvenli tanışma · 1 davet story · 1 Ads testi.
         Cron lifecycle: <code>{{ $frontendUrl }}/setup/cron</code>

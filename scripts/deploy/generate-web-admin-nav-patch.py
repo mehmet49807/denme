@@ -124,7 +124,7 @@ if (is_file($layoutFile)) {
         );
         if ($count > 0 && is_string($replaced)) {
             $newLayout = $replaced;
-            echo "patched layout: github after AI Denetim\n";
+            echo "patched layout: github after Odysseus\n";
         } elseif (! str_contains($newLayout, 'admin-nav-github-link')) {
             $replaced = preg_replace(
                 '/(\s*)<\/nav>(\s*<div class="admin-sidebar-footer">)/',
@@ -139,7 +139,7 @@ if (is_file($layoutFile)) {
             }
         }
     } else {
-        echo "layout: github already after AI Denetim\n";
+        echo "layout: github already after Odysseus\n";
     }
 
     if ($newLayout !== $layout) {

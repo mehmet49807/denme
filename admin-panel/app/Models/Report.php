@@ -18,12 +18,6 @@ class Report extends Model
         ];
     }
 
-    protected static function booted(): void
-    {
-        static::created(function (Report $report) {
-            \App\Jobs\RunAiModerationJob::dispatchAfterResponse('report', $report->id);
-        });
-    }
 
     public function reporter()
     {

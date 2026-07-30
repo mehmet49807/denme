@@ -20,19 +20,6 @@ class Message extends Model
                 $message->created_at = now();
             }
         });
-
-        static::created(function (Message $message) {
-            try {
-                app(\App\Services\ConversationService::class)->forgetConversationsCache((int) $message->sender_id);
-                app(\App\Services\ConversationService::class)->forgetConversationsCache((int) $message->receiver_id);
-            } catch (\Throwable) {
-                //
-            }
-            app(\App\Services\NotificationService::class)->notifyNewMessage($message);
-            if (class_exists(\App\Jobs\RunAiModerationJob::class)) {
-                \App\Jobs\RunAiModerationJob::dispatchAfterResponse('message', $message->id);
-            }
-        });
     }
 
     protected function casts(): array

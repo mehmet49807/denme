@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Jobs\SendBroadcastPushJob;
 use App\Models\AdminBroadcast;
 use App\Models\AdminUserNote;
-use App\Models\AiModerationFlag;
 use App\Models\Message;
 use App\Models\PremiumSubscription;
 use App\Models\Referral;
@@ -72,10 +71,6 @@ class AdminPanelController extends Controller
                     ->count()
                 : 0;
 
-            $aiFlags = Schema::hasTable('ai_moderation_flags')
-                ? AiModerationFlag::where('status', AiModerationFlag::STATUS_PENDING)->count()
-                : 0;
-
             $openSupport = Schema::hasTable('support_tickets')
                 ? SupportTicket::query()->whereIn('status', ['open', 'pending'])->count()
                 : 0;
@@ -94,8 +89,7 @@ class AdminPanelController extends Controller
                     ? User::where('role', 'user')->whereNotNull('referred_by_user_id')->count()
                     : 0,
                 'pending_profiles' => $pendingProfiles,
-                'ai_flags' => $aiFlags,
-                'open_support' => $openSupport,
+                                'open_support' => $openSupport,
                 'signups_today' => $signupsToday,
             ];
         };

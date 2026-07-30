@@ -49,10 +49,6 @@
         <div class="admin-stat-value" id="statPendingProfiles">{{ $stats['pending_profiles'] ?? 0 }}</div>
         <div class="admin-stat-label">Bekleyen Profil</div>
     </div>
-    <div class="admin-stat-card admin-stat-card--violet">
-        <div class="admin-stat-value" id="statAiFlags">{{ $stats['ai_flags'] ?? 0 }}</div>
-        <div class="admin-stat-label">AI Bayrak</div>
-    </div>
     <div class="admin-stat-card admin-stat-card--coral">
         <div class="admin-stat-value" id="statOpenSupport">{{ $stats['open_support'] ?? 0 }}</div>
         <div class="admin-stat-label">Açık Destek</div>

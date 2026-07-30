@@ -21,7 +21,7 @@
         'admin.messages' => 'messages',
         'admin.gallery' => 'content',
         'admin.content' => 'content',
-        'admin.ai' => 'ai',
+        'admin.odysseus' => 'ai',
         'admin.auto-rules' => 'ai',
         'admin.github' => 'seo',
         'admin.reports' => 'reports',

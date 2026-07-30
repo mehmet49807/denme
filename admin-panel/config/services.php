@@ -35,11 +35,15 @@ return [
         ],
     ],
 
-    'openrouter' => [
-        'api_key' => env('OPENROUTER_API_KEY'),
-        'model' => env('OPENROUTER_MODEL', 'openrouter/free'),
-        'base_url' => env('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1'),
-        'timeout' => env('OPENROUTER_TIMEOUT', 90),
+    'odysseus' => [
+        'url' => env('ODYSSEUS_URL', 'http://127.0.0.1:7000'),
+        'user' => env('ODYSSEUS_USER', 'admin'),
+        'password' => env('ODYSSEUS_PASSWORD'),
+        'workspace' => env('ODYSSEUS_WORKSPACE'),
+        'model' => env('ODYSSEUS_MODEL'),
+        'endpoint_url' => env('ODYSSEUS_ENDPOINT_URL'),
+        'api_key' => env('ODYSSEUS_API_KEY'),
+        'timeout' => env('ODYSSEUS_TIMEOUT', 300),
     ],
 
     'seo' => [

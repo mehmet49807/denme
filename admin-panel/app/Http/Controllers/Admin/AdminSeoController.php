@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\OpenRouterService;
 use App\Services\SiteSettingsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Throwable;
 
 class AdminSeoController extends Controller
 {
@@ -24,9 +21,6 @@ class AdminSeoController extends Controller
             'sitemapUrl' => $frontendUrl.'/sitemap.xml',
             'robotsUrl' => $frontendUrl.'/robots.txt',
             'searchUrl' => $frontendUrl.'/ara',
-            'openRouterConfigured' => (string) config('services.openrouter.api_key') !== '',
-            'openRouterModel' => (string) config('services.openrouter.model', 'openrouter/free'),
-            'openRouterLastUpdated' => $this->openRouterLastUpdated(),
         ]);
     }
 
@@ -88,83 +82,5 @@ class AdminSeoController extends Controller
         return redirect()
             ->route('admin.seo')
             ->with('success', 'Sitemap önbelleği temizlendi.');
-    }
-
-    public function openRouterHelp(): RedirectResponse
-    {
-        return redirect()
-            ->route('admin.seo')
-            ->with('error', 'OpenRouter güncellemesini SEO sayfasındaki butondan çalıştırın.');
-    }
-
-    public function refreshOpenRouter(OpenRouterService $openRouter): RedirectResponse
-    {
-        try {
-            $payload = $openRouter->chat(
-                $this->openRouterSeoSystemPrompt(),
-                $this->openRouterSeoUserPrompt(),
-                1800,
-            );
-        } catch (Throwable $e) {
-            return redirect()
-                ->route('admin.seo')
-                ->with('error', 'OpenRouter bağlantı hatası: '.$e->getMessage());
-        }
-
-        if (! $payload) {
-            return redirect()
-                ->route('admin.seo')
-                ->with('error', 'OpenRouter yanıt vermedi veya API anahtarı tanımlı değil.');
-        }
-
-        try {
-            $payload['updated_at'] = now()->toDateString();
-            Storage::put('seo/openrouter-weekly.json', json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-        } catch (Throwable $e) {
-            return redirect()
-                ->route('admin.seo')
-                ->with('error', 'OpenRouter çıktısı kaydedilemedi: '.$e->getMessage());
-        }
-
-        return redirect()
-            ->route('admin.seo')
-            ->with('success', 'OpenRouter haftalık Türkçe SEO önerileri güncellendi.');
-    }
-
-    private function openRouterLastUpdated(): ?string
-    {
-        if (! Storage::exists('seo/openrouter-weekly.json')) {
-            return null;
-        }
-
-        $payload = json_decode((string) Storage::get('seo/openrouter-weekly.json'), true);
-
-        return is_array($payload) ? ($payload['updated_at'] ?? null) : null;
-    }
-
-    private function openRouterSeoSystemPrompt(): string
-    {
-        return <<<'PROMPT'
-Sen Gönül Köprüsü için çalışan Türkçe SEO içerik editörüsün.
-Her zaman yalnızca Türkçe yaz.
-Ton: güven veren, saygılı, aile ve ciddi ilişki odaklı, abartısız ve doğal.
-Amaç: organik trafik için blog, SSS ve şehir bazlı sayfa fikirleri üretmek.
-Yasaklar: İngilizce içerik yazma, tıbbi/hukuki kesin iddia yazma, rakip marka adı kullanma, spam anahtar kelime doldurma.
-JSON formatında dön: {"updated_at":"YYYY-MM-DD","blog_ideas":[...],"faq_ideas":[...],"city_page_ideas":[...],"internal_links":[...]}.
-PROMPT;
-    }
-
-    private function openRouterSeoUserPrompt(): string
-    {
-        return <<<'PROMPT'
-Bu hafta Gönül Köprüsü için organik trafik büyütmeye yönelik içerik önerileri üret.
-Odak konular:
-- İstanbul evlilik sitesi, Ankara tanışma, İzmir ciddi ilişki gibi şehir niyetli aramalar
-- Güvenli tanışma, ilk buluşma, profil ipuçları
-- "Ciddi ilişki nasıl bulunur?" benzeri Blog / SSS soruları
-Her blog fikrinde: başlık, slug, meta_description, hedef_anahtar_kelime, kısa_özet alanları olsun.
-Her SSS fikrinde: soru ve kısa cevap olsun.
-Her şehir sayfası fikrinde: şehir, hedef arama niyeti, başlık ve kısa içerik önerisi olsun.
-PROMPT;
     }
 }

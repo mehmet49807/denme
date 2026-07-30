@@ -209,7 +209,6 @@
             statActivePremium: stats.active_premium,
             statSignupsToday: stats.signups_today,
             statPendingProfiles: stats.pending_profiles,
-            statAiFlags: stats.ai_flags,
             statOpenSupport: stats.open_support,
         };
 

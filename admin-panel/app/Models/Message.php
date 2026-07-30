@@ -21,15 +21,6 @@ class Message extends Model
                 $message->created_at = now();
             }
         });
-
-        static::created(function (Message $message) {
-            if (class_exists(\App\Services\NotificationService::class)) {
-                app(\App\Services\NotificationService::class)->notifyNewMessage($message);
-            }
-            if (class_exists(\App\Jobs\RunAiModerationJob::class)) {
-                \App\Jobs\RunAiModerationJob::dispatchAfterResponse('message', $message->id);
-            }
-        });
     }
 
     protected function casts(): array

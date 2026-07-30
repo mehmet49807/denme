@@ -3,7 +3,7 @@
 // Yönetim paneli: /adminlogin (gonulkoprusu.com/adminlogin)
 
 use App\Http\Controllers\Admin\AdminAuthController;
-use App\Http\Controllers\Admin\AdminAiController;
+use App\Http\Controllers\Admin\AdminOdysseusController;
 use App\Http\Controllers\Admin\AdminContentController;
 use App\Http\Controllers\Admin\AdminEmailController;
 use App\Http\Controllers\Admin\AdminReferralController;
@@ -72,19 +72,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/content', [AdminContentController::class, 'index'])->name('admin.content');
     Route::delete('/content/posts/{post}', [AdminContentController::class, 'destroyPost'])->name('admin.content.posts.destroy');
     Route::delete('/content/stories/{story}', [AdminContentController::class, 'destroyStory'])->name('admin.content.stories.destroy');
-    Route::get('/ai', [AdminAiController::class, 'index'])->name('admin.ai');
-    Route::post('/ai/scan', [AdminAiController::class, 'scan'])->name('admin.ai.scan');
-    Route::post('/ai/test', [AdminAiController::class, 'testConnection'])->name('admin.ai.test');
-    Route::post('/ai/publish-blog-faq', [AdminAiController::class, 'publishBlogFaq'])->name('admin.ai.publish-blog-faq');
-    Route::post('/ai/settings', [AdminAiController::class, 'updateSettings'])->name('admin.ai.settings');
-    Route::post('/ai/daily-report', [AdminAiController::class, 'dailyReport'])->name('admin.ai.daily-report');
-    Route::post('/ai/flags/bulk', [AdminAiController::class, 'bulkFlags'])->name('admin.ai.flags.bulk');
-    Route::post('/ai/flags/{flag}/quick', [AdminAiController::class, 'quickAction'])->name('admin.ai.flags.quick');
-    Route::put('/ai/flags/{flag}', [AdminAiController::class, 'updateFlag'])->name('admin.ai.flags.update');
-    Route::post('/ai/users/{user}/scan', [AdminAiController::class, 'scanProfile'])->name('admin.ai.users.scan');
     Route::get('/rapor', fn () => redirect()->route('admin.dashboard'))->name('admin.rapor');
     Route::get('/rapor/{rapor}', fn () => redirect()->route('admin.dashboard'))->name('admin.rapor.show');
     Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');
+
+    Route::get('/odysseus', [AdminOdysseusController::class, 'index'])->name('admin.odysseus');
+    Route::post('/odysseus/run', [AdminOdysseusController::class, 'run'])->name('admin.odysseus.run');
+    Route::post('/odysseus/refresh', [AdminOdysseusController::class, 'refreshStatus'])->name('admin.odysseus.refresh');
     Route::post('/github/check', [AdminGithubController::class, 'check'])->middleware(RequireSuperAdmin::class)->name('admin.github.check');
     Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->middleware(RequireSuperAdmin::class)->name('admin.github.clear-cache');
     Route::post('/github/trigger', [AdminGithubController::class, 'trigger'])->middleware(RequireSuperAdmin::class)->name('admin.github.trigger');
@@ -116,8 +110,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/seo', [AdminSeoController::class, 'index'])->name('admin.seo');
     Route::post('/seo', [AdminSeoController::class, 'update'])->name('admin.seo.update');
     Route::post('/seo/clear-sitemap', [AdminSeoController::class, 'clearSitemapCache'])->name('admin.seo.clear-sitemap');
-    Route::get('/seo/openrouter-refresh', [AdminSeoController::class, 'openRouterHelp'])->name('admin.seo.openrouter-help');
-    Route::post('/seo/openrouter-refresh', [AdminSeoController::class, 'refreshOpenRouter'])->name('admin.seo.openrouter-refresh');
     Route::get('/profile', [AdminProfileController::class, 'show'])->name('admin.profile');
     Route::put('/profile', [AdminProfileController::class, 'update'])->name('admin.profile.update');
     Route::post('/profile/photo', [AdminProfileController::class, 'updatePhoto'])->name('admin.profile.photo');

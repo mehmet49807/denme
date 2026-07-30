@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Block;
 use App\Models\Message;
 use App\Models\User;
-use App\Services\AiModerationService;
+use App\Services\ContentPolicyService;
 use App\Services\ChatTypingService;
 use App\Services\ConversationService;
 use App\Services\MessageConversationService;
@@ -27,7 +27,7 @@ class MessagePageController extends Controller
         private MessageService $messageService,
         private ChatTypingService $typing,
         private NotificationService $notifications,
-        private AiModerationService $moderation,
+        private ContentPolicyService $moderation,
     ) {}
 
     public function index(Request $request): View
@@ -136,7 +136,7 @@ class MessagePageController extends Controller
 
         if ($text !== '') {
             try {
-                $this->moderation->validateOutgoingText($text, 'message');
+                $this->moderation->validateTextOrFail($text, 'message');
             } catch (ValidationException $e) {
                 if ($request->expectsJson()) {
                     return response()->json([

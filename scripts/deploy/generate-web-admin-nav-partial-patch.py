@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deploy admin-nav partial with GitHub after AI Denetim."""
+"""Deploy admin-nav partial with GitHub after Odysseus."""
 
 from __future__ import annotations
 

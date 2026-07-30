@@ -12,12 +12,6 @@ class Story extends Model
         'user_id', 'media_url', 'media_type', 'expires_at',
     ];
 
-    protected static function booted(): void
-    {
-        static::created(function (Story $story) {
-            \App\Jobs\RunAiModerationJob::dispatchAfterResponse('story', $story->id);
-        });
-    }
 
     protected function casts(): array
     {

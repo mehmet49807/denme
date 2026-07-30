@@ -147,26 +147,26 @@ if (is_file($layoutFile)) {
     $newLayout = preg_replace('/<a[^>]*\/rapor[^>]*>[\s\S]*?<\/a>\s*/', '', $newLayout) ?? $newLayout;
     $newLayout = preg_replace('/<a[^>]*>[^<]*AI Rapor[^<]*<\/a>\s*/', '', $newLayout) ?? $newLayout;
     $newLayout = preg_replace('/^.*admin\.rapor.*$\n?/m', '', $newLayout) ?? $newLayout;
-    $newLayout = str_replace("route('admin.rapor')", "route('admin.ai')", $newLayout);
-    $newLayout = str_replace('route("admin.rapor")', 'route("admin.ai")', $newLayout);
+    $newLayout = str_replace("route('admin.rapor')", "route('admin.odysseus')", $newLayout);
+    $newLayout = str_replace('route("admin.rapor")', 'route("admin.odysseus")', $newLayout);
     $newLayout = str_replace($include, '', $newLayout);
     $newLayout = str_replace('@include("partials.admin-nav-github-link")', '', $newLayout);
 
-    $aiMarker = "route('admin.ai')";
+    $aiMarker = "route('admin.odysseus')";
     $pos = strpos($newLayout, $aiMarker);
     if ($pos !== false && ! str_contains(substr($newLayout, $pos, 800), 'admin-nav-github-link')) {
         $close = strpos($newLayout, '</a>', $pos);
         if ($close !== false) {
             $insertAt = $close + 4;
             $newLayout = substr($newLayout, 0, $insertAt)."\n            ".$include.substr($newLayout, $insertAt);
-            echo "patched layout: github after AI Denetim\n";
+            echo "patched layout: github after Odysseus\n";
         }
     }
 
     if (! str_contains($newLayout, "'admin.github'")) {
         $newLayout = str_replace(
-            "'admin.ai' => 'ai',",
-            "'admin.ai' => 'ai',\n        'admin.github' => 'seo',",
+            "'admin.odysseus' => 'ai',",
+            "'admin.odysseus' => 'ai',\n        'admin.github' => 'seo',",
             $newLayout
         );
         echo "patched layout: admin.github theme\n";

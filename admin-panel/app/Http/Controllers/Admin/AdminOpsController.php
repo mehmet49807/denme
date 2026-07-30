@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AdminAuditLog;
 use App\Models\AdminUserNote;
-use App\Models\AiModerationFlag;
 use App\Models\Report;
 use App\Models\SupportTicket;
 use App\Models\User;
@@ -36,14 +35,6 @@ class AdminOpsController extends Controller
             ->latest()
             ->limit(25)
             ->get();
-
-        $aiFlags = Schema::hasTable('ai_moderation_flags')
-            ? AiModerationFlag::with('user')
-                ->where('status', AiModerationFlag::STATUS_PENDING)
-                ->latest()
-                ->limit(25)
-                ->get()
-            : collect();
 
         $pendingProfiles = User::query()
             ->where('role', 'user')
@@ -79,14 +70,10 @@ class AdminOpsController extends Controller
 
         return view('admin.moderation-queue', [
             'pendingReports' => $pendingReports,
-            'aiFlags' => $aiFlags,
             'pendingProfiles' => $pendingProfiles,
             'gallerySamples' => $gallerySamples,
             'counts' => [
                 'reports' => Report::where('status', 'pending')->count(),
-                'ai_flags' => Schema::hasTable('ai_moderation_flags')
-                    ? AiModerationFlag::where('status', AiModerationFlag::STATUS_PENDING)->count()
-                    : 0,
                 'profiles' => User::where('role', 'user')->whereNull('profile_verified_at')
                     ->whereNotNull('profile_photo_url')->where('profile_photo_url', '!=', '')->count(),
                 'support' => $openSupport,
@@ -282,9 +269,6 @@ class AdminOpsController extends Controller
         ];
 
         $pendingReports = Report::where('status', 'pending')->count();
-        $pendingAi = Schema::hasTable('ai_moderation_flags')
-            ? AiModerationFlag::where('status', AiModerationFlag::STATUS_PENDING)->count()
-            : 0;
         $pendingProfiles = User::where('role', 'user')->whereNull('profile_verified_at')
             ->whereNotNull('profile_photo_url')->where('profile_photo_url', '!=', '')->count();
         $openSupport = Schema::hasTable('support_tickets')
@@ -292,9 +276,9 @@ class AdminOpsController extends Controller
             : 0;
 
         $checks['moderation'] = [
-            'ok' => ($pendingReports + $pendingAi) < 50,
+            'ok' => $pendingReports < 50,
             'label' => 'Denetim yükü',
-            'detail' => "{$pendingReports} şikayet · {$pendingAi} AI bayrak · {$pendingProfiles} profil · {$openSupport} destek",
+            'detail' => "{$pendingReports} şikayet · {$pendingProfiles} profil · {$openSupport} destek",
         ];
 
         $diskFree = @disk_free_space(base_path());

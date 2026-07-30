@@ -12,14 +12,6 @@ class Story extends Model
         'user_id', 'media_url', 'media_type', 'expires_at', 'created_at',
     ];
 
-    protected static function booted(): void
-    {
-        static::created(function (Story $story) {
-            if (class_exists(\App\Jobs\RunAiModerationJob::class)) {
-                \App\Jobs\RunAiModerationJob::dispatchAfterResponse('story', $story->id);
-            }
-        });
-    }
 
     protected function casts(): array
     {
