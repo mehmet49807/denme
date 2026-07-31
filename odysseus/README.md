@@ -24,10 +24,12 @@ ODYSSEUS_URL=http://127.0.0.1:7000
 ODYSSEUS_USER=admin
 ODYSSEUS_PASSWORD=...
 ODYSSEUS_WORKSPACE=/home/gonulkop/apps/gonulkoprusu
-ODYSSEUS_MODEL=openai/gpt-4o-mini
-ODYSSEUS_ENDPOINT_URL=https://openrouter.ai/api/v1
-ODYSSEUS_API_KEY=...
+ODYSSEUS_ENDPOINT_URL=https://api.openai.com/v1
+ODYSSEUS_API_KEY=sk-...
+ODYSSEUS_MODEL=gpt-4o-mini
 ```
 
+Odysseus bir aracıdır; arkasında bir LLM sağlayıcı gerekir (OpenAI, Groq, Gemini, vb.).
 `ODYSSEUS_ENDPOINT_URL` provider base URL olmalı (`…/v1`), `…/chat/completions` değil.
+
 Admin komutları agent modunda `ODYSSEUS_WORKSPACE` altında dosya okur/yazar.

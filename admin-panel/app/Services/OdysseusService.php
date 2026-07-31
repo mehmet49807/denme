@@ -206,7 +206,16 @@ class OdysseusService
         $model = trim((string) config('services.odysseus.model', ''));
 
         if ($baseUrl === '' || $apiKey === '') {
-            throw new \RuntimeException('ODYSSEUS_ENDPOINT_URL ve ODYSSEUS_API_KEY admin .env içinde gerekli.');
+            throw new \RuntimeException(
+                'LLM sağlayıcı ayarlı değil. Admin .env içine ODYSSEUS_ENDPOINT_URL + ODYSSEUS_API_KEY + ODYSSEUS_MODEL yazın '
+                .'(ör. OpenAI: https://api.openai.com/v1). OpenRouter kullanılmıyor.'
+            );
+        }
+
+        if (str_contains(strtolower($baseUrl), 'openrouter.ai')) {
+            throw new \RuntimeException(
+                'OpenRouter engellendi. ODYSSEUS_ENDPOINT_URL değerini OpenAI/Groq/Gemini gibi başka bir sağlayıcıya çevirin.'
+            );
         }
 
         $multipart = [
