@@ -1,6 +1,9 @@
 # Odysseus (Gönül Köprüsü)
 
-Admin panelinden komut verip kod değişikliği yaptıran self-hosted AI workspace.
+Self-hosted AI workspace. İki kullanım birlikte:
+
+1. **Bağımsız** — `https://odysseus.gonulkoprusu.com` arayüzünden kullan; model key’lerini Settings’te tanımla.
+2. **Admin tetik** — `admin.gonulkoprusu.com` → **Sistem → Odysseus** komut köprüsü; Settings’teki modeli kullanır.
 
 Upstream: https://github.com/odysseus-dev/odysseus
 
@@ -11,25 +14,26 @@ bash scripts/odysseus/install.sh
 bash scripts/odysseus/start.sh
 ```
 
-Servis: `http://127.0.0.1:7000`
+Servis (iç): `http://127.0.0.1:7000`  
+Genel arayüz: `https://odysseus.gonulkoprusu.com` (reverse proxy → 7000)
 
-## Admin
+## Model / API key
 
-`admin.gonulkoprusu.com` → **Sistem → Odysseus**
+Model API key’leri **admin .env’ye yazılmaz**.  
+Odysseus UI → **Settings → Model endpoint** (OpenAI / Groq / Gemini vb.).
 
-Ortam değişkenleri (`admin-panel/.env`):
+## Admin .env
 
 ```
 ODYSSEUS_URL=http://127.0.0.1:7000
+ODYSSEUS_PUBLIC_URL=https://odysseus.gonulkoprusu.com
 ODYSSEUS_USER=admin
 ODYSSEUS_PASSWORD=...
 ODYSSEUS_WORKSPACE=/home/gonulkop/apps/gonulkoprusu
-ODYSSEUS_ENDPOINT_URL=https://api.openai.com/v1
-ODYSSEUS_API_KEY=sk-...
-ODYSSEUS_MODEL=gpt-4o-mini
+# İsteğe bağlı tercih (Settings’teki kayıtlar)
+ODYSSEUS_ENDPOINT_ID=
+ODYSSEUS_MODEL=
+ODYSSEUS_TIMEOUT=300
 ```
-
-Odysseus bir aracıdır; arkasında bir LLM sağlayıcı gerekir (OpenAI, Groq, Gemini, vb.).
-`ODYSSEUS_ENDPOINT_URL` provider base URL olmalı (`…/v1`), `…/chat/completions` değil.
 
 Admin komutları agent modunda `ODYSSEUS_WORKSPACE` altında dosya okur/yazar.

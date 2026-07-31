@@ -14,10 +14,15 @@ class AdminOdysseusController extends Controller
     public function index(OdysseusService $odysseus): View
     {
         $status = $odysseus->status();
+        $models = $status['ok']
+            ? $odysseus->modelEndpointsSummary()
+            : ['ok' => false, 'endpoints' => [], 'error' => $status['message'] ?? null];
 
         return view('admin.odysseus', [
             'status' => $status,
+            'models' => $models,
             'baseUrl' => $odysseus->baseUrl(),
+            'publicUrl' => $odysseus->publicUrl(),
             'workspace' => $odysseus->workspace(),
             'history' => session('odysseus_history', []),
         ]);

@@ -20,6 +20,16 @@ class OdysseusService
         return rtrim((string) config('services.odysseus.url', 'http://127.0.0.1:7000'), '/');
     }
 
+    public function publicUrl(): string
+    {
+        $configured = trim((string) config('services.odysseus.public_url', ''));
+        if ($configured !== '') {
+            return rtrim($configured, '/');
+        }
+
+        return 'https://odysseus.gonulkoprusu.com';
+    }
+
     public function workspace(): string
     {
         $configured = trim((string) config('services.odysseus.workspace', ''));
@@ -53,6 +63,45 @@ class OdysseusService
                 'ok' => false,
                 'message' => 'Odysseus erişilemiyor: '.$e->getMessage().'. Sunucuda keepalive cron kontrol edin.',
             ];
+        }
+    }
+
+    /**
+     * Settings’te tanımlı model endpoint özeti (admin UI için).
+     *
+     * @return array{ok: bool, endpoints: list<array{id: string, name: string, base_url: string, is_enabled: bool, models: list<string>, status: string}>, error?: string}
+     */
+    public function modelEndpointsSummary(): array
+    {
+        $status = $this->status();
+        if (! $status['ok']) {
+            return ['ok' => false, 'endpoints' => [], 'error' => $status['message']];
+        }
+
+        try {
+            $cookie = $this->authenticate();
+            $endpoints = $this->fetchModelEndpoints($cookie);
+
+            return [
+                'ok' => true,
+                'endpoints' => array_map(static function (array $ep): array {
+                    $models = array_values(array_unique(array_filter(array_merge(
+                        is_array($ep['pinned_models'] ?? null) ? $ep['pinned_models'] : [],
+                        is_array($ep['models'] ?? null) ? $ep['models'] : [],
+                    ), static fn ($m) => is_string($m) && $m !== '')));
+
+                    return [
+                        'id' => (string) ($ep['id'] ?? ''),
+                        'name' => (string) ($ep['name'] ?? 'Model'),
+                        'base_url' => (string) ($ep['base_url'] ?? ''),
+                        'is_enabled' => (bool) ($ep['is_enabled'] ?? false),
+                        'models' => array_slice($models, 0, 8),
+                        'status' => (string) ($ep['status'] ?? ''),
+                    ];
+                }, $endpoints),
+            ];
+        } catch (Throwable $e) {
+            return ['ok' => false, 'endpoints' => [], 'error' => $e->getMessage()];
         }
     }
 
@@ -115,7 +164,9 @@ class OdysseusService
         $error = strtolower($error);
 
         return str_contains($error, 'model endpoint was removed')
+            || str_contains($error, 'model endpoint no longer exists')
             || str_contains($error, 'no model selected')
+            || str_contains($error, 'no model endpoint')
             || str_contains($error, 'session')
             || str_contains($error, 'http 400')
             || str_contains($error, 'http 401')
@@ -181,76 +232,119 @@ class OdysseusService
         return '';
     }
 
-    private function llmBaseUrl(): string
+    /**
+     * Odysseus Settings’te kayıtlı endpoint’leri listeler (admin .env API key oluşturmaz).
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function fetchModelEndpoints(string $cookieHeader): array
     {
-        $raw = trim((string) config('services.odysseus.endpoint_url', ''));
-        if ($raw === '') {
-            return '';
-        }
-
-        // ModelEndpoint wants provider base (…/v1), not …/chat/completions
-        $raw = preg_replace('#/chat/completions/?$#i', '', $raw) ?? $raw;
-
-        return rtrim($raw, '/');
-    }
-
-    private function ensureModelEndpoint(string $cookieHeader): string
-    {
-        $cached = Cache::get(self::CACHE_ENDPOINT);
-        if (is_string($cached) && $cached !== '') {
-            return $cached;
-        }
-
-        $baseUrl = $this->llmBaseUrl();
-        $apiKey = trim((string) config('services.odysseus.api_key', ''));
-        $model = trim((string) config('services.odysseus.model', ''));
-
-        if ($baseUrl === '' || $apiKey === '') {
-            throw new \RuntimeException(
-                'LLM sağlayıcı ayarlı değil. Admin .env içine ODYSSEUS_ENDPOINT_URL + ODYSSEUS_API_KEY + ODYSSEUS_MODEL yazın (ör. OpenAI: https://api.openai.com/v1).'
-            );
-        }
-
-        if (str_contains(strtolower($baseUrl), 'openrouter.ai')) {
-            throw new \RuntimeException(
-                'Bu LLM adresi desteklenmiyor. ODYSSEUS_ENDPOINT_URL için OpenAI/Groq/Gemini kullanın.'
-            );
-        }
-
-        $multipart = [
-            ['name' => 'name', 'contents' => 'Admin LLM'],
-            ['name' => 'base_url', 'contents' => $baseUrl],
-            ['name' => 'api_key', 'contents' => $apiKey],
-            ['name' => 'skip_probe', 'contents' => 'false'],
-            ['name' => 'require_models', 'contents' => 'false'],
-            ['name' => 'endpoint_kind', 'contents' => 'api'],
-            ['name' => 'shared', 'contents' => 'true'],
-        ];
-        if ($model !== '') {
-            $multipart[] = ['name' => 'pinned_models', 'contents' => $model];
-        }
-
-        $response = Http::timeout(60)
+        $response = Http::timeout(30)
             ->withHeaders(['Cookie' => $cookieHeader])
-            ->asMultipart()
-            ->post($this->baseUrl().'/api/model-endpoints', $multipart);
+            ->acceptJson()
+            ->get($this->baseUrl().'/api/model-endpoints');
 
         if (! $response->successful()) {
-            throw new \RuntimeException('Odysseus model endpoint oluşturulamadı: HTTP '.$response->status().' '.$response->body());
+            throw new \RuntimeException(
+                'Odysseus model listesi alınamadı: HTTP '.$response->status().' '.$response->body()
+            );
         }
 
-        $endpointId = (string) ($response->json('id') ?? $response->json('endpoint_id') ?? '');
-        if ($endpointId === '') {
-            // Some responses wrap data
-            $endpointId = (string) data_get($response->json(), 'data.id', '');
+        $json = $response->json();
+        if (! is_array($json)) {
+            return [];
         }
-        if ($endpointId === '') {
-            throw new \RuntimeException('Odysseus model endpoint ID dönmedi.');
+
+        // API düz liste veya {data:[...]} dönebilir
+        if (array_is_list($json)) {
+            return $json;
+        }
+
+        $data = $json['data'] ?? $json['endpoints'] ?? [];
+
+        return is_array($data) ? $data : [];
+    }
+
+    /**
+     * @return array{id: string, model: string}
+     */
+    private function resolveModelEndpoint(string $cookieHeader): array
+    {
+        $cached = Cache::get(self::CACHE_ENDPOINT);
+        $preferredId = trim((string) config('services.odysseus.endpoint_id', ''));
+        $preferredModel = trim((string) config('services.odysseus.model', ''));
+
+        $endpoints = $this->fetchModelEndpoints($cookieHeader);
+        $usable = [];
+        foreach ($endpoints as $ep) {
+            if (! is_array($ep)) {
+                continue;
+            }
+            $id = trim((string) ($ep['id'] ?? ''));
+            $base = strtolower((string) ($ep['base_url'] ?? ''));
+            $enabled = (bool) ($ep['is_enabled'] ?? false);
+            if ($id === '' || ! $enabled) {
+                continue;
+            }
+            if (str_contains($base, 'openrouter.ai')) {
+                continue;
+            }
+            $usable[] = $ep;
+        }
+
+        if ($usable === []) {
+            throw new \RuntimeException(
+                'Odysseus Settings’te kullanılabilir model yok. Odysseus arayüzünden Settings → Model ekleyin (OpenAI / Groq / Gemini vb.).'
+            );
+        }
+
+        $selected = null;
+        if ($preferredId !== '') {
+            foreach ($usable as $ep) {
+                if ((string) ($ep['id'] ?? '') === $preferredId) {
+                    $selected = $ep;
+                    break;
+                }
+            }
+        }
+
+        if ($selected === null && is_string($cached) && $cached !== '') {
+            foreach ($usable as $ep) {
+                if ((string) ($ep['id'] ?? '') === $cached) {
+                    $selected = $ep;
+                    break;
+                }
+            }
+        }
+
+        if ($selected === null && $preferredModel !== '') {
+            foreach ($usable as $ep) {
+                $models = array_merge(
+                    is_array($ep['pinned_models'] ?? null) ? $ep['pinned_models'] : [],
+                    is_array($ep['models'] ?? null) ? $ep['models'] : [],
+                );
+                foreach ($models as $m) {
+                    if (is_string($m) && strcasecmp($m, $preferredModel) === 0) {
+                        $selected = $ep;
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        $selected ??= $usable[0];
+        $endpointId = (string) $selected['id'];
+        $model = $preferredModel;
+
+        if ($model === '') {
+            $pinned = is_array($selected['pinned_models'] ?? null) ? $selected['pinned_models'] : [];
+            $models = is_array($selected['models'] ?? null) ? $selected['models'] : [];
+            $model = (string) ($pinned[0] ?? $models[0] ?? '');
         }
 
         Cache::put(self::CACHE_ENDPOINT, $endpointId, now()->addHours(12));
 
-        return $endpointId;
+        return ['id' => $endpointId, 'model' => $model];
     }
 
     private function ensureSession(string $cookieHeader, bool $forceNew = false): string
@@ -262,16 +356,15 @@ class OdysseusService
             }
         }
 
-        $endpointId = $this->ensureModelEndpoint($cookieHeader);
-        $model = trim((string) config('services.odysseus.model', ''));
+        $resolved = $this->resolveModelEndpoint($cookieHeader);
 
         $multipart = [
             ['name' => 'name', 'contents' => 'Admin Komut'],
-            ['name' => 'endpoint_id', 'contents' => $endpointId],
+            ['name' => 'endpoint_id', 'contents' => $resolved['id']],
             ['name' => 'skip_validation', 'contents' => 'false'],
         ];
-        if ($model !== '') {
-            $multipart[] = ['name' => 'model', 'contents' => $model];
+        if ($resolved['model'] !== '') {
+            $multipart[] = ['name' => 'model', 'contents' => $resolved['model']];
         }
 
         $response = Http::timeout(60)
@@ -410,7 +503,7 @@ PROMPT;
             return [
                 'ok' => false,
                 'reply' => '',
-                'error' => 'Odysseus boş yanıt döndü. Model endpoint ayarını kontrol et.',
+                'error' => 'Odysseus boş yanıt döndü. Odysseus Settings → Model ayarını kontrol et.',
                 'events' => array_values(array_unique($events)),
             ];
         }

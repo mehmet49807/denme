@@ -37,12 +37,13 @@ return [
 
     'odysseus' => [
         'url' => env('ODYSSEUS_URL', 'http://127.0.0.1:7000'),
+        'public_url' => env('ODYSSEUS_PUBLIC_URL', 'https://odysseus.gonulkoprusu.com'),
         'user' => env('ODYSSEUS_USER', 'admin'),
         'password' => env('ODYSSEUS_PASSWORD'),
         'workspace' => env('ODYSSEUS_WORKSPACE'),
+        // Model API key’leri admin .env’de tutulmaz; Odysseus Settings’ten okunur.
+        'endpoint_id' => env('ODYSSEUS_ENDPOINT_ID'),
         'model' => env('ODYSSEUS_MODEL'),
-        'endpoint_url' => env('ODYSSEUS_ENDPOINT_URL'),
-        'api_key' => env('ODYSSEUS_API_KEY'),
         'timeout' => env('ODYSSEUS_TIMEOUT', 300),
     ],
 
