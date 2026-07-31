@@ -1,0 +1,15 @@
+{
+  "appId": "com.golarena.football",
+  "appName": "Gol Arena",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#0a1628"
+  },
+  "plugins": {
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#0a1628"
+    }
+  }
+}

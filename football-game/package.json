@@ -1,0 +1,27 @@
+{
+  "name": "gol-arena",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Android 3D futbol oyunu — gerçek oyuncu isimleri",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "cap:sync": "npm run build && npx cap sync android",
+    "cap:open": "npx cap open android",
+    "android:add": "npx cap add android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.2",
+    "@capacitor/app": "^7.0.2",
+    "@capacitor/core": "^7.4.2",
+    "@capacitor/haptics": "^7.0.2",
+    "@capacitor/status-bar": "^7.0.2",
+    "three": "^0.178.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.2",
+    "vite": "^7.0.6"
+  }
+}

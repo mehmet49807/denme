@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0a1628" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Gol Arena — 3D Futbol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game-canvas"></canvas>
+
+      <div id="hud" class="hidden">
+        <div class="scoreboard">
+          <div class="team home">
+            <span class="badge" id="home-badge">GS</span>
+            <span class="name" id="home-name">Galatasaray</span>
+          </div>
+          <div class="score">
+            <span id="home-score">0</span>
+            <span class="sep">:</span>
+            <span id="away-score">0</span>
+          </div>
+          <div class="team away">
+            <span class="name" id="away-name">Fenerbahçe</span>
+            <span class="badge" id="away-badge">FB</span>
+          </div>
+        </div>
+        <div class="clock">
+          <span id="match-minute">0'</span>
+          <span id="possession-player"></span>
+        </div>
+      </div>
+
+      <div id="touch-controls" class="hidden">
+        <div id="joystick-zone">
+          <div id="joystick-base">
+            <div id="joystick-knob"></div>
+          </div>
+        </div>
+        <div id="action-buttons">
+          <button type="button" id="btn-pass" class="action-btn">Pas</button>
+          <button type="button" id="btn-shoot" class="action-btn shoot">Şut</button>
+          <button type="button" id="btn-sprint" class="action-btn">Sprint</button>
+        </div>
+      </div>
+
+      <div id="menu" class="screen">
+        <div class="menu-bg"></div>
+        <div class="menu-content">
+          <p class="eyebrow">3D MOBİL FUTBOL</p>
+          <h1>GOL ARENA</h1>
+          <p class="tagline">Gerçek oyuncu isimleri · Dokunmatik kontrol · Stadyum atmosferi</p>
+
+          <section class="picker">
+            <h2>Takımını seç</h2>
+            <div id="team-grid" class="team-grid"></div>
+          </section>
+
+          <section class="picker opponent">
+            <h2>Rakip</h2>
+            <select id="opponent-select"></select>
+          </section>
+
+          <button type="button" id="btn-start" class="cta" disabled>Maça Başla</button>
+          <p class="legal-note">
+            Oyuncu isimleri tanıtım amaçlıdır. Resmi lisans gerektirmez / ticari kullanım için
+            lisans alınmalıdır.
+          </p>
+        </div>
+      </div>
+
+      <div id="pause-overlay" class="screen hidden">
+        <div class="panel">
+          <h2>Duraklatıldı</h2>
+          <button type="button" id="btn-resume" class="cta">Devam</button>
+          <button type="button" id="btn-quit" class="cta ghost">Menüye Dön</button>
+        </div>
+      </div>
+
+      <div id="goal-banner" class="hidden">
+        <div class="goal-text">GOL!</div>
+        <div class="goal-scorer" id="goal-scorer"></div>
+      </div>
+
+      <div id="result-screen" class="screen hidden">
+        <div class="panel">
+          <h2 id="result-title">Maç Bitti</h2>
+          <p id="result-score" class="result-score">0 - 0</p>
+          <button type="button" id="btn-rematch" class="cta">Yeniden Oyna</button>
+          <button type="button" id="btn-menu" class="cta ghost">Takım Seç</button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.idea/
+.vscode/
+android/.gradle/
+android/app/build/
+android/build/
+android/captures/
+android/local.properties
+android/*.iml
+android/.cxx/
+.capacitor/
+releases/*.apk
+!releases/.gitkeep
