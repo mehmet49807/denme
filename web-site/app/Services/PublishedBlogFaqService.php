@@ -95,10 +95,15 @@ class PublishedBlogFaqService
   /** @return list<string> */
   private function candidatePaths(): array
   {
+    $legacy = 'seo/openrouter-published-blog-faq.json';
+
     return array_values(array_unique(array_filter([
       storage_path('app/'.self::STORAGE_PATH),
       base_path('storage/app/'.self::STORAGE_PATH),
       base_path('../public_html/storage/app/'.self::STORAGE_PATH),
+      storage_path('app/'.$legacy),
+      base_path('storage/app/'.$legacy),
+      base_path('../public_html/storage/app/'.$legacy),
     ])));
   }
 }
