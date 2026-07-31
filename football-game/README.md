@@ -1,16 +1,23 @@
 # Gol Arena — Android 3D Futbol
 
-Dokunmatik kontrollü 3D futbol oyunu. Stilize oyuncu modelleri, stadyum atmosferi ve **gerçek oyuncu isimleri** (Süper Lig + Avrupa kulüpleri).
+Teknik direktör olarak giriş yap, **kendi takımını kur**, logo oluştur; kadroya **gerçek futbolcu isimleri** otomatik atanır. Hazır kulüp markası yok (telif riski azaltılır).
 
 ## Özellikler
 
-- 8 takım, 11’er gerçek isimli kadro
-- 3D saha, kale, tribün / taraftar şeridi
-- Joystick + Pas / Şut / Sprint
-- 90 dakikalık maç (hızlandırılmış), skor, gol animasyonu
-- Capacitor ile Android APK / AAB
+- **Google / Facebook / Misafir** giriş + teknik direktör adı
+- Takım adı (en fazla **3 kelime**), skor tabelası kısa adı (2–4 harf)
+- Logo editörü (şekil + renkler)
+- Otomatik 11 kişilik kadro (gerçek oyuncu isimleri)
+- Telifsiz AI rakip takımlar
+- 3D saha, dokunmatik joystick, Pas / Şut / Sprint
 
-## Hızlı önizleme (tarayıcı)
+## Akış
+
+1. Teknik direktör adını yaz → Google / Facebook / Misafir
+2. Takım adı + kısa ad + logo oluştur
+3. Kadro otomatik atanır → rakip seç → maç
+
+## Önizleme
 
 ```bash
 cd football-game
@@ -18,45 +25,25 @@ npm install
 npm run dev
 ```
 
-Masaüstünde: **WASD / oklar** hareket, **J** pas, **Space** şut, **Shift** sprint, **Esc** duraklat.
+Masaüstü: **WASD** hareket, **J** pas, **Space** şut, **Shift** sprint, **Esc** duraklat.
 
-## Hazır debug APK
-
-Derlenmiş paket: `football-game/releases/GolArena-debug.apk`  
-Telefona kopyalayıp yükleyin (bilinmeyen kaynaklara izin verin).
-
-Yeniden derlemek:
+## Android APK
 
 ```bash
-cd football-game
-npm install
-npm run build
-npx cap sync android
-cd android && ./gradlew assembleDebug
+bash scripts/build-apk.sh
+# → android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## Android (Android Studio)
-
-Gereksinimler: JDK 17+, Android Studio (SDK 35), Node 20+.
+## Gerçek Google / Facebook OAuth (opsiyonel)
 
 ```bash
-cd football-game
-npm install
-npm run build
-npx cap sync android
-npx cap open android
+cp .env.example .env
+# VITE_GOOGLE_CLIENT_ID=...
+# VITE_FACEBOOK_APP_ID=...
 ```
 
-Release (Play Store) için keystore ile `assembleRelease` / `bundleRelease` kullanın.
+Client ID yoksa butonlar yine çalışır: sağlayıcı + teknik direktör adı ile yerel oturum açılır.
 
-## Lisans notu
+## Not
 
-Oyuncu ve kulüp isimleri **tanıtım / fan projesi** içindir. Ticari yayın için resmi lisans gerekir.
-
-## Klasörler
-
-| Yol | Açıklama |
-|-----|----------|
-| `src/game/` | Maç motoru, saha, oyuncu, kontroller |
-| `src/data/teams.js` | Takımlar ve gerçek oyuncu isimleri |
-| `android/` | Capacitor Android projesi (`cap add` sonrası) |
+Futbolcu isimleri tanıtım amaçlıdır. Kulüp adları / logoları kullanıcı tarafından oluşturulur; resmi lig lisansı yoktur.

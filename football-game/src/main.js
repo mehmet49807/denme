@@ -1,16 +1,29 @@
 import * as THREE from 'three';
-import { TEAMS, getTeam } from './data/teams.js';
 import { createPitchScene } from './game/Pitch.js';
 import { Match } from './game/Match.js';
 import { TouchControls } from './game/Controls.js';
+import { signIn } from './auth/socialAuth.js';
+import {
+  loadSave,
+  saveState,
+  clearAll,
+  validateTeamName,
+  validateShortName,
+  validateManagerName,
+} from './data/storage.js';
+import { createUserTeam, buildAiOpponents, teamOvr } from './data/teamFactory.js';
+import { createLogoEditor } from './ui/logoEditor.js';
 
 const canvas = document.getElementById('game-canvas');
-const menu = document.getElementById('menu');
 const hud = document.getElementById('hud');
-const touchControls = document.getElementById('touch-controls');
+const touchControlsEl = document.getElementById('touch-controls');
 const pauseOverlay = document.getElementById('pause-overlay');
 const goalBanner = document.getElementById('goal-banner');
 const resultScreen = document.getElementById('result-screen');
+
+const screenLogin = document.getElementById('screen-login');
+const screenTeam = document.getElementById('screen-team');
+const screenLobby = document.getElementById('screen-lobby');
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -28,10 +41,12 @@ camera.position.set(0, 22, -28);
 
 let scene = createPitchScene();
 let match = null;
-let selectedHomeId = null;
-let selectedAwayId = TEAMS[1].id;
+let userTeam = null;
+let aiOpponents = [];
+let selectedAwayId = null;
 let raf = 0;
 let lastT = 0;
+let logoDataUrl = '';
 
 const controls = new TouchControls({
   joystickZone: document.getElementById('joystick-zone'),
@@ -44,76 +59,246 @@ const controls = new TouchControls({
   },
 });
 
-// —— Menu setup ——
-const teamGrid = document.getElementById('team-grid');
-const opponentSelect = document.getElementById('opponent-select');
-const btnStart = document.getElementById('btn-start');
-
-function teamOvr(team) {
-  const vals = team.players.map((p) => (p.pace + p.shooting + p.passing + p.defending + p.physical) / 5);
-  return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
-}
-
-function renderTeamGrid() {
-  teamGrid.innerHTML = '';
-  for (const team of TEAMS) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'team-card' + (selectedHomeId === team.id ? ' selected' : '');
-    btn.innerHTML = `
-      <span class="badge" style="background:${team.colors.primary};color:${contrastText(team.colors.primary)}">${team.short}</span>
-      <span class="label">${team.name}</span>
-      <span class="stars">Güç ${teamOvr(team)} · ${team.players[10]?.name ?? ''}</span>
-    `;
-    btn.addEventListener('click', () => {
-      selectedHomeId = team.id;
-      if (selectedAwayId === selectedHomeId) {
-        selectedAwayId = TEAMS.find((t) => t.id !== selectedHomeId)?.id;
-      }
-      renderTeamGrid();
-      fillOpponents();
-      btnStart.disabled = !selectedHomeId;
-    });
-    teamGrid.appendChild(btn);
-  }
-}
-
-function fillOpponents() {
-  opponentSelect.innerHTML = '';
-  for (const team of TEAMS) {
-    if (team.id === selectedHomeId) continue;
-    const opt = document.createElement('option');
-    opt.value = team.id;
-    opt.textContent = `${team.name} (${teamOvr(team)})`;
-    if (team.id === selectedAwayId) opt.selected = true;
-    opponentSelect.appendChild(opt);
-  }
-  selectedAwayId = opponentSelect.value;
-}
-
-opponentSelect.addEventListener('change', () => {
-  selectedAwayId = opponentSelect.value;
+// —— Logo editor ——
+const logoCanvas = document.getElementById('logo-canvas');
+const logoEditor = createLogoEditor({
+  canvas: logoCanvas,
+  onChange: (url) => {
+    logoDataUrl = url;
+  },
 });
 
-btnStart.addEventListener('click', () => startMatch());
-document.getElementById('btn-resume').addEventListener('click', () => setPaused(false));
-document.getElementById('btn-quit').addEventListener('click', () => backToMenu());
-document.getElementById('btn-rematch').addEventListener('click', () => startMatch());
-document.getElementById('btn-menu').addEventListener('click', () => backToMenu());
+const shapeRow = document.getElementById('shape-row');
+const shapeLabels = { circle: 'Daire', shield: 'Kalkan', hex: 'Altıgen', diamond: 'Baklava' };
+for (const shape of logoEditor.shapes) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'shape-btn' + (shape === 'shield' ? ' active' : '');
+  btn.textContent = shapeLabels[shape] || shape;
+  btn.addEventListener('click', () => {
+    logoEditor.set({ shape });
+    shapeRow.querySelectorAll('.shape-btn').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+  shapeRow.appendChild(btn);
+}
 
-function contrastText(hex) {
-  const c = new THREE.Color(hex);
-  const lum = c.r * 0.299 + c.g * 0.587 + c.b * 0.114;
-  return lum > 0.6 ? '#111' : '#fff';
+document.getElementById('logo-primary').addEventListener('input', (e) => {
+  logoEditor.set({ primary: e.target.value });
+});
+document.getElementById('logo-secondary').addEventListener('input', (e) => {
+  logoEditor.set({ secondary: e.target.value });
+});
+document.getElementById('logo-accent').addEventListener('input', (e) => {
+  logoEditor.set({ accent: e.target.value });
+});
+document.getElementById('btn-logo-random').addEventListener('click', () => {
+  logoEditor.randomize();
+  document.getElementById('logo-primary').value = logoEditor.state.primary;
+  document.getElementById('logo-secondary').value = logoEditor.state.secondary;
+  document.getElementById('logo-accent').value = logoEditor.state.accent;
+  syncShapeButtons();
+});
+
+document.getElementById('input-team-short').addEventListener('input', (e) => {
+  const v = e.target.value.toUpperCase().replace(/[^A-ZÇĞİÖŞÜ0-9]/gi, '').slice(0, 4);
+  e.target.value = v;
+  logoEditor.set({ short: v || 'GA' });
+});
+
+function syncShapeButtons() {
+  const cur = logoEditor.state.shape;
+  shapeRow.querySelectorAll('.shape-btn').forEach((b, i) => {
+    b.classList.toggle('active', logoEditor.shapes[i] === cur);
+  });
+}
+
+// —— Screens ——
+function showScreen(name) {
+  screenLogin.classList.toggle('hidden', name !== 'login');
+  screenTeam.classList.toggle('hidden', name !== 'team');
+  screenLobby.classList.toggle('hidden', name !== 'lobby');
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  if (!msg) {
+    el.classList.add('hidden');
+    el.textContent = '';
+    return;
+  }
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+function showTeamError(msg) {
+  const el = document.getElementById('team-error');
+  if (!msg) {
+    el.classList.add('hidden');
+    el.textContent = '';
+    return;
+  }
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+async function handleAuth(provider) {
+  showLoginError('');
+  const managerName = document.getElementById('input-manager').value;
+  const err = validateManagerName(managerName);
+  if (err) {
+    showLoginError(err);
+    return;
+  }
+  try {
+    const auth = await signIn(provider, managerName);
+    saveState({ auth });
+    document.getElementById('coach-label').textContent = `TD · ${auth.managerName}`;
+    const save = loadSave();
+    if (save.team?.players?.length) {
+      userTeam = save.team;
+      enterLobby();
+    } else {
+      showScreen('team');
+    }
+  } catch (e) {
+    showLoginError(e.message || 'Giriş başarısız');
+  }
+}
+
+document.getElementById('btn-google').addEventListener('click', () => handleAuth('google'));
+document.getElementById('btn-facebook').addEventListener('click', () => handleAuth('facebook'));
+document.getElementById('btn-guest').addEventListener('click', () => handleAuth('guest'));
+
+document.getElementById('btn-create-team').addEventListener('click', () => {
+  showTeamError('');
+  const name = document.getElementById('input-team-name').value;
+  const short = document.getElementById('input-team-short').value;
+  const nameErr = validateTeamName(name);
+  const shortErr = validateShortName(short);
+  if (nameErr || shortErr) {
+    showTeamError(nameErr || shortErr);
+    return;
+  }
+  if (!logoDataUrl) {
+    showTeamError('Logo oluşturman gerekiyor.');
+    return;
+  }
+
+  const auth = loadSave().auth;
+  const team = createUserTeam({
+    name,
+    short,
+    colors: {
+      primary: logoEditor.state.primary,
+      secondary: logoEditor.state.secondary,
+      accent: logoEditor.state.accent,
+    },
+    logoDataUrl,
+    managerName: auth?.managerName || 'Teknik Direktör',
+  });
+  userTeam = team;
+  saveState({ team });
+  enterLobby();
+});
+
+function logout() {
+  clearAll();
+  userTeam = null;
+  aiOpponents = [];
+  match?.dispose();
+  match = null;
+  document.getElementById('input-manager').value = '';
+  showScreen('login');
+  hud.classList.add('hidden');
+  touchControlsEl.classList.add('hidden');
+  pauseOverlay.classList.add('hidden');
+  resultScreen.classList.add('hidden');
+}
+
+document.getElementById('btn-logout').addEventListener('click', logout);
+document.getElementById('btn-lobby-logout').addEventListener('click', logout);
+document.getElementById('btn-edit-team').addEventListener('click', () => {
+  const t = userTeam;
+  if (t) {
+    document.getElementById('input-team-name').value = t.name;
+    document.getElementById('input-team-short').value = t.short;
+    logoEditor.set({
+      short: t.short,
+      primary: t.colors.primary,
+      secondary: t.colors.secondary,
+      accent: t.colors.accent || '#ffffff',
+    });
+    document.getElementById('logo-primary').value = t.colors.primary;
+    document.getElementById('logo-secondary').value = t.colors.secondary;
+    document.getElementById('logo-accent').value = t.colors.accent || '#ffffff';
+  }
+  // Yeni kadro için kaydı temizle (yeniden oluşturunca değişir)
+  saveState({ team: null });
+  userTeam = null;
+  showScreen('team');
+});
+
+function enterLobby() {
+  if (!userTeam) {
+    showScreen('team');
+    return;
+  }
+  document.getElementById('lobby-logo').src = userTeam.logoDataUrl;
+  document.getElementById('lobby-manager').textContent = `TD · ${userTeam.managerName}`;
+  document.getElementById('lobby-team-name').textContent = userTeam.name;
+  document.getElementById('lobby-meta').textContent = `${userTeam.short} · Güç ${userTeam.ovr ?? teamOvr(userTeam.players)}`;
+
+  const list = document.getElementById('squad-list');
+  list.innerHTML = '';
+  for (const p of userTeam.players) {
+    const li = document.createElement('li');
+    li.innerHTML = `<span><span class="pos">${p.pos}</span> ${p.name}</span><span class="num">#${p.number}</span>`;
+    list.appendChild(li);
+  }
+
+  aiOpponents = buildAiOpponents(userTeam.short);
+  const sel = document.getElementById('opponent-select');
+  sel.innerHTML = '';
+  for (const t of aiOpponents) {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = `${t.name} (${t.short}) · Güç ${t.ovr}`;
+    sel.appendChild(opt);
+  }
+  selectedAwayId = sel.value;
+  sel.onchange = () => {
+    selectedAwayId = sel.value;
+  };
+
+  showScreen('lobby');
+}
+
+document.getElementById('btn-start').addEventListener('click', () => startMatch());
+document.getElementById('btn-resume').addEventListener('click', () => setPaused(false));
+document.getElementById('btn-quit').addEventListener('click', () => backToLobby());
+document.getElementById('btn-rematch').addEventListener('click', () => startMatch());
+document.getElementById('btn-menu').addEventListener('click', () => backToLobby());
+
+function setLogoEl(img, url) {
+  if (url) {
+    img.src = url;
+    img.style.display = '';
+  } else {
+    img.removeAttribute('src');
+    img.style.display = 'none';
+  }
 }
 
 function startMatch() {
+  if (!userTeam) return;
+  const away = aiOpponents.find((t) => t.id === selectedAwayId) || aiOpponents[0];
+  if (!away) return;
+
   if (match) match.dispose();
-  // Fresh pitch each match keeps scene clean
   scene = createPitchScene();
 
-  const home = getTeam(selectedHomeId);
-  const away = getTeam(selectedAwayId);
+  const home = userTeam;
 
   document.getElementById('home-name').textContent = home.name;
   document.getElementById('away-name').textContent = away.name;
@@ -121,9 +306,12 @@ function startMatch() {
   document.getElementById('away-badge').textContent = away.short;
   document.getElementById('home-badge').style.background = home.colors.primary;
   document.getElementById('away-badge').style.background = away.colors.primary;
+  setLogoEl(document.getElementById('home-logo'), home.logoDataUrl);
+  setLogoEl(document.getElementById('away-logo'), away.logoDataUrl);
   document.getElementById('home-score').textContent = '0';
   document.getElementById('away-score').textContent = '0';
   document.getElementById('match-minute').textContent = "0'";
+  document.getElementById('manager-chip').textContent = home.managerName;
 
   match = new Match({
     scene,
@@ -140,7 +328,7 @@ function startMatch() {
     },
     onEnd: (score) => {
       resultScreen.classList.remove('hidden');
-      touchControls.classList.add('hidden');
+      touchControlsEl.classList.add('hidden');
       const title =
         score.home > score.away ? 'Galibiyet!' : score.home < score.away ? 'Mağlubiyet' : 'Beraberlik';
       document.getElementById('result-title').textContent = title;
@@ -152,17 +340,20 @@ function startMatch() {
   });
 
   match.resetKickoff(1);
-  menu.classList.add('hidden');
+  showScreen(null);
+  screenLogin.classList.add('hidden');
+  screenTeam.classList.add('hidden');
+  screenLobby.classList.add('hidden');
   resultScreen.classList.add('hidden');
   pauseOverlay.classList.add('hidden');
   hud.classList.remove('hidden');
-  touchControls.classList.remove('hidden');
+  touchControlsEl.classList.remove('hidden');
   lastT = performance.now();
   cancelAnimationFrame(raf);
   raf = requestAnimationFrame(loop);
 }
 
-function backToMenu() {
+function backToLobby() {
   if (match) {
     match.dispose();
     match = null;
@@ -171,9 +362,9 @@ function backToMenu() {
   resultScreen.classList.add('hidden');
   goalBanner.classList.add('hidden');
   hud.classList.add('hidden');
-  touchControls.classList.add('hidden');
-  menu.classList.remove('hidden');
+  touchControlsEl.classList.add('hidden');
   scene = createPitchScene();
+  enterLobby();
 }
 
 function setPaused(v) {
@@ -190,7 +381,6 @@ function vibrate(ms) {
   }
 }
 
-// Pause on back / visibility
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && match && !match.ended) setPaused(true);
 });
@@ -207,7 +397,6 @@ function loop(t) {
   const dt = Math.min(0.05, (t - lastT) / 1000);
   lastT = t;
 
-  // Idle camera on menu
   if (!match) {
     const a = t * 0.00015;
     camera.position.set(Math.sin(a) * 40, 18, Math.cos(a) * 40);
@@ -223,11 +412,14 @@ function loop(t) {
   const target = match.getCameraTarget();
   camLook.lerp(target, 1 - Math.pow(0.001, dt));
   const facing = match.controlled
-    ? new THREE.Vector3(Math.sin(match.controlled.mesh.rotation.y), 0, Math.cos(match.controlled.mesh.rotation.y))
+    ? new THREE.Vector3(
+        Math.sin(match.controlled.mesh.rotation.y),
+        0,
+        Math.cos(match.controlled.mesh.rotation.y)
+      )
     : new THREE.Vector3(0, 0, 1);
   const back = facing.clone().multiplyScalar(-14).add(new THREE.Vector3(0, 12, 0));
   camPos.copy(camLook).add(back);
-  // Blend with classic broadcast angle
   camPos.lerp(camLook.clone().add(camOffset), 0.35);
   camera.position.lerp(camPos, 1 - Math.pow(0.0008, dt));
   camera.lookAt(camLook.x, 0.8, camLook.z);
@@ -244,15 +436,26 @@ function onResize() {
 }
 window.addEventListener('resize', onResize);
 
-renderTeamGrid();
-fillOpponents();
-btnStart.disabled = true;
+// Boot: restore session
+(function boot() {
+  const save = loadSave();
+  if (save.auth?.managerName) {
+    document.getElementById('input-manager').value = save.auth.managerName;
+    document.getElementById('coach-label').textContent = `TD · ${save.auth.managerName}`;
+    if (save.team?.players?.length) {
+      userTeam = save.team;
+      enterLobby();
+    } else {
+      showScreen('team');
+    }
+  } else {
+    showScreen('login');
+  }
+})();
 
-// Menu ambient render
 lastT = performance.now();
 raf = requestAnimationFrame(loop);
 
-// Capacitor status bar (optional)
 async function initNative() {
   try {
     const { StatusBar, Style } = await import('@capacitor/status-bar');

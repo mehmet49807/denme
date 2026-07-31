@@ -19,6 +19,13 @@
   user-select: none;
 }
 
+input,
+textarea,
+select {
+  user-select: text;
+  touch-action: manipulation;
+}
+
 html,
 body {
   margin: 0;
@@ -58,7 +65,7 @@ body {
   padding: calc(16px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
 }
 
-#menu .menu-bg {
+.screen > .menu-bg {
   position: absolute;
   inset: 0;
   background:
@@ -90,6 +97,279 @@ body {
   overflow-y: auto;
   text-align: center;
   padding: 8px 4px;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.menu-content.wide {
+  width: min(480px, 100%);
+}
+
+.screen-title {
+  margin: 0.15em 0 0.35em;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 8vw, 2.6rem);
+  letter-spacing: 0.04em;
+}
+
+.tagline.tight {
+  margin-bottom: 1rem;
+}
+
+.field {
+  display: block;
+  text-align: left;
+  margin-bottom: 0.75rem;
+}
+
+.field > span {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.field em {
+  font-style: normal;
+  font-weight: 500;
+  opacity: 0.8;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 0.8rem 0.9rem;
+  font: inherit;
+  font-weight: 600;
+}
+
+.auth-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.auth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  color: #111;
+  background: #fff;
+}
+
+.auth-btn.google {
+  background: #fff;
+  color: #1f1f1f;
+}
+
+.auth-btn.facebook {
+  background: #1877f2;
+  color: #fff;
+  border-color: transparent;
+}
+
+.auth-btn.guest {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+
+.auth-icon {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.auth-btn.facebook .auth-icon {
+  background: rgba(255, 255, 255, 0.2);
+  font-family: Georgia, serif;
+}
+
+.form-error {
+  margin: 0.5rem 0 0;
+  color: #ff8a7a;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.logo-section {
+  text-align: center;
+  margin: 0.5rem 0 1rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.logo-section h3,
+.squad-preview h3 {
+  margin: 0 0 0.6rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.squad-preview h3 em,
+.logo-section h3 em {
+  font-style: normal;
+  opacity: 0.75;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+#logo-canvas {
+  width: 160px;
+  height: 160px;
+  border-radius: 16px;
+  display: block;
+  margin: 0 auto 0.75rem;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.logo-tools {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+  margin-bottom: 0.55rem;
+}
+
+.logo-tools label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.logo-tools input[type='color'] {
+  width: 100%;
+  height: 36px;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.shape-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 0.55rem;
+}
+
+.shape-btn {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.shape-btn.active {
+  border-color: var(--accent);
+  background: rgba(212, 160, 23, 0.18);
+  color: var(--accent);
+}
+
+.cta.small {
+  margin-top: 0.35rem;
+  font-size: 1.1rem;
+  padding: 0.65rem 0.8rem;
+}
+
+.lobby-header {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  text-align: left;
+  margin-bottom: 0.85rem;
+}
+
+.lobby-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  object-fit: cover;
+  background: #0a1628;
+  flex-shrink: 0;
+}
+
+.squad-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  touch-action: pan-y;
+}
+
+.squad-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
+}
+
+.squad-list li:last-child {
+  border-bottom: none;
+}
+
+.squad-list .pos {
+  color: var(--accent);
+  font-weight: 700;
+  min-width: 2.2rem;
+}
+
+.squad-list .num {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.scoreboard .logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  object-fit: cover;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+#manager-chip {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .eyebrow {

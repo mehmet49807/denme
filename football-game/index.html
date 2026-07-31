@@ -25,8 +25,9 @@
       <div id="hud" class="hidden">
         <div class="scoreboard">
           <div class="team home">
-            <span class="badge" id="home-badge">GS</span>
-            <span class="name" id="home-name">Galatasaray</span>
+            <img class="logo" id="home-logo" alt="" />
+            <span class="badge" id="home-badge">—</span>
+            <span class="name" id="home-name">Ev</span>
           </div>
           <div class="score">
             <span id="home-score">0</span>
@@ -34,12 +35,14 @@
             <span id="away-score">0</span>
           </div>
           <div class="team away">
-            <span class="name" id="away-name">Fenerbahçe</span>
-            <span class="badge" id="away-badge">FB</span>
+            <span class="name" id="away-name">Dep</span>
+            <span class="badge" id="away-badge">—</span>
+            <img class="logo" id="away-logo" alt="" />
           </div>
         </div>
         <div class="clock">
           <span id="match-minute">0'</span>
+          <span id="manager-chip"></span>
           <span id="possession-player"></span>
         </div>
       </div>
@@ -57,28 +60,114 @@
         </div>
       </div>
 
-      <div id="menu" class="screen">
+      <!-- 1) GİRİŞ -->
+      <div id="screen-login" class="screen">
         <div class="menu-bg"></div>
         <div class="menu-content">
           <p class="eyebrow">3D MOBİL FUTBOL</p>
           <h1>GOL ARENA</h1>
-          <p class="tagline">Gerçek oyuncu isimleri · Dokunmatik kontrol · Stadyum atmosferi</p>
+          <p class="tagline">Teknik direktör ol · Kendi takımını kur · Gerçek futbolcu isimleri</p>
 
-          <section class="picker">
-            <h2>Takımını seç</h2>
-            <div id="team-grid" class="team-grid"></div>
-          </section>
+          <label class="field">
+            <span>Teknik direktör adın</span>
+            <input
+              id="input-manager"
+              type="text"
+              maxlength="32"
+              placeholder="Örn. Mehmet Yılmaz"
+              autocomplete="name"
+            />
+          </label>
 
-          <section class="picker opponent">
-            <h2>Rakip</h2>
-            <select id="opponent-select"></select>
-          </section>
-
-          <button type="button" id="btn-start" class="cta" disabled>Maça Başla</button>
+          <div class="auth-stack">
+            <button type="button" id="btn-google" class="auth-btn google">
+              <span class="auth-icon">G</span>
+              Google ile giriş
+            </button>
+            <button type="button" id="btn-facebook" class="auth-btn facebook">
+              <span class="auth-icon">f</span>
+              Facebook ile giriş
+            </button>
+            <button type="button" id="btn-guest" class="auth-btn guest">Misafir devam et</button>
+          </div>
+          <p id="login-error" class="form-error hidden"></p>
           <p class="legal-note">
-            Oyuncu isimleri tanıtım amaçlıdır. Resmi lisans gerektirmez / ticari kullanım için
-            lisans alınmalıdır.
+            Kulüp markası yok — kendi takımını oluşturursun. Futbolcu isimleri otomatik atanır.
           </p>
+        </div>
+      </div>
+
+      <!-- 2) TAKIM OLUŞTUR -->
+      <div id="screen-team" class="screen hidden">
+        <div class="menu-bg"></div>
+        <div class="menu-content wide">
+          <p class="eyebrow" id="coach-label">TEKNİK DİREKTÖR</p>
+          <h2 class="screen-title">Takımını oluştur</h2>
+          <p class="tagline tight">Telif için kulüp yok — ad, kısa ad ve logo senin.</p>
+
+          <label class="field">
+            <span>Takım adı <em>(en fazla 3 kelime)</em></span>
+            <input id="input-team-name" type="text" maxlength="28" placeholder="Örn. Kuzey Kartal" />
+          </label>
+
+          <label class="field">
+            <span>Skor tabelası kısa adı <em>(2–4 harf)</em></span>
+            <input id="input-team-short" type="text" maxlength="4" placeholder="Örn. KK" />
+          </label>
+
+          <section class="logo-section">
+            <h3>Takım logosu</h3>
+            <canvas id="logo-canvas" width="256" height="256" aria-label="Logo önizleme"></canvas>
+            <div class="logo-tools">
+              <label>
+                Ana renk
+                <input type="color" id="logo-primary" value="#1b6ca8" />
+              </label>
+              <label>
+                Kenar
+                <input type="color" id="logo-secondary" value="#f0c14b" />
+              </label>
+              <label>
+                Yazı
+                <input type="color" id="logo-accent" value="#ffffff" />
+              </label>
+            </div>
+            <div class="shape-row" id="shape-row"></div>
+            <button type="button" id="btn-logo-random" class="cta ghost small">Rastgele logo</button>
+          </section>
+
+          <p id="team-error" class="form-error hidden"></p>
+          <button type="button" id="btn-create-team" class="cta">Kadro Ata &amp; Devam</button>
+          <button type="button" id="btn-logout" class="cta ghost">Çıkış</button>
+        </div>
+      </div>
+
+      <!-- 3) LOBİ / MAÇ -->
+      <div id="screen-lobby" class="screen hidden">
+        <div class="menu-bg"></div>
+        <div class="menu-content wide">
+          <div class="lobby-header">
+            <img id="lobby-logo" class="lobby-logo" alt="Logo" />
+            <div>
+              <p class="eyebrow" id="lobby-manager">TD</p>
+              <h2 class="screen-title" id="lobby-team-name">Takım</h2>
+              <p class="tagline tight" id="lobby-meta">Güç · Kısa ad</p>
+            </div>
+          </div>
+
+          <section class="squad-preview">
+            <h3>Kadron <em>(otomatik atandı)</em></h3>
+            <ul id="squad-list" class="squad-list"></ul>
+          </section>
+
+          <label class="field">
+            <span>Rakip takım</span>
+            <select id="opponent-select"></select>
+          </label>
+
+          <button type="button" id="btn-start" class="cta">Maça Başla</button>
+          <button type="button" id="btn-edit-team" class="cta ghost">Takımı yeniden oluştur</button>
+          <button type="button" id="btn-lobby-logout" class="cta ghost">Çıkış</button>
         </div>
       </div>
 
@@ -86,7 +175,7 @@
         <div class="panel">
           <h2>Duraklatıldı</h2>
           <button type="button" id="btn-resume" class="cta">Devam</button>
-          <button type="button" id="btn-quit" class="cta ghost">Menüye Dön</button>
+          <button type="button" id="btn-quit" class="cta ghost">Lobiye Dön</button>
         </div>
       </div>
 
@@ -100,7 +189,7 @@
           <h2 id="result-title">Maç Bitti</h2>
           <p id="result-score" class="result-score">0 - 0</p>
           <button type="button" id="btn-rematch" class="cta">Yeniden Oyna</button>
-          <button type="button" id="btn-menu" class="cta ghost">Takım Seç</button>
+          <button type="button" id="btn-menu" class="cta ghost">Lobiye Dön</button>
         </div>
       </div>
     </div>
