@@ -72,7 +72,5 @@ scripts/deploy/__pycache__/
 marketing/stock/mixkit/*.mp4
 marketing/realistic-ads/
 marketing/website-ads/
-
-# Odysseus runtime (install via scripts/odysseus/install.sh)
-/odysseus/*
-!/odysseus/README.md
+/odysseus/
+/tmp/

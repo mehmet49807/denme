@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deploy admin-nav partial with GitHub after Odysseus."""
+"""Deploy admin-nav partial with GitHub menu item."""
 
 from __future__ import annotations
 

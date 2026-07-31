@@ -3,7 +3,6 @@
 // Yönetim paneli: /adminlogin (gonulkoprusu.com/adminlogin)
 
 use App\Http\Controllers\Admin\AdminAuthController;
-use App\Http\Controllers\Admin\AdminOdysseusController;
 use App\Http\Controllers\Admin\AdminContentController;
 use App\Http\Controllers\Admin\AdminEmailController;
 use App\Http\Controllers\Admin\AdminReferralController;
@@ -76,9 +75,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/rapor/{rapor}', fn () => redirect()->route('admin.dashboard'))->name('admin.rapor.show');
     Route::get('/github', [AdminGithubController::class, 'index'])->name('admin.github');
 
-    Route::get('/odysseus', [AdminOdysseusController::class, 'index'])->name('admin.odysseus');
-    Route::post('/odysseus/run', [AdminOdysseusController::class, 'run'])->name('admin.odysseus.run');
-    Route::post('/odysseus/refresh', [AdminOdysseusController::class, 'refreshStatus'])->name('admin.odysseus.refresh');
     Route::post('/github/check', [AdminGithubController::class, 'check'])->middleware(RequireSuperAdmin::class)->name('admin.github.check');
     Route::post('/github/clear-cache', [AdminGithubController::class, 'clearCache'])->middleware(RequireSuperAdmin::class)->name('admin.github.clear-cache');
     Route::post('/github/trigger', [AdminGithubController::class, 'trigger'])->middleware(RequireSuperAdmin::class)->name('admin.github.trigger');

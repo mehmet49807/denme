@@ -21,8 +21,7 @@
         'admin.messages' => 'messages',
         'admin.gallery' => 'content',
         'admin.content' => 'content',
-        'admin.odysseus' => 'ai',
-        'admin.auto-rules' => 'ai',
+        'admin.auto-rules' => 'seo',
         'admin.github' => 'seo',
         'admin.reports' => 'reports',
         'admin.premium' => 'premium',
@@ -35,7 +34,7 @@
         'admin.system-health' => 'seo',
         'admin.updates' => 'seo',
         'admin.staff' => 'users',
-        'admin.ops' => 'ai',
+        'admin.ops' => 'seo',
         'admin.profile' => 'profile',
     ];
     $adminPageTheme = 'dashboard';

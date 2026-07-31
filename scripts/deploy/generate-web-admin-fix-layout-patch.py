@@ -33,7 +33,7 @@ if ($mode === 'dump') {
     $needle = (string) ($_GET['q'] ?? 'admin-sidebar-nav');
     $pos = strpos($layout, $needle);
     if ($pos === false) {
-        $pos = strpos($layout, "route('admin.odysseus')");
+        $pos = strpos($layout, "route('admin.updates')");
     }
     echo substr($layout, max(0, $pos - 200), 4000);
     exit;
@@ -47,14 +47,14 @@ $newLayout = preg_replace('/<a[^>]*>[^<]*AI Rapor[^<]*<\/a>\s*/s', '', $newLayou
 $newLayout = str_replace($include, '', $newLayout);
 $newLayout = str_replace('@include("partials.admin-nav-github-link")', '', $newLayout);
 
-$aiMarker = "route('admin.odysseus')";
+$aiMarker = "route('admin.updates')";
 $pos = strpos($newLayout, $aiMarker);
 if ($pos !== false) {
     $close = strpos($newLayout, '</a>', $pos);
     if ($close !== false) {
         $insertAt = $close + 4;
         $newLayout = substr($newLayout, 0, $insertAt)."\n            ".$include.substr($newLayout, $insertAt);
-        echo "inserted github after admin.odysseus link\n";
+        echo "inserted github after admin.updates link\n";
     }
 }
 

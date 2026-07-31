@@ -62,7 +62,6 @@
                 ['route' => 'admin.audit', 'label' => 'Denetim Kayıtları', 'icon' => 'search', 'theme' => 'indigo'],
                 ['route' => 'admin.system-health', 'label' => 'Sistem Sağlığı', 'icon' => 'chart', 'theme' => 'emerald'],
                 ['route' => 'admin.updates', 'label' => 'Güncelleme', 'icon' => 'refresh', 'theme' => 'amber'],
-                ['route' => 'admin.odysseus', 'label' => 'Odysseus', 'icon' => 'sparkles', 'theme' => 'emerald'],
                 ['route' => 'admin.profile', 'label' => 'Profilim', 'icon' => 'user', 'theme' => 'rose'],
             ],
         ],
