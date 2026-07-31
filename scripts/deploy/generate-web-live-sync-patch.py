@@ -282,8 +282,8 @@ files = {
     "css/growth.css": WEB / "public/css/growth.css",
     "css/growth.min.css": WEB / "public/css/growth.min.css",
     "database/data/world-locations.php": WEB / "database/data/world-locations.php",
-    "storage/app/seo/openrouter-published-blog-faq.json": WEB
-    / "storage/app/seo/openrouter-published-blog-faq.json",
+    "storage/app/seo/published-blog-faq.json": WEB
+    / "storage/app/seo/published-blog-faq.json",
     "lang/tr/app.php": WEB / "lang/tr/app.php",
     "lang/en/app.php": WEB / "lang/en/app.php",
     "app/Support/QuickMessages.php": WEB / "app/Support/QuickMessages.php",

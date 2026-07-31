@@ -207,14 +207,13 @@ class OdysseusService
 
         if ($baseUrl === '' || $apiKey === '') {
             throw new \RuntimeException(
-                'LLM sağlayıcı ayarlı değil. Admin .env içine ODYSSEUS_ENDPOINT_URL + ODYSSEUS_API_KEY + ODYSSEUS_MODEL yazın '
-                .'(ör. OpenAI: https://api.openai.com/v1). OpenRouter kullanılmıyor.'
+                'LLM sağlayıcı ayarlı değil. Admin .env içine ODYSSEUS_ENDPOINT_URL + ODYSSEUS_API_KEY + ODYSSEUS_MODEL yazın (ör. OpenAI: https://api.openai.com/v1).'
             );
         }
 
         if (str_contains(strtolower($baseUrl), 'openrouter.ai')) {
             throw new \RuntimeException(
-                'OpenRouter engellendi. ODYSSEUS_ENDPOINT_URL değerini OpenAI/Groq/Gemini gibi başka bir sağlayıcıya çevirin.'
+                'Bu LLM adresi desteklenmiyor. ODYSSEUS_ENDPOINT_URL için OpenAI/Groq/Gemini kullanın.'
             );
         }
 

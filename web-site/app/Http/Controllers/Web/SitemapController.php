@@ -111,11 +111,8 @@ class SitemapController extends Controller
     {
         foreach ([
             storage_path('app/seo/published-blog-faq.json'),
-            storage_path('app/seo/openrouter-published-blog-faq.json'),
             base_path('storage/app/seo/published-blog-faq.json'),
-            base_path('storage/app/seo/openrouter-published-blog-faq.json'),
             base_path('../public_html/storage/app/seo/published-blog-faq.json'),
-            base_path('../public_html/storage/app/seo/openrouter-published-blog-faq.json'),
         ] as $path) {
             if (! is_file($path)) {
                 continue;

@@ -163,11 +163,8 @@ class LegalPageController extends Controller
     {
         return array_values(array_unique(array_filter([
             storage_path('app/seo/published-blog-faq.json'),
-            storage_path('app/seo/openrouter-published-blog-faq.json'),
             base_path('storage/app/seo/published-blog-faq.json'),
-            base_path('storage/app/seo/openrouter-published-blog-faq.json'),
             base_path('../public_html/storage/app/seo/published-blog-faq.json'),
-            base_path('../public_html/storage/app/seo/openrouter-published-blog-faq.json'),
         ])));
     }
 
@@ -187,9 +184,7 @@ class LegalPageController extends Controller
 
         foreach ([
             storage_path('app/seo/published-blog-faq.json'),
-            storage_path('app/seo/openrouter-published-blog-faq.json'),
             base_path('../public_html/storage/app/seo/published-blog-faq.json'),
-            base_path('../public_html/storage/app/seo/openrouter-published-blog-faq.json'),
         ] as $path) {
             File::ensureDirectoryExists(dirname($path));
             File::put($path, $json);
