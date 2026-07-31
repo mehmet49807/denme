@@ -145,6 +145,11 @@ class UserMailService
         };
     }
 
+    public function countRecipients(string $target, ?string $email = null): int
+    {
+        return $this->resolveRecipients($target, $email)->count();
+    }
+
     /** @return array<string, string|bool> */
     public function mailDiagnostics(): array
     {
