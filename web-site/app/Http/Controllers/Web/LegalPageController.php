@@ -162,8 +162,11 @@ class LegalPageController extends Controller
     private function publishedBlogFaqPaths(): array
     {
         return array_values(array_unique(array_filter([
+            storage_path('app/seo/published-blog-faq.json'),
             storage_path('app/seo/openrouter-published-blog-faq.json'),
+            base_path('storage/app/seo/published-blog-faq.json'),
             base_path('storage/app/seo/openrouter-published-blog-faq.json'),
+            base_path('../public_html/storage/app/seo/published-blog-faq.json'),
             base_path('../public_html/storage/app/seo/openrouter-published-blog-faq.json'),
         ])));
     }
@@ -180,10 +183,12 @@ class LegalPageController extends Controller
 
         $json = json_encode($normalized, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
-        Storage::put('seo/openrouter-published-blog-faq.json', $json);
+        Storage::put('seo/published-blog-faq.json', $json);
 
         foreach ([
+            storage_path('app/seo/published-blog-faq.json'),
             storage_path('app/seo/openrouter-published-blog-faq.json'),
+            base_path('../public_html/storage/app/seo/published-blog-faq.json'),
             base_path('../public_html/storage/app/seo/openrouter-published-blog-faq.json'),
         ] as $path) {
             File::ensureDirectoryExists(dirname($path));

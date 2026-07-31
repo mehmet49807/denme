@@ -23,10 +23,11 @@ Ortam değişkenleri (`admin-panel/.env`):
 ODYSSEUS_URL=http://127.0.0.1:7000
 ODYSSEUS_USER=admin
 ODYSSEUS_PASSWORD=...
-ODYSSEUS_WORKSPACE=/path/to/repo
-ODYSSEUS_MODEL=
-ODYSSEUS_ENDPOINT_URL=https://openrouter.ai/api/v1/chat/completions
-ODYSSEUS_API_KEY=
+ODYSSEUS_WORKSPACE=/home/gonulkop/apps/gonulkoprusu
+ODYSSEUS_MODEL=openai/gpt-4o-mini
+ODYSSEUS_ENDPOINT_URL=https://openrouter.ai/api/v1
+ODYSSEUS_API_KEY=...
 ```
 
-Model endpoint Odysseus Settings içinde de tanımlanabilir; admin komutları agent modunda `ODYSSEUS_WORKSPACE` altında dosya okur/yazar.
+`ODYSSEUS_ENDPOINT_URL` provider base URL olmalı (`…/v1`), `…/chat/completions` değil.
+Admin komutları agent modunda `ODYSSEUS_WORKSPACE` altında dosya okur/yazar.

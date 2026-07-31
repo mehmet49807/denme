@@ -9,6 +9,12 @@ use Throwable;
 
 class OdysseusService
 {
+    private const CACHE_COOKIE = 'odysseus.session_cookie';
+
+    private const CACHE_SESSION = 'odysseus.agent_session_id';
+
+    private const CACHE_ENDPOINT = 'odysseus.model_endpoint_id';
+
     public function baseUrl(): string
     {
         return rtrim((string) config('services.odysseus.url', 'http://127.0.0.1:7000'), '/');
@@ -21,7 +27,6 @@ class OdysseusService
             return $configured;
         }
 
-        // Repo root: admin-panel/app/Services → ../../../
         return realpath(base_path('..')) ?: base_path();
     }
 
@@ -46,14 +51,12 @@ class OdysseusService
         } catch (Throwable $e) {
             return [
                 'ok' => false,
-                'message' => 'Odysseus erişilemiyor: '.$e->getMessage().'. Sunucuda: bash scripts/odysseus/start.sh',
+                'message' => 'Odysseus erişilemiyor: '.$e->getMessage().'. Sunucuda keepalive cron kontrol edin.',
             ];
         }
     }
 
     /**
-     * Run an admin command in Odysseus agent mode against the code workspace.
-     *
      * @return array{ok: bool, reply: string, session_id?: string, error?: string, events?: list<string>}
      */
     public function runCommand(string $command): array
@@ -70,8 +73,16 @@ class OdysseusService
 
         try {
             $cookie = $this->authenticate();
-            $sessionId = $this->ensureSession($cookie);
+            $sessionId = $this->ensureSession($cookie, forceNew: false);
             $stream = $this->chatStream($cookie, $sessionId, $command);
+
+            // Stale endpoint / session → recreate once
+            if (! $stream['ok'] && $this->isRecoverableSessionError($stream['error'] ?? '')) {
+                $this->forgetCaches();
+                $cookie = $this->authenticate();
+                $sessionId = $this->ensureSession($cookie, forceNew: true);
+                $stream = $this->chatStream($cookie, $sessionId, $command);
+            }
 
             return [
                 'ok' => $stream['ok'],
@@ -82,6 +93,7 @@ class OdysseusService
             ];
         } catch (Throwable $e) {
             Log::warning('Odysseus command failed', ['error' => $e->getMessage()]);
+            $this->forgetCaches();
 
             return [
                 'ok' => false,
@@ -91,10 +103,29 @@ class OdysseusService
         }
     }
 
+    private function forgetCaches(): void
+    {
+        Cache::forget(self::CACHE_COOKIE);
+        Cache::forget(self::CACHE_SESSION);
+        Cache::forget(self::CACHE_ENDPOINT);
+    }
+
+    private function isRecoverableSessionError(string $error): bool
+    {
+        $error = strtolower($error);
+
+        return str_contains($error, 'model endpoint was removed')
+            || str_contains($error, 'no model selected')
+            || str_contains($error, 'session')
+            || str_contains($error, 'http 400')
+            || str_contains($error, 'http 401')
+            || str_contains($error, 'http 403')
+            || str_contains($error, 'http 404');
+    }
+
     private function authenticate(): string
     {
-        $cacheKey = 'odysseus.session_cookie';
-        $cached = Cache::get($cacheKey);
+        $cached = Cache::get(self::CACHE_COOKIE);
         if (is_string($cached) && $cached !== '') {
             return $cached;
         }
@@ -124,7 +155,7 @@ class OdysseusService
             throw new \RuntimeException('Odysseus oturum çerezi alınamadı.');
         }
 
-        Cache::put($cacheKey, $cookie, now()->addHours(12));
+        Cache::put(self::CACHE_COOKIE, $cookie, now()->addHours(12));
 
         return $cookie;
     }
@@ -139,7 +170,6 @@ class OdysseusService
             }
         }
 
-        // Fallback: first cookie
         foreach ($cookieJar as $cookie) {
             $name = method_exists($cookie, 'getName') ? $cookie->getName() : (string) ($cookie['Name'] ?? '');
             $value = method_exists($cookie, 'getValue') ? $cookie->getValue() : (string) ($cookie['Value'] ?? '');
@@ -151,48 +181,107 @@ class OdysseusService
         return '';
     }
 
-    private function ensureSession(string $cookieHeader): string
+    private function llmBaseUrl(): string
     {
-        $cacheKey = 'odysseus.agent_session_id';
-        $cached = Cache::get($cacheKey);
+        $raw = trim((string) config('services.odysseus.endpoint_url', ''));
+        if ($raw === '') {
+            return '';
+        }
+
+        // ModelEndpoint wants provider base (…/v1), not …/chat/completions
+        $raw = preg_replace('#/chat/completions/?$#i', '', $raw) ?? $raw;
+
+        return rtrim($raw, '/');
+    }
+
+    private function ensureModelEndpoint(string $cookieHeader): string
+    {
+        $cached = Cache::get(self::CACHE_ENDPOINT);
         if (is_string($cached) && $cached !== '') {
             return $cached;
         }
 
-        $endpointUrl = trim((string) config('services.odysseus.endpoint_url', ''));
-        $model = trim((string) config('services.odysseus.model', ''));
+        $baseUrl = $this->llmBaseUrl();
         $apiKey = trim((string) config('services.odysseus.api_key', ''));
+        $model = trim((string) config('services.odysseus.model', ''));
+
+        if ($baseUrl === '' || $apiKey === '') {
+            throw new \RuntimeException('ODYSSEUS_ENDPOINT_URL ve ODYSSEUS_API_KEY admin .env içinde gerekli.');
+        }
+
+        $multipart = [
+            ['name' => 'name', 'contents' => 'Admin LLM'],
+            ['name' => 'base_url', 'contents' => $baseUrl],
+            ['name' => 'api_key', 'contents' => $apiKey],
+            ['name' => 'skip_probe', 'contents' => 'false'],
+            ['name' => 'require_models', 'contents' => 'false'],
+            ['name' => 'endpoint_kind', 'contents' => 'api'],
+            ['name' => 'shared', 'contents' => 'true'],
+        ];
+        if ($model !== '') {
+            $multipart[] = ['name' => 'pinned_models', 'contents' => $model];
+        }
+
+        $response = Http::timeout(60)
+            ->withHeaders(['Cookie' => $cookieHeader])
+            ->asMultipart()
+            ->post($this->baseUrl().'/api/model-endpoints', $multipart);
+
+        if (! $response->successful()) {
+            throw new \RuntimeException('Odysseus model endpoint oluşturulamadı: HTTP '.$response->status().' '.$response->body());
+        }
+
+        $endpointId = (string) ($response->json('id') ?? $response->json('endpoint_id') ?? '');
+        if ($endpointId === '') {
+            // Some responses wrap data
+            $endpointId = (string) data_get($response->json(), 'data.id', '');
+        }
+        if ($endpointId === '') {
+            throw new \RuntimeException('Odysseus model endpoint ID dönmedi.');
+        }
+
+        Cache::put(self::CACHE_ENDPOINT, $endpointId, now()->addHours(12));
+
+        return $endpointId;
+    }
+
+    private function ensureSession(string $cookieHeader, bool $forceNew = false): string
+    {
+        if (! $forceNew) {
+            $cached = Cache::get(self::CACHE_SESSION);
+            if (is_string($cached) && $cached !== '') {
+                return $cached;
+            }
+        }
+
+        $endpointId = $this->ensureModelEndpoint($cookieHeader);
+        $model = trim((string) config('services.odysseus.model', ''));
 
         $multipart = [
             ['name' => 'name', 'contents' => 'Admin Komut'],
-            ['name' => 'skip_validation', 'contents' => $endpointUrl === '' ? 'true' : 'false'],
+            ['name' => 'endpoint_id', 'contents' => $endpointId],
+            ['name' => 'skip_validation', 'contents' => 'false'],
         ];
-
-        if ($endpointUrl !== '') {
-            $multipart[] = ['name' => 'endpoint_url', 'contents' => $endpointUrl];
-        }
         if ($model !== '') {
             $multipart[] = ['name' => 'model', 'contents' => $model];
         }
-        if ($apiKey !== '') {
-            $multipart[] = ['name' => 'api_key', 'contents' => $apiKey];
-        }
 
-        $response = Http::timeout(45)
+        $response = Http::timeout(60)
             ->withHeaders(['Cookie' => $cookieHeader])
             ->asMultipart()
             ->post($this->baseUrl().'/api/session', $multipart);
 
         if (! $response->successful()) {
+            Cache::forget(self::CACHE_ENDPOINT);
             throw new \RuntimeException('Odysseus oturum açılamadı: HTTP '.$response->status().' '.$response->body());
         }
 
         $sessionId = (string) ($response->json('id') ?? $response->json('session_id') ?? '');
         if ($sessionId === '') {
-            throw new \RuntimeException('Odysseus oturum ID dönmedi. Odysseus Settings içinde model endpoint tanımlayın.');
+            throw new \RuntimeException('Odysseus oturum ID dönmedi.');
         }
 
-        Cache::put($cacheKey, $sessionId, now()->addHours(12));
+        Cache::put(self::CACHE_SESSION, $sessionId, now()->addHours(12));
 
         return $sessionId;
     }
@@ -204,7 +293,6 @@ class OdysseusService
     {
         $workspace = $this->workspace();
         $prompt = $this->buildPrompt($command, $workspace);
-
         $timeout = (int) config('services.odysseus.timeout', 300);
 
         $response = Http::timeout($timeout)
@@ -222,10 +310,8 @@ class OdysseusService
             ]);
 
         if (! $response->successful()) {
-            // Clear stale auth/session on auth errors
-            if (in_array($response->status(), [401, 403, 404], true)) {
-                Cache::forget('odysseus.session_cookie');
-                Cache::forget('odysseus.agent_session_id');
+            if (in_array($response->status(), [400, 401, 403, 404], true)) {
+                $this->forgetCaches();
             }
 
             return [
@@ -301,7 +387,6 @@ PROMPT;
 
         $reply = trim(implode('', $replyParts));
         if ($reply === '' && $body !== '') {
-            // Non-SSE JSON fallback
             $json = json_decode($body, true);
             if (is_array($json)) {
                 $reply = (string) ($json['response'] ?? $json['reply'] ?? $json['message'] ?? '');
@@ -317,7 +402,7 @@ PROMPT;
             return [
                 'ok' => false,
                 'reply' => '',
-                'error' => 'Odysseus boş yanıt döndü. Settings içinde model/endpoint tanımlı mı kontrol et.',
+                'error' => 'Odysseus boş yanıt döndü. Model endpoint ayarını kontrol et.',
                 'events' => array_values(array_unique($events)),
             ];
         }

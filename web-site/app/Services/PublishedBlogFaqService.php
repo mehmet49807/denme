@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class PublishedBlogFaqService
 {
-  private const STORAGE_PATH = 'seo/openrouter-published-blog-faq.json';
+  private const STORAGE_PATH = 'seo/published-blog-faq.json';
 
   /** @return array{blog_posts: array<int, array<string, mixed>>, faq_items: array<int, array<string, string>>, published_at?: string} */
   public function all(): array
