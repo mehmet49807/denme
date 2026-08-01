@@ -7,6 +7,22 @@
 @section('page-lead', $post['description'] ?? '')
 
 @section('page-content')
+    @php $visual = \App\Support\BlogPostVisual::forPost(is_array($post) ? $post : []); @endphp
+    <div class="blog-hero blog-hero--post">
+        <x-optimized-image
+            name="{{ $visual['image'] }}"
+            alt="{{ $visual['alt'] }}"
+            width="960"
+            height="640"
+            loading="eager"
+            sizes="(max-width: 768px) 100vw, 720px"
+        />
+        <div class="blog-hero__copy">
+            <strong>{{ $visual['label'] }}</strong>
+            <span>Şehir rehberi · Gönül Köprüsü</span>
+        </div>
+    </div>
+
     @foreach(($post['sections'] ?? []) as $section)
         @if(!empty($section['heading']))
             <h2>{{ $section['heading'] }}</h2>

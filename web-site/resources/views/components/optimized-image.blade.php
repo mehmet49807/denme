@@ -22,6 +22,11 @@
         'testimonial-ayse', 'testimonial-mehmet', 'testimonial-elif' => [56, 112],
         'story-couple-01', 'story-couple-02', 'story-couple-03',
         'story-couple-04', 'story-couple-05', 'story-couple-06' => [640, 960],
+        'blog-city-istanbul', 'blog-city-ankara', 'blog-city-izmir',
+        'blog-city-bursa', 'blog-city-antalya', 'blog-city-adana',
+        'blog-city-konya', 'blog-city-gaziantep', 'blog-city-kayseri',
+        'blog-city-mersin', 'blog-city-diyarbakir', 'blog-city-eskisehir',
+        'blog-city-samsun', 'blog-city-trabzon', 'blog-city-general' => [640, 960],
         default => null,
     };
 
@@ -31,6 +36,11 @@
         'testimonial-ayse', 'testimonial-mehmet', 'testimonial-elif' => '56px',
         'story-couple-01', 'story-couple-02', 'story-couple-03',
         'story-couple-04', 'story-couple-05', 'story-couple-06' => '(max-width: 768px) 100vw, 560px',
+        'blog-city-istanbul', 'blog-city-ankara', 'blog-city-izmir',
+        'blog-city-bursa', 'blog-city-antalya', 'blog-city-adana',
+        'blog-city-konya', 'blog-city-gaziantep', 'blog-city-kayseri',
+        'blog-city-mersin', 'blog-city-diyarbakir', 'blog-city-eskisehir',
+        'blog-city-samsun', 'blog-city-trabzon', 'blog-city-general' => '(max-width: 768px) 100vw, 320px',
         default => null,
     };
 

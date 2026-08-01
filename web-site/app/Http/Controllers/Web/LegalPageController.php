@@ -94,6 +94,7 @@ class LegalPageController extends Controller
             'posts' => $published['blog_posts'],
             'publishedAt' => $published['published_at'] ?? null,
             'jsonLd' => $this->blogIndexSchema($published['blog_posts']),
+            'homeStories' => \App\Support\SuccessStoriesContent::forHome(4),
         ]));
     }
 

@@ -2073,17 +2073,12 @@ body.app-shell-body .site-header .site-nav { display: none; }
         order: -1;
         margin-bottom: 0.75rem;
     }
-    .info-nav__summary {
-        display: flex;
+    .info-nav__list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.35rem;
     }
-    .info-nav__panel:not([open]) .info-nav__body {
-        display: none;
-    }
-    .info-nav__body {
-        max-height: min(70vh, 28rem);
-        overflow: auto;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
+    .info-nav__list--legal {
+        grid-template-columns: 1fr;
     }
     .content-icon-cards { grid-template-columns: 1fr; }
     .content-tip-grid { grid-template-columns: 1fr; }
