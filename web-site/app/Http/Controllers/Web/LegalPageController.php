@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Support\SeoHelper;
+use App\Support\SuccessStoriesContent;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -94,7 +95,7 @@ class LegalPageController extends Controller
             'posts' => $published['blog_posts'],
             'publishedAt' => $published['published_at'] ?? null,
             'jsonLd' => $this->blogIndexSchema($published['blog_posts']),
-            'homeStories' => \App\Support\SuccessStoriesContent::forHome(4),
+            'homeStories' => SuccessStoriesContent::forHome(4),
         ]));
     }
 
