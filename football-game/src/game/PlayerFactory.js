@@ -183,52 +183,53 @@ export function createPlayerMesh(colors, isKeeper = false, appearance = {}) {
   const hairMat = mat(hairColor, { roughness: 0.92 });
 
   // —— Head (egg-shaped) + front face card ——
-  const head = add(root, new THREE.SphereGeometry(0.105, 28, 22), headMat, 0, 1.68, 0.02);
-  head.scale.set(0.95, 1.08, 0.92);
+  const head = add(root, new THREE.SphereGeometry(0.12, 32, 24), headMat, 0, 1.7, 0.02);
+  head.scale.set(0.95, 1.1, 0.92);
 
   const face = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.16, 0.19),
+    new THREE.PlaneGeometry(0.19, 0.22),
     new THREE.MeshStandardMaterial({
       map: faceMap,
-      roughness: 0.7,
+      roughness: 0.65,
       metalness: 0.02,
       transparent: true,
+      depthWrite: true,
     })
   );
-  face.position.set(0, 1.675, 0.095);
+  face.position.set(0, 1.7, 0.108);
   face.castShadow = true;
   root.add(face);
 
   // Hair cap + sides
   const hair = add(
     root,
-    new THREE.SphereGeometry(0.11, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.55),
+    new THREE.SphereGeometry(0.125, 22, 16, 0, Math.PI * 2, 0, Math.PI * 0.55),
     hairMat,
     0,
-    1.7,
+    1.72,
     0.0
   );
   hair.rotation.x = -0.18;
-  add(root, new THREE.SphereGeometry(0.09, 12, 10), hairMat, 0, 1.62, -0.05);
+  add(root, new THREE.SphereGeometry(0.1, 12, 10), hairMat, 0, 1.64, -0.06);
 
   // Ears
-  add(root, new THREE.SphereGeometry(0.028, 10, 8), bodySkin, -0.1, 1.67, 0);
-  add(root, new THREE.SphereGeometry(0.028, 10, 8), bodySkin, 0.1, 1.67, 0);
+  add(root, new THREE.SphereGeometry(0.032, 10, 8), bodySkin, -0.115, 1.69, 0);
+  add(root, new THREE.SphereGeometry(0.032, 10, 8), bodySkin, 0.115, 1.69, 0);
 
   // Neck
-  add(root, new THREE.CylinderGeometry(0.045, 0.055, 0.08, 12), bodySkin, 0, 1.54, 0);
+  add(root, new THREE.CylinderGeometry(0.05, 0.06, 0.09, 12), bodySkin, 0, 1.55, 0);
 
   // —— Torso (training jacket) ——
-  const chest = add(root, new THREE.CapsuleGeometry(0.15, 0.28, 6, 14), kitMat, 0, 1.32, 0);
-  chest.scale.set(1.15, 1, 0.75);
+  const chest = add(root, new THREE.CapsuleGeometry(0.17, 0.3, 8, 16), kitMat, 0, 1.32, 0);
+  chest.scale.set(1.2, 1, 0.78);
 
   // Shoulders
-  add(root, new THREE.SphereGeometry(0.07, 12, 10), sleeveMat, -0.2, 1.42, 0);
-  add(root, new THREE.SphereGeometry(0.07, 12, 10), sleeveMat, 0.2, 1.42, 0);
+  add(root, new THREE.SphereGeometry(0.08, 12, 10), sleeveMat, -0.22, 1.44, 0);
+  add(root, new THREE.SphereGeometry(0.08, 12, 10), sleeveMat, 0.22, 1.44, 0);
 
   // Arms (upper white, lower team color — long sleeve training)
-  const upperArmGeo = new THREE.CapsuleGeometry(0.042, 0.16, 4, 10);
-  const foreArmGeo = new THREE.CapsuleGeometry(0.038, 0.16, 4, 10);
+  const upperArmGeo = new THREE.CapsuleGeometry(0.05, 0.17, 5, 12);
+  const foreArmGeo = new THREE.CapsuleGeometry(0.045, 0.17, 5, 12);
 
   const leftUpper = add(root, upperArmGeo, sleeveMat, -0.26, 1.3, 0);
   leftUpper.rotation.z = 0.22;

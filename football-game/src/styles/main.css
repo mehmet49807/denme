@@ -81,6 +81,28 @@ body {
   animation: sky-shift 12s ease-in-out infinite alternate;
 }
 
+.screen > .menu-bg.soft {
+  background:
+    linear-gradient(90deg, rgba(7, 20, 34, 0.92) 0%, rgba(7, 20, 34, 0.78) 42%, rgba(7, 20, 34, 0.15) 68%, rgba(7, 20, 34, 0.05) 100%),
+    radial-gradient(ellipse 50% 60% at 72% 55%, rgba(255, 255, 255, 0.08), transparent 55%);
+  animation: none;
+}
+
+.screen.showcase {
+  justify-content: flex-start;
+}
+
+.login-panel {
+  width: min(400px, 46vw) !important;
+  margin-left: 4vw;
+  text-align: left;
+  background: rgba(8, 22, 40, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  backdrop-filter: blur(8px);
+}
+
 @keyframes sky-shift {
   from {
     filter: brightness(1);

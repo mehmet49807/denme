@@ -65,9 +65,22 @@ function spawnMenuPreview() {
     false,
     { skin: 0xc68642, hair: 0x1a120c, beard: true }
   );
-  previewPlayer.position.set(0, 0, 0);
-  previewPlayer.rotation.y = Math.PI;
+  previewPlayer.position.set(1.35, 0, 0.2);
+  previewPlayer.rotation.y = -0.55;
   scene.add(previewPlayer);
+
+  // Antrenman konileri (referans görsele yakın)
+  const coneMat = new THREE.MeshStandardMaterial({ color: 0xff6a00, roughness: 0.5 });
+  for (const [x, z] of [
+    [0.6, 0.9],
+    [1.9, 1.1],
+    [2.2, 0.3],
+  ]) {
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.32, 12), coneMat);
+    cone.position.set(x, 0.16, z);
+    cone.castShadow = true;
+    scene.add(cone);
+  }
 }
 spawnMenuPreview();
 let userTeam = null;
@@ -419,7 +432,7 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && match && !match.ended) setPaused(!match.paused);
 });
 
-const camOffset = new THREE.Vector3(0, 9, -12);
+const camOffset = new THREE.Vector3(4.5, 5.5, -9);
 const camLook = new THREE.Vector3();
 const camPos = new THREE.Vector3();
 
@@ -430,13 +443,14 @@ function loop(t) {
 
   if (!match) {
     if (!previewPlayer) spawnMenuPreview();
-    const a = t * 0.00035;
+    const a = t * 0.00025;
     if (previewPlayer) {
-      previewPlayer.rotation.y = Math.PI + Math.sin(a) * 0.35;
-      animatePlayerWalk(previewPlayer, t / 1000, 0.35);
+      previewPlayer.rotation.y = -0.55 + Math.sin(a) * 0.2;
+      animatePlayerWalk(previewPlayer, t / 1000, 0.25);
     }
-    camera.position.set(Math.sin(a) * 2.4, 1.75, 3.6);
-    camera.lookAt(0, 1.35, 0);
+    // Karakter vitrini — yüz ve vücut net görünsün
+    camera.position.set(-0.15 + Math.sin(a) * 0.15, 1.45, 3.1);
+    camera.lookAt(1.2, 1.25, 0.1);
     renderer.render(scene, camera);
     return;
   }
@@ -454,12 +468,13 @@ function loop(t) {
         Math.cos(match.controlled.mesh.rotation.y)
       )
     : new THREE.Vector3(0, 0, 1);
-  // Üçüncü şahıs — oyuncuya daha yakın (yüz/vücut görünsün)
-  const back = facing.clone().multiplyScalar(-8).add(new THREE.Vector3(0, 3.2, 0));
+  // Yan-arkadan 3/4 açı — insan modeli daha iyi okunur
+  const side = new THREE.Vector3(-facing.z, 0, facing.x).multiplyScalar(3.2);
+  const back = facing.clone().multiplyScalar(-7.2).add(new THREE.Vector3(0, 2.8, 0)).add(side);
   camPos.copy(camLook).add(back);
-  camPos.lerp(camLook.clone().add(camOffset), 0.25);
+  camPos.lerp(camLook.clone().add(camOffset), 0.2);
   camera.position.lerp(camPos, 1 - Math.pow(0.0008, dt));
-  camera.lookAt(camLook.x, 1.35, camLook.z);
+  camera.lookAt(camLook.x, 1.2, camLook.z);
 
   renderer.render(scene, camera);
 }
