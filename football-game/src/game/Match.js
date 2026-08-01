@@ -79,8 +79,8 @@ export class Match {
       this.scene.add(mesh);
 
       const label = makeNameSprite(data.name.split(' ').slice(-1)[0], data.number);
-      label.position.y = 1.95;
-      label.scale.set(1.6, 0.4, 1);
+      label.position.y = 2.0;
+      label.scale.set(1.35, 0.34, 1);
       mesh.add(label);
 
       this.players.push({

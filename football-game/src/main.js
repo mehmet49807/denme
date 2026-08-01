@@ -83,8 +83,8 @@ async function spawnMenuPreview() {
       kitStyle: 'training',
     }
   );
-  previewPlayer.position.set(1.2, 0, 0.15);
-  previewPlayer.rotation.y = Math.PI - 0.45;
+  previewPlayer.position.set(0, 0, 0);
+  previewPlayer.rotation.y = 0; // yüz +Z
   scene.add(previewPlayer);
 
   previewBall = createBall();
@@ -456,7 +456,7 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && match && !match.ended) setPaused(!match.paused);
 });
 
-const camOffset = new THREE.Vector3(4.5, 5.5, -9);
+const camOffset = new THREE.Vector3(5.5, 4.2, -7.5);
 const camLook = new THREE.Vector3();
 const camPos = new THREE.Vector3();
 
@@ -469,12 +469,12 @@ function loop(t) {
     if (!previewPlayer) spawnMenuPreview();
     const a = t * 0.0002;
     if (previewPlayer) {
-      previewPlayer.rotation.y = Math.PI - 0.45 + Math.sin(a) * 0.1;
-      animateAthlete(previewPlayer, t / 1000, 0.55, dt);
+      previewPlayer.rotation.y = Math.sin(a) * 0.25; // hafif salınım, yüz önde
+      animateAthlete(previewPlayer, t / 1000, 0.25, dt);
     }
-    // Referans gibi yakın portre / 3-4 vücut
-    camera.position.set(0.15 + Math.sin(a) * 0.1, 1.35, 2.55);
-    camera.lookAt(1.15, 1.15, 0.2);
+    // Tam önden yakın portre
+    camera.position.set(0.35, 1.5, 2.8);
+    camera.lookAt(0, 1.35, 0);
     renderer.render(scene, camera);
     return;
   }
@@ -492,13 +492,13 @@ function loop(t) {
         Math.cos(match.controlled.mesh.rotation.y)
       )
     : new THREE.Vector3(0, 0, 1);
-  // Yan-arkadan 3/4 açı — insan modeli daha iyi okunur
-  const side = new THREE.Vector3(-facing.z, 0, facing.x).multiplyScalar(3.2);
-  const back = facing.clone().multiplyScalar(-7.2).add(new THREE.Vector3(0, 2.8, 0)).add(side);
+  // Yan 3/4 — yüz/saç görünsün (tam arkadan robot gibi durmasın)
+  const side = new THREE.Vector3(-facing.z, 0, facing.x).multiplyScalar(4.5);
+  const back = facing.clone().multiplyScalar(-5.5).add(new THREE.Vector3(0, 2.4, 0)).add(side);
   camPos.copy(camLook).add(back);
-  camPos.lerp(camLook.clone().add(camOffset), 0.2);
+  camPos.lerp(camLook.clone().add(camOffset), 0.18);
   camera.position.lerp(camPos, 1 - Math.pow(0.0008, dt));
-  camera.lookAt(camLook.x, 1.2, camLook.z);
+  camera.lookAt(camLook.x, 1.35, camLook.z);
 
   renderer.render(scene, camera);
 }
