@@ -82,9 +82,10 @@
 <section class="admin-panel admin-panel--glass admin-instagram-pack">
     <header class="admin-package-card__head">
         <div>
-            <h3 class="admin-panel-title">Instagram bio / story paketi</h3>
+            <h3 class="admin-panel-title">Instagram Reels / bio paketi</h3>
             <p class="admin-package-card__sub">
-                Tek tıkla bio linki, story sticker URL’si ve hazır caption’ları kopyala.
+                Yeni Reels v2 videoları (ig-01…ig-05) + açıklama/hashtag’ler.
+                Videolar: <a href="{{ route('admin.ads') }}">Reklam</a> menüsünden indir.
                 UTM kampanya: <code>{{ $defaultCampaign }}</code>
             </p>
         </div>

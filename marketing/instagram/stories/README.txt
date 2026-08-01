@@ -1,29 +1,28 @@
-Gönül Köprüsü — Instagram Story Paketi
+Gönül Köprüsü — Instagram içerik notu
 =====================================
 
-Boyut: 1080×1920 (9:16)
-Ses: Türkçe (edge-tts Emel)
-Görseller: marketing/instagram gerçek marka görselleri + logo
+ESKİ story-*.mp4 paketleri kaldırıldı (düşük izlenme / 0 beğeni).
 
-Story link sticker:
-  https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly
+Yeni paket (Reels v2) — canlı:
+  https://gonulkoprusu.com/images/ads/
 
-Dosyalar:
-- story-01-ciddi-iliski.png / story-01-ciddi-iliski.mp4 — “Ciddi ilişki arayanlar burada”
-  Ses metni: Gönül Köprüsü. Ciddi ilişki arayanlar burada. Güvenli tanışma, evlilik odaklı. Ücretsiz üye ol. gonulkoprusu.com
+Dosyalar (9:16 Instagram Reels):
+  ig-01-dur.mp4       — Flört yorduysa… / Ciddi ilişki ara
+  ig-02-soru.mp4      — Ciddi misin? Gerçekten mi?
+  ig-03-guven.mp4     — Önce güven. Sonra sohbet.
+  ig-04-sehir.mp4     — Şehrinde misin?
+  ig-05-evlilik.mp4   — Evlilik niyetiyle?
 
-- story-02-dogru-insan.png / story-02-dogru-insan.mp4 — “Doğru insan, doğru yer”
-  Ses metni: Doğru insan, doğru yer. Kalpten kalbe uzanan en güzel köprü. Gönül Köprüsü. Ücretsiz üye ol.
+Açıklama + hashtag (kopyala-yapıştır):
+  marketing/instagram/reels-v2-captions.txt
+  https://gonulkoprusu.com/images/ads/instagram-reels-captions.txt
 
-- story-03-guvenli.png / story-03-guvenli.mp4 — “Güvenli · Ciddi · Gerçek bağlar”
-  Ses metni: Gönül Köprüsü ile tanış. Güvenli profiller, ciddi üyelik, gerçek bağlar. Hemen ücretsiz kayıt ol.
+Yayın adımları:
+1) Instagram’daki ESKİ zayıf Reel’leri arşivle / sil
+2) Admin → Reklam’dan ig-0X.mp4 indir (veya yukarıdaki URL)
+3) Reels olarak yükle — ilk 1 sn’de büyük yazı görünmeli
+4) Pazarlama panelinden ilgili caption’ı yapıştır
+5) Bio link: register?utm_source=instagram&utm_medium=reels&utm_campaign=v2
 
-- story-04-evlilik.png / story-04-evlilik.mp4 — “Evlilik hayaline bir adım”
-  Ses metni: Evlilik hayalinize bir adım daha yaklaşın. Gönül Köprüsü. Gönülden gönüle. Hemen kayıt ol.
-
-- story-reel-full.mp4 — 4 story birleşik reel
-
-Yayın notu:
-1) Instagram uygulamasında Story ekle → bu MP4’lerden birini yükle
-2) Link sticker: yukarıdaki UTM’li kayıt linki
-3) Marka adı karede hero; seslendirme Türkçe
+Yeniden üretmek:
+  python3 scripts/marketing/build-realistic-ads.py

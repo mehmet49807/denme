@@ -43,96 +43,161 @@ CLIPS = {
     "h": STOCK / "mixkit-42511.mp4",
 }
 
+# v2: kısa kesim, 1. sn içinde okunabilir hook, yumuşak şiirsel satır YOK
 ADS = [
     {
-        "id": "rx-01-hook-ciddi",
-        "title": "Ciddi ilişki mi arıyorsun?",
-        "subtitle": "Hook · kimlik odaklı",
+        "id": "ig-01-dur",
+        "title": "Flört yorduysa dur",
+        "subtitle": "Pattern interrupt · Reels v2",
         "format_primary": "9:16",
-        "channel": "Instagram Reels · Stories · Meta Ads",
-        "clips": [("a", 0.4, 2.8), ("c", 0.5, 3.5), ("e", 1.0, 3.2)],
+        "channel": "Instagram Reels",
+        "clips": [("a", 0.2, 1.8), ("c", 0.4, 2.0), ("d", 0.5, 2.0), ("b", 0.3, 1.9)],
         "captions": [
-            (0.0, 2.4, "Ciddi ilişki mi arıyorsun?"),
-            (2.4, 5.8, "Uygulama kalabalığında kaybolma."),
-            (5.8, 9.5, "Gönül Köprüsü — güvenli & ciddi"),
+            (0.0, 1.6, "Flört yorduysa…"),
+            (1.6, 3.4, "Ciddi ilişki ara."),
+            (3.4, 5.6, "Kart yok. Ücretsiz."),
+            (5.6, 7.8, "Gönül Köprüsü"),
         ],
         "voice": (
-            "Ciddi ilişki mi arıyorsun? Uygulama kalabalığında kaybolma. "
-            "Gönül Köprüsü. Güvenli tanışma, evlilik odaklı. Ücretsiz üye ol."
+            "Flört uygulamaları yorduysa dur. Ciddi ilişki arıyorsan Gönül Köprüsü. "
+            "Kart bilgisi yok. Ücretsiz üye ol."
         ),
-        "cta": "Ücretsiz üye ol → gonulkoprusu.com",
+        "cta": "Ücretsiz kayıt → gonulkoprusu.com",
+        "ig_caption": (
+            "Flört yorduysa… ciddi ilişki zamanı.\n"
+            "Gönül Köprüsü’nde güvenli tanış, evlilik niyetiyle ilerle.\n"
+            "Kart bilgisi yok · Ücretsiz kayıt 👇\n"
+            "{url}\n\n"
+            "#ciddiilişki #evlilik #güvenlitanışma #gonülköprüsü #tanışma "
+            "#evliliğeğilimli #ilişki #aile #Türkçe #reels"
+        ),
     },
     {
-        "id": "rx-02-dogru-insan",
-        "title": "Doğru insan, doğru yer",
-        "subtitle": "Duygusal · reel tarzı",
+        "id": "ig-02-soru",
+        "title": "Gerçekten ciddi misin?",
+        "subtitle": "Soru hook · Reels v2",
         "format_primary": "9:16",
-        "channel": "Instagram Reels · TikTok",
-        "clips": [("f", 0.3, 3.0), ("d", 0.2, 3.2), ("b", 0.8, 3.0)],
+        "channel": "Instagram Reels",
+        "clips": [("c", 0.2, 1.7), ("d", 0.2, 2.0), ("a", 0.6, 1.9), ("b", 0.4, 1.9)],
         "captions": [
-            (0.0, 2.2, "Doğru insan, doğru yer"),
-            (2.2, 5.5, "Kalpten kalbe uzanan köprü"),
-            (5.5, 9.2, "Hemen kayıt ol — ücretsiz"),
+            (0.0, 1.5, "Ciddi misin?"),
+            (1.5, 3.3, "Gerçekten mi?"),
+            (3.3, 5.5, "O zaman buradasın."),
+            (5.5, 7.6, "Ücretsiz üye ol"),
         ],
         "voice": (
-            "Doğru insan, doğru yer. Kalpten kalbe uzanan en güzel köprü. "
-            "Gönül Köprüsü. Ücretsiz üye ol."
+            "Ciddi misin? Gerçekten mi? O zaman Gönül Köprüsü’ndesin. "
+            "Güvenli tanışma, evlilik odaklı. Ücretsiz üye ol."
         ),
-        "cta": "Şimdi kayıt ol → gonulkoprusu.com",
+        "cta": "Bio’daki linke dokun",
+        "ig_caption": (
+            "Ciddi misin? Gerçekten mi?\n"
+            "O zaman doğru yerdesin — Gönül Köprüsü.\n"
+            "Flört değil; güvenli, ciddi tanışma. Ücretsiz başla 👇\n"
+            "{url}\n\n"
+            "#ciddiilişki #evlilikarıyorum #güvenliuygulama #gonülköprüsü "
+            "#tanışmasitesi #evlilik #reels #Türkiye"
+        ),
     },
     {
-        "id": "rx-03-guvenli",
-        "title": "Güvenli · Ciddi · Gerçek",
-        "subtitle": "Güven mesajı",
+        "id": "ig-03-guven",
+        "title": "Güven önce gelir",
+        "subtitle": "Güven mesajı · Reels v2",
         "format_primary": "9:16",
-        "channel": "Meta Ads · Stories",
-        "clips": [("g", 0.2, 3.0), ("h", 0.2, 2.8), ("a", 2.0, 3.0)],
+        "channel": "Instagram Reels · Stories",
+        "clips": [("d", 0.15, 1.8), ("h", 0.15, 1.9), ("a", 1.5, 2.0), ("b", 0.8, 1.8)],
         "captions": [
-            (0.0, 2.3, "Güvenli profiller"),
-            (2.3, 5.2, "Ciddi üyelik · gerçek bağlar"),
-            (5.2, 9.0, "Gönül Köprüsü’ne katıl"),
+            (0.0, 1.5, "Önce güven."),
+            (1.5, 3.4, "Sonra sohbet."),
+            (3.4, 5.5, "Profilini tamamla."),
+            (5.5, 7.6, "Gönül Köprüsü"),
         ],
         "voice": (
-            "Güvenli profiller, ciddi üyelik, gerçek bağlar. "
-            "Gönül Köprüsü ile tanış. Hemen ücretsiz kayıt ol."
+            "Önce güven. Sonra sohbet. Gönül Köprüsü’nde profilini tamamla, "
+            "şehrini seç, saygılı bir bağ kur. Ücretsiz kayıt ol."
         ),
-        "cta": "Linke dokun — ücretsiz kayıt",
+        "cta": "Ücretsiz kayıt ol",
+        "ig_caption": (
+            "Önce güven, sonra sohbet.\n"
+            "Gönül Köprüsü: güvenli profiller, ciddi niyet, gerçek bağ.\n"
+            "Şehrini seç · Ücretsiz üye ol 👇\n"
+            "{url}\n\n"
+            "#güvenlitanışma #ciddiilişki #profil #gonülköprüsü #evlilik "
+            "#güven #reels #İstanbul #Ankara #İzmir"
+        ),
     },
     {
-        "id": "rx-04-evlilik",
-        "title": "Evlilik hayaline bir adım",
-        "subtitle": "Dönüşüm CTA",
+        "id": "ig-04-sehir",
+        "title": "Şehrinde ciddi tanışma",
+        "subtitle": "Yerel SEO · Reels v2",
         "format_primary": "9:16",
-        "channel": "Reels · Feed",
-        "clips": [("e", 0.5, 3.2), ("b", 2.0, 3.0), ("c", 1.0, 3.0)],
+        "channel": "Instagram Reels",
+        "clips": [("c", 0.3, 1.8), ("b", 1.2, 2.0), ("a", 1.0, 1.8), ("d", 0.5, 1.9)],
         "captions": [
-            (0.0, 2.5, "Evlilik hayaline bir adım"),
-            (2.5, 5.6, "Gönülden gönüle"),
-            (5.6, 9.4, "Bugün sen köprüyü kur"),
+            (0.0, 1.6, "Şehrinde misin?"),
+            (1.6, 3.5, "Ciddi biriyle tanış."),
+            (3.5, 5.6, "İstanbul · Ankara · İzmir"),
+            (5.6, 7.7, "Ücretsiz başla"),
         ],
         "voice": (
-            "Evlilik hayalinize bir adım daha yaklaşın. "
-            "Gönül Köprüsü. Gönülden gönüle. Hemen kayıt ol."
+            "Şehrinde misin? Ciddi biriyle tanışmak istiyorsan Gönül Köprüsü. "
+            "İstanbul, Ankara, İzmir ve daha fazlası. Ücretsiz başla."
         ),
-        "cta": "Ücretsiz başla → gonulkoprusu.com",
+        "cta": "gonulkoprusu.com",
+        "ig_caption": (
+            "Şehrinde ciddi ilişki arayanlar burada.\n"
+            "İstanbul · Ankara · İzmir · Bursa · Antalya…\n"
+            "Gönül Köprüsü’nde ücretsiz kayıt ol 👇\n"
+            "{url}\n\n"
+            "#İstanbultanışma #Ankaratanışma #İzmirtanışma #ciddiilişki "
+            "#evlilik #gonülköprüsü #şehir #reels"
+        ),
     },
     {
-        "id": "rx-05-web-display",
-        "title": "Web / YouTube Display",
+        "id": "ig-05-evlilik",
+        "title": "Evlilik niyetiyle",
+        "subtitle": "Dönüşüm CTA · Reels v2",
+        "format_primary": "9:16",
+        "channel": "Instagram Reels · Feed",
+        "clips": [("b", 0.2, 2.2), ("c", 0.8, 1.8), ("a", 0.5, 1.8), ("d", 0.8, 1.8)],
+        "captions": [
+            (0.0, 1.5, "Evlilik niyetiyle?"),
+            (1.5, 3.4, "Doğru yerdesin."),
+            (3.4, 5.5, "Bugün ilk adımı at."),
+            (5.5, 7.6, "Ücretsiz üye ol"),
+        ],
+        "voice": (
+            "Evlilik niyetiyle mi arıyorsun? Doğru yerdesin. "
+            "Gönül Köprüsü. Bugün ücretsiz üye ol, ilk adımı at."
+        ),
+        "cta": "Ücretsiz üye ol → linkte",
+        "ig_caption": (
+            "Evlilik niyetiyle arıyorsan doğru yerdesin.\n"
+            "Gönül Köprüsü — flört temposu değil; ciddi bağ.\n"
+            "Ücretsiz üye ol, profilini tamamla 👇\n"
+            "{url}\n\n"
+            "#evlilik #evliliğeğilimli #ciddiilişki #gonülköprüsü "
+            "#yuva #aile #güvenlitanışma #reels"
+        ),
+    },
+    {
+        "id": "ig-06-web",
+        "title": "Web / YouTube Display v2",
         "subtitle": "16:9 display paketi",
         "format_primary": "16:9",
         "channel": "YouTube · Display · Landing",
-        "clips": [("a", 0.5, 3.5), ("f", 0.3, 3.2), ("e", 0.8, 3.5)],
+        "clips": [("a", 0.3, 2.2), ("b", 0.2, 2.2), ("d", 0.6, 2.4)],
         "captions": [
-            (0.0, 2.5, "Ciddi ilişki arayanlar burada"),
-            (2.5, 5.8, "Güvenli tanışma · Evlilik odaklı"),
-            (5.8, 10.0, "gonulkoprusu.com — ücretsiz üye ol"),
+            (0.0, 1.8, "Ciddi ilişki arayanlar"),
+            (1.8, 4.0, "Güvenli tanışma burada"),
+            (4.0, 6.5, "gonulkoprusu.com"),
         ],
         "voice": (
             "Gönül Köprüsü. Ciddi ilişki arayanlar burada. "
-            "Güvenli tanışma, evlilik odaklı. Ücretsiz üye ol. gonulkoprusu.com"
+            "Güvenli tanışma, evlilik odaklı. Ücretsiz üye ol."
         ),
         "cta": "Ücretsiz üye ol — gonulkoprusu.com",
+        "ig_caption": "",
     },
 ]
 
@@ -317,23 +382,26 @@ def burn_captions_and_mux(
     total_dur: float,
 ) -> None:
     w, h = size
-    # Caption style: large, centered lower-third (safe zone)
-    fontsize = max(36, w // 22 if w < h else w // 32)
-    y_expr = f"h*{0.62 if w < h else 0.72}"
+    # Büyük, kısa hook metni — ilk 2 sn’de okunabilir (Reels retention)
+    base = max(42, w // 16 if w < h else w // 28)
+    y_expr = f"h*{0.58 if w < h else 0.70}"
     filters = []
     for i, (start, end, text) in enumerate(captions):
         t = escape_drawtext(text)
+        # İlk satır (hook) daha büyük
+        fs = int(base * (1.22 if i == 0 else 1.0))
+        bw = 4 if i == 0 else 3
         filters.append(
-            f"drawtext=fontfile={FONT_BOLD_SANS}:text='{t}':fontsize={fontsize}:"
-            f"fontcolor=white:borderw=3:bordercolor=black@0.55:"
+            f"drawtext=fontfile={FONT_BOLD_SANS}:text='{t}':fontsize={fs}:"
+            f"fontcolor=white:borderw={bw}:bordercolor=black@0.65:"
             f"x=(w-text_w)/2:y={y_expr}:"
             f"enable='between(t,{start:.2f},{end:.2f})'"
         )
-    # subtle top brand chip
+    # Üstte küçük marka — hero metni ezmesin
     filters.append(
-        f"drawtext=fontfile={FONT_BOLD}:text='Gönül Köprüsü':fontsize={max(22, w // 40)}:"
-        f"fontcolor=white@0.92:x=(w-text_w)/2:y={int(h * 0.06 if w < h else h * 0.05)}:"
-        f"shadowcolor=black@0.4:shadowx=1:shadowy=1"
+        f"drawtext=fontfile={FONT_BOLD}:text='Gönül Köprüsü':fontsize={max(20, w // 42)}:"
+        f"fontcolor=white@0.88:x=(w-text_w)/2:y={int(h * 0.055 if w < h else h * 0.045)}:"
+        f"shadowcolor=black@0.45:shadowx=1:shadowy=1"
     )
     vf = ",".join(filters)
     run(
@@ -520,14 +588,23 @@ async def main() -> None:
             poster = name.replace(".mp4", ".png")
             if not (PUBLIC / poster).exists():
                 poster = ""
-            kind = "realistic" if name.startswith("rx-") else "classic"
+            kind = "realistic" if name.startswith(("rx-", "ig-")) else "classic"
+            is_vertical = (
+                "story-" in name
+                or (
+                    name.startswith(("rx-", "ig-"))
+                    and "-wide" not in name
+                    and "web-" not in name
+                    and not name.startswith("ig-06-web")
+                )
+            )
             videos.append(
                 {
                     "file": rel,
                     "title": name.replace(".mp4", "").replace("-", " "),
                     "poster": poster,
                     "kind": kind,
-                    "format": "9:16" if "story-" in name or (name.startswith("rx-") and "-wide" not in name and "web-" not in name) else "16:9",
+                    "format": "9:16" if is_vertical else "16:9",
                 }
             )
         elif name.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
@@ -578,6 +655,31 @@ async def main() -> None:
         encoding="utf-8",
     )
     shutil.copy2(PUBLIC / "index.html", MIRROR / "index.html")
+
+    # Instagram Reels açıklama + hashtag paketi (kopyala-yapıştır)
+    reel_url = "https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=reels&utm_campaign=v2"
+    cap_lines = [
+        "=== Gönül Köprüsü — Instagram Reels v2 ===",
+        "Yayın: her Reel’e aşağıdaki açıklamayı yapıştır + linki bio’ya koy",
+        f"Varsayılan link: {reel_url}",
+        "",
+    ]
+    for ad in ADS:
+        ig = (ad.get("ig_caption") or "").strip()
+        if not ig:
+            continue
+        cap_lines.append(f"--- {ad['id']} · {ad['title']} ---")
+        cap_lines.append(f"Dosya: {ad['id']}.mp4 (9:16)")
+        cap_lines.append(ig.format(url=reel_url))
+        cap_lines.append("")
+    cap_path = PUBLIC / "instagram-reels-captions.txt"
+    cap_path.write_text("\n".join(cap_lines).rstrip() + "\n", encoding="utf-8")
+    shutil.copy2(cap_path, MIRROR / cap_path.name)
+    shutil.copy2(cap_path, ART / cap_path.name)
+    (ROOT / "marketing" / "instagram" / "reels-v2-captions.txt").write_text(
+        cap_path.read_text(encoding="utf-8"), encoding="utf-8"
+    )
+
     print("OK", PUBLIC, "videos", len(videos), "photos", len(photos))
 
 

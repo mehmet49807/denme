@@ -5,15 +5,17 @@ Kaynak: Mixkit ücretsiz stok görüntü (ticari kullanım) + marka end-card + T
 Araştırma: Meta Reels 9:16, ilk 2 sn hook, altyazı, UGC/gerçek görüntü
 
 Gerçekçi (rx-*):
-- rx-01-hook-ciddi.mp4 / rx-01-hook-ciddi.png — Ciddi ilişki mi arıyorsun? (9:16)
-- rx-01-hook-ciddi-wide.mp4 / rx-01-hook-ciddi-wide.png — Ciddi ilişki mi arıyorsun? (16:9)
-- rx-02-dogru-insan.mp4 / rx-02-dogru-insan.png — Doğru insan, doğru yer (9:16)
-- rx-02-dogru-insan-wide.mp4 / rx-02-dogru-insan-wide.png — Doğru insan, doğru yer (16:9)
-- rx-03-guvenli.mp4 / rx-03-guvenli.png — Güvenli · Ciddi · Gerçek (9:16)
-- rx-03-guvenli-wide.mp4 / rx-03-guvenli-wide.png — Güvenli · Ciddi · Gerçek (16:9)
-- rx-04-evlilik.mp4 / rx-04-evlilik.png — Evlilik hayaline bir adım (9:16)
-- rx-04-evlilik-wide.mp4 / rx-04-evlilik-wide.png — Evlilik hayaline bir adım (16:9)
-- rx-05-web-display.mp4 / rx-05-web-display.png — Web / YouTube Display (16:9)
+- ig-01-dur.mp4 / ig-01-dur.png — Flört yorduysa dur (9:16)
+- ig-01-dur-wide.mp4 / ig-01-dur-wide.png — Flört yorduysa dur (16:9)
+- ig-02-soru.mp4 / ig-02-soru.png — Gerçekten ciddi misin? (9:16)
+- ig-02-soru-wide.mp4 / ig-02-soru-wide.png — Gerçekten ciddi misin? (16:9)
+- ig-03-guven.mp4 / ig-03-guven.png — Güven önce gelir (9:16)
+- ig-03-guven-wide.mp4 / ig-03-guven-wide.png — Güven önce gelir (16:9)
+- ig-04-sehir.mp4 / ig-04-sehir.png — Şehrinde ciddi tanışma (9:16)
+- ig-04-sehir-wide.mp4 / ig-04-sehir-wide.png — Şehrinde ciddi tanışma (16:9)
+- ig-05-evlilik.mp4 / ig-05-evlilik.png — Evlilik niyetiyle (9:16)
+- ig-05-evlilik-wide.mp4 / ig-05-evlilik-wide.png — Evlilik niyetiyle (16:9)
+- ig-06-web.mp4 / ig-06-web.png — Web / YouTube Display v2 (16:9)
 
 Klasik (web-* / story-*): önceki Ken Burns paketleri
 Admin: Reklam menüsü → tüm video + fotoğraflar

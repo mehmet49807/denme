@@ -1,21 +1,24 @@
-Gönül Köprüsü — Web Sitesi Reklam Videoları
-==========================================
+Gönül Köprüsü — Reklam Medya Paketi
+=================================
 
-16:9 (1920×1080): YouTube Ads, Display, site içi, landing
-9:16 (1080×1920): Instagram Story / Reels / TikTok
+Kaynak: Mixkit ücretsiz stok görüntü (ticari kullanım) + marka end-card + TR ses
+Araştırma: Meta Reels 9:16, ilk 2 sn hook, altyazı, UGC/gerçek görüntü
 
-Canlı klasör: web-site/public/marketing/ads/
-Admin: Pazarlama menüsü → Reklam Videoları
+Gerçekçi (rx-*):
+- ig-01-dur.mp4 / ig-01-dur.png — Flört yorduysa dur (9:16)
+- ig-01-dur-wide.mp4 / ig-01-dur-wide.png — Flört yorduysa dur (16:9)
+- ig-02-soru.mp4 / ig-02-soru.png — Gerçekten ciddi misin? (9:16)
+- ig-02-soru-wide.mp4 / ig-02-soru-wide.png — Gerçekten ciddi misin? (16:9)
+- ig-03-guven.mp4 / ig-03-guven.png — Güven önce gelir (9:16)
+- ig-03-guven-wide.mp4 / ig-03-guven-wide.png — Güven önce gelir (16:9)
+- ig-04-sehir.mp4 / ig-04-sehir.png — Şehrinde ciddi tanışma (9:16)
+- ig-04-sehir-wide.mp4 / ig-04-sehir-wide.png — Şehrinde ciddi tanışma (16:9)
+- ig-05-evlilik.mp4 / ig-05-evlilik.png — Evlilik niyetiyle (9:16)
+- ig-05-evlilik-wide.mp4 / ig-05-evlilik-wide.png — Evlilik niyetiyle (16:9)
+- ig-06-web.mp4 / ig-06-web.png — Web / YouTube Display v2 (16:9)
 
-- web-01-ciddi-iliski.mp4 — Ciddi ilişki arayanlar burada (16:9)
-- web-02-dogru-insan.mp4 — Doğru insan, doğru yer (16:9)
-- web-03-guvenli.mp4 — Güvenli · Ciddi · Gerçek bağlar (16:9)
-- web-04-evlilik.mp4 — Evlilik hayaline bir adım (16:9)
-- web-reel-full.mp4 — Web reklam birleşik reel (16:9)
-- story-01-ciddi-iliski.mp4 — Ciddi ilişki arayanlar burada (9:16)
-- story-02-dogru-insan.mp4 — Doğru insan, doğru yer (9:16)
-- story-03-guvenli.mp4 — Güvenli · Ciddi · Gerçek bağlar (9:16)
-- story-04-evlilik.mp4 — Evlilik hayaline bir adım (9:16)
-- story-reel-full.mp4 — 4 hikâye birleşik reel (9:16)
+Klasik (web-* / story-*): önceki Ken Burns paketleri
+Admin: Reklam menüsü → tüm video + fotoğraflar
+Canlı: https://gonulkoprusu.com/images/ads/
 
-Deploy mapping: public/marketing → marketing (document root)
+Mixkit attribution: https://mixkit.co (Free Stock Video)

@@ -124,7 +124,7 @@ class AdminAdsController extends Controller
                 'subtitle' => (string) ($item['subtitle'] ?? ''),
                 'format' => (string) ($item['format'] ?? $this->guessFormat($file)),
                 'channel' => (string) ($item['channel'] ?? ''),
-                'kind' => (string) ($item['kind'] ?? (str_starts_with($file, 'rx-') ? 'realistic' : 'classic')),
+                'kind' => (string) ($item['kind'] ?? (str_starts_with($file, 'ig-') || str_starts_with($file, 'rx-') ? 'realistic' : 'classic')),
                 'video_url' => $base.'/'.$file,
                 'poster_url' => $poster !== '' ? $base.'/'.$poster : '',
                 'download_url' => $this->downloadUrl($file),
@@ -167,7 +167,7 @@ class AdminAdsController extends Controller
                         'subtitle' => '',
                         'format' => $this->guessFormat($name),
                         'channel' => '',
-                        'kind' => str_starts_with($name, 'rx-') ? 'realistic' : 'classic',
+                        'kind' => str_starts_with($name, 'ig-') || str_starts_with($name, 'rx-') ? 'realistic' : 'classic',
                         'video_url' => $base.'/'.$name,
                         'poster_url' => File::exists($localDir.'/'.$poster) ? $base.'/'.$poster : '',
                         'download_url' => $this->downloadUrl($name),
@@ -258,7 +258,11 @@ class AdminAdsController extends Controller
 
     private function guessFormat(string $file): string
     {
-        if (str_contains($file, 'story-') || (str_starts_with($file, 'rx-') && ! str_contains($file, '-wide') && ! str_starts_with($file, 'rx-05'))) {
+        if (str_contains($file, '-wide') || str_starts_with($file, 'ig-06-web') || str_starts_with($file, 'web-')) {
+            return '16:9';
+        }
+
+        if (str_contains($file, 'story-') || str_starts_with($file, 'ig-') || str_starts_with($file, 'rx-')) {
             return '9:16';
         }
 

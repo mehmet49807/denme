@@ -1,119 +1,367 @@
 {
   "brand": "Gönül Köprüsü",
-  "updated": "auto",
-  "notes": "Admin Pazarlama → Reklam Videoları. İndirip Meta/Google/Instagram’a yükleyin.",
+  "public_base": "https://gonulkoprusu.com/images/ads",
+  "research_notes": [
+    "Meta Reels/Stories: 9:16 zorunlu; hook ilk 2 sn",
+    "Dating: kimlik odaklı mesaj (ciddi ilişki) > jenerik 'yakınında tanış'",
+    "UGC / gerçek görüntü, altyazı, 15–30 sn ideal"
+  ],
   "videos": [
     {
-      "id": "web-01-ciddi-iliski",
-      "title": "Ciddi ilişki arayanlar burada",
-      "subtitle": "Güvenli tanışma · Evlilik odaklı",
+      "file": "ig-01-dur-wide.mp4",
+      "title": "Flört yorduysa dur",
+      "poster": "ig-01-dur-wide.png",
+      "kind": "realistic",
       "format": "16:9",
-      "channel": "YouTube / Display / Web",
-      "duration_hint": "13s",
-      "video": "web-01-ciddi-iliski.mp4",
-      "poster": "web-01-ciddi-iliski.png",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=web"
+      "subtitle": "Pattern interrupt · Reels v2",
+      "channel": "Instagram Reels"
     },
     {
-      "id": "web-02-dogru-insan",
-      "title": "Doğru insan, doğru yer",
-      "subtitle": "Kalpten kalbe uzanan köprü",
+      "file": "ig-01-dur.mp4",
+      "title": "Flört yorduysa dur",
+      "poster": "ig-01-dur.png",
+      "kind": "realistic",
+      "format": "9:16",
+      "subtitle": "Pattern interrupt · Reels v2",
+      "channel": "Instagram Reels"
+    },
+    {
+      "file": "ig-02-soru-wide.mp4",
+      "title": "Gerçekten ciddi misin?",
+      "poster": "ig-02-soru-wide.png",
+      "kind": "realistic",
       "format": "16:9",
-      "channel": "YouTube / Display / Web",
-      "duration_hint": "11s",
-      "video": "web-02-dogru-insan.mp4",
-      "poster": "web-02-dogru-insan.png",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=web"
+      "subtitle": "Soru hook · Reels v2",
+      "channel": "Instagram Reels"
     },
     {
-      "id": "web-03-guvenli",
-      "title": "Güvenli · Ciddi · Gerçek bağlar",
-      "subtitle": "Moderasyonlu, ciddi üyelik",
+      "file": "ig-02-soru.mp4",
+      "title": "Gerçekten ciddi misin?",
+      "poster": "ig-02-soru.png",
+      "kind": "realistic",
+      "format": "9:16",
+      "subtitle": "Soru hook · Reels v2",
+      "channel": "Instagram Reels"
+    },
+    {
+      "file": "ig-03-guven-wide.mp4",
+      "title": "Güven önce gelir",
+      "poster": "ig-03-guven-wide.png",
+      "kind": "realistic",
       "format": "16:9",
-      "channel": "YouTube / Display / Web",
-      "duration_hint": "10s",
-      "video": "web-03-guvenli.mp4",
-      "poster": "web-03-guvenli.png",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=web"
+      "subtitle": "Güven mesajı · Reels v2",
+      "channel": "Instagram Reels · Stories"
     },
     {
-      "id": "web-04-evlilik",
-      "title": "Evlilik hayaline bir adım",
-      "subtitle": "Gönülden gönüle",
+      "file": "ig-03-guven.mp4",
+      "title": "Güven önce gelir",
+      "poster": "ig-03-guven.png",
+      "kind": "realistic",
+      "format": "9:16",
+      "subtitle": "Güven mesajı · Reels v2",
+      "channel": "Instagram Reels · Stories"
+    },
+    {
+      "file": "ig-04-sehir-wide.mp4",
+      "title": "Şehrinde ciddi tanışma",
+      "poster": "ig-04-sehir-wide.png",
+      "kind": "realistic",
       "format": "16:9",
-      "channel": "YouTube / Display / Web",
-      "duration_hint": "10s",
-      "video": "web-04-evlilik.mp4",
-      "poster": "web-04-evlilik.png",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=web"
+      "subtitle": "Yerel SEO · Reels v2",
+      "channel": "Instagram Reels"
     },
     {
-      "id": "web-reel-full",
-      "title": "Web reklam birleşik reel",
-      "subtitle": "4 reklam · 16:9",
+      "file": "ig-04-sehir.mp4",
+      "title": "Şehrinde ciddi tanışma",
+      "poster": "ig-04-sehir.png",
+      "kind": "realistic",
+      "format": "9:16",
+      "subtitle": "Yerel SEO · Reels v2",
+      "channel": "Instagram Reels"
+    },
+    {
+      "file": "ig-05-evlilik-wide.mp4",
+      "title": "Evlilik niyetiyle",
+      "poster": "ig-05-evlilik-wide.png",
+      "kind": "realistic",
       "format": "16:9",
-      "channel": "YouTube · Landing · Site içi",
-      "duration_hint": "birleşik",
-      "video": "web-reel-full.mp4",
-      "poster": "web-reel-full.png",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=web"
+      "subtitle": "Dönüşüm CTA · Reels v2",
+      "channel": "Instagram Reels · Feed"
     },
     {
-      "id": "story-01-ciddi-iliski",
-      "title": "Ciddi ilişki arayanlar burada",
-      "subtitle": "Instagram Story / Reels (9:16)",
+      "file": "ig-05-evlilik.mp4",
+      "title": "Evlilik niyetiyle",
+      "poster": "ig-05-evlilik.png",
+      "kind": "realistic",
       "format": "9:16",
-      "channel": "Instagram Story · Reels · TikTok",
-      "duration_hint": "story",
-      "video": "story-01-ciddi-iliski.mp4",
-      "poster": "story-01-ciddi-iliski.png",
-      "cta_url": "https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly"
+      "subtitle": "Dönüşüm CTA · Reels v2",
+      "channel": "Instagram Reels · Feed"
     },
     {
-      "id": "story-02-dogru-insan",
-      "title": "Doğru insan, doğru yer",
-      "subtitle": "Instagram Story / Reels (9:16)",
-      "format": "9:16",
-      "channel": "Instagram Story · Reels · TikTok",
-      "duration_hint": "story",
-      "video": "story-02-dogru-insan.mp4",
-      "poster": "story-02-dogru-insan.png",
-      "cta_url": "https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly"
-    },
-    {
-      "id": "story-03-guvenli",
-      "title": "Güvenli · Ciddi · Gerçek bağlar",
-      "subtitle": "Instagram Story / Reels (9:16)",
-      "format": "9:16",
-      "channel": "Instagram Story · Reels · TikTok",
-      "duration_hint": "story",
-      "video": "story-03-guvenli.mp4",
-      "poster": "story-03-guvenli.png",
-      "cta_url": "https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly"
-    },
-    {
-      "id": "story-04-evlilik",
-      "title": "Evlilik hayaline bir adım",
-      "subtitle": "Instagram Story / Reels (9:16)",
-      "format": "9:16",
-      "channel": "Instagram Story · Reels · TikTok",
-      "duration_hint": "story",
-      "video": "story-04-evlilik.mp4",
-      "poster": "story-04-evlilik.png",
-      "cta_url": "https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly"
-    },
-    {
-      "id": "story-reel-full",
-      "title": "4 hikâye birleşik reel",
-      "subtitle": "Instagram Reels uzun versiyon",
-      "format": "9:16",
-      "channel": "Instagram Reels · TikTok",
-      "duration_hint": "story",
-      "video": "story-reel-full.mp4",
-      "poster": "story-reel-full.png",
-      "cta_url": "https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly"
+      "file": "ig-06-web.mp4",
+      "title": "Web / YouTube Display v2",
+      "poster": "ig-06-web.png",
+      "kind": "realistic",
+      "format": "16:9",
+      "subtitle": "16:9 display paketi",
+      "channel": "YouTube · Display · Landing"
     }
   ],
-  "deploy_note": "FTP mapping: web-site/public/images -> images",
-  "public_base": "https://gonulkoprusu.com/images/ads"
+  "photos": [
+    {
+      "file": "ig-01-dur-still.png",
+      "title": "ig 01 dur still.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-01-dur-wide-still.png",
+      "title": "ig 01 dur wide still.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-01-dur-wide.png",
+      "title": "ig 01 dur wide.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-01-dur.png",
+      "title": "ig 01 dur.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-02-soru-still.png",
+      "title": "ig 02 soru still.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-02-soru-wide-still.png",
+      "title": "ig 02 soru wide still.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-02-soru-wide.png",
+      "title": "ig 02 soru wide.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-02-soru.png",
+      "title": "ig 02 soru.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-03-guven-still.png",
+      "title": "ig 03 guven still.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-03-guven-wide-still.png",
+      "title": "ig 03 guven wide still.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-03-guven-wide.png",
+      "title": "ig 03 guven wide.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-03-guven.png",
+      "title": "ig 03 guven.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-04-sehir-still.png",
+      "title": "ig 04 sehir still.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-04-sehir-wide-still.png",
+      "title": "ig 04 sehir wide still.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-04-sehir-wide.png",
+      "title": "ig 04 sehir wide.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-04-sehir.png",
+      "title": "ig 04 sehir.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-05-evlilik-still.png",
+      "title": "ig 05 evlilik still.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-05-evlilik-wide-still.png",
+      "title": "ig 05 evlilik wide still.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-05-evlilik-wide.png",
+      "title": "ig 05 evlilik wide.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-05-evlilik.png",
+      "title": "ig 05 evlilik.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-06-web-still.png",
+      "title": "ig 06 web still.png",
+      "kind": "still"
+    },
+    {
+      "file": "ig-06-web.png",
+      "title": "ig 06 web.png",
+      "kind": "still"
+    }
+  ],
+  "realistic": [
+    {
+      "id": "ig-01-dur",
+      "title": "Flört yorduysa dur",
+      "subtitle": "Pattern interrupt · Reels v2",
+      "format": "9:16",
+      "channel": "Instagram Reels",
+      "video": "ig-01-dur.mp4",
+      "poster": "ig-01-dur.png",
+      "still": "ig-01-dur-still.png",
+      "duration_hint": "12s",
+      "kind": "realistic",
+      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
+    },
+    {
+      "id": "ig-01-dur-wide",
+      "title": "Flört yorduysa dur",
+      "subtitle": "Pattern interrupt · Reels v2",
+      "format": "16:9",
+      "channel": "Instagram Reels",
+      "video": "ig-01-dur-wide.mp4",
+      "poster": "ig-01-dur-wide.png",
+      "still": "ig-01-dur-wide-still.png",
+      "duration_hint": "12s",
+      "kind": "realistic",
+      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
+    },
+    {
+      "id": "ig-02-soru",
+      "title": "Gerçekten ciddi misin?",
+      "subtitle": "Soru hook · Reels v2",
+      "format": "9:16",
+      "channel": "Instagram Reels",
+      "video": "ig-02-soru.mp4",
+      "poster": "ig-02-soru.png",
+      "still": "ig-02-soru-still.png",
+      "duration_hint": "13s",
+      "kind": "realistic",
+      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
+    },
+    {
+      "id": "ig-02-soru-wide",
+      "title": "Gerçekten ciddi misin?",
+      "subtitle": "Soru hook · Reels v2",
+      "format": "16:9",
+      "channel": "Instagram Reels",
+      "video": "ig-02-soru-wide.mp4",
+      "poster": "ig-02-soru-wide.png",
+      "still": "ig-02-soru-wide-still.png",
+      "duration_hint": "13s",
+      "kind": "realistic",
+      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
+    },
+    {
+      "id": "ig-03-guven",
+      "title": "Güven önce gelir",
+      "subtitle": "Güven mesajı · Reels v2",
+      "format": "9:16",
+      "channel": "Instagram Reels · Stories",
+      "video": "ig-03-guven.mp4",
+      "poster": "ig-03-guven.png",
+      "still": "ig-03-guven-still.png",
+      "duration_hint": "12s",
+      "kind": "realistic",
+      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
+    },
+    {
+      "id": "ig-03-guven-wide",
+      "title": "Güven önce gelir",
+      "subtitle": "Güven mesajı · Reels v2",
+      "format": "16:9",
+      "channel": "Instagram Reels · Stories",
+      "video": "ig-03-guven-wide.mp4",
+      "poster": "ig-03-guven-wide.png",
+      "still": "ig-03-guven-wide-still.png",
+      "duration_hint": "12s",
+      "kind": "realistic",
+      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
+    },
+    {
+      "id": "ig-04-sehir",
+      "title": "Şehrinde ciddi tanışma",
+      "subtitle": "Yerel SEO · Reels v2",
+      "format": "9:16",
+      "channel": "Instagram Reels",
+      "video": "ig-04-sehir.mp4",
+      "poster": "ig-04-sehir.png",
+      "still": "ig-04-sehir-still.png",
+      "duration_hint": "13s",
+      "kind": "realistic",
+      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
+    },
+    {
+      "id": "ig-04-sehir-wide",
+      "title": "Şehrinde ciddi tanışma",
+      "subtitle": "Yerel SEO · Reels v2",
+      "format": "16:9",
+      "channel": "Instagram Reels",
+      "video": "ig-04-sehir-wide.mp4",
+      "poster": "ig-04-sehir-wide.png",
+      "still": "ig-04-sehir-wide-still.png",
+      "duration_hint": "13s",
+      "kind": "realistic",
+      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
+    },
+    {
+      "id": "ig-05-evlilik",
+      "title": "Evlilik niyetiyle",
+      "subtitle": "Dönüşüm CTA · Reels v2",
+      "format": "9:16",
+      "channel": "Instagram Reels · Feed",
+      "video": "ig-05-evlilik.mp4",
+      "poster": "ig-05-evlilik.png",
+      "still": "ig-05-evlilik-still.png",
+      "duration_hint": "11s",
+      "kind": "realistic",
+      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
+    },
+    {
+      "id": "ig-05-evlilik-wide",
+      "title": "Evlilik niyetiyle",
+      "subtitle": "Dönüşüm CTA · Reels v2",
+      "format": "16:9",
+      "channel": "Instagram Reels · Feed",
+      "video": "ig-05-evlilik-wide.mp4",
+      "poster": "ig-05-evlilik-wide.png",
+      "still": "ig-05-evlilik-wide-still.png",
+      "duration_hint": "11s",
+      "kind": "realistic",
+      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
+    },
+    {
+      "id": "ig-06-web",
+      "title": "Web / YouTube Display v2",
+      "subtitle": "16:9 display paketi",
+      "format": "16:9",
+      "channel": "YouTube · Display · Landing",
+      "video": "ig-06-web.mp4",
+      "poster": "ig-06-web.png",
+      "still": "ig-06-web-still.png",
+      "duration_hint": "11s",
+      "kind": "realistic",
+      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
+    }
+  ]
 }
