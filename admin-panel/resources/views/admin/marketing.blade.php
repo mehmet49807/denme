@@ -84,7 +84,7 @@
         <div>
             <h3 class="admin-panel-title">Instagram Reels / bio paketi</h3>
             <p class="admin-package-card__sub">
-                Yeni Reels v2 videoları (ig-01…ig-05) + açıklama/hashtag’ler.
+                Yeni Reels v3 videoları (ig-01…ig-05) — farklı görseller, logo rozeti, güvenli alan metin.
                 Videolar: <a href="{{ route('admin.ads') }}">Reklam</a> menüsünden indir.
                 UTM kampanya: <code>{{ $defaultCampaign }}</code>
             </p>

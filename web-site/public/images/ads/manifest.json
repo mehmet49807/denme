@@ -2,91 +2,46 @@
   "brand": "Gönül Köprüsü",
   "public_base": "https://gonulkoprusu.com/images/ads",
   "research_notes": [
-    "Meta Reels/Stories: 9:16 zorunlu; hook ilk 2 sn",
-    "Dating: kimlik odaklı mesaj (ciddi ilişki) > jenerik 'yakınında tanış'",
-    "UGC / gerçek görüntü, altyazı, 15–30 sn ideal"
+    "Reels v3: her video farklı görsel set + renk grade",
+    "Logo rozeti üst güvenli alanda; metin ortada pill içinde",
+    "Alt Instagram UI bölgesine yazı basılmaz"
   ],
   "videos": [
-    {
-      "file": "ig-01-dur-wide.mp4",
-      "title": "Flört yorduysa dur",
-      "poster": "ig-01-dur-wide.png",
-      "kind": "realistic",
-      "format": "16:9",
-      "subtitle": "Pattern interrupt · Reels v2",
-      "channel": "Instagram Reels"
-    },
     {
       "file": "ig-01-dur.mp4",
       "title": "Flört yorduysa dur",
       "poster": "ig-01-dur.png",
       "kind": "realistic",
       "format": "9:16",
-      "subtitle": "Pattern interrupt · Reels v2",
-      "channel": "Instagram Reels"
-    },
-    {
-      "file": "ig-02-soru-wide.mp4",
-      "title": "Gerçekten ciddi misin?",
-      "poster": "ig-02-soru-wide.png",
-      "kind": "realistic",
-      "format": "16:9",
-      "subtitle": "Soru hook · Reels v2",
+      "subtitle": "Reels v3 · farklı görseller",
       "channel": "Instagram Reels"
     },
     {
       "file": "ig-02-soru.mp4",
-      "title": "Gerçekten ciddi misin?",
+      "title": "Ciddi misin?",
       "poster": "ig-02-soru.png",
       "kind": "realistic",
       "format": "9:16",
-      "subtitle": "Soru hook · Reels v2",
+      "subtitle": "Reels v3 · farklı görseller",
       "channel": "Instagram Reels"
     },
     {
-      "file": "ig-03-guven-wide.mp4",
-      "title": "Güven önce gelir",
-      "poster": "ig-03-guven-wide.png",
-      "kind": "realistic",
-      "format": "16:9",
-      "subtitle": "Güven mesajı · Reels v2",
-      "channel": "Instagram Reels · Stories"
-    },
-    {
       "file": "ig-03-guven.mp4",
-      "title": "Güven önce gelir",
+      "title": "Önce güven",
       "poster": "ig-03-guven.png",
       "kind": "realistic",
       "format": "9:16",
-      "subtitle": "Güven mesajı · Reels v2",
-      "channel": "Instagram Reels · Stories"
-    },
-    {
-      "file": "ig-04-sehir-wide.mp4",
-      "title": "Şehrinde ciddi tanışma",
-      "poster": "ig-04-sehir-wide.png",
-      "kind": "realistic",
-      "format": "16:9",
-      "subtitle": "Yerel SEO · Reels v2",
+      "subtitle": "Reels v3 · farklı görseller",
       "channel": "Instagram Reels"
     },
     {
       "file": "ig-04-sehir.mp4",
-      "title": "Şehrinde ciddi tanışma",
+      "title": "Şehrinde tanış",
       "poster": "ig-04-sehir.png",
       "kind": "realistic",
       "format": "9:16",
-      "subtitle": "Yerel SEO · Reels v2",
+      "subtitle": "Reels v3 · farklı görseller",
       "channel": "Instagram Reels"
-    },
-    {
-      "file": "ig-05-evlilik-wide.mp4",
-      "title": "Evlilik niyetiyle",
-      "poster": "ig-05-evlilik-wide.png",
-      "kind": "realistic",
-      "format": "16:9",
-      "subtitle": "Dönüşüm CTA · Reels v2",
-      "channel": "Instagram Reels · Feed"
     },
     {
       "file": "ig-05-evlilik.mp4",
@@ -94,274 +49,90 @@
       "poster": "ig-05-evlilik.png",
       "kind": "realistic",
       "format": "9:16",
-      "subtitle": "Dönüşüm CTA · Reels v2",
-      "channel": "Instagram Reels · Feed"
-    },
-    {
-      "file": "ig-06-web.mp4",
-      "title": "Web / YouTube Display v2",
-      "poster": "ig-06-web.png",
-      "kind": "realistic",
-      "format": "16:9",
-      "subtitle": "16:9 display paketi",
-      "channel": "YouTube · Display · Landing"
+      "subtitle": "Reels v3 · farklı görseller",
+      "channel": "Instagram Reels"
     }
   ],
   "photos": [
     {
       "file": "ig-01-dur-still.png",
-      "title": "ig 01 dur still.png",
+      "title": "ig 01 dur still",
       "kind": "still"
     },
     {
       "file": "ig-01-dur-wide-still.png",
-      "title": "ig 01 dur wide still.png",
-      "kind": "still"
-    },
-    {
-      "file": "ig-01-dur-wide.png",
-      "title": "ig 01 dur wide.png",
+      "title": "ig 01 dur wide still",
       "kind": "still"
     },
     {
       "file": "ig-01-dur.png",
-      "title": "ig 01 dur.png",
+      "title": "ig 01 dur",
       "kind": "still"
     },
     {
       "file": "ig-02-soru-still.png",
-      "title": "ig 02 soru still.png",
+      "title": "ig 02 soru still",
       "kind": "still"
     },
     {
       "file": "ig-02-soru-wide-still.png",
-      "title": "ig 02 soru wide still.png",
-      "kind": "still"
-    },
-    {
-      "file": "ig-02-soru-wide.png",
-      "title": "ig 02 soru wide.png",
+      "title": "ig 02 soru wide still",
       "kind": "still"
     },
     {
       "file": "ig-02-soru.png",
-      "title": "ig 02 soru.png",
+      "title": "ig 02 soru",
       "kind": "still"
     },
     {
       "file": "ig-03-guven-still.png",
-      "title": "ig 03 guven still.png",
+      "title": "ig 03 guven still",
       "kind": "still"
     },
     {
       "file": "ig-03-guven-wide-still.png",
-      "title": "ig 03 guven wide still.png",
-      "kind": "still"
-    },
-    {
-      "file": "ig-03-guven-wide.png",
-      "title": "ig 03 guven wide.png",
+      "title": "ig 03 guven wide still",
       "kind": "still"
     },
     {
       "file": "ig-03-guven.png",
-      "title": "ig 03 guven.png",
+      "title": "ig 03 guven",
       "kind": "still"
     },
     {
       "file": "ig-04-sehir-still.png",
-      "title": "ig 04 sehir still.png",
+      "title": "ig 04 sehir still",
       "kind": "still"
     },
     {
       "file": "ig-04-sehir-wide-still.png",
-      "title": "ig 04 sehir wide still.png",
-      "kind": "still"
-    },
-    {
-      "file": "ig-04-sehir-wide.png",
-      "title": "ig 04 sehir wide.png",
+      "title": "ig 04 sehir wide still",
       "kind": "still"
     },
     {
       "file": "ig-04-sehir.png",
-      "title": "ig 04 sehir.png",
+      "title": "ig 04 sehir",
       "kind": "still"
     },
     {
       "file": "ig-05-evlilik-still.png",
-      "title": "ig 05 evlilik still.png",
+      "title": "ig 05 evlilik still",
       "kind": "still"
     },
     {
       "file": "ig-05-evlilik-wide-still.png",
-      "title": "ig 05 evlilik wide still.png",
-      "kind": "still"
-    },
-    {
-      "file": "ig-05-evlilik-wide.png",
-      "title": "ig 05 evlilik wide.png",
+      "title": "ig 05 evlilik wide still",
       "kind": "still"
     },
     {
       "file": "ig-05-evlilik.png",
-      "title": "ig 05 evlilik.png",
+      "title": "ig 05 evlilik",
       "kind": "still"
     },
     {
       "file": "ig-06-web-still.png",
-      "title": "ig 06 web still.png",
+      "title": "ig 06 web still",
       "kind": "still"
-    },
-    {
-      "file": "ig-06-web.png",
-      "title": "ig 06 web.png",
-      "kind": "still"
-    }
-  ],
-  "realistic": [
-    {
-      "id": "ig-01-dur",
-      "title": "Flört yorduysa dur",
-      "subtitle": "Pattern interrupt · Reels v2",
-      "format": "9:16",
-      "channel": "Instagram Reels",
-      "video": "ig-01-dur.mp4",
-      "poster": "ig-01-dur.png",
-      "still": "ig-01-dur-still.png",
-      "duration_hint": "12s",
-      "kind": "realistic",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
-    },
-    {
-      "id": "ig-01-dur-wide",
-      "title": "Flört yorduysa dur",
-      "subtitle": "Pattern interrupt · Reels v2",
-      "format": "16:9",
-      "channel": "Instagram Reels",
-      "video": "ig-01-dur-wide.mp4",
-      "poster": "ig-01-dur-wide.png",
-      "still": "ig-01-dur-wide-still.png",
-      "duration_hint": "12s",
-      "kind": "realistic",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
-    },
-    {
-      "id": "ig-02-soru",
-      "title": "Gerçekten ciddi misin?",
-      "subtitle": "Soru hook · Reels v2",
-      "format": "9:16",
-      "channel": "Instagram Reels",
-      "video": "ig-02-soru.mp4",
-      "poster": "ig-02-soru.png",
-      "still": "ig-02-soru-still.png",
-      "duration_hint": "13s",
-      "kind": "realistic",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
-    },
-    {
-      "id": "ig-02-soru-wide",
-      "title": "Gerçekten ciddi misin?",
-      "subtitle": "Soru hook · Reels v2",
-      "format": "16:9",
-      "channel": "Instagram Reels",
-      "video": "ig-02-soru-wide.mp4",
-      "poster": "ig-02-soru-wide.png",
-      "still": "ig-02-soru-wide-still.png",
-      "duration_hint": "13s",
-      "kind": "realistic",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
-    },
-    {
-      "id": "ig-03-guven",
-      "title": "Güven önce gelir",
-      "subtitle": "Güven mesajı · Reels v2",
-      "format": "9:16",
-      "channel": "Instagram Reels · Stories",
-      "video": "ig-03-guven.mp4",
-      "poster": "ig-03-guven.png",
-      "still": "ig-03-guven-still.png",
-      "duration_hint": "12s",
-      "kind": "realistic",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
-    },
-    {
-      "id": "ig-03-guven-wide",
-      "title": "Güven önce gelir",
-      "subtitle": "Güven mesajı · Reels v2",
-      "format": "16:9",
-      "channel": "Instagram Reels · Stories",
-      "video": "ig-03-guven-wide.mp4",
-      "poster": "ig-03-guven-wide.png",
-      "still": "ig-03-guven-wide-still.png",
-      "duration_hint": "12s",
-      "kind": "realistic",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
-    },
-    {
-      "id": "ig-04-sehir",
-      "title": "Şehrinde ciddi tanışma",
-      "subtitle": "Yerel SEO · Reels v2",
-      "format": "9:16",
-      "channel": "Instagram Reels",
-      "video": "ig-04-sehir.mp4",
-      "poster": "ig-04-sehir.png",
-      "still": "ig-04-sehir-still.png",
-      "duration_hint": "13s",
-      "kind": "realistic",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
-    },
-    {
-      "id": "ig-04-sehir-wide",
-      "title": "Şehrinde ciddi tanışma",
-      "subtitle": "Yerel SEO · Reels v2",
-      "format": "16:9",
-      "channel": "Instagram Reels",
-      "video": "ig-04-sehir-wide.mp4",
-      "poster": "ig-04-sehir-wide.png",
-      "still": "ig-04-sehir-wide-still.png",
-      "duration_hint": "13s",
-      "kind": "realistic",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
-    },
-    {
-      "id": "ig-05-evlilik",
-      "title": "Evlilik niyetiyle",
-      "subtitle": "Dönüşüm CTA · Reels v2",
-      "format": "9:16",
-      "channel": "Instagram Reels · Feed",
-      "video": "ig-05-evlilik.mp4",
-      "poster": "ig-05-evlilik.png",
-      "still": "ig-05-evlilik-still.png",
-      "duration_hint": "11s",
-      "kind": "realistic",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
-    },
-    {
-      "id": "ig-05-evlilik-wide",
-      "title": "Evlilik niyetiyle",
-      "subtitle": "Dönüşüm CTA · Reels v2",
-      "format": "16:9",
-      "channel": "Instagram Reels · Feed",
-      "video": "ig-05-evlilik-wide.mp4",
-      "poster": "ig-05-evlilik-wide.png",
-      "still": "ig-05-evlilik-wide-still.png",
-      "duration_hint": "11s",
-      "kind": "realistic",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
-    },
-    {
-      "id": "ig-06-web",
-      "title": "Web / YouTube Display v2",
-      "subtitle": "16:9 display paketi",
-      "format": "16:9",
-      "channel": "YouTube · Display · Landing",
-      "video": "ig-06-web.mp4",
-      "poster": "ig-06-web.png",
-      "still": "ig-06-web-still.png",
-      "duration_hint": "11s",
-      "kind": "realistic",
-      "cta_url": "https://gonulkoprusu.com/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic"
     }
   ]
 }
