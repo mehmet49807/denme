@@ -322,7 +322,6 @@ export function createPlayerMesh(colors, isKeeper = false, appearance = {}) {
     rightArm,
     leftBoot,
     rightBoot,
-    leftFore,
     head,
     chest,
   };
