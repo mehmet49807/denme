@@ -2,6 +2,7 @@ Gönül Köprüsü — Instagram CTA disiplini
 =====================================
 
 Bio link (tek CTA):
+  Admin → Pazarlama → Instagram paketi (veya)
   https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=bio&utm_campaign=organic
 
 Alternatif (kampanya landing — Ads / story):
@@ -10,24 +11,29 @@ Alternatif (kampanya landing — Ads / story):
   Şehir:
   https://gonulkoprusu.com/kampanya?utm_source=meta&utm_medium=paid&utm_campaign=istanbul&city=istanbul
   https://gonulkoprusu.com/sehir/istanbul?utm_source=instagram&utm_medium=story&utm_campaign=istanbul
+  İlçe:
+  https://gonulkoprusu.com/sehir/istanbul/kadikoy?utm_source=instagram&utm_medium=story&utm_campaign=kadikoy
 
 Story / post swipe-up veya link sticker:
   https://gonulkoprusu.com/register?utm_source=instagram&utm_medium=story&utm_campaign=weekly
-  Şehir odaklı:
-  https://gonulkoprusu.com/sehir/istanbul?utm_source=instagram&utm_medium=story&utm_campaign=istanbul
-  https://gonulkoprusu.com/sehir/ankara?utm_source=instagram&utm_medium=story&utm_campaign=ankara
-  https://gonulkoprusu.com/sehir/izmir?utm_source=instagram&utm_medium=story&utm_campaign=izmir
+  Şehir / ilçe odaklı:
+  https://gonulkoprusu.com/sehir/istanbul/kadikoy
+  https://gonulkoprusu.com/sehir/ankara/cankaya
+  https://gonulkoprusu.com/sehir/izmir/karsiyaka
 
 Her içerikte tek iş:
   1) Kısa değer cümlesi (güvenli / ciddi ilişki)
   2) Tek CTA: "Ücretsiz kayıt ol"
   3) Yukarıdaki UTM’li link
 
-Haftalık ritim (öneri):
-  - 2 şehir odaklı post (İstanbul / Ankara / İzmir rotasyonu)
-  - 1 güvenli tanışma / SSS içeriği
-  - 1 davet / WhatsApp paylaşım story’si
-  - 1 üye / atmosfer görseli (marketing/instagram/*.png)
+Haftalık ritim (Admin → Pazarlama’da tablo):
+  - Pzt: İstanbul / Kadıköy
+  - Sal: Güvenli tanışma story
+  - Çar: Ankara / Çankaya
+  - Per: Davet ödülü WhatsApp story
+  - Cum: İzmir / Karşıyaka
+  - Cmt: Başarı hikâyesi
+  - Paz: Atmosfer Reels + bio CTA
 
 Ölçüm (GTM/GA event’leri):
   - sign_up
@@ -40,16 +46,16 @@ Haftalık ritim (öneri):
   - trial_cta_click
 
 Küçük Ads testi:
+  - Admin → Pazarlama → Ads test paketi
   - Bütçe: düşük, 7 gün
   - Hedef: kayıt (sign_up / google_complete)
-  - Kreatif: Instagram görselleri + şehir CTA
   - Landing: /kampanya?utm_source=meta&utm_medium=paid&utm_campaign=test1
-    veya /kampanya?utm_source=google&utm_medium=cpc&utm_campaign=test1&city=istanbul
+    veya şehirli kampanyalar (istanbul / ankara / izmir)
 
 Haftalık metrik (sunucu):
   https://gonulkoprusu.com/setup/growth?key=gk-cpanel-setup-2026
 
-Cron (lifecycle e-posta: fotoğraf, davet, trial→premium, re-engagement):
+Cron (lifecycle: e-posta + davet push, fotoğraf, trial→premium, re-engagement):
   https://gonulkoprusu.com/setup/cron?key=gk-cron-2026
 
 Hesap: @gonulkoprusucom

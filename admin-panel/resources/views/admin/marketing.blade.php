@@ -136,6 +136,88 @@
 </section>
 @endif
 
+@if(!empty($adsTestPack))
+<section class="admin-panel admin-panel--glass">
+    <header class="admin-package-card__head">
+        <div>
+            <h3 class="admin-panel-title">Ads test paketi (7 gün)</h3>
+            <p class="admin-package-card__sub">Düşük bütçeli Meta / Google testi — landing + kontrol listesi.</p>
+        </div>
+        <button type="button" class="btn btn-primary" data-copy-from="adsPackFull">Paketi kopyala</button>
+    </header>
+    <textarea id="adsPackFull" class="admin-sr-only" readonly hidden aria-hidden="true">{{ $adsTestPack['pack_text'] }}</textarea>
+    <div class="admin-marketing-link-grid" style="margin-top:0.85rem;">
+        @foreach($adsTestPack['links'] as $item)
+            <div class="admin-marketing-link-card">
+                <div class="admin-marketing-link-card__meta">
+                    <strong>{{ $item['label'] }}</strong>
+                    <span>{{ $item['hint'] }}</span>
+                </div>
+                <code class="admin-marketing-link-card__url">{{ $item['url'] }}</code>
+                <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $item['url'] }}">Kopyala</button>
+            </div>
+        @endforeach
+    </div>
+    <ul class="admin-template-list" style="margin-top:0.85rem;">
+        @foreach($adsTestPack['checklist'] as $row)
+            <li>{{ $row }}</li>
+        @endforeach
+    </ul>
+</section>
+@endif
+
+@if(!empty($inviteSharePack))
+<section class="admin-panel admin-panel--glass">
+    <header class="admin-package-card__head">
+        <div>
+            <h3 class="admin-panel-title">Davet WhatsApp / SMS metinleri</h3>
+            <p class="admin-package-card__sub">Otomatik SMS yok; WhatsApp ve manuel SMS için hazır metin. Push davet hatırlatması cron ile gider.</p>
+        </div>
+        <button type="button" class="btn btn-primary" data-copy-from="invitePackFull">Paketi kopyala</button>
+    </header>
+    <textarea id="invitePackFull" class="admin-sr-only" readonly hidden aria-hidden="true">{{ $inviteSharePack['pack_text'] }}</textarea>
+    <div class="admin-marketing-link-grid" style="margin-top:0.85rem;">
+        @foreach($inviteSharePack['messages'] as $i => $msg)
+            <div class="admin-marketing-link-card">
+                <div class="admin-marketing-link-card__meta">
+                    <strong>{{ $msg['label'] }}</strong>
+                    <span>Kopyala → yapıştır</span>
+                </div>
+                <code class="admin-marketing-link-card__url" style="white-space:pre-wrap;">{{ $msg['text'] }}</code>
+                <textarea id="inviteMsg{{ $i }}" class="admin-sr-only" readonly hidden aria-hidden="true">{{ $msg['text'] }}</textarea>
+                <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy-from="inviteMsg{{ $i }}">Kopyala</button>
+            </div>
+        @endforeach
+    </div>
+</section>
+@endif
+
+@if(!empty($weeklyPlan))
+<section class="admin-panel admin-panel--glass">
+    <header class="admin-package-card__head">
+        <div>
+            <h3 class="admin-panel-title">Haftalık içerik ritmi</h3>
+            <p class="admin-package-card__sub">Instagram / organik — günde tek iş.</p>
+        </div>
+    </header>
+    <table class="admin-table" style="margin-top:0.75rem;">
+        <thead><tr><th>Gün</th><th>İş</th><th>Link</th></tr></thead>
+        <tbody>
+            @foreach($weeklyPlan as $row)
+                <tr>
+                    <td>{{ $row['day'] }}</td>
+                    <td>{{ $row['task'] }}</td>
+                    <td>
+                        <code class="admin-marketing-link-card__url" style="display:inline;">{{ $row['link'] }}</code>
+                        <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $row['link'] }}">Kopyala</button>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</section>
+@endif
+
 <section class="admin-panel admin-panel--glass admin-marketing-links">
     <header class="admin-package-card__head">
         <div>

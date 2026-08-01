@@ -17,13 +17,26 @@ final class SeoDistricts
                 'Kadıköy', 'Beşiktaş', 'Üsküdar', 'Bakırköy', 'Şişli',
                 'Ataşehir', 'Pendik', 'Maltepe', 'Beylikdüzü', 'Başakşehir',
                 'Ümraniye', 'Kartal', 'Sarıyer', 'Fatih', 'Eyüpsultan',
+                'Avcılar', 'Bahçelievler', 'Küçükçekmece', 'Büyükçekmece', 'Gaziosmanpaşa',
             ],
             'ankara' => [
                 'Çankaya', 'Keçiören', 'Yenimahalle', 'Mamak', 'Etimesgut', 'Sincan',
+                'Pursaklar', 'Altındağ', 'Gölbaşı',
             ],
             'izmir' => [
                 'Konak', 'Karşıyaka', 'Bornova', 'Buca', 'Bayraklı', 'Çiğli',
+                'Gaziemir', 'Karabağlar', 'Menemen',
             ],
+        ];
+    }
+
+    /** Sitemap’e giren öncelikli ilçeler (crawl bütçesi için daraltılmış). */
+    public static function sitemapPrioritySlugs(): array
+    {
+        return [
+            'istanbul' => ['kadikoy', 'besiktas', 'uskudar', 'sisli', 'atasehir', 'bakirkoy', 'pendik', 'umraniye'],
+            'ankara' => ['cankaya', 'kecioren', 'yenimahalle', 'etimesgut'],
+            'izmir' => ['konak', 'karsiyaka', 'bornova', 'buca'],
         ];
     }
 
@@ -47,6 +60,24 @@ final class SeoDistricts
                     'district_slug' => self::slug($district),
                 ];
             }
+        }
+
+        return $out;
+    }
+
+    /**
+     * @return list<array{city_slug: string, district: string, district_slug: string}>
+     */
+    public static function sitemapEntries(): array
+    {
+        $priority = self::sitemapPrioritySlugs();
+        $out = [];
+        foreach (self::all() as $row) {
+            $allowed = $priority[$row['city_slug']] ?? [];
+            if ($allowed !== [] && ! in_array($row['district_slug'], $allowed, true)) {
+                continue;
+            }
+            $out[] = $row;
         }
 
         return $out;

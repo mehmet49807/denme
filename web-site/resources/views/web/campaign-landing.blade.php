@@ -3,14 +3,10 @@
 @section('title', 'Ücretsiz Kayıt — Gönül Köprüsü')
 @section('page-eyebrow', 'Kampanya')
 @section('page-title')
-    @if(!empty($cityName))
-        {{ $cityName }} tanışma — ücretsiz üye ol
-    @else
-        Ücretsiz üye ol, güvenle tanış
-    @endif
+    {{ $headline ?? ((!empty($cityName) ? $cityName.' tanışma — ücretsiz üye ol' : 'Ücretsiz üye ol, güvenle tanış')) }}
 @endsection
 @section('page-lead')
-    Ciddi ilişki ve evlilik odaklı Gönül Köprüsü. Kadın üyelerde mesajlaşma ücretsiz; kayıt bir dakikadan az sürer.
+    {{ $lead ?? 'Ciddi ilişki ve evlilik odaklı Gönül Köprüsü. Kadın üyelerde mesajlaşma ücretsiz; kayıt bir dakikadan az sürer.' }}
 @endsection
 
 @section('page-content')

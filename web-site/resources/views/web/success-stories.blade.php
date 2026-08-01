@@ -49,13 +49,18 @@
         </div>
     @endif
 
-    <p>
-        <a href="{{ route('blog') }}">Blog</a> ·
-        <a href="{{ route('sss') }}">SSS</a> ·
-        <a href="{{ route('city.seo', 'istanbul') }}">İstanbul tanışma</a> ·
-        <a href="{{ route('city.seo', 'ankara') }}">Ankara tanışma</a> ·
-        <a href="{{ route('city.seo', 'izmir') }}">İzmir tanışma</a>
-    </p>
+    <h2>Şehir ve ilçe keşfi</h2>
+    <ul class="city-seo-links">
+        <li><a href="{{ route('city.seo', 'istanbul') }}">İstanbul tanışma</a></li>
+        <li><a href="{{ route('city.seo.district', ['slug' => 'istanbul', 'district' => 'kadikoy']) }}">Kadıköy</a></li>
+        <li><a href="{{ route('city.seo', 'ankara') }}">Ankara tanışma</a></li>
+        <li><a href="{{ route('city.seo.district', ['slug' => 'ankara', 'district' => 'cankaya']) }}">Çankaya</a></li>
+        <li><a href="{{ route('city.seo', 'izmir') }}">İzmir tanışma</a></li>
+        <li><a href="{{ route('city.seo.district', ['slug' => 'izmir', 'district' => 'karsiyaka']) }}">Karşıyaka</a></li>
+        <li><a href="{{ route('blog') }}">Blog</a></li>
+        <li><a href="{{ route('sss') }}">SSS</a></li>
+        <li><a href="{{ url('/davet') }}">Arkadaşını davet et</a></li>
+    </ul>
 @endsection
 
 @push('ld-json')

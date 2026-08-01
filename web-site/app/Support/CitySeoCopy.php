@@ -137,9 +137,28 @@ final class CitySeoCopy
     ): array {
         $members = number_format(max(0, $memberCount));
         $place = $district.', '.$city;
+        $districtSlug = SeoDistricts::slug($district);
 
-        $lead = "{$district} tanışma — {$city} içinde {$district} ve çevresinde ciddi ilişki, güvenli sohbet ve evlilik odaklı ücretsiz tanışma. "
-            ."{$city} evlilik sitesi arayanlar için ilçe bazlı keşif Gönül Köprüsü'nde.";
+        $hooks = [
+            'kadikoy' => "Kadıköy tanışma — Moda, Caferağa ve çevresinde ciddi ilişki arayanlar için güvenli, ücretsiz ilçe keşfi. İstanbul’un Anadolu yakasında evlilik odaklı sohbet.",
+            'besiktas' => "Beşiktaş tanışma — Levent–Beşiktaş hattında ciddi niyetli üyelerle güvenli sohbet. İstanbul evlilik arayışına ilçe odaklı başlangıç.",
+            'uskudar' => "Üsküdar tanışma — boğaz hattında saygılı, evlilik odaklı ücretsiz tanışma. İstanbul’da ilçe bazlı keşif.",
+            'sisli' => "Şişli tanışma — Nişantaşı ve çevresinde ciddi ilişki niyeti. Güvenli mesajlaşma, ücretsiz kayıt.",
+            'atasehir' => "Ataşehir tanışma — finans ve yaşam merkezinde evlilik odaklı, moderasyonlu platform.",
+            'bakirkoy' => "Bakırköy tanışma — Avrupa yakasında güvenli sohbet ve ciddi ilişki. Ücretsiz üye ol.",
+            'cankaya' => "Çankaya tanışma — başkentin merkez ilçesinde evlilik ve ciddi ilişki odaklı keşif. Ankara ücretsiz kayıt.",
+            'kecioren' => "Keçiören tanışma — Ankara’da ailevi değerlere uygun, güvenli online sohbet.",
+            'yenimahalle' => "Yenimahalle tanışma — başkentte konum yakınlığıyla ciddi ilişki arayışı.",
+            'konak' => "Konak tanışma — İzmir merkezde güvenli, ciddi niyetli üye keşfi. Ücretsiz kayıt.",
+            'karsiyaka' => "Karşıyaka tanışma — İzmir’in kuzey yakasında evlilik odaklı, saygılı sohbet.",
+            'bornova' => "Bornova tanışma — üniversite ve yaşam bölgesinde ciddi ilişki arayanlar için güvenli platform.",
+            'buca' => "Buca tanışma — İzmir’de ücretsiz kayıt, moderasyon ve ilçe bazlı keşif.",
+        ];
+
+        $lead = $hooks[$districtSlug] ?? (
+            "{$district} tanışma — {$city} içinde {$district} ve çevresinde ciddi ilişki, güvenli sohbet ve evlilik odaklı ücretsiz tanışma. "
+            ."{$city} evlilik sitesi arayanlar için ilçe bazlı keşif Gönül Köprüsü'nde."
+        );
 
         if ($memberCount > 0) {
             $lead .= " {$place} bölgesinde yaklaşık {$members} kayıtlı üye görünür.";
@@ -151,6 +170,8 @@ final class CitySeoCopy
             'Moderasyon, engelleme ve şikayet araçları',
             "{$city} genelinden {$district} odaklı ciddi niyet",
             'Güvenli ilk buluşma için rehber ve destek',
+            "{$district} halka açık buluşma noktaları önerisi",
+            'Davet ödülleriyle arkadaşlarını da getirebilirsin',
         ];
 
         $faqs = [
@@ -165,6 +186,10 @@ final class CitySeoCopy
             [
                 'question' => "{$city} şehir sayfasına nasıl dönerim?",
                 'answer' => "{$city} genel tanışma sayfası /sehir/{$citySlug} adresindedir. İlçe sayfaları yerel aramalar için ek keşif sunar.",
+            ],
+            [
+                'question' => "{$district} için hangi anahtar kelimelerle bulunurum?",
+                'answer' => "{$district} tanışma, {$district} evlilik, {$city} {$district} ciddi ilişki aramalarında bu sayfa ve şehir sayfamız öne çıkar. Ücretsiz kayıt ile başlayabilirsin.",
             ],
             [
                 'question' => 'İlk buluşmada nelere dikkat etmeliyim?',

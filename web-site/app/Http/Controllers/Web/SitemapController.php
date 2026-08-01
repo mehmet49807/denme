@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Support\FeaturedCities;
+use App\Support\SeoDistricts;
 use Illuminate\Support\Facades\Cache;
 
 class SitemapController extends Controller
 {
     /**
      * Dinamik sitemap.xml — Google crawl bütçesi için daraltılmış öncelikli URL seti.
-     * İlçe sayfaları ve tüm 81 il sitemap'te yok; sayfalar canlı kalır, iç linklerle keşfedilir.
+     * Öncelikli ilçeler (İstanbul/Ankara/İzmir) + FeaturedCities; kalan 81 il iç linklerle keşfedilir.
      */
     public function index()
     {
@@ -19,7 +20,7 @@ class SitemapController extends Controller
             abort(404);
         }
 
-        $xml = Cache::remember('sitemap.xml.body.v6', now()->addHour(), function () use ($settings) {
+        $xml = Cache::remember('sitemap.xml.body.v7', now()->addHour(), function () use ($settings) {
             return $this->buildSitemapXml($settings);
         });
 
@@ -83,6 +84,15 @@ class SitemapController extends Controller
                 'lastmod' => now()->toDateString(),
                 'changefreq' => 'weekly',
                 'priority' => in_array($link['slug'], ['istanbul', 'ankara', 'izmir'], true) ? '0.9' : '0.8',
+            ];
+        }
+
+        foreach (SeoDistricts::sitemapEntries() as $district) {
+            $urls[] = [
+                'loc' => $baseUrl.'/sehir/'.$district['city_slug'].'/'.$district['district_slug'],
+                'lastmod' => now()->toDateString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.78',
             ];
         }
 

@@ -141,6 +141,11 @@ class SiteSettingsService
             Cache::forget(self::CACHE_KEY);
             Cache::forget('sitemap.xml.body');
             Cache::forget('sitemap.xml.body.v2');
+            Cache::forget('sitemap.xml.body.v3');
+            Cache::forget('sitemap.xml.body.v4');
+            Cache::forget('sitemap.xml.body.v5');
+            Cache::forget('sitemap.xml.body.v6');
+            Cache::forget('sitemap.xml.body.v7');
         } catch (\Throwable) {
             //
         }

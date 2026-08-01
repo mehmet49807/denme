@@ -31,6 +31,9 @@ class AdminMarketingController extends Controller
             'defaultCampaign' => $campaign,
             'links' => $this->campaignLinks($frontend, $campaign),
             'instagramPack' => $this->instagramPack($frontend, $campaign),
+            'adsTestPack' => $this->adsTestPack($frontend),
+            'inviteSharePack' => $this->inviteSharePack($frontend),
+            'weeklyPlan' => $this->weeklyContentPlan($frontend),
             'adVideos' => $this->adVideos($frontend),
         ]);
     }
@@ -342,6 +345,134 @@ class AdminMarketingController extends Controller
             'kampanya_url' => $kampanyaUrl,
             'captions' => $captions,
             'pack_text' => trim(implode("\n", $packLines)),
+        ];
+    }
+
+    /**
+     * 7 günlük düşük bütçeli Meta/Google Ads test paketi.
+     *
+     * @return array{links: list<array{label: string, url: string, hint: string}>, pack_text: string, checklist: list<string>}
+     */
+    private function adsTestPack(string $frontend): array
+    {
+        $links = [
+            [
+                'label' => 'Meta test1 (genel)',
+                'url' => $frontend.'/kampanya?'.http_build_query([
+                    'utm_source' => 'meta', 'utm_medium' => 'paid', 'utm_campaign' => 'test1',
+                ]),
+                'hint' => '7 gün · kayıt hedefi · genel kreatif',
+            ],
+            [
+                'label' => 'Meta İstanbul',
+                'url' => $frontend.'/kampanya?'.http_build_query([
+                    'utm_source' => 'meta', 'utm_medium' => 'paid', 'utm_campaign' => 'istanbul', 'city' => 'istanbul',
+                ]),
+                'hint' => 'Şehir hedefli · İstanbul',
+            ],
+            [
+                'label' => 'Meta Ankara',
+                'url' => $frontend.'/kampanya?'.http_build_query([
+                    'utm_source' => 'meta', 'utm_medium' => 'paid', 'utm_campaign' => 'ankara', 'city' => 'ankara',
+                ]),
+                'hint' => 'Şehir hedefli · Ankara',
+            ],
+            [
+                'label' => 'Meta İzmir',
+                'url' => $frontend.'/kampanya?'.http_build_query([
+                    'utm_source' => 'meta', 'utm_medium' => 'paid', 'utm_campaign' => 'izmir', 'city' => 'izmir',
+                ]),
+                'hint' => 'Şehir hedefli · İzmir',
+            ],
+            [
+                'label' => 'Google CPC test1',
+                'url' => $frontend.'/kampanya?'.http_build_query([
+                    'utm_source' => 'google', 'utm_medium' => 'cpc', 'utm_campaign' => 'test1',
+                ]),
+                'hint' => 'Search / Performance Max test',
+            ],
+        ];
+
+        $checklist = [
+            'Bütçe: düşük, 7 gün (günlük sabit)',
+            'Hedef: kayıt (sign_up / google_complete)',
+            'Landing: yukarıdaki /kampanya URL’leri (UTM’li)',
+            'Kreatif: Admin → Reklam medya (story MP4 / PNG)',
+            'Ölçüm: Pazarlama metrikleri + GA olayları',
+            'Durdur: CPA yüksekse 72 saat sonra kapat',
+        ];
+
+        $lines = ['=== Ads Test Paketi (7 gün) ===', ''];
+        foreach ($links as $link) {
+            $lines[] = $link['label'].': '.$link['url'];
+        }
+        $lines[] = '';
+        $lines[] = 'Kontrol listesi:';
+        foreach ($checklist as $item) {
+            $lines[] = '- '.$item;
+        }
+
+        return [
+            'links' => $links,
+            'checklist' => $checklist,
+            'pack_text' => implode("\n", $lines),
+        ];
+    }
+
+    /**
+     * Davet WhatsApp / SMS kopyala metinleri (SMS gateway yok — manuel veya WhatsApp).
+     *
+     * @return array{messages: list<array{label: string, text: string}>, pack_text: string}
+     */
+    private function inviteSharePack(string $frontend): array
+    {
+        $davet = $frontend.'/davet';
+        $messages = [
+            [
+                'label' => 'WhatsApp kısa',
+                'text' => "Gönül Köprüsü'nde buluşalım — ücretsiz kayıt:\n{$davet}",
+            ],
+            [
+                'label' => 'WhatsApp ödül (erkek)',
+                'text' => "Arkadaşını davet et, +3 gün premium kazan.\nCiddi ilişki odaklı tanışma:\n{$davet}",
+            ],
+            [
+                'label' => 'WhatsApp ödül (kadın)',
+                'text' => "Güvendiğin birini davet et — profilin 24 saat öne çıksın.\n{$davet}",
+            ],
+            [
+                'label' => 'SMS kısa (160 kr.)',
+                'text' => 'Gonul Koprusu: ucretsiz kayit ve guvenli tanisma. '.$frontend.'/register?utm_source=sms&utm_medium=manual&utm_campaign=invite',
+            ],
+        ];
+
+        $lines = ['=== Davet WhatsApp / SMS Paketi ===', ''];
+        foreach ($messages as $msg) {
+            $lines[] = '--- '.$msg['label'].' ---';
+            $lines[] = $msg['text'];
+            $lines[] = '';
+        }
+        $lines[] = 'Not: Otomatik SMS gateway yok; push davet hatırlatması cron ile gider.';
+
+        return [
+            'messages' => $messages,
+            'pack_text' => trim(implode("\n", $lines)),
+        ];
+    }
+
+    /**
+     * @return list<array{day: string, task: string, link: string}>
+     */
+    private function weeklyContentPlan(string $frontend): array
+    {
+        return [
+            ['day' => 'Pzt', 'task' => 'İstanbul / Kadıköy şehir postu', 'link' => $frontend.'/sehir/istanbul/kadikoy'],
+            ['day' => 'Sal', 'task' => 'Güvenli tanışma / SSS story', 'link' => $frontend.'/guvenli-tanisma'],
+            ['day' => 'Çar', 'task' => 'Ankara / Çankaya postu', 'link' => $frontend.'/sehir/ankara/cankaya'],
+            ['day' => 'Per', 'task' => 'Davet ödülü WhatsApp story', 'link' => $frontend.'/davet'],
+            ['day' => 'Cum', 'task' => 'İzmir / Karşıyaka postu', 'link' => $frontend.'/sehir/izmir/karsiyaka'],
+            ['day' => 'Cmt', 'task' => 'Başarı hikâyesi paylaşımı', 'link' => $frontend.'/basari-hikayeleri'],
+            ['day' => 'Paz', 'task' => 'Üye atmosfer / Reels + bio CTA', 'link' => $frontend.'/register?utm_source=instagram&utm_medium=bio&utm_campaign=weekly'],
         ];
     }
 

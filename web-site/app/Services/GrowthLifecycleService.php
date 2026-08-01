@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Schema;
  */
 final class GrowthLifecycleService
 {
-    public function __construct(private UserMailService $mail) {}
+    public function __construct(
+        private UserMailService $mail,
+        private NotificationService $notifications,
+    ) {}
 
     /** @return array<string, int> */
     public function run(int $limit = 40): array
@@ -21,6 +24,7 @@ final class GrowthLifecycleService
         $stats = [
             'profile_nudge' => 0,
             'invite_campaign' => 0,
+            'invite_push' => 0,
             'trial_premium' => 0,
             're_engagement' => 0,
             'skipped' => 0,
@@ -33,7 +37,9 @@ final class GrowthLifecycleService
         $per = max(5, (int) ceil($limit / 4));
 
         $stats['profile_nudge'] = $this->sendProfileCompleteNudges($per);
-        $stats['invite_campaign'] = $this->sendInviteCampaigns($per);
+        $invite = $this->sendInviteCampaigns($per);
+        $stats['invite_campaign'] = $invite['email'];
+        $stats['invite_push'] = $invite['push'];
         $stats['trial_premium'] = $this->sendTrialPremiumNudges($per);
         $stats['re_engagement'] = $this->sendReEngagement($per);
 
@@ -73,9 +79,11 @@ final class GrowthLifecycleService
         return $sent;
     }
 
-    private function sendInviteCampaigns(int $limit): int
+    /** @return array{email: int, push: int} */
+    private function sendInviteCampaigns(int $limit): array
     {
-        $sent = 0;
+        $emailSent = 0;
+        $pushSent = 0;
         $users = User::query()
             ->where('role', 'user')
             ->where('is_banned', false)
@@ -90,7 +98,7 @@ final class GrowthLifecycleService
             ->get();
 
         foreach ($users as $user) {
-            if ($sent >= $limit) {
+            if ($emailSent + $pushSent >= $limit * 2) {
                 break;
             }
 
@@ -108,17 +116,81 @@ final class GrowthLifecycleService
                 ? 'invite_friends'
                 : 'premium_invite';
 
-            if ($this->alreadySent($user, $template, 12)) {
+            if ($this->alreadySent($user, $template, 12) && $this->alreadySent($user, 'invite_friends_push', 12)) {
                 continue;
             }
 
-            if ($this->mail->sendLifecycle($user, $template)) {
+            $didEmail = false;
+            $didPush = false;
+
+            if ($emailSent < $limit && ! $this->alreadySent($user, $template, 12)) {
+                if ($this->mail->sendLifecycle($user, $template)) {
+                    $didEmail = true;
+                    $emailSent++;
+                }
+            }
+
+            if ($pushSent < $limit && ! $this->alreadySent($user, 'invite_friends_push', 12)) {
+                if ($this->sendInvitePush($user)) {
+                    $didPush = true;
+                    $pushSent++;
+                }
+            }
+
+            if ($didEmail || $didPush) {
                 $this->markSent($user);
-                $sent++;
             }
         }
 
-        return $sent;
+        return ['email' => $emailSent, 'push' => $pushSent];
+    }
+
+    private function sendInvitePush(User $user): bool
+    {
+        try {
+            $isFemale = $user->gender === 'female';
+            $title = 'Arkadaşını davet et, ödül kazan';
+            $body = $isFemale
+                ? 'Her başarılı davette profilin 24 saat öne çıkar. Linkini paylaş.'
+                : 'Her davette +3 gün premium / deneme. Linkini WhatsApp ile paylaş.';
+
+            $this->notifications->notifyAdminNotice($user, $title, $body, [
+                'type' => 'invite_reminder',
+                'url' => '/davet',
+            ]);
+
+            $this->logPushTouch($user, 'invite_friends_push', $title);
+
+            return true;
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    private function logPushTouch(User $user, string $templateKey, string $subject): void
+    {
+        try {
+            if (! Schema::hasTable('email_logs')) {
+                return;
+            }
+
+            $row = [
+                'admin_id' => null,
+                'user_id' => $user->id,
+                'recipient_email' => (string) ($user->email ?: 'push@local'),
+                'template_key' => $templateKey,
+                'subject' => mb_substr($subject, 0, 190),
+                'status' => 'sent',
+                'error_message' => 'channel:push',
+                'created_at' => now(),
+            ];
+            if (Schema::hasColumn('email_logs', 'updated_at')) {
+                $row['updated_at'] = now();
+            }
+            DB::table('email_logs')->insert($row);
+        } catch (\Throwable) {
+            //
+        }
     }
 
     /** Erkek: trial bitimine 24s kala veya bitişten sonra 3 gün içinde premium daveti */

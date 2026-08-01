@@ -327,9 +327,10 @@ Route::get('/setup/sitemap-ping', function () {
     Cache::forget('sitemap.xml.body.v4');
     Cache::forget('sitemap.xml.body.v5');
     Cache::forget('sitemap.xml.body.v6');
+    Cache::forget('sitemap.xml.body.v7');
 
     $sitemapUrl = 'https://gonulkoprusu.com/sitemap.xml';
-    $lines = ['sitemap-ping', 'sitemap='.$sitemapUrl, 'mode=featured-cities-v6'];
+    $lines = ['sitemap-ping', 'sitemap='.$sitemapUrl, 'mode=featured-cities-districts-v7'];
 
     foreach ([
         'https://www.google.com/ping?sitemap='.rawurlencode($sitemapUrl),

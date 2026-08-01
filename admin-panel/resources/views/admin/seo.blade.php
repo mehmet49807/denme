@@ -45,6 +45,21 @@
         </form>
     </div>
 
+    <section class="admin-panel admin-panel--glass" style="margin:1.25rem 0;">
+        <h3 class="admin-panel-title">Google Search Console kontrol listesi</h3>
+        <ol class="admin-template-list">
+            <li>Mülkü doğrula (yukarıdaki <strong>google_site_verification</strong> kodunu kaydet).</li>
+            <li>Sitemap gönder: <code>{{ $sitemapUrl }}</code> (şehir + öncelikli ilçe URL’leri dahil).</li>
+            <li>İlk indeks: <code>/evlilik-sitesi</code>, <code>/basari-hikayeleri</code>, <code>/sehir/istanbul</code>, <code>/blog</code>.</li>
+            <li>İlçe sayfaları: Kadıköy, Çankaya, Karşıyaka — “URL denetimi” ile iste.</li>
+            <li>Haftalık: kapsama raporundaki 404 / softuplicate’leri temizle; sitemap cache’i temizle.</li>
+            <li>Bing Webmaster’a aynı sitemap’i ekle (opsiyonel doğrulama kodu yukarıda).</li>
+        </ol>
+        <p class="admin-package-card__sub" style="margin-bottom:0;">
+            Canlı ping (sunucu): <code>{{ rtrim($settings['site_url'] ?? 'https://gonulkoprusu.com', '/') }}/setup/sitemap-ping?key=…</code>
+        </p>
+    </section>
+
     <form method="POST" action="{{ route('admin.seo.update') }}" class="admin-seo-form">
         @csrf
 
