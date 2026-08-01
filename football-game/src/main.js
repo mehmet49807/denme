@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { createPitchScene } from './game/Pitch.js';
 import { Match } from './game/Match.js';
 import { TouchControls } from './game/Controls.js';
-import { createPlayerMesh, animatePlayerWalk } from './game/PlayerFactory.js';
+import { createPlayerMesh, animatePlayerWalk, applyKickPose } from './game/PlayerFactory.js';
+import { createBall } from './game/Ball.js';
 import { signIn } from './auth/socialAuth.js';
 import {
   loadSave,
@@ -55,32 +56,61 @@ let scene = createPitchScene();
 let previewPlayer = null;
 let match = null;
 
+let previewBall = null;
+let previewKick = false;
+
 function spawnMenuPreview() {
   if (previewPlayer) {
     scene.remove(previewPlayer);
     previewPlayer = null;
   }
+  if (previewBall) {
+    scene.remove(previewBall.mesh);
+    previewBall = null;
+  }
+
+  // Referans 1: beyaz/mavi antrenman — veya dönüşümlü kırmızı/sarı
+  const kits = [
+    { primary: '#6ec1e4', secondary: '#ffffff', accent: '#1a3a6e', label: 'GA' },
+    { primary: '#e63946', secondary: '#ffd60a', accent: '#ffd60a', label: 'FTG' },
+  ];
+  const kit = kits[Math.floor(Date.now() / 8000) % 2];
+
   previewPlayer = createPlayerMesh(
-    { primary: '#5dade2', secondary: '#ffffff', accent: '#1a1a1a' },
+    { primary: kit.primary, secondary: kit.secondary, accent: kit.accent },
     false,
-    { skin: 0xc68642, hair: 0x1a120c, beard: true }
+    {
+      skin: 0xd4a06a,
+      hair: 0x1a120c,
+      beard: true,
+      number: 19,
+      shortLabel: kit.label,
+      kitStyle: kit.label === 'FTG' ? 'match' : 'training',
+    }
   );
-  previewPlayer.position.set(1.35, 0, 0.2);
-  previewPlayer.rotation.y = -0.55;
+  previewPlayer.position.set(1.2, 0, 0.15);
+  previewPlayer.rotation.y = -0.35;
   scene.add(previewPlayer);
 
-  // Antrenman konileri (referans görsele yakın)
-  const coneMat = new THREE.MeshStandardMaterial({ color: 0xff6a00, roughness: 0.5 });
+  previewBall = createBall();
+  previewBall.mesh.position.set(1.45, 0.22, 0.85);
+  scene.add(previewBall.mesh);
+
+  const coneMat = new THREE.MeshStandardMaterial({ color: 0xff6a00, roughness: 0.45 });
   for (const [x, z] of [
-    [0.6, 0.9],
-    [1.9, 1.1],
-    [2.2, 0.3],
+    [0.55, 0.85],
+    [1.85, 1.05],
+    [2.15, 0.35],
+    [0.9, 1.35],
   ]) {
-    const cone = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.32, 12), coneMat);
-    cone.position.set(x, 0.16, z);
+    const cone = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), coneMat);
+    cone.scale.set(1, 0.55, 1);
+    cone.position.set(x, 0.06, z);
     cone.castShadow = true;
     scene.add(cone);
   }
+  previewKick = kit.label === 'FTG';
+  if (previewKick) applyKickPose(previewPlayer, 1);
 }
 spawnMenuPreview();
 let userTeam = null;
@@ -443,14 +473,15 @@ function loop(t) {
 
   if (!match) {
     if (!previewPlayer) spawnMenuPreview();
-    const a = t * 0.00025;
+    const a = t * 0.0002;
     if (previewPlayer) {
-      previewPlayer.rotation.y = -0.55 + Math.sin(a) * 0.2;
-      animatePlayerWalk(previewPlayer, t / 1000, 0.25);
+      previewPlayer.rotation.y = -0.35 + Math.sin(a) * 0.12;
+      if (!previewKick) animatePlayerWalk(previewPlayer, t / 1000, 0.2);
+      else applyKickPose(previewPlayer, 0.85 + Math.sin(t * 0.004) * 0.08);
     }
-    // Karakter vitrini — yüz ve vücut net görünsün
-    camera.position.set(-0.15 + Math.sin(a) * 0.15, 1.45, 3.1);
-    camera.lookAt(1.2, 1.25, 0.1);
+    // Referans gibi yakın portre / 3-4 vücut
+    camera.position.set(0.15 + Math.sin(a) * 0.1, 1.35, 2.55);
+    camera.lookAt(1.15, 1.15, 0.2);
     renderer.render(scene, camera);
     return;
   }

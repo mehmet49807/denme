@@ -60,9 +60,12 @@ export class Match {
       const form = FORMATION[i] || FORMATION[FORMATION.length - 1];
       const seed = (data.name?.charCodeAt(0) || 0) + i * 17 + (side > 0 ? 0 : 99);
       const mesh = createPlayerMesh(team.colors, data.pos === 'GK', {
-        skin: [0xe0ac69, 0xc68642, 0x8d5524, 0xd4a574, 0xb07d4f][seed % 5],
-        hair: [0x1a120c, 0x2c1810, 0x0d0d0d, 0x3b2f2f][seed % 4],
+        skin: [0xe8b989, 0xd4a06a, 0xc68642, 0xb07d4f, 0x8d5524][seed % 5],
+        hair: [0x1a120c, 0x0f0a08, 0x2a1c14, 0x111111][seed % 4],
         beard: seed % 3 !== 0,
+        number: data.number,
+        shortLabel: team.short || 'GA',
+        kitStyle: 'training',
       });
       const z = form.z * side;
       const x = form.x;
