@@ -1251,30 +1251,38 @@
     background: #f43f5e;
 }
 .gk-home-thanks {
-    margin-top: 1.75rem;
-    padding: 1.5rem 1.35rem;
-    border-radius: 22px;
-    background: linear-gradient(135deg, #fff 0%, #fff1eb 55%, #f8f0ff 100%);
-    border: 1px solid rgba(26, 18, 37, 0.08);
-}
-.gk-home-thanks h3 {
-    margin: 0.25rem 0 0.75rem;
-    font-size: clamp(1.25rem, 2.4vw, 1.55rem);
-    line-height: 1.25;
-    color: #2a1845;
-}
-.gk-home-thanks p {
-    margin: 0 0 0.7rem;
-    font-size: 0.98rem;
-    line-height: 1.55;
-    color: #3f3849;
-    max-width: 48rem;
+    margin-top: 1.35rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: 0;
 }
 .gk-home-thanks__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.65rem;
-    margin-top: 1rem;
+    margin: 0;
+}
+.gk-home-thanks__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.7rem 1.05rem;
+    font-weight: 700;
+}
+.gk-home-thanks__ico {
+    display: inline-flex;
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0;
+}
+.gk-home-thanks__ico .theme-icon,
+.gk-home-thanks__ico .theme-icon svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    display: block;
 }
 .gk-home-stories-more,
 .gk-home-faq-more {

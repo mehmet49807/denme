@@ -221,25 +221,23 @@
                 </div>
             </div>
 
-            <aside class="gk-home-thanks" aria-labelledby="gk-home-thanks-heading">
-                <p class="gk-label">Teşekkürler</p>
-                <h3 id="gk-home-thanks-heading">Yuva kuranlara, umut bağlayanlara teşekkürler</h3>
-                <p>
-                    Gönül Köprüsü’nde tanışıp nişanlanan, evlenen veya uzun soluklu bir bağ kuran herkese
-                    içten teşekkür ederiz. Amacımız flört temposu değil; <strong>ciddi ilişki</strong> ve
-                    <strong>evlilik</strong> niyetiyle güvenli tanışmayı mümkün kılmak.
-                </p>
-                <p>
-                    Siz de aynı yolda ilerlemek istiyorsanız ücretsiz üye olun; şehrinizi seçin, profilinizi
-                    tamamlayın ve saygılı bir sohbetle ilk adımı atın.
-                </p>
+            <aside class="gk-home-thanks" aria-label="Başarı hikâyeleri hızlı bağlantılar">
                 <div class="gk-home-thanks__actions">
-                    <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'stories', 'utm_campaign' => 'thanks']) }}" class="btn btn-primary" data-gk-event="sign_up_click" data-gk-event-label="home_thanks">Ücretsiz kayıt ol</a>
+                    <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'stories', 'utm_campaign' => 'thanks']) }}" class="btn btn-primary gk-home-thanks__btn" data-gk-event="sign_up_click" data-gk-event-label="home_thanks">
+                        <span class="gk-home-thanks__ico" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'user'])</span>
+                        <span>Ücretsiz kayıt ol</span>
+                    </a>
                     @if(Route::has('stories'))
-                        <a href="{{ route('stories') }}" class="btn btn-outline">Tüm başarı hikâyeleri</a>
+                        <a href="{{ route('stories') }}" class="btn btn-outline gk-home-thanks__btn">
+                            <span class="gk-home-thanks__ico" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'sparkles'])</span>
+                            <span>Tüm başarı hikâyeleri</span>
+                        </a>
                     @endif
                     @if(Route::has('seo.marriage'))
-                        <a href="{{ route('seo.marriage') }}" class="btn btn-ghost">Evlilik sitesi</a>
+                        <a href="{{ route('seo.marriage') }}" class="btn btn-outline gk-home-thanks__btn">
+                            <span class="gk-home-thanks__ico" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'heart'])</span>
+                            <span>Evlilik sitesi</span>
+                        </a>
                     @endif
                 </div>
             </aside>
