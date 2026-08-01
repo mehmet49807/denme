@@ -1,4 +1,5 @@
 <?php
+// redeploy-blog-assets
 
 namespace App\Http\Controllers\Web;
 

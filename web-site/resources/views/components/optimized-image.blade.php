@@ -1,3 +1,4 @@
+{{-- redeploy-blog-assets --}}
 @props([
     'name',
     'alt' => '',

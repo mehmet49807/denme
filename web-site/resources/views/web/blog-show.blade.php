@@ -1,3 +1,4 @@
+{{-- redeploy-blog-assets --}}
 @extends('layouts.content-page')
 
 @section('title', ($post['title'] ?? 'Blog') . ' — Gönül Köprüsü')
