@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Yeni üye e-posta dizisi: fotoğraf, davet, trial→premium, yeniden etkileşim.
- * Setup cron (/setup/cron) üzerinden çağrılır.
+ * Yeni üye lifecycle: fotoğraf e-posta, davet e-posta + FCM push,
+ * trial→premium, yeniden etkileşim. Setup cron (/setup/cron) üzerinden çağrılır.
  */
 final class GrowthLifecycleService
 {
