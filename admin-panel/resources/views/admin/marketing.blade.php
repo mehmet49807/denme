@@ -77,6 +77,65 @@
     </header>
 </section>
 
+@php $pack = $instagramPack ?? null; @endphp
+@if($pack)
+<section class="admin-panel admin-panel--glass admin-instagram-pack">
+    <header class="admin-package-card__head">
+        <div>
+            <h3 class="admin-panel-title">Instagram bio / story paketi</h3>
+            <p class="admin-package-card__sub">
+                Tek tıkla bio linki, story sticker URL’si ve hazır caption’ları kopyala.
+                UTM kampanya: <code>{{ $defaultCampaign }}</code>
+            </p>
+        </div>
+        <button type="button" class="btn btn-primary" data-copy-from="igPackFull">Paketi kopyala</button>
+    </header>
+    <textarea id="igPackFull" class="admin-sr-only" readonly hidden aria-hidden="true">{{ $pack['pack_text'] }}</textarea>
+
+    <div class="admin-marketing-link-grid" style="margin-top:0.85rem;">
+        <div class="admin-marketing-link-card">
+            <div class="admin-marketing-link-card__meta">
+                <strong>Bio link</strong>
+                <span>Profil bio’suna yapıştır</span>
+            </div>
+            <code class="admin-marketing-link-card__url">{{ $pack['bio_url'] }}</code>
+            <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $pack['bio_url'] }}">Kopyala</button>
+        </div>
+        <div class="admin-marketing-link-card">
+            <div class="admin-marketing-link-card__meta">
+                <strong>Story / sticker link</strong>
+                <span>Hikâye link sticker</span>
+            </div>
+            <code class="admin-marketing-link-card__url">{{ $pack['story_url'] }}</code>
+            <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $pack['story_url'] }}">Kopyala</button>
+        </div>
+        <div class="admin-marketing-link-card">
+            <div class="admin-marketing-link-card__meta">
+                <strong>Kampanya landing</strong>
+                <span>/kampanya — Google + e-posta</span>
+            </div>
+            <code class="admin-marketing-link-card__url">{{ $pack['kampanya_url'] }}</code>
+            <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $pack['kampanya_url'] }}">Kopyala</button>
+        </div>
+    </div>
+
+    <h4 class="admin-marketing-group">Hazır caption’lar</h4>
+    <div class="admin-marketing-link-grid">
+        @foreach($pack['captions'] as $i => $cap)
+            <div class="admin-marketing-link-card">
+                <div class="admin-marketing-link-card__meta">
+                    <strong>{{ $cap['label'] }}</strong>
+                    <span>Instagram gönderi / story metni</span>
+                </div>
+                <code class="admin-marketing-link-card__url" style="white-space:pre-wrap;">{{ $cap['text'] }}</code>
+                <textarea id="igCap{{ $i }}" class="admin-sr-only" readonly hidden aria-hidden="true">{{ $cap['text'] }}</textarea>
+                <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy-from="igCap{{ $i }}">Kopyala</button>
+            </div>
+        @endforeach
+    </div>
+</section>
+@endif
+
 <section class="admin-panel admin-panel--glass admin-marketing-links">
     <header class="admin-package-card__head">
         <div>
@@ -160,17 +219,28 @@
 
 <script>
 (function () {
+    async function copyText(btn, text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            var prev = btn.textContent;
+            btn.textContent = 'Kopyalandı';
+            setTimeout(function () { btn.textContent = prev; }, 1400);
+        } catch (e) {
+            window.prompt('Kopyala:', text);
+        }
+    }
+
     document.querySelectorAll('[data-copy]').forEach(function (btn) {
-        btn.addEventListener('click', async function () {
-            var text = btn.getAttribute('data-copy') || '';
-            try {
-                await navigator.clipboard.writeText(text);
-                var prev = btn.textContent;
-                btn.textContent = 'Kopyalandı';
-                setTimeout(function () { btn.textContent = prev; }, 1400);
-            } catch (e) {
-                window.prompt('Kopyala:', text);
-            }
+        btn.addEventListener('click', function () {
+            copyText(btn, btn.getAttribute('data-copy') || '');
+        });
+    });
+
+    document.querySelectorAll('[data-copy-from]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var id = btn.getAttribute('data-copy-from') || '';
+            var el = id ? document.getElementById(id) : null;
+            copyText(btn, el ? (el.value || el.textContent || '') : '');
         });
     });
 })();

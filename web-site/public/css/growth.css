@@ -20,6 +20,41 @@
     line-height: 1.55;
 }
 
+.invite-landing-rewards {
+    margin: 0 0 1.1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    border: 1px solid rgba(15, 118, 110, 0.18);
+    background: linear-gradient(145deg, rgba(20, 184, 166, 0.1) 0%, rgba(255, 255, 255, 0.9) 70%);
+}
+
+.invite-landing-rewards__title {
+    margin: 0 0 0.45rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #0f766e;
+}
+
+.invite-landing-rewards__list {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--text-muted, #64748b);
+    line-height: 1.5;
+    font-size: 0.92rem;
+}
+
+.invite-landing-rewards__list strong {
+    color: #0f766e;
+}
+
+.invite-landing-rewards__note {
+    margin: 0.55rem 0 0;
+    font-size: 0.86rem;
+    color: #334155;
+}
+
 .invite-landing-cta-wrap,
 .invite-landing-share {
     display: flex;
@@ -122,6 +157,38 @@
 .referral-share-btn--whatsapp {
     border-color: #25d366 !important;
     color: #128c7e !important;
+}
+
+.referral-hero-rewards {
+    list-style: none;
+    margin: 0.85rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.referral-hero-rewards li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 650;
+    color: #4c1d95;
+    background: rgba(124, 58, 237, 0.1);
+    border: 1px solid rgba(124, 58, 237, 0.16);
+}
+
+.referral-hero--female .referral-hero-rewards li {
+    color: #9d174d;
+    background: rgba(219, 39, 119, 0.1);
+    border-color: rgba(219, 39, 119, 0.18);
+}
+
+.referral-hero-rewards strong {
+    font-weight: 800;
 }
 
 .referral-badge-note {

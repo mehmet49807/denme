@@ -20,14 +20,17 @@ class AdminMarketingController extends Controller
             $instagram = 'https://www.instagram.com/gonulkoprusucom';
         }
 
+        $campaign = (string) $settings->get('marketing_default_campaign', 'organic');
+
         return view('admin.marketing', [
             'metrics' => $this->growthMetrics(),
             'frontendUrl' => $frontend,
             'instagramUrl' => rtrim($instagram, '/'),
             'facebookUrl' => (string) $settings->get('facebook_url', ''),
             'marketingNotes' => (string) $settings->get('marketing_notes', ''),
-            'defaultCampaign' => (string) $settings->get('marketing_default_campaign', 'organic'),
-            'links' => $this->campaignLinks($frontend, (string) $settings->get('marketing_default_campaign', 'organic')),
+            'defaultCampaign' => $campaign,
+            'links' => $this->campaignLinks($frontend, $campaign),
+            'instagramPack' => $this->instagramPack($frontend, $campaign),
             'adVideos' => $this->adVideos($frontend),
         ]);
     }
@@ -265,6 +268,84 @@ class AdminMarketingController extends Controller
     }
 
     /**
+     * Instagram bio/story tek tık kopyala paketi.
+     *
+     * @return array{
+     *   bio_url: string,
+     *   story_url: string,
+     *   kampanya_url: string,
+     *   captions: list<array{label: string, text: string}>,
+     *   pack_text: string
+     * }
+     */
+    private function instagramPack(string $frontend, string $campaign): array
+    {
+        $campaign = $campaign !== '' ? $campaign : 'organic';
+        $bioUrl = $frontend.'/register?'.http_build_query([
+            'utm_source' => 'instagram',
+            'utm_medium' => 'bio',
+            'utm_campaign' => $campaign,
+        ]);
+        $storyUrl = $frontend.'/register?'.http_build_query([
+            'utm_source' => 'instagram',
+            'utm_medium' => 'story',
+            'utm_campaign' => $campaign,
+        ]);
+        $kampanyaUrl = $frontend.'/kampanya?'.http_build_query([
+            'utm_source' => 'instagram',
+            'utm_medium' => 'story',
+            'utm_campaign' => $campaign,
+        ]);
+
+        $captions = [
+            [
+                'label' => 'Bio kısa',
+                'text' => "Gönül Köprüsü — ciddi ilişki & güvenli tanışma\nÜcretsiz kayıt 👇\n{$bioUrl}",
+            ],
+            [
+                'label' => 'Story CTA',
+                'text' => "Ciddi ilişki arıyorsan buradayız 💛\nKart bilgisi yok · Ücretsiz kayıt\nLink sticker: {$storyUrl}",
+            ],
+            [
+                'label' => 'Davet ödülü',
+                'text' => "Arkadaşını davet et, ödül kazan:\n• Erkek: +3 gün premium / davet\n• Kadın: 24 saat öne çıkma\n• Haftanın 1.’si ekstra ödül\nKayıt: {$storyUrl}",
+            ],
+            [
+                'label' => 'Şehir SEO',
+                'text' => "Şehrinde güvenli tanışma\nİstanbul · Ankara · İzmir · Bursa · Antalya…\nÜcretsiz başla: {$kampanyaUrl}",
+            ],
+        ];
+
+        $packLines = [
+            '=== Gönül Köprüsü Instagram Paketi ===',
+            'Kampanya: '.$campaign,
+            '',
+            'BIO LINK:',
+            $bioUrl,
+            '',
+            'STORY / STICKER LINK:',
+            $storyUrl,
+            '',
+            'KAMPANYA LANDING:',
+            $kampanyaUrl,
+            '',
+        ];
+        foreach ($captions as $cap) {
+            $packLines[] = '--- '.$cap['label'].' ---';
+            $packLines[] = $cap['text'];
+            $packLines[] = '';
+        }
+
+        return [
+            'bio_url' => $bioUrl,
+            'story_url' => $storyUrl,
+            'kampanya_url' => $kampanyaUrl,
+            'captions' => $captions,
+            'pack_text' => trim(implode("\n", $packLines)),
+        ];
+    }
+
+    /**
      * @return list<array{group: string, label: string, url: string, hint: string}>
      */
     private function campaignLinks(string $frontend, string $campaign): array
@@ -280,13 +361,13 @@ class AdminMarketingController extends Controller
             [
                 'group' => 'Instagram',
                 'label' => 'Bio link (tek CTA)',
-                'url' => $q(['path' => 'register', 'source' => 'instagram', 'medium' => 'bio', 'campaign' => 'organic']),
+                'url' => $q(['path' => 'register', 'source' => 'instagram', 'medium' => 'bio', 'campaign' => $campaign]),
                 'hint' => 'Instagram profil bio’suna yapıştır',
             ],
             [
                 'group' => 'Instagram',
                 'label' => 'Story / post sticker',
-                'url' => $q(['path' => 'register', 'source' => 'instagram', 'medium' => 'story', 'campaign' => 'weekly']),
+                'url' => $q(['path' => 'register', 'source' => 'instagram', 'medium' => 'story', 'campaign' => $campaign]),
                 'hint' => 'Haftalık story CTA',
             ],
             [

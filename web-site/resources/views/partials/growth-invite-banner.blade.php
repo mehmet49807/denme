@@ -11,8 +11,8 @@
         try {
             $referral = app(\App\Services\ReferralService::class);
             $shareText = $isFemale
-                ? 'Gönül Köprüsü\'nde buluşalım — seni davet ediyorum:'
-                : 'Gönül Köprüsü\'ne gel, birlikte keşfedelim:';
+                ? 'Gönül Köprüsü\'nde güvenli tanışma — her davette profilim 24 saat öne çıkıyor. Ücretsiz kayıt:'
+                : 'Gönül Köprüsü\'ne katıl — her davette +'.$rewardDays.' gün premium kazanıyorum. Ücretsiz kayıt:';
             $whatsappUrl = $referral->whatsappShareUrl($viewer, $shareText);
             $inviteUrl = $referral->inviteUrl($viewer);
             $nextMilestone = $referral->nextMilestone($viewer);
@@ -36,13 +36,19 @@
         </div>
 
         <div class="gib__copy">
-            <p class="gib__eyebrow">Davet · Ödül</p>
-            <h2 class="gib__title">Arkadaşını davet et, ödül kazan</h2>
+            <p class="gib__eyebrow">Davet · Ödül · Haftalık yarışma</p>
+            <h2 class="gib__title">
+                @if($isFemale)
+                    Davet et → 24 saat öne çık
+                @else
+                    Davet et → +{{ $rewardDays }} gün premium
+                @endif
+            </h2>
             <p class="gib__lead">
                 @if($isFemale)
-                    WhatsApp veya link ile paylaş. Her başarılı davette profilin 24 saat öne çıkar.
+                    WhatsApp veya link ile paylaş. Her başarılı davette profilin 24 saat öne çıkar; haftanın 1.’si +48 saat ekstra.
                 @else
-                    WhatsApp veya link ile paylaş. Kayıt olan her arkadaşın için +{{ $rewardDays }} gün ödül hesabına tanımlanır.
+                    WhatsApp veya link ile paylaş. Her kayıt için +{{ $rewardDays }} gün deneme + premium; haftanın 1.’si +7 gün ekstra.
                 @endif
                 @if(!empty($nextMilestone))
                     Sonraki hedef: {{ $nextMilestone['label'] }} ({{ $nextMilestone['left'] }} kaldı).
@@ -51,10 +57,12 @@
             <ul class="gib__perks" aria-label="Ödüller">
                 @if($isFemale)
                     <li><span class="gib__perk-dot" aria-hidden="true"></span>24 saat öne çıkma</li>
+                    <li><span class="gib__perk-dot" aria-hidden="true"></span>Hafta 1. → +48 saat</li>
                     <li><span class="gib__perk-dot" aria-hidden="true"></span>Davetçi rozeti</li>
                 @else
                     <li><span class="gib__perk-dot" aria-hidden="true"></span>+{{ $rewardDays }} gün premium</li>
                     <li><span class="gib__perk-dot" aria-hidden="true"></span>Deneme uzatma</li>
+                    <li><span class="gib__perk-dot" aria-hidden="true"></span>Hafta 1. → +7 gün</li>
                 @endif
             </ul>
         </div>

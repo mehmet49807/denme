@@ -30,6 +30,17 @@
                     Davet linkini paylaş; kayıt olan her arkadaşın için +{{ $rewardDays }} gün premium / deneme hakkı kazan.
                 @endif
             </p>
+            <ul class="referral-hero-rewards" aria-label="Kazançların">
+                @if($isFemale)
+                    <li><strong>24 saat</strong> öne çıkma / davet</li>
+                    <li><strong>48 saat</strong> hafta 1. ödülü</li>
+                    <li><strong>Rozet</strong> profilinde</li>
+                @else
+                    <li><strong>+{{ $rewardDays }} gün</strong> premium / davet</li>
+                    <li><strong>+{{ $rewardDays }} gün</strong> deneme uzatma</li>
+                    <li><strong>+7 gün</strong> hafta 1. ödülü</li>
+                @endif
+            </ul>
             <div class="referral-hero-stat">
                 <strong>{{ number_format($referralCount) }}</strong>
                 <span>{{ $isFemale ? 'arkadaşın katıldı' : 'kişi davetinle katıldı' }}</span>
@@ -79,14 +90,16 @@
         </section>
 
         <section class="glass-card referral-tips {{ $isFemale ? 'referral-tips--female' : '' }}">
-            <h2>Ödüller</h2>
+            <h2>Ödüller (net kazanç)</h2>
             <ul class="referral-tips-list">
                 @if($isFemale)
-                    <li>Her başarılı davette 24 saat profil öne çıkarma</li>
+                    <li><strong>Her davet:</strong> 24 saat profil öne çıkarma</li>
+                    <li><strong>Haftanın 1.’si:</strong> +48 saat ekstra öne çıkarma</li>
+                    <li>Davetçi rozeti profilinde görünür</li>
                     <li>Güvendiğin kişilerle aynı güvenli ortam</li>
                 @else
-                    <li>Her kayıt için +{{ $rewardDays }} gün deneme uzatma</li>
-                    <li>Aynı anda +{{ $rewardDays }} gün premium ödül</li>
+                    <li><strong>Her davet:</strong> +{{ $rewardDays }} gün deneme + {{ $rewardDays }} gün premium</li>
+                    <li><strong>Haftanın 1.’si:</strong> +7 gün ekstra Premium</li>
                     <li>Davetçi rozeti profilinde görünür</li>
                 @endif
             </ul>

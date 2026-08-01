@@ -19,10 +19,21 @@
             seni bekliyor.
         </p>
         <ul class="invite-landing-benefits">
-            <li>Ücretsiz üyelik</li>
+            <li>Ücretsiz üyelik — kart bilgisi gerekmez</li>
             <li>Moderasyon ve güvenli tanışma</li>
             <li>Ciddi ilişki odaklı topluluk</li>
         </ul>
+
+        <aside class="invite-landing-rewards" aria-label="Davet ödülleri">
+            <p class="invite-landing-rewards__title">Davet ödülleri</p>
+            <ul class="invite-landing-rewards__list">
+                <li>Erkek üyeler: her başarılı davette <strong>+{{ $rewardDays }} gün</strong> premium / deneme</li>
+                <li>Kadın üyeler: her başarılı davette <strong>24 saat</strong> profil öne çıkarma</li>
+                <li>Haftanın 1.’si: erkeklerde <strong>+7 gün</strong>, kadınlarda <strong>48 saat</strong> ekstra</li>
+            </ul>
+            <p class="invite-landing-rewards__note">Sen ücretsiz kayıt ol; {{ $referrerName }} de davet ödülünü kazanır.</p>
+        </aside>
+
         <p class="invite-landing-cta-wrap">
             <a href="{{ $registerUrl }}" class="btn btn-primary" data-gk-event="invite_cta_click" data-gk-event-label="register">Ücretsiz Kayıt Ol</a>
             <a href="{{ route('login', ['ref' => $code]) }}" class="btn btn-outline">Giriş Yap</a>

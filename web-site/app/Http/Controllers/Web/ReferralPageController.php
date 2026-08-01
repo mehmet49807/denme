@@ -22,9 +22,10 @@ class ReferralPageController extends Controller
     {
         $user = auth()->user();
         $inviteUrl = $this->referrals->inviteUrl($user);
+        $rewardDays = User::REFERRAL_REWARD_DAYS;
         $shareText = $user->gender === 'female'
-            ? 'Gönül Köprüsü\'nde güvenli ve saygılı tanışma platformuna seni de bekliyorum. Ücretsiz kayıt ol:'
-            : 'Gönül Köprüsü\'ne katıl, ciddi ilişki odaklı tanışma platformunu keşfet:';
+            ? 'Gönül Köprüsü\'nde güvenli tanışma — her davette profilim 24 saat öne çıkıyor. Ücretsiz kayıt ol:'
+            : 'Gönül Köprüsü\'ne katıl — her davette +'.$rewardDays.' gün premium kazanıyorum. Ücretsiz kayıt:';
 
         $referralCount = $this->referrals->referralCount($user);
 
@@ -54,7 +55,7 @@ class ReferralPageController extends Controller
             'shareText' => $shareText,
             'referralCount' => $referralCount,
             'recentReferrals' => $recentReferrals,
-            'rewardDays' => User::REFERRAL_REWARD_DAYS,
+            'rewardDays' => $rewardDays,
             'milestones' => $this->referrals->milestones($user),
             'nextMilestone' => $this->referrals->nextMilestone($user),
             'leaderboard' => $leaderboard,

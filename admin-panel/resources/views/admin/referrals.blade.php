@@ -25,6 +25,36 @@
     </div>
 </div>
 
+<section class="admin-panel admin-panel--glass" style="margin:1.25rem 0;">
+    <h3 class="admin-panel-title admin-panel-title--accent">Canlı ödül kuralları</h3>
+    <p class="admin-package-card__sub" style="margin-top:0;">
+        Bu değerler web-site <code>ReferralService</code> / <code>User::REFERRAL_REWARD_DAYS = 3</code> ile eşleşir.
+        Kullanıcıya /davet sayfasında ve feed davet banner’ında gösterilir.
+    </p>
+    <div class="admin-email-grid">
+        <div>
+            <h4 class="admin-marketing-group">Erkek</h4>
+            <ul class="admin-template-list">
+                <li><strong>Her başarılı davet:</strong> +3 gün deneme + 3 gün Premium</li>
+                <li><strong>Haftanın 1.’si:</strong> +7 gün Premium</li>
+                <li>Davetçi rozeti profilde görünür</li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="admin-marketing-group">Kadın</h4>
+            <ul class="admin-template-list">
+                <li><strong>Her başarılı davet:</strong> 24 saat profil öne çıkarma</li>
+                <li><strong>Haftanın 1.’si:</strong> +48 saat öne çıkarma</li>
+                <li>Davetçi rozeti profilde görünür</li>
+            </ul>
+        </div>
+    </div>
+    <p class="admin-package-card__sub" style="margin-bottom:0;">
+        Pazarlama → Instagram paketi ile story/bio linklerini kopyalayıp davet kampanyasına yönlendirebilirsin.
+        <a href="{{ route('admin.marketing') }}">Pazarlama</a>
+    </p>
+</section>
+
 <div class="admin-email-grid">
     <div class="admin-panel admin-panel--glass">
         <h3 class="admin-panel-title admin-panel-title--accent">En çok davet edenler</h3>
