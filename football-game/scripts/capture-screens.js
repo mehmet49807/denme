@@ -20,7 +20,7 @@ const context = await browser.newContext({
 
 const page = await context.newPage();
 await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
-await page.waitForTimeout(800);
+await page.waitForTimeout(2500);
 
 async function shot(name) {
   const path = join(outDir, name);
@@ -30,7 +30,7 @@ async function shot(name) {
 
 await page.evaluate(() => localStorage.clear());
 await page.reload({ waitUntil: 'networkidle' });
-await page.waitForTimeout(1400);
+await page.waitForTimeout(3000);
 await shot('01-giris.png');
 
 await page.fill('#input-manager', 'Mehmet Uzun');

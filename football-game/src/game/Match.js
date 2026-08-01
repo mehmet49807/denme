@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createPlayerMesh, animatePlayerWalk } from './PlayerFactory.js';
+import { createAthlete, animateAthlete } from './PlayerLoader.js';
 import { createBall, updateBall } from './Ball.js';
 import { FIELD } from './Pitch.js';
 
@@ -29,7 +29,7 @@ export class Match {
     this.score = { home: 0, away: 0 };
     this.minute = 0;
     this._timeAcc = 0;
-    this.matchDurationSec = 90; // real seconds ≈ 90 match minutes
+    this.matchDurationSec = 90;
     this.paused = false;
     this.ended = false;
     this._goalLock = 0;
@@ -38,14 +38,9 @@ export class Match {
     scene.add(this.ball.mesh);
 
     this.players = [];
-    this._spawnTeam(homeTeam, 1);
-    this._spawnTeam(awayTeam, -1);
-
-    this.controlled = this.players.find((p) => p.side === 1 && p.data.pos === 'ST')
-      || this.players.find((p) => p.side === 1);
+    this.controlled = null;
     this.kickCooldown = 0;
 
-    // Controlled player ground ring
     this.controlRing = new THREE.Mesh(
       new THREE.RingGeometry(0.45, 0.58, 32),
       new THREE.MeshBasicMaterial({ color: 0xd4a017, transparent: true, opacity: 0.85, side: THREE.DoubleSide })
@@ -55,11 +50,21 @@ export class Match {
     scene.add(this.controlRing);
   }
 
-  _spawnTeam(team, side) {
-    team.players.forEach((data, i) => {
+  static async create(opts) {
+    const match = new Match(opts);
+    await match._spawnTeam(opts.homeTeam, 1);
+    await match._spawnTeam(opts.awayTeam, -1);
+    match.controlled =
+      match.players.find((p) => p.side === 1 && p.data.pos === 'ST') ||
+      match.players.find((p) => p.side === 1);
+    return match;
+  }
+
+  async _spawnTeam(team, side) {
+    const jobs = team.players.map(async (data, i) => {
       const form = FORMATION[i] || FORMATION[FORMATION.length - 1];
       const seed = (data.name?.charCodeAt(0) || 0) + i * 17 + (side > 0 ? 0 : 99);
-      const mesh = createPlayerMesh(team.colors, data.pos === 'GK', {
+      const mesh = await createAthlete(team.colors, data.pos === 'GK', {
         skin: [0xe8b989, 0xd4a06a, 0xc68642, 0xb07d4f, 0x8d5524][seed % 5],
         hair: [0x1a120c, 0x0f0a08, 0x2a1c14, 0x111111][seed % 4],
         beard: seed % 3 !== 0,
@@ -73,7 +78,6 @@ export class Match {
       mesh.rotation.y = side === 1 ? 0 : Math.PI;
       this.scene.add(mesh);
 
-      // Name label (küçük, oyuncunun üstünde)
       const label = makeNameSprite(data.name.split(' ').slice(-1)[0], data.number);
       label.position.y = 1.95;
       label.scale.set(1.6, 0.4, 1);
@@ -89,6 +93,7 @@ export class Match {
         stamina: 1,
       });
     });
+    await Promise.all(jobs);
   }
 
   resetKickoff(towardSide = 1) {
@@ -176,7 +181,7 @@ export class Match {
     }
 
     const spd = Math.hypot(p.vel.x, p.vel.z);
-    animatePlayerWalk(p.mesh, performance.now() / 1000, spd / 8);
+    animateAthlete(p.mesh, performance.now() / 1000, spd / 8, dt);
 
     const dist = p.mesh.position.distanceTo(this.ball.mesh.position);
     if (dist < 1.6 && this.kickCooldown <= 0) {
@@ -227,7 +232,7 @@ export class Match {
       this._clampPlayer(p);
 
       if (len > 0.2) p.mesh.rotation.y = Math.atan2(dx, dz);
-      animatePlayerWalk(p.mesh, performance.now() / 1000 + p.data.number, step / 8);
+      animateAthlete(p.mesh, performance.now() / 1000 + p.data.number, step / 8, dt);
 
       // AI kick
       if (dist < 1.35 && this.kickCooldown <= 0 && Math.random() < 0.02) {

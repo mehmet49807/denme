@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createPitchScene } from './game/Pitch.js';
 import { Match } from './game/Match.js';
 import { TouchControls } from './game/Controls.js';
-import { createPlayerMesh, animatePlayerWalk, applyKickPose } from './game/PlayerFactory.js';
+import { createAthlete, animateAthlete, preloadPlayers } from './game/PlayerLoader.js';
 import { createBall } from './game/Ball.js';
 import { signIn } from './auth/socialAuth.js';
 import {
@@ -59,7 +59,7 @@ let match = null;
 let previewBall = null;
 let previewKick = false;
 
-function spawnMenuPreview() {
+async function spawnMenuPreview() {
   if (previewPlayer) {
     scene.remove(previewPlayer);
     previewPlayer = null;
@@ -69,14 +69,9 @@ function spawnMenuPreview() {
     previewBall = null;
   }
 
-  // Referans 1: beyaz/mavi antrenman — veya dönüşümlü kırmızı/sarı
-  const kits = [
-    { primary: '#6ec1e4', secondary: '#ffffff', accent: '#1a3a6e', label: 'GA' },
-    { primary: '#e63946', secondary: '#ffd60a', accent: '#ffd60a', label: 'FTG' },
-  ];
-  const kit = kits[Math.floor(Date.now() / 8000) % 2];
+  const kit = { primary: '#6ec1e4', secondary: '#ffffff', accent: '#1a3a6e', label: 'GA' };
 
-  previewPlayer = createPlayerMesh(
+  previewPlayer = await createAthlete(
     { primary: kit.primary, secondary: kit.secondary, accent: kit.accent },
     false,
     {
@@ -85,11 +80,11 @@ function spawnMenuPreview() {
       beard: true,
       number: 19,
       shortLabel: kit.label,
-      kitStyle: kit.label === 'FTG' ? 'match' : 'training',
+      kitStyle: 'training',
     }
   );
   previewPlayer.position.set(1.2, 0, 0.15);
-  previewPlayer.rotation.y = -0.35;
+  previewPlayer.rotation.y = Math.PI - 0.45;
   scene.add(previewPlayer);
 
   previewBall = createBall();
@@ -109,10 +104,9 @@ function spawnMenuPreview() {
     cone.castShadow = true;
     scene.add(cone);
   }
-  previewKick = kit.label === 'FTG';
-  if (previewKick) applyKickPose(previewPlayer, 1);
+  previewKick = false;
 }
-spawnMenuPreview();
+preloadPlayers().then(() => spawnMenuPreview());
 let userTeam = null;
 let aiOpponents = [];
 let selectedAwayId = null;
@@ -362,7 +356,7 @@ function setLogoEl(img, url) {
   }
 }
 
-function startMatch() {
+async function startMatch() {
   if (!userTeam) return;
   const away = aiOpponents.find((t) => t.id === selectedAwayId) || aiOpponents[0];
   if (!away) return;
@@ -386,7 +380,7 @@ function startMatch() {
   document.getElementById('match-minute').textContent = "0'";
   document.getElementById('manager-chip').textContent = home.managerName;
 
-  match = new Match({
+  match = await Match.create({
     scene,
     homeTeam: home,
     awayTeam: away,
@@ -475,9 +469,8 @@ function loop(t) {
     if (!previewPlayer) spawnMenuPreview();
     const a = t * 0.0002;
     if (previewPlayer) {
-      previewPlayer.rotation.y = -0.35 + Math.sin(a) * 0.12;
-      if (!previewKick) animatePlayerWalk(previewPlayer, t / 1000, 0.2);
-      else applyKickPose(previewPlayer, 0.85 + Math.sin(t * 0.004) * 0.08);
+      previewPlayer.rotation.y = Math.PI - 0.45 + Math.sin(a) * 0.1;
+      animateAthlete(previewPlayer, t / 1000, 0.55, dt);
     }
     // Referans gibi yakın portre / 3-4 vücut
     camera.position.set(0.15 + Math.sin(a) * 0.1, 1.35, 2.55);
