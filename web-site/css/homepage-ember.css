@@ -1093,10 +1093,17 @@
     padding: clamp(2.25rem, 4.5vw, 3.5rem) 0;
     background: #fff8f4;
 }
+.gk-home-stories .gk-section-lead {
+    margin: 0.45rem 0 0;
+    max-width: 36rem;
+    font-size: 0.98rem;
+    line-height: 1.5;
+    color: var(--gk-muted, #5c5470);
+}
 .gk-home-stories-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    gap: 1.15rem;
 }
 .gk-home-story {
     padding: 1.25rem 1.15rem;
@@ -1105,24 +1112,92 @@
     border: 1px solid rgba(26, 18, 37, 0.08);
     box-shadow: 0 10px 28px rgba(61, 32, 102, 0.06);
 }
+.gk-home-story--photo {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.gk-home-story__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: linear-gradient(145deg, #ffe4d6 0%, #f3e8ff 100%);
+}
+.gk-home-story__media img,
+.gk-home-story__media picture,
+.gk-home-story__media .optimized-picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.gk-home-story__media img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    transform: scale(1.02);
+    transition: transform 0.55s ease;
+}
+.gk-home-story--photo:hover .gk-home-story__media img {
+    transform: scale(1.06);
+}
+.gk-home-story__body {
+    padding: 1.1rem 1.15rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
 .gk-home-story__quote {
-    margin: 0 0 1rem;
+    margin: 0 0 0.55rem;
     font-size: 1rem;
     font-weight: 700;
     line-height: 1.45;
     color: #3d2066;
 }
+.gk-home-story__note {
+    margin: 0 0 0.85rem;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--gk-muted, #5c5470);
+}
 .gk-home-story footer {
     display: flex;
     flex-direction: column;
     gap: 0.1rem;
+    margin-top: auto;
 }
 .gk-home-story footer strong {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
 }
 .gk-home-story footer span {
     font-size: 0.78rem;
     color: var(--gk-muted);
+}
+.gk-home-thanks {
+    margin-top: 1.75rem;
+    padding: 1.5rem 1.35rem;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #fff 0%, #fff1eb 55%, #f8f0ff 100%);
+    border: 1px solid rgba(26, 18, 37, 0.08);
+}
+.gk-home-thanks h3 {
+    margin: 0.25rem 0 0.75rem;
+    font-size: clamp(1.25rem, 2.4vw, 1.55rem);
+    line-height: 1.25;
+    color: #2a1845;
+}
+.gk-home-thanks p {
+    margin: 0 0 0.7rem;
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: #3f3849;
+    max-width: 48rem;
+}
+.gk-home-thanks__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1rem;
 }
 .gk-home-stories-more,
 .gk-home-faq-more {

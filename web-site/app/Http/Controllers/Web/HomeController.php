@@ -46,18 +46,27 @@ class HomeController extends Controller
         $homeStories = [
             [
                 'names' => 'Ayşe & Mehmet',
-                'city' => 'İstanbul',
+                'city' => 'İstanbul · Kadıköy',
                 'quote' => 'Ciddi niyet arıyorduk; burada buluştuk.',
+                'note' => 'Güvenli sohbetten ilk buluşmaya, sonra nişan.',
+                'image' => 'landing-hero-couple',
+                'image_alt' => 'Gönül Köprüsü’nde tanışan çift — İstanbul',
             ],
             [
                 'names' => 'Elif & Can',
-                'city' => 'Ankara',
+                'city' => 'Ankara · Çankaya',
                 'quote' => 'Başkentte sakin ve saygılı bir ortam.',
+                'note' => 'Evlilik niyetiyle başladılar; bağları güçlendi.',
+                'image' => 'landing-community',
+                'image_alt' => 'Gönül Köprüsü’nde tanışan çift — Ankara',
             ],
             [
                 'names' => 'Zeynep & Emre',
-                'city' => 'İzmir',
+                'city' => 'İzmir · Karşıyaka',
                 'quote' => 'Flört değil, gerçek bağ istedik.',
+                'note' => 'Saygılı mesajlaşma, güvenli ilk adım, ortak yol.',
+                'image' => 'landing-step-meet',
+                'image_alt' => 'Gönül Köprüsü’nde tanışan çift — İzmir',
             ],
         ];
 

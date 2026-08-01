@@ -159,24 +159,60 @@
         <div class="gk-wrap">
             <header class="gk-section-head">
                 <p class="gk-label">Başarı hikâyeleri</p>
-                <h2 id="gk-home-stories-heading">Gerçek bağlar, kısa hikâyeler</h2>
+                <h2 id="gk-home-stories-heading">Gönül Köprüsü’nde tanışanlar</h2>
+                <p class="gk-section-lead">Platformda buluşup yoluna devam eden çiftlerden esinlenen kısa hikâyeler.</p>
             </header>
             <div class="gk-home-stories-grid">
                 @foreach($homeStories as $story)
-                    <article class="gk-home-story">
-                        <p class="gk-home-story__quote">“{{ $story['quote'] }}”</p>
-                        <footer>
-                            <strong>{{ $story['names'] }}</strong>
-                            <span>{{ $story['city'] }}</span>
-                        </footer>
+                    <article class="gk-home-story gk-home-story--photo">
+                        @if(!empty($story['image']))
+                            <div class="gk-home-story__media">
+                                <x-optimized-image
+                                    name="{{ $story['image'] }}"
+                                    alt="{{ $story['image_alt'] ?? ($story['names'].' — '.$story['city']) }}"
+                                    width="640"
+                                    height="420"
+                                    loading="lazy"
+                                    sizes="(max-width: 768px) min(100vw - 2rem, 420px), 320px"
+                                />
+                            </div>
+                        @endif
+                        <div class="gk-home-story__body">
+                            <p class="gk-home-story__quote">“{{ $story['quote'] }}”</p>
+                            @if(!empty($story['note']))
+                                <p class="gk-home-story__note">{{ $story['note'] }}</p>
+                            @endif
+                            <footer>
+                                <strong>{{ $story['names'] }}</strong>
+                                <span>{{ $story['city'] }}</span>
+                            </footer>
+                        </div>
                     </article>
                 @endforeach
             </div>
-            @if(Route::has('stories'))
-                <p class="gk-home-stories-more">
-                    <a href="{{ route('stories') }}">Tüm başarı hikâyeleri</a>
+
+            <aside class="gk-home-thanks" aria-labelledby="gk-home-thanks-heading">
+                <p class="gk-label">Teşekkürler</p>
+                <h3 id="gk-home-thanks-heading">Yuva kuranlara, umut bağlayanlara teşekkürler</h3>
+                <p>
+                    Gönül Köprüsü’nde tanışıp nişanlanan, evlenen veya uzun soluklu bir bağ kuran herkese
+                    içten teşekkür ederiz. Amacımız flört temposu değil; <strong>ciddi ilişki</strong> ve
+                    <strong>evlilik</strong> niyetiyle güvenli tanışmayı mümkün kılmak.
                 </p>
-            @endif
+                <p>
+                    Siz de aynı yolda ilerlemek istiyorsanız ücretsiz üye olun; şehrinizi seçin, profilinizi
+                    tamamlayın ve saygılı bir sohbetle ilk adımı atın.
+                </p>
+                <div class="gk-home-thanks__actions">
+                    <a href="{{ route('register', ['utm_source' => 'home', 'utm_medium' => 'stories', 'utm_campaign' => 'thanks']) }}" class="btn btn-primary" data-gk-event="sign_up_click" data-gk-event-label="home_thanks">Ücretsiz kayıt ol</a>
+                    @if(Route::has('stories'))
+                        <a href="{{ route('stories') }}" class="btn btn-outline">Tüm başarı hikâyeleri</a>
+                    @endif
+                    @if(Route::has('seo.marriage'))
+                        <a href="{{ route('seo.marriage') }}" class="btn btn-ghost">Evlilik sitesi</a>
+                    @endif
+                </div>
+            </aside>
         </div>
     </section>
     @endif
