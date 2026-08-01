@@ -1,6 +1,7 @@
 @extends('layouts.content-page')
 
 @section('title', 'Destek — Gönül Köprüsü')
+@section('legal-active', 'support')
 @section('page-eyebrow', 'Yardım')
 @section('page-title', 'Destek formu')
 @section('page-lead', 'Hesap, güvenlik, premium paket talebi ve teknik konularda bize yazın.')

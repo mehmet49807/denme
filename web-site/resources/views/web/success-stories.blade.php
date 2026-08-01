@@ -1,6 +1,7 @@
 @extends('layouts.content-page')
 
 @section('title', 'Başarı Hikâyeleri — Ciddi İlişki ve Evlilik | Gönül Köprüsü')
+@section('legal-active', 'stories')
 @section('page-eyebrow', 'Tanışma hikâyeleri')
 @section('page-title', 'Başarı hikâyeleri')
 @section('page-lead', 'Ciddi ilişki ve evlilik niyetiyle Gönül Köprüsü’nde tanışan üyelerden esinlenen hikâyeler.')
