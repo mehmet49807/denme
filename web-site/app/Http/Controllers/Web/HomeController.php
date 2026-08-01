@@ -8,6 +8,7 @@ use App\Services\LocationDataService;
 use App\Support\FeaturedCities;
 use App\Support\SeoHelper;
 use App\Support\SeoSchema;
+use App\Support\SuccessStoriesContent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
@@ -43,32 +44,7 @@ class HomeController extends Controller
             ],
         ];
 
-        $homeStories = [
-            [
-                'names' => 'Ayşe & Mehmet',
-                'city' => 'İstanbul · Kadıköy',
-                'quote' => 'Ciddi niyet arıyorduk; burada buluştuk.',
-                'note' => 'Güvenli sohbetten ilk buluşmaya, sonra nişan.',
-                'image' => 'landing-hero-couple',
-                'image_alt' => 'Gönül Köprüsü’nde tanışan çift — İstanbul',
-            ],
-            [
-                'names' => 'Elif & Can',
-                'city' => 'Ankara · Çankaya',
-                'quote' => 'Başkentte sakin ve saygılı bir ortam.',
-                'note' => 'Evlilik niyetiyle başladılar; bağları güçlendi.',
-                'image' => 'landing-community',
-                'image_alt' => 'Gönül Köprüsü’nde tanışan çift — Ankara',
-            ],
-            [
-                'names' => 'Zeynep & Emre',
-                'city' => 'İzmir · Karşıyaka',
-                'quote' => 'Flört değil, gerçek bağ istedik.',
-                'note' => 'Saygılı mesajlaşma, güvenli ilk adım, ortak yol.',
-                'image' => 'landing-step-meet',
-                'image_alt' => 'Gönül Köprüsü’nde tanışan çift — İzmir',
-            ],
-        ];
+        $homeStories = SuccessStoriesContent::forHome(6);
 
         $stats = Cache::remember('home.member_stats.v1', 120, function () {
             try {

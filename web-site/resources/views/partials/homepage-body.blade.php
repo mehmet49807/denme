@@ -160,35 +160,65 @@
             <header class="gk-section-head">
                 <p class="gk-label">Başarı hikâyeleri</p>
                 <h2 id="gk-home-stories-heading">Gönül Köprüsü’nde tanışanlar</h2>
-                <p class="gk-section-lead">Platformda buluşup yoluna devam eden çiftlerden esinlenen kısa hikâyeler.</p>
+                <p class="gk-section-lead">Gelin, damat ve mutlu çiftlerden esinlenen hikâyeler — slaytla gezinin.</p>
             </header>
-            <div class="gk-home-stories-grid">
-                @foreach($homeStories as $story)
-                    <article class="gk-home-story gk-home-story--photo">
-                        @if(!empty($story['image']))
-                            <div class="gk-home-story__media">
+
+            <div
+                class="gk-stories-slider"
+                id="gkStoriesSlider"
+                data-autoplay="6500"
+                aria-roledescription="carousel"
+                aria-label="Başarı hikâyeleri slaytı"
+            >
+                <div class="gk-stories-slider__viewport">
+                    @foreach($homeStories as $i => $story)
+                        <article
+                            class="gk-stories-slide{{ $i === 0 ? ' is-active' : '' }}"
+                            data-slide="{{ $i }}"
+                            aria-hidden="{{ $i === 0 ? 'false' : 'true' }}"
+                            @if($i !== 0) inert @endif
+                        >
+                            <div class="gk-stories-slide__media">
                                 <x-optimized-image
                                     name="{{ $story['image'] }}"
                                     alt="{{ $story['image_alt'] ?? ($story['names'].' — '.$story['city']) }}"
-                                    width="640"
-                                    height="420"
-                                    loading="lazy"
-                                    sizes="(max-width: 768px) min(100vw - 2rem, 420px), 320px"
+                                    width="960"
+                                    height="720"
+                                    loading="{{ $i === 0 ? 'eager' : 'lazy' }}"
+                                    sizes="(max-width: 900px) 100vw, 560px"
                                 />
                             </div>
-                        @endif
-                        <div class="gk-home-story__body">
-                            <p class="gk-home-story__quote">“{{ $story['quote'] }}”</p>
-                            @if(!empty($story['note']))
-                                <p class="gk-home-story__note">{{ $story['note'] }}</p>
-                            @endif
-                            <footer>
-                                <strong>{{ $story['names'] }}</strong>
-                                <span>{{ $story['city'] }}</span>
-                            </footer>
-                        </div>
-                    </article>
-                @endforeach
+                            <div class="gk-stories-slide__copy">
+                                <p class="gk-stories-slide__eyebrow">{{ $story['city'] }}</p>
+                                <h3 class="gk-stories-slide__names">{{ $story['names'] }}</h3>
+                                <p class="gk-stories-slide__quote">“{{ $story['quote'] }}”</p>
+                                @if(!empty($story['note']))
+                                    <p class="gk-stories-slide__note">{{ $story['note'] }}</p>
+                                @endif
+                                @if(Route::has('stories'))
+                                    <a href="{{ route('stories') }}" class="gk-stories-slide__link">Hikâyeyi oku</a>
+                                @endif
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+
+                <div class="gk-stories-slider__controls">
+                    <button type="button" class="gk-stories-slider__btn" data-slider-prev aria-label="Önceki hikâye">‹</button>
+                    <div class="gk-stories-slider__dots" role="tablist" aria-label="Slayt seç">
+                        @foreach($homeStories as $i => $story)
+                            <button
+                                type="button"
+                                class="gk-stories-slider__dot{{ $i === 0 ? ' is-active' : '' }}"
+                                data-slider-dot="{{ $i }}"
+                                role="tab"
+                                aria-label="Hikâye {{ $i + 1 }}: {{ $story['names'] }}"
+                                aria-selected="{{ $i === 0 ? 'true' : 'false' }}"
+                            ></button>
+                        @endforeach
+                    </div>
+                    <button type="button" class="gk-stories-slider__btn" data-slider-next aria-label="Sonraki hikâye">›</button>
+                </div>
             </div>
 
             <aside class="gk-home-thanks" aria-labelledby="gk-home-thanks-heading">
@@ -215,6 +245,60 @@
             </aside>
         </div>
     </section>
+    <script>
+    (function () {
+        var root = document.getElementById('gkStoriesSlider');
+        if (!root) return;
+        var slides = Array.prototype.slice.call(root.querySelectorAll('.gk-stories-slide'));
+        var dots = Array.prototype.slice.call(root.querySelectorAll('[data-slider-dot]'));
+        var prev = root.querySelector('[data-slider-prev]');
+        var next = root.querySelector('[data-slider-next]');
+        var i = 0;
+        var timer = null;
+        var delay = parseInt(root.getAttribute('data-autoplay') || '6500', 10);
+
+        function go(n) {
+            if (!slides.length) return;
+            i = (n + slides.length) % slides.length;
+            slides.forEach(function (slide, idx) {
+                var on = idx === i;
+                slide.classList.toggle('is-active', on);
+                slide.setAttribute('aria-hidden', on ? 'false' : 'true');
+                if (on) slide.removeAttribute('inert');
+                else slide.setAttribute('inert', '');
+            });
+            dots.forEach(function (dot, idx) {
+                var on = idx === i;
+                dot.classList.toggle('is-active', on);
+                dot.setAttribute('aria-selected', on ? 'true' : 'false');
+            });
+        }
+
+        function start() {
+            stop();
+            if (delay < 2000 || slides.length < 2) return;
+            timer = setInterval(function () { go(i + 1); }, delay);
+        }
+        function stop() {
+            if (timer) clearInterval(timer);
+            timer = null;
+        }
+
+        if (prev) prev.addEventListener('click', function () { go(i - 1); start(); });
+        if (next) next.addEventListener('click', function () { go(i + 1); start(); });
+        dots.forEach(function (dot) {
+            dot.addEventListener('click', function () {
+                go(parseInt(dot.getAttribute('data-slider-dot') || '0', 10));
+                start();
+            });
+        });
+        root.addEventListener('mouseenter', stop);
+        root.addEventListener('mouseleave', start);
+        root.addEventListener('focusin', stop);
+        root.addEventListener('focusout', start);
+        start();
+    })();
+    </script>
     @endif
 
     <section class="gk-reviews">

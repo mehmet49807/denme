@@ -11,12 +11,17 @@
 ])
 
 @php
-    $version = 'opt-v6';
+    $version = 'opt-v7';
     $imagesDir = base_path('images');
+    if (! is_dir($imagesDir) && is_dir(public_path('images'))) {
+        $imagesDir = public_path('images');
+    }
     $widthVariants = $widths ?? match ($name) {
         'landing-community' => [384, 480, 640, 960],
         'landing-step-profile', 'landing-step-discover', 'landing-step-meet' => [320, 400, 800],
         'testimonial-ayse', 'testimonial-mehmet', 'testimonial-elif' => [56, 112],
+        'story-couple-01', 'story-couple-02', 'story-couple-03',
+        'story-couple-04', 'story-couple-05', 'story-couple-06' => [640, 960],
         default => null,
     };
 
@@ -24,6 +29,8 @@
         'landing-community' => '(max-width: 768px) min(100vw - 2rem, 425px), 640px',
         'landing-step-profile', 'landing-step-discover', 'landing-step-meet' => '(max-width: 768px) min(100vw - 2.5rem, 320px), 400px',
         'testimonial-ayse', 'testimonial-mehmet', 'testimonial-elif' => '56px',
+        'story-couple-01', 'story-couple-02', 'story-couple-03',
+        'story-couple-04', 'story-couple-05', 'story-couple-06' => '(max-width: 768px) 100vw, 560px',
         default => null,
     };
 
