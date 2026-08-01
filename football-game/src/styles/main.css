@@ -774,3 +774,133 @@ h1 {
     height: 96px;
   }
 }
+
+/* —— Yatay (landscape) zorunlu düzen —— */
+@media (orientation: landscape) {
+  .menu-content {
+    width: min(860px, 96%);
+  }
+
+  .menu-content.wide {
+    width: min(920px, 96%);
+  }
+
+  #screen-team .menu-content.wide,
+  #screen-lobby .menu-content.wide {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 0.75rem 1.25rem;
+    text-align: left;
+    align-items: start;
+  }
+
+  #screen-team .eyebrow,
+  #screen-team .screen-title,
+  #screen-team .tagline,
+  #screen-lobby .lobby-header {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  #screen-team .logo-section {
+    grid-row: span 4;
+    margin: 0;
+  }
+
+  #logo-canvas {
+    width: 140px;
+    height: 140px;
+  }
+
+  .squad-list {
+    max-height: 160px;
+  }
+
+  h1 {
+    font-size: clamp(2.6rem, 8vw, 4.2rem);
+  }
+
+  .scoreboard {
+    max-width: 560px;
+  }
+
+  #joystick-zone {
+    width: 38%;
+    height: 55%;
+  }
+
+  #action-buttons {
+    flex-direction: row;
+    align-items: flex-end;
+    right: 24px;
+    bottom: calc(18px + var(--safe-bottom));
+  }
+}
+
+@media (orientation: portrait) {
+  #rotate-hint {
+    display: flex !important;
+  }
+
+  #screen-login,
+  #screen-team,
+  #screen-lobby,
+  #hud,
+  #touch-controls,
+  #pause-overlay,
+  #result-screen,
+  #goal-banner {
+    visibility: hidden;
+  }
+}
+
+#rotate-hint {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  background: radial-gradient(ellipse at center, #0e2744, #071422);
+  color: var(--text);
+}
+
+#rotate-hint strong {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+#rotate-hint p {
+  margin: 0;
+  color: var(--muted);
+  max-width: 16rem;
+  line-height: 1.4;
+}
+
+.rotate-icon {
+  width: 64px;
+  height: 64px;
+  border: 3px solid var(--accent);
+  border-radius: 12px;
+  position: relative;
+  animation: tilt-phone 1.4s ease-in-out infinite;
+}
+
+@keyframes tilt-phone {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  40% {
+    transform: rotate(90deg);
+  }
+  60% {
+    transform: rotate(90deg);
+  }
+}

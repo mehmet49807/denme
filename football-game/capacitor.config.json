@@ -4,7 +4,8 @@
   "webDir": "dist",
   "android": {
     "allowMixedContent": false,
-    "backgroundColor": "#0a1628"
+    "backgroundColor": "#0a1628",
+    "overrideUserAgentContentMode": "mobile"
   },
   "plugins": {
     "StatusBar": {

@@ -58,16 +58,22 @@ export class Match {
   _spawnTeam(team, side) {
     team.players.forEach((data, i) => {
       const form = FORMATION[i] || FORMATION[FORMATION.length - 1];
-      const mesh = createPlayerMesh(team.colors, data.pos === 'GK');
+      const seed = (data.name?.charCodeAt(0) || 0) + i * 17 + (side > 0 ? 0 : 99);
+      const mesh = createPlayerMesh(team.colors, data.pos === 'GK', {
+        skin: [0xe0ac69, 0xc68642, 0x8d5524, 0xd4a574, 0xb07d4f][seed % 5],
+        hair: [0x1a120c, 0x2c1810, 0x0d0d0d, 0x3b2f2f][seed % 4],
+        beard: seed % 3 !== 0,
+      });
       const z = form.z * side;
       const x = form.x;
       mesh.position.set(x, 0, z);
       mesh.rotation.y = side === 1 ? 0 : Math.PI;
       this.scene.add(mesh);
 
-      // Name label
+      // Name label (küçük, oyuncunun üstünde)
       const label = makeNameSprite(data.name.split(' ').slice(-1)[0], data.number);
-      label.position.y = 2.05;
+      label.position.y = 1.95;
+      label.scale.set(1.6, 0.4, 1);
       mesh.add(label);
 
       this.players.push({

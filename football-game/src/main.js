@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createPitchScene } from './game/Pitch.js';
 import { Match } from './game/Match.js';
 import { TouchControls } from './game/Controls.js';
+import { createPlayerMesh, animatePlayerWalk } from './game/PlayerFactory.js';
 import { signIn } from './auth/socialAuth.js';
 import {
   loadSave,
@@ -36,11 +37,39 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 250);
-camera.position.set(0, 22, -28);
+const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 250);
+camera.position.set(0, 14, -22);
+
+async function lockLandscape() {
+  try {
+    const orient = screen.orientation || screen.mozOrientation || screen.msOrientation;
+    if (orient?.lock) await orient.lock('landscape');
+  } catch {
+    /* tarayıcı / izin */
+  }
+}
+lockLandscape();
+document.addEventListener('click', () => lockLandscape(), { once: true });
 
 let scene = createPitchScene();
+let previewPlayer = null;
 let match = null;
+
+function spawnMenuPreview() {
+  if (previewPlayer) {
+    scene.remove(previewPlayer);
+    previewPlayer = null;
+  }
+  previewPlayer = createPlayerMesh(
+    { primary: '#5dade2', secondary: '#ffffff', accent: '#1a1a1a' },
+    false,
+    { skin: 0xc68642, hair: 0x1a120c, beard: true }
+  );
+  previewPlayer.position.set(0, 0, 0);
+  previewPlayer.rotation.y = Math.PI;
+  scene.add(previewPlayer);
+}
+spawnMenuPreview();
 let userTeam = null;
 let aiOpponents = [];
 let selectedAwayId = null;
@@ -296,6 +325,7 @@ function startMatch() {
   if (!away) return;
 
   if (match) match.dispose();
+  previewPlayer = null;
   scene = createPitchScene();
 
   const home = userTeam;
@@ -364,6 +394,7 @@ function backToLobby() {
   hud.classList.add('hidden');
   touchControlsEl.classList.add('hidden');
   scene = createPitchScene();
+  spawnMenuPreview();
   enterLobby();
 }
 
@@ -388,7 +419,7 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && match && !match.ended) setPaused(!match.paused);
 });
 
-const camOffset = new THREE.Vector3(0, 16, -18);
+const camOffset = new THREE.Vector3(0, 9, -12);
 const camLook = new THREE.Vector3();
 const camPos = new THREE.Vector3();
 
@@ -398,9 +429,14 @@ function loop(t) {
   lastT = t;
 
   if (!match) {
-    const a = t * 0.00015;
-    camera.position.set(Math.sin(a) * 40, 18, Math.cos(a) * 40);
-    camera.lookAt(0, 0, 0);
+    if (!previewPlayer) spawnMenuPreview();
+    const a = t * 0.00035;
+    if (previewPlayer) {
+      previewPlayer.rotation.y = Math.PI + Math.sin(a) * 0.35;
+      animatePlayerWalk(previewPlayer, t / 1000, 0.35);
+    }
+    camera.position.set(Math.sin(a) * 2.4, 1.75, 3.6);
+    camera.lookAt(0, 1.35, 0);
     renderer.render(scene, camera);
     return;
   }
@@ -418,11 +454,12 @@ function loop(t) {
         Math.cos(match.controlled.mesh.rotation.y)
       )
     : new THREE.Vector3(0, 0, 1);
-  const back = facing.clone().multiplyScalar(-14).add(new THREE.Vector3(0, 12, 0));
+  // Üçüncü şahıs — oyuncuya daha yakın (yüz/vücut görünsün)
+  const back = facing.clone().multiplyScalar(-8).add(new THREE.Vector3(0, 3.2, 0));
   camPos.copy(camLook).add(back);
-  camPos.lerp(camLook.clone().add(camOffset), 0.35);
+  camPos.lerp(camLook.clone().add(camOffset), 0.25);
   camera.position.lerp(camPos, 1 - Math.pow(0.0008, dt));
-  camera.lookAt(camLook.x, 0.8, camLook.z);
+  camera.lookAt(camLook.x, 1.35, camLook.z);
 
   renderer.render(scene, camera);
 }

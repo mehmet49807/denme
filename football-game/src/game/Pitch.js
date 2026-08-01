@@ -9,16 +9,17 @@ export const FIELD = {
 
 export function createPitchScene() {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x87b5d9);
-  scene.fog = new THREE.Fog(0x87b5d9, 70, 160);
+  scene.background = new THREE.Color(0x7eb6d9);
+  scene.fog = new THREE.Fog(0x9ec6e0, 55, 140);
 
-  const hemi = new THREE.HemisphereLight(0xddeeff, 0x3d5c2e, 0.85);
+  const hemi = new THREE.HemisphereLight(0xf0f6ff, 0x3d6b3a, 1.05);
   scene.add(hemi);
 
-  const sun = new THREE.DirectionalLight(0xfff2d6, 1.35);
-  sun.position.set(30, 50, 20);
+  const sun = new THREE.DirectionalLight(0xfff4e0, 1.7);
+  sun.position.set(25, 55, 18);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.bias = -0.0002;
   sun.shadow.camera.near = 1;
   sun.shadow.camera.far = 140;
   sun.shadow.camera.left = -60;

@@ -4,7 +4,7 @@
   "description": "3D futbol oyunu — gerçek oyuncu isimleri",
   "start_url": ".",
   "display": "fullscreen",
-  "orientation": "portrait",
+  "orientation": "landscape",
   "background_color": "#0a1628",
   "theme_color": "#0a1628",
   "icons": [
