@@ -1,3 +1,4 @@
+{{-- deploy-v-info-nav-1 --}}
 @php
     $primary = array_values(array_filter([
         ['key' => 'about', 'label' => 'Hakkımızda', 'url' => route('about'), 'icon' => 'heart', 'tone' => 'rose'],

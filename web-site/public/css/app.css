@@ -1692,7 +1692,7 @@ select.loc-country option {
     color: var(--text-muted);
 }
 
-/* Blog index / post */
+/* Blog index / post · blog-city-deploy-1 */
 .blog-hero {
     position: relative;
     overflow: hidden;

@@ -97,3 +97,4 @@ final class BlogPostVisual
         return strtr(mb_strtolower($value, 'UTF-8'), $map);
     }
 }
+

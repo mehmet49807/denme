@@ -1,10 +1,11 @@
+{{-- deploy-v-blog-city-1 --}}
 @extends('layouts.content-page')
 
 @section('title', 'Blog — Gönül Köprüsü')
 @section('legal-active', 'blog')
 @section('page-eyebrow', 'Gönül Köprüsü')
 @section('page-title', 'Blog')
-@section('page-lead', 'Şehir rehberleri, ciddi ilişki tavsiyeleri ve evlilik odaklı yazılar.')
+@section ('page-lead', 'Şehir rehberleri, ciddi ilişki tavsiyeleri ve evlilik odaklı yazılar.')
 
 @section('page-content')
 <div class="blog-hero">
