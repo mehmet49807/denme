@@ -2067,18 +2067,24 @@ body.app-shell-body .site-header .site-nav { display: none; }
 
 @media (max-width: 768px) {
     .content-page-layout { grid-template-columns: 1fr; margin-top: 0; }
-    .content-page-nav { position: static; }
-    .content-page-nav-head { margin-bottom: 0.55rem; padding-bottom: 0.55rem; }
-    .content-page-nav ul {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.35rem;
+    .info-nav {
+        position: sticky;
+        top: 0.65rem;
+        order: -1;
+        margin-bottom: 0.75rem;
     }
-    .content-page-nav li { margin-bottom: 0; }
-    .content-page-nav a { font-size: 0.78rem; padding: 0.4rem 0.5rem; }
-    .content-page-nav-icon { width: 1.6rem; height: 1.6rem; border-radius: 8px; }
-    .content-page-nav-icon .theme-icon,
-    .content-page-nav-icon .theme-icon svg { width: 0.9rem; height: 0.9rem; }
+    .info-nav__summary {
+        display: flex;
+    }
+    .info-nav__panel:not([open]) .info-nav__body {
+        display: none;
+    }
+    .info-nav__body {
+        max-height: min(70vh, 28rem);
+        overflow: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
     .content-icon-cards { grid-template-columns: 1fr; }
     .content-tip-grid { grid-template-columns: 1fr; }
     .page-landing .landing-cta--visual { grid-template-columns: 1fr; }

@@ -1,73 +1,71 @@
-<nav class="content-page-nav glass-card content-page-nav--vivid" aria-label="Yasal ve bilgi sayfaları">
-    <header class="content-page-nav-head">
-        <span class="content-page-nav-mark" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'sparkles'])</span>
-        <div>
-            <p class="content-page-nav-title">Bilgi Merkezi</p>
-            <p class="content-page-nav-sub">Rehber · güven · yasal</p>
+@php
+    $items = [
+        [
+            'group' => 'Keşfet',
+            'links' => array_values(array_filter([
+                ['key' => 'about', 'label' => 'Hakkımızda', 'url' => route('about'), 'icon' => 'heart', 'tone' => 'rose'],
+                ['key' => 'safe-meeting', 'label' => 'Güvenli Tanışma', 'url' => route('safe-meeting'), 'icon' => 'shield', 'tone' => 'teal'],
+                ['key' => 'blog', 'label' => 'Blog', 'url' => url('/blog'), 'icon' => 'post', 'tone' => 'amber'],
+                ['key' => 'sss', 'label' => 'SSS', 'url' => url('/sss'), 'icon' => 'messages', 'tone' => 'sky'],
+                Route::has('stories')
+                    ? ['key' => 'stories', 'label' => 'Başarı Hikâyeleri', 'url' => route('stories'), 'icon' => 'sparkles', 'tone' => 'coral']
+                    : null,
+                ['key' => 'support', 'label' => '7/24 Destek', 'url' => route('support'), 'icon' => 'support', 'tone' => 'orange'],
+            ])),
+        ],
+        [
+            'group' => 'Yasal',
+            'links' => [
+                ['key' => 'complaints', 'label' => 'Şikayet & Engelleme', 'url' => route('complaints'), 'icon' => 'bell', 'tone' => 'violet'],
+                ['key' => 'privacy', 'label' => 'Gizlilik', 'url' => route('privacy'), 'icon' => 'eye', 'tone' => 'indigo'],
+                ['key' => 'kvkk', 'label' => 'KVKK', 'url' => route('kvkk'), 'icon' => 'lock', 'tone' => 'emerald'],
+                ['key' => 'terms', 'label' => 'Kullanım Koşulları', 'url' => route('terms'), 'icon' => 'star', 'tone' => 'gold'],
+            ],
+        ],
+    ];
+    $activeKey = $active ?? '';
+    $activeLabel = 'Sayfa seç';
+    foreach ($items as $section) {
+        foreach ($section['links'] as $link) {
+            if ($activeKey === $link['key']) {
+                $activeLabel = $link['label'];
+                break 2;
+            }
+        }
+    }
+@endphp
+
+<nav class="info-nav" aria-label="Bilgi Merkezi">
+    <details class="info-nav__panel">
+        <summary class="info-nav__summary">
+            <span class="info-nav__summary-icon" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'sparkles'])</span>
+            <span class="info-nav__summary-text">
+                <strong>Bilgi Merkezi</strong>
+                <small>{{ $activeLabel }}</small>
+            </span>
+            <span class="info-nav__chevron" aria-hidden="true"></span>
+        </summary>
+
+        <div class="info-nav__body">
+            @foreach($items as $section)
+                <p class="info-nav__group">{{ $section['group'] }}</p>
+                <ul class="info-nav__list">
+                    @foreach($section['links'] as $link)
+                        <li>
+                            <a
+                                href="{{ $link['url'] }}"
+                                class="info-nav__link{{ $activeKey === $link['key'] ? ' is-active' : '' }}"
+                                @if($activeKey === $link['key']) aria-current="page" @endif
+                            >
+                                <span class="info-nav__icon info-nav__icon--{{ $link['tone'] }}" aria-hidden="true">
+                                    @include('partials.theme-icon', ['icon' => $link['icon']])
+                                </span>
+                                <span class="info-nav__label">{{ $link['label'] }}</span>
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            @endforeach
         </div>
-    </header>
-    <ul>
-        <li>
-            <a href="{{ route('about') }}" class="{{ ($active ?? '') === 'about' ? 'active' : '' }}">
-                <span class="content-page-nav-icon content-page-nav-icon--rose" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'heart'])</span>
-                <span>Hakkımızda</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('safe-meeting') }}" class="{{ ($active ?? '') === 'safe-meeting' ? 'active' : '' }}">
-                <span class="content-page-nav-icon content-page-nav-icon--teal" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'shield'])</span>
-                <span>Güvenli Tanışma</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ url('/blog') }}" class="{{ ($active ?? '') === 'blog' ? 'active' : '' }}">
-                <span class="content-page-nav-icon content-page-nav-icon--amber" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'post'])</span>
-                <span>Blog</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ url('/sss') }}" class="{{ ($active ?? '') === 'sss' ? 'active' : '' }}">
-                <span class="content-page-nav-icon content-page-nav-icon--sky" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'messages'])</span>
-                <span>SSS</span>
-            </a>
-        </li>
-        @if(Route::has('stories'))
-        <li>
-            <a href="{{ route('stories') }}" class="{{ ($active ?? '') === 'stories' ? 'active' : '' }}">
-                <span class="content-page-nav-icon content-page-nav-icon--coral" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'sparkles'])</span>
-                <span>Başarı Hikâyeleri</span>
-            </a>
-        </li>
-        @endif
-        <li>
-            <a href="{{ route('support') }}" class="{{ ($active ?? '') === 'support' ? 'active' : '' }}">
-                <span class="content-page-nav-icon content-page-nav-icon--orange" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'support'])</span>
-                <span>7/24 Destek</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('complaints') }}" class="{{ ($active ?? '') === 'complaints' ? 'active' : '' }}">
-                <span class="content-page-nav-icon content-page-nav-icon--violet" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'bell'])</span>
-                <span>Şikayet & Engelleme</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('privacy') }}" class="{{ ($active ?? '') === 'privacy' ? 'active' : '' }}">
-                <span class="content-page-nav-icon content-page-nav-icon--indigo" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'eye'])</span>
-                <span>Gizlilik Sözleşmesi</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('kvkk') }}" class="{{ ($active ?? '') === 'kvkk' ? 'active' : '' }}">
-                <span class="content-page-nav-icon content-page-nav-icon--emerald" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'lock'])</span>
-                <span>KVKK Aydınlatma</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('terms') }}" class="{{ ($active ?? '') === 'terms' ? 'active' : '' }}">
-                <span class="content-page-nav-icon content-page-nav-icon--gold" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'star'])</span>
-                <span>Kullanım Koşulları</span>
-            </a>
-        </li>
-    </ul>
+    </details>
 </nav>
