@@ -84,14 +84,43 @@
         <div>
             <h3 class="admin-panel-title">Instagram Reels / bio paketi</h3>
             <p class="admin-package-card__sub">
-                Yeni Reels v3 videoları (ig-01…ig-05) — farklı görseller, logo rozeti, güvenli alan metin.
-                Videolar: <a href="{{ route('admin.ads') }}">Reklam</a> menüsünden indir.
+                Reels v3 videoları + Türkçe (UTF-8) caption’lar.
                 UTM kampanya: <code>{{ $defaultCampaign }}</code>
             </p>
         </div>
-        <button type="button" class="btn btn-primary" data-copy-from="igPackFull">Paketi kopyala</button>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
+            @if(!empty($pack['captions_html_url']))
+                <a href="{{ $pack['captions_html_url'] }}" class="btn btn-outline" target="_blank" rel="noopener">Caption HTML</a>
+            @endif
+            @if(!empty($pack['captions_txt_url']))
+                <a href="{{ $pack['captions_txt_url'] }}" class="btn btn-outline" target="_blank" rel="noopener">Caption TXT</a>
+            @endif
+            <button type="button" class="btn btn-primary" data-copy-from="igPackFull">Paketi kopyala</button>
+        </div>
     </header>
     <textarea id="igPackFull" class="admin-sr-only" readonly hidden aria-hidden="true">{{ $pack['pack_text'] }}</textarea>
+
+    @if(!empty($pack['reels']))
+        <h4 class="admin-marketing-group">Reels videoları + caption’lar (Türkçe)</h4>
+        <div class="admin-marketing-link-grid">
+            @foreach($pack['reels'] as $i => $reel)
+                <div class="admin-marketing-link-card">
+                    <div class="admin-marketing-link-card__meta">
+                        <strong>{{ $reel['id'] }} · {{ $reel['title'] }}</strong>
+                        <span>{{ $reel['file'] }}</span>
+                    </div>
+                    <code class="admin-marketing-link-card__url">{{ $reel['video_url'] }}</code>
+                    <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin:.45rem 0;">
+                        <a href="{{ $reel['video_url'] }}" class="btn btn-outline btn-sm" target="_blank" rel="noopener">Videoyu aç</a>
+                        <button type="button" class="btn btn-outline btn-sm admin-copy-btn" data-copy="{{ $reel['video_url'] }}">Video linki</button>
+                    </div>
+                    <code class="admin-marketing-link-card__url" style="white-space:pre-wrap;margin-top:.35rem;">{{ $reel['caption'] }}</code>
+                    <textarea id="igReelCap{{ $i }}" class="admin-sr-only" readonly hidden aria-hidden="true">{{ $reel['caption'] }}</textarea>
+                    <button type="button" class="btn btn-primary btn-sm admin-copy-btn" data-copy-from="igReelCap{{ $i }}">Caption kopyala</button>
+                </div>
+            @endforeach
+        </div>
+    @endif
 
     <div class="admin-marketing-link-grid" style="margin-top:0.85rem;">
         <div class="admin-marketing-link-card">
@@ -120,7 +149,7 @@
         </div>
     </div>
 
-    <h4 class="admin-marketing-group">Hazır caption’lar</h4>
+    <h4 class="admin-marketing-group">Diğer hazır metinler</h4>
     <div class="admin-marketing-link-grid">
         @foreach($pack['captions'] as $i => $cap)
             <div class="admin-marketing-link-card">

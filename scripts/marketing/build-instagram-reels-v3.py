@@ -602,11 +602,34 @@ async def main() -> None:
         lines.append(f"Dosya: {ad['id']}.mp4")
         lines.append(ad["ig_caption"].format(url=reel_url))
         lines.append("")
+    body = "\n".join(lines).rstrip() + "\n"
     cap = PUBLIC / "instagram-reels-captions.txt"
-    cap.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+    # UTF-8 BOM: tarayıcılar charset olmadan da Türkçe karakterleri doğru okusun
+    cap.write_bytes(("\ufeff" + body).encode("utf-8"))
+    html = (
+        "<!DOCTYPE html>\n<html lang=\"tr\"><head><meta charset=\"utf-8\">"
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+        "<meta name=\"robots\" content=\"noindex,nofollow\">"
+        "<title>Gönül Köprüsü — Instagram Reels Caption’ları</title>"
+        "<style>body{font-family:Georgia,serif;background:#1a1220;color:#fff8f2;"
+        "margin:0;padding:1.5rem;line-height:1.55;max-width:52rem}"
+        "pre{white-space:pre-wrap;word-break:break-word;background:#2a1830;"
+        "border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:1.1rem;"
+        "font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem}"
+        "a{color:#ffb4c8}.note{color:#d8c8d8;font-size:.9rem}</style></head><body>"
+        "<h1>Instagram Reels v3 — Caption paketi</h1>"
+        "<p class=\"note\">UTF-8 Türkçe. Düz metin: "
+        "<a href=\"instagram-reels-captions.txt\">instagram-reels-captions.txt</a></p>"
+        "<pre>"
+        + body.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        + "</pre></body></html>\n"
+    )
+    (PUBLIC / "instagram-reels-captions.html").write_text(html, encoding="utf-8")
     shutil.copy2(cap, MIRROR / cap.name)
+    shutil.copy2(PUBLIC / "instagram-reels-captions.html", MIRROR / "instagram-reels-captions.html")
     shutil.copy2(cap, ART / cap.name)
-    (ROOT / "marketing" / "instagram" / "reels-v3-captions.txt").write_text(cap.read_text(encoding="utf-8"), encoding="utf-8")
+    shutil.copy2(PUBLIC / "instagram-reels-captions.html", ART / "instagram-reels-captions.html")
+    (ROOT / "marketing" / "instagram" / "reels-v3-captions.txt").write_bytes(cap.read_bytes())
 
     # Refresh manifest from PUBLIC
     videos, photos = [], []

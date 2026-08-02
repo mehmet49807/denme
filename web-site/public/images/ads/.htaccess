@@ -1,0 +1,11 @@
+# Türkçe karakterler için .txt dosyalarını UTF-8 sun
+<IfModule mod_mime.c>
+    AddCharset UTF-8 .txt
+    AddType "text/plain; charset=utf-8" .txt
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(txt)$">
+        Header set Content-Type "text/plain; charset=utf-8"
+    </FilesMatch>
+</IfModule>

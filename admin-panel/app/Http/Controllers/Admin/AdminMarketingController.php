@@ -140,7 +140,7 @@ class AdminMarketingController extends Controller
                 'video' => 'ig-01-dur.mp4',
                 'poster' => 'ig-01-dur.png',
                 'cta_url' => $reelsCta,
-                'group' => 'Instagram Reels v2 (9:16)',
+                'group' => 'Instagram Reels v3 (9:16)',
             ],
             [
                 'id' => 'ig-02-soru',
@@ -152,7 +152,7 @@ class AdminMarketingController extends Controller
                 'video' => 'ig-02-soru.mp4',
                 'poster' => 'ig-02-soru.png',
                 'cta_url' => $reelsCta,
-                'group' => 'Instagram Reels v2 (9:16)',
+                'group' => 'Instagram Reels v3 (9:16)',
             ],
             [
                 'id' => 'ig-03-guven',
@@ -164,7 +164,7 @@ class AdminMarketingController extends Controller
                 'video' => 'ig-03-guven.mp4',
                 'poster' => 'ig-03-guven.png',
                 'cta_url' => $reelsCta,
-                'group' => 'Instagram Reels v2 (9:16)',
+                'group' => 'Instagram Reels v3 (9:16)',
             ],
             [
                 'id' => 'ig-04-sehir',
@@ -176,7 +176,7 @@ class AdminMarketingController extends Controller
                 'video' => 'ig-04-sehir.mp4',
                 'poster' => 'ig-04-sehir.png',
                 'cta_url' => $reelsCta,
-                'group' => 'Instagram Reels v2 (9:16)',
+                'group' => 'Instagram Reels v3 (9:16)',
             ],
             [
                 'id' => 'ig-05-evlilik',
@@ -188,19 +188,7 @@ class AdminMarketingController extends Controller
                 'video' => 'ig-05-evlilik.mp4',
                 'poster' => 'ig-05-evlilik.png',
                 'cta_url' => $reelsCta,
-                'group' => 'Instagram Reels v2 (9:16)',
-            ],
-            [
-                'id' => 'ig-06-web',
-                'title' => 'Web / YouTube Display v2',
-                'subtitle' => '16:9 display',
-                'format' => '16:9',
-                'channel' => 'YouTube · Display',
-                'duration_hint' => '~10s',
-                'video' => 'ig-06-web.mp4',
-                'poster' => 'ig-06-web.png',
-                'cta_url' => $frontend.'/kampanya?utm_source=ads&utm_medium=video&utm_campaign=v2',
-                'group' => 'Web (16:9)',
+                'group' => 'Instagram Reels v3 (9:16)',
             ],
         ];
 
@@ -258,30 +246,49 @@ class AdminMarketingController extends Controller
             'utm_campaign' => 'v3',
         ]);
 
+        $adsBase = $frontend.'/images/ads';
+        $reels = [
+            [
+                'id' => 'ig-01-dur',
+                'title' => 'Flört yorduysa dur',
+                'file' => 'ig-01-dur.mp4',
+                'video_url' => $adsBase.'/ig-01-dur.mp4',
+                'caption' => "Flört yorduysa… ciddi ilişki zamanı.\nGönül Köprüsü — güvenli tanışma, evlilik niyeti.\nKart yok · Ücretsiz 👇\n{$reelsUrl}\n\n#ciddiilişki #evlilik #güvenlitanışma #gonülköprüsü #reels",
+            ],
+            [
+                'id' => 'ig-02-soru',
+                'title' => 'Ciddi misin?',
+                'file' => 'ig-02-soru.mp4',
+                'video_url' => $adsBase.'/ig-02-soru.mp4',
+                'caption' => "Ciddi misin? Gerçekten mi?\nDoğru yerdesin — Gönül Köprüsü.\nÜcretsiz başla 👇\n{$reelsUrl}\n\n#ciddiilişki #evlilik #gonülköprüsü #tanışma #reels",
+            ],
+            [
+                'id' => 'ig-03-guven',
+                'title' => 'Önce güven',
+                'file' => 'ig-03-guven.mp4',
+                'video_url' => $adsBase.'/ig-03-guven.mp4',
+                'caption' => "Önce güven, sonra sohbet.\nGüvenli profiller · ciddi niyet.\nÜcretsiz üye ol 👇\n{$reelsUrl}\n\n#güvenlitanışma #ciddiilişki #gonülköprüsü #reels",
+            ],
+            [
+                'id' => 'ig-04-sehir',
+                'title' => 'Şehrinde misin?',
+                'file' => 'ig-04-sehir.mp4',
+                'video_url' => $adsBase.'/ig-04-sehir.mp4',
+                'caption' => "Şehrinde ciddi ilişki arayanlar burada.\nİstanbul · Ankara · İzmir…\nÜcretsiz kayıt 👇\n{$reelsUrl}\n\n#İstanbultanışma #ciddiilişki #gonülköprüsü #reels",
+            ],
+            [
+                'id' => 'ig-05-evlilik',
+                'title' => 'Evlilik niyetiyle',
+                'file' => 'ig-05-evlilik.mp4',
+                'video_url' => $adsBase.'/ig-05-evlilik.mp4',
+                'caption' => "Evlilik niyetiyle arıyorsan doğru yerdesin.\nGönül Köprüsü — flört değil, ciddi bağ.\nÜcretsiz üye ol 👇\n{$reelsUrl}\n\n#evlilik #ciddiilişki #gonülköprüsü #reels",
+            ],
+        ];
+
         $captions = [
             [
                 'label' => 'Bio kısa',
                 'text' => "Gönül Köprüsü — ciddi ilişki & güvenli tanışma\nÜcretsiz kayıt 👇\n{$bioUrl}",
-            ],
-            [
-                'label' => 'Reel v3 · Flört yorduysa (ig-01)',
-                'text' => "Flört yorduysa… ciddi ilişki zamanı.\nGönül Köprüsü — güvenli tanışma, evlilik niyeti.\nKart yok · Ücretsiz 👇\n{$reelsUrl}\n\n#ciddiilişki #evlilik #güvenlitanışma #gonülköprüsü #reels",
-            ],
-            [
-                'label' => 'Reel v3 · Ciddi misin? (ig-02)',
-                'text' => "Ciddi misin? Gerçekten mi?\nDoğru yerdesin — Gönül Köprüsü.\nÜcretsiz başla 👇\n{$reelsUrl}\n\n#ciddiilişki #evlilik #gonülköprüsü #tanışma #reels",
-            ],
-            [
-                'label' => 'Reel v3 · Önce güven (ig-03)',
-                'text' => "Önce güven, sonra sohbet.\nGüvenli profiller · ciddi niyet.\nÜcretsiz üye ol 👇\n{$reelsUrl}\n\n#güvenlitanışma #ciddiilişki #gonülköprüsü #reels",
-            ],
-            [
-                'label' => 'Reel v3 · Şehrinde (ig-04)',
-                'text' => "Şehrinde ciddi ilişki arayanlar burada.\nİstanbul · Ankara · İzmir…\nÜcretsiz kayıt 👇\n{$reelsUrl}\n\n#İstanbultanışma #ciddiilişki #gonülköprüsü #reels",
-            ],
-            [
-                'label' => 'Reel v3 · Evlilik niyetiyle (ig-05)',
-                'text' => "Evlilik niyetiyle arıyorsan doğru yerdesin.\nGönül Köprüsü — flört değil, ciddi bağ.\nÜcretsiz üye ol 👇\n{$reelsUrl}\n\n#evlilik #ciddiilişki #gonülköprüsü #reels",
             ],
             [
                 'label' => 'Story CTA',
@@ -306,7 +313,16 @@ class AdminMarketingController extends Controller
             'KAMPANYA LANDING:',
             $kampanyaUrl,
             '',
+            'REELS CAPTION PAKETİ (UTF-8):',
+            $adsBase.'/instagram-reels-captions.html',
+            '',
         ];
+        foreach ($reels as $reel) {
+            $packLines[] = '--- '.$reel['id'].' · '.$reel['title'].' ---';
+            $packLines[] = 'Video: '.$reel['video_url'];
+            $packLines[] = $reel['caption'];
+            $packLines[] = '';
+        }
         foreach ($captions as $cap) {
             $packLines[] = '--- '.$cap['label'].' ---';
             $packLines[] = $cap['text'];
@@ -317,6 +333,10 @@ class AdminMarketingController extends Controller
             'bio_url' => $bioUrl,
             'story_url' => $storyUrl,
             'kampanya_url' => $kampanyaUrl,
+            'reels_url' => $reelsUrl,
+            'captions_html_url' => $adsBase.'/instagram-reels-captions.html',
+            'captions_txt_url' => $adsBase.'/instagram-reels-captions.txt',
+            'reels' => $reels,
             'captions' => $captions,
             'pack_text' => trim(implode("\n", $packLines)),
         ];
