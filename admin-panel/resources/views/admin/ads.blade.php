@@ -5,6 +5,7 @@
 
 @section('header-actions')
     <a href="{{ $adsBaseUrl }}/" class="btn btn-outline" target="_blank" rel="noopener">Medya klasörü</a>
+    <a href="{{ $adsBaseUrl }}/instagram-reels-captions.html" class="btn btn-outline" target="_blank" rel="noopener">Reels caption’ları</a>
     <a href="{{ route('admin.marketing') }}" class="btn btn-outline">Pazarlama / UTM</a>
     <a href="{{ $frontendUrl }}/kampanya?utm_source=ads&utm_medium=video&utm_campaign=realistic" class="btn btn-primary" target="_blank" rel="noopener">Ads Landing</a>
 @endsection
