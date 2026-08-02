@@ -323,3 +323,4 @@ class PremiumPackagesService
         return preg_match('/^#[0-9A-Fa-f]{6}$/', $value) ? strtolower($value) : strtolower($fallback);
     }
 }
+

@@ -777,3 +777,4 @@ class User extends Authenticatable
         app(UserMailService::class)->sendPasswordReset($this, $token);
     }
 }
+
