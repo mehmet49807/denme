@@ -316,29 +316,6 @@
     box-shadow: 0 0 0 2px #fff, 0 0 0 4px #7c3aed;
 }
 
-.shared-time--story {
-    display: inline-flex;
-    justify-content: center;
-    max-width: 100%;
-    font-size: 0.56rem;
-    font-weight: 700;
-    color: var(--text-muted, #5c5470);
-}
-
-.shared-time--story .shared-time__icon .theme-icon,
-.shared-time--story .shared-time__icon svg {
-    width: 0.7rem;
-    height: 0.7rem;
-}
-
-.shared-time--story .story-shared-time,
-.shared-time--story .shared-time__value {
-    font-size: inherit;
-    font-weight: inherit;
-    color: inherit;
-    text-align: left;
-}
-
 .shared-time--viewer {
     margin-top: 0.1rem;
     color: rgba(255, 255, 255, 0.9);
