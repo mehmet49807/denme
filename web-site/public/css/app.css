@@ -4082,14 +4082,25 @@ a.member-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(
 }
 .user-profile-actions__primary > a,
 .user-profile-actions__primary > form {
-    flex: 1 1 0;
-    min-width: 0;
     margin: 0;
     display: flex;
+}
+.user-profile-actions__primary > a.profile-action-btn--icon,
+.user-profile-actions__primary > form:has(.profile-action-btn--icon) {
+    flex: 0 0 auto;
+}
+.user-profile-actions__primary > form.profile-follow-form {
+    flex: 1 1 auto;
+    min-width: 0;
 }
 .user-profile-actions__primary .profile-action-btn {
     width: 100%;
     justify-content: center;
+}
+.user-profile-actions__primary .profile-action-btn--icon {
+    width: 2.35rem;
+    min-width: 2.35rem;
+    padding: 0.45rem;
 }
 .profile-action-btn {
     display: inline-flex;
@@ -4186,11 +4197,10 @@ a.member-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(
 .profile-more__item--danger:hover { background: rgba(220, 38, 38, 0.08); }
 .profile-block-form { margin: 0; }
 @media (max-width: 420px) {
-    .user-profile-actions__primary .profile-action-label {
-        display: none;
-    }
-    .user-profile-actions__primary .profile-action-btn {
-        padding: 0.5rem;
+    .user-profile-actions__primary .profile-action-btn--follow {
+        padding-left: 0.55rem;
+        padding-right: 0.55rem;
+        font-size: 0.74rem;
     }
 }
 

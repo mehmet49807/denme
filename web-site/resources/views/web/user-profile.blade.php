@@ -83,18 +83,22 @@
             <div class="user-profile-actions">
                 <div class="user-profile-actions__primary">
                     @if($viewer->canSendMessages())
-                    <a href="{{ route('messages.show', $user->username) }}" class="profile-action-btn profile-action-btn--message" title="{{ __('app.profile.send_message') }}">
+                    <a
+                        href="{{ route('messages.show', $user->username) }}"
+                        class="profile-action-btn profile-action-btn--message profile-action-btn--icon"
+                        title="{{ __('app.profile.send_message') }}"
+                        aria-label="{{ __('app.profile.send_message') }}"
+                    >
                         <span class="profile-action-icon profile-action-icon--messages" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M5 6.5A3.5 3.5 0 018.5 3h7A3.5 3.5 0 0119 6.5v7A3.5 3.5 0 0115.5 17H10l-4.5 3.5V17H8.5A3.5 3.5 0 015 13.5v-7z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
                             </svg>
                         </span>
-                        <span class="profile-action-label">{{ __('app.profile.send_message') }}</span>
                     </a>
                     @elseif($viewer->gender === 'male')
                     <a
                         href="{{ route('premium') }}"
-                        class="profile-action-btn profile-action-btn--premium-msg"
+                        class="profile-action-btn profile-action-btn--premium-msg profile-action-btn--icon"
                         title="{{ __('app.profile.message_locked_title') }}"
                         aria-label="{{ __('app.profile.message_locked_title') }}"
                     >
@@ -104,7 +108,6 @@
                                 <path d="M16.4 4.2l.7 1.3 1.4.2-1 1 .2 1.4-1.3-.7-1.3.7.2-1.4-1-1 1.4-.2.7-1.3z" fill="currentColor"/>
                             </svg>
                         </span>
-                        <span class="profile-action-label">{{ __('app.profile.message_locked_cta') }}</span>
                     </a>
                     @endif
 
@@ -122,6 +125,7 @@
                             data-follow-btn
                             aria-pressed="{{ !empty($viewerFollowing) ? 'true' : 'false' }}"
                             title="{{ !empty($viewerFollowing) ? __('app.profile.following') : __('app.profile.follow') }}"
+                            aria-label="{{ !empty($viewerFollowing) ? __('app.profile.following') : __('app.profile.follow') }}"
                         >
                             <span class="profile-action-icon profile-action-icon--follow" aria-hidden="true">
                                 @if(!empty($viewerFollowing))
@@ -147,17 +151,18 @@
                         @csrf
                         <button
                             type="submit"
-                            class="profile-action-btn profile-action-btn--like {{ !empty($viewerLiked) ? 'is-liked' : '' }} {{ !empty($isMatched) ? 'is-matched' : '' }}"
+                            class="profile-action-btn profile-action-btn--like profile-action-btn--icon {{ !empty($viewerLiked) ? 'is-liked' : '' }} {{ !empty($isMatched) ? 'is-matched' : '' }}"
                             data-like-btn
                             aria-pressed="{{ !empty($viewerLiked) ? 'true' : 'false' }}"
                             title="@if(!empty($isMatched)){{ __('app.profile.matched') }}@elseif(!empty($viewerLiked)){{ __('app.profile.liked') }}@else{{ __('app.profile.like') }}@endif"
+                            aria-label="@if(!empty($isMatched)){{ __('app.profile.matched') }}@elseif(!empty($viewerLiked)){{ __('app.profile.liked') }}@else{{ __('app.profile.like') }}@endif"
                         >
                             <span class="profile-action-icon profile-action-icon--like" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M12 20.5s-7.2-4.7-9.2-8.8C1.2 8.2 3.4 5 6.8 5c1.8 0 3.2.9 4 2.1.8-1.2 2.2-2.1 4-2.1 3.4 0 5.6 3.2 4 6.7-2 4.1-9.2 8.8-9.2 8.8z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
                                 </svg>
                             </span>
-                            <span class="profile-action-label" data-like-label>
+                            <span class="sr-only" data-like-label>
                                 @if(!empty($isMatched))
                                     {{ __('app.profile.matched') }}
                                 @elseif(!empty($viewerLiked))
