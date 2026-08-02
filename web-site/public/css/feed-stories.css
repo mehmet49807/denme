@@ -198,15 +198,6 @@
     overflow: hidden;
 }
 
-.story-flag {
-    width: 12px;
-    height: 9px;
-    object-fit: cover;
-    border-radius: 2px;
-    flex-shrink: 0;
-    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
-}
-
 .story-city {
     font-size: 0.58rem;
     font-weight: 600;

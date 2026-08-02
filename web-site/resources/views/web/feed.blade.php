@@ -102,10 +102,8 @@
                     </span>
                     <span class="story-caption">
                         <span class="story-username">{{ $group['username'] }}</span>
+                        @if(!empty($group['city']) || (!empty($group['country']) && !$isOfficial) || (!empty($group['show_premium_sticker']) && is_array($sticker)))
                         <span class="story-meta-line">
-                            @if(!empty($group['flag_url']))
-                                <img class="story-flag" src="{{ $group['flag_url'] }}" alt="" width="14" height="10" loading="lazy" decoding="async">
-                            @endif
                             @if(!empty($group['city']))
                                 <span class="story-city">{{ $group['city'] }}</span>
                             @elseif(!empty($group['country']) && !$isOfficial)
@@ -118,6 +116,7 @@
                                 >{{ $sticker['label'] ?? 'Premium' }}</span>
                             @endif
                         </span>
+                        @endif
                     </span>
                 </button>
                 @endforeach
