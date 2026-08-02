@@ -6,22 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Story;
 use App\Services\MediaUploadService;
-use App\Services\StoryGroupService;
 use App\Services\StoryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class AdminContentController extends Controller
 {
     public function __construct(
         private MediaUploadService $mediaUpload,
-        private StoryGroupService $storyGroups,
         private StoryService $stories,
     ) {}
 
     public function index(Request $request): View
     {
+        Story::ensureAudienceColumn();
+
         $tab = $request->get('tab') === 'stories' ? 'stories' : 'posts';
         $search = trim((string) $request->get('search', ''));
 
@@ -59,41 +62,63 @@ class AdminContentController extends Controller
             $items = $query->paginate(24)->withQueryString();
         }
 
-        $storyGroups = collect();
-        $storyIndexMap = [];
-
-        if ($tab === 'stories' && $items->count() > 0) {
-            $storyGroups = $items->getCollection()
-                ->groupBy('user_id')
-                ->map(function ($userStories) {
-                    $user = $userStories->first()?->user;
-                    if (!$user) {
-                        return null;
-                    }
-
-                    return $this->storyGroups->formatStoryGroup($user, $userStories);
-                })
-                ->filter()
-                ->values();
-
-            foreach ($storyGroups as $groupIndex => $group) {
-                foreach ($group['items'] as $itemIndex => $item) {
-                    $storyIndexMap[$item['id']] = [
-                        'group' => $groupIndex,
-                        'item' => $itemIndex,
-                    ];
-                }
-            }
-        }
-
         return view('admin.content', [
             'tab' => $tab,
             'search' => $search,
             'stats' => $stats,
             'items' => $items,
-            'storyGroups' => $storyGroups,
-            'storyIndexMap' => $storyIndexMap,
         ]);
+    }
+
+    public function storeStory(Request $request): RedirectResponse
+    {
+        Story::ensureAudienceColumn();
+
+        $validated = $request->validate([
+            'media' => 'required|file|mimes:jpeg,jpg,png,gif,webp,mp4,mov,webm|max:25600',
+            'audience' => 'required|in:all,male,female',
+        ], [
+            'media.required' => 'Lütfen bir fotoğraf veya video seçin.',
+            'media.mimes' => 'Hikâye dosyası JPG, PNG, GIF, WEBP, MP4, MOV veya WEBM olmalıdır.',
+            'media.max' => 'Hikâye dosyası en fazla 25 MB olabilir.',
+            'audience.required' => 'Hedef kitle seçin.',
+            'audience.in' => 'Geçersiz hedef kitle.',
+        ]);
+
+        $file = $request->file('media');
+        $mediaUrl = null;
+
+        try {
+            DB::transaction(function () use ($request, $file, $validated, &$mediaUrl) {
+                $mediaUrl = $this->mediaUpload->uploadStoryMedia($file);
+
+                $this->stories->createForUser(
+                    $request->user(),
+                    $mediaUrl,
+                    $this->detectMediaType($file),
+                    $validated['audience'],
+                );
+            });
+        } catch (\Throwable $e) {
+            if ($mediaUrl) {
+                $this->mediaUpload->deleteByUrl($mediaUrl);
+            }
+
+            Log::error('Admin story upload failed', [
+                'admin_id' => $request->user()?->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()
+                ->route('admin.content', ['tab' => 'stories'])
+                ->withErrors(['media' => 'Hikâye yüklenemedi. Lütfen tekrar deneyin.']);
+        }
+
+        $label = Story::audienceLabel($validated['audience']);
+
+        return redirect()
+            ->route('admin.content', ['tab' => 'stories'])
+            ->with('success', "Hikâye paylaşıldı — hedef: {$label}.");
     }
 
     public function destroyPost(Post $post): RedirectResponse
@@ -114,5 +139,10 @@ class AdminContentController extends Controller
         return redirect()
             ->route('admin.content', ['tab' => 'stories', 'search' => request('search'), 'page' => request('page')])
             ->with('success', 'Hikaye ve medya dosyası silindi.');
+    }
+
+    private function detectMediaType(UploadedFile $file): string
+    {
+        return str_starts_with((string) $file->getMimeType(), 'video/') ? 'video' : 'image';
     }
 }

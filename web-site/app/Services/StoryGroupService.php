@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Story;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 
 class StoryGroupService
 {
@@ -18,12 +19,16 @@ class StoryGroupService
         private StoryService $stories,
     ) {}
 
-    public function loadUserStoryGroup(User $user): ?array
+    public function loadUserStoryGroup(User $user, ?User $viewer = null): ?array
     {
         $stories = Story::active()
             ->where('user_id', $user->id)
             ->latest()
             ->get();
+
+        if ($viewer) {
+            $stories = $stories->filter(fn (Story $story) => $story->visibleTo($viewer))->values();
+        }
 
         if ($stories->isEmpty()) {
             return null;
@@ -51,6 +56,31 @@ class StoryGroupService
 
     public function loadDiscoveryGroups(User $viewer, ?Collection $visibleUserIds = null): Collection
     {
+        $memberStories = $this->loadMemberDiscoveryStories($viewer, $visibleUserIds);
+        $officialStories = $this->loadOfficialDiscoveryStories($viewer);
+
+        $stories = $officialStories
+            ->concat($memberStories)
+            ->unique('id')
+            ->values();
+
+        return $stories
+            ->filter(fn ($story) => $story->user)
+            ->groupBy('user_id')
+            ->take(self::DISCOVERY_GROUP_LIMIT)
+            ->map(function ($userStories) {
+                $user = $userStories->first()->user;
+
+                return $this->formatStoryGroup($user, $userStories);
+            })
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, Story>
+     */
+    private function loadMemberDiscoveryStories(User $viewer, ?Collection $visibleUserIds = null): Collection
+    {
         $visibleSubquery = $visibleUserIds !== null
             ? null
             : $this->genderFilter->visibleUsersQuery($viewer);
@@ -70,6 +100,7 @@ class StoryGroupService
                 ->with($premiumWith)
                 ->join('users', 'users.id', '=', 'stories.user_id')
                 ->where('stories.user_id', '!=', $viewer->id)
+                ->where($this->memberAudienceConstraint())
                 ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now])
                 ->orderByRaw(User::packageTypeOrderSql('users.id'), [$now])
                 ->orderByDesc('stories.created_at')
@@ -82,12 +113,13 @@ class StoryGroupService
                 $query->whereIn('stories.user_id', (clone $visibleSubquery)->select('users.id'));
             }
 
-            $stories = $query->get();
+            return $query->get();
         } catch (\Throwable) {
             // Sıralama sorgusu düşerse paketsiz kullanıcılar yine tüm hikayeleri görsün.
             $query = Story::active()
                 ->with($premiumWith)
                 ->where('user_id', '!=', $viewer->id)
+                ->where($this->memberAudienceConstraint())
                 ->latest()
                 ->limit(self::DISCOVERY_STORY_LIMIT);
 
@@ -97,36 +129,94 @@ class StoryGroupService
                 $query->whereIn('user_id', (clone $visibleSubquery)->select('users.id'));
             }
 
-            $stories = $query->get();
+            return $query->get();
+        }
+    }
+
+    /**
+     * Yönetici hikâyeleri: tüm üyeler / kadınlar / erkekler hedefiyle — cinsiyet filtresinden bağımsız.
+     *
+     * @return Collection<int, Story>
+     */
+    private function loadOfficialDiscoveryStories(User $viewer): Collection
+    {
+        if (! $this->hasAudienceColumn()) {
+            return collect();
         }
 
-        return $stories
-            ->filter(fn ($story) => $story->user)
-            ->groupBy('user_id')
-            ->take(self::DISCOVERY_GROUP_LIMIT)
-            ->map(function ($userStories) {
-                $user = $userStories->first()->user;
+        $gender = in_array($viewer->gender, ['male', 'female'], true) ? $viewer->gender : null;
 
-                return $this->formatStoryGroup($user, $userStories);
-            })
-            ->values();
+        return Story::active()
+            ->with('user')
+            ->where('user_id', '!=', $viewer->id)
+            ->whereIn('audience', array_values(array_filter([
+                Story::AUDIENCE_ALL,
+                $gender,
+            ])))
+            ->latest()
+            ->limit(48)
+            ->get();
+    }
+
+    /**
+     * Üye hikâyeleri audience=null (veya kolon yok) — resmi hedefli hikâyeler ayrı yüklenir.
+     */
+    private function memberAudienceConstraint(): \Closure
+    {
+        return function ($query) {
+            if (! $this->hasAudienceColumn()) {
+                return;
+            }
+
+            $query->where(function ($q) {
+                $q->whereNull('stories.audience')
+                    ->orWhere('stories.audience', '');
+            });
+        };
+    }
+
+    private function hasAudienceColumn(): bool
+    {
+        static $has = null;
+
+        if ($has !== null) {
+            return $has;
+        }
+
+        try {
+            Story::ensureAudienceColumn();
+            $has = Schema::hasColumn('stories', 'audience');
+        } catch (\Throwable) {
+            $has = false;
+        }
+
+        return $has;
     }
 
     public function formatStoryGroup(User $user, $stories): array
     {
+        $storyItems = collect($stories)->values();
+        $isOfficial = $storyItems->contains(fn ($story) => method_exists($story, 'isOfficial') && $story->isOfficial());
+
         return [
             'user_id' => $user->id,
-            'username' => $user->username,
-            'profile_url' => rtrim((string) config('app.site_url'), '/').'/users/'.$user->username,
+            'username' => $isOfficial ? 'Gönül Köprüsü' : $user->username,
+            'profile_url' => $isOfficial
+                ? rtrim((string) config('app.site_url', config('app.url')), '/')
+                : rtrim((string) config('app.site_url'), '/').'/users/'.$user->username,
             'profile_photo_url' => $user->profile_photo_url,
-            'is_online' => $user->isOnline(),
+            'is_online' => method_exists($user, 'isOnline') ? $user->isOnline() : false,
             'is_own' => false,
-            'package_type' => $user->activePackageType(),
-            'is_featured' => $user->packageRank() >= 2 || $user->isBoosted(),
-            'items' => $stories->map(fn ($story) => [
+            'is_official' => $isOfficial,
+            'package_type' => method_exists($user, 'activePackageType') ? $user->activePackageType() : null,
+            'is_featured' => $isOfficial
+                || (method_exists($user, 'packageRank') && $user->packageRank() >= 2)
+                || (method_exists($user, 'isBoosted') && $user->isBoosted()),
+            'items' => $storyItems->map(fn ($story) => [
                 'id' => $story->id,
                 'media_url' => $story->media_url,
                 'media_type' => $story->is_video ? 'video' : 'image',
+                'audience' => $story->audience ?? null,
             ])->values()->all(),
         ];
     }

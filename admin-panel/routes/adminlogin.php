@@ -69,6 +69,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/backup/users.csv', [AdminOpsController::class, 'exportUsersCsv'])->middleware(RequireSuperAdmin::class)->name('admin.backup.users');
     Route::get('/backup/settings.json', [AdminOpsController::class, 'exportSettingsJson'])->middleware(RequireSuperAdmin::class)->name('admin.backup.settings');
     Route::get('/content', [AdminContentController::class, 'index'])->name('admin.content');
+    Route::post('/content/stories', [AdminContentController::class, 'storeStory'])->name('admin.content.stories.store');
     Route::delete('/content/posts/{post}', [AdminContentController::class, 'destroyPost'])->name('admin.content.posts.destroy');
     Route::delete('/content/stories/{story}', [AdminContentController::class, 'destroyStory'])->name('admin.content.stories.destroy');
     Route::get('/rapor', fn () => redirect()->route('admin.dashboard'))->name('admin.rapor');

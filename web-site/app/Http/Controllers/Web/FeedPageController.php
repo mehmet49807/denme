@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\Referral;
+use App\Models\Story;
 use App\Models\User;
 use App\Services\GenderFilterService;
 use App\Services\GrowthOnboardingService;
@@ -56,6 +57,7 @@ class FeedPageController extends Controller
             ]);
         }
 
+        Story::ensureAudienceColumn();
         $ownStoryGroup = $this->storyGroups->loadOwnStoryGroup($viewer);
         $storyGroups = $this->storyGroups->loadDiscoveryGroups($viewer);
 

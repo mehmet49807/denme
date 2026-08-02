@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'İçerik Moderasyonu')
-@section('lead', 'Gönderileri ve hikâyeleri inceleyin, uygunsuz içeriği kaldırın.')
+@section('lead', 'Gönderileri ve hikâyeleri inceleyin; yönetici hikâyesi ekleyin.')
 
 @section('content')
 <div class="admin-stat-grid admin-stat-grid--compact">
@@ -42,6 +42,49 @@
         </form>
     </div>
 </div>
+
+@if($tab === 'stories')
+    <div class="admin-panel admin-panel--glass" style="margin-bottom:1rem;">
+        <h2 style="margin:0 0 .35rem;font-size:1.05rem;">Yönetici hikâyesi ekle</h2>
+        <p class="admin-ops-meta" style="margin:0 0 1rem;">
+            24 saat görünür. Hedef kitleyi seçin: tüm üyeler, yalnızca kadınlar veya yalnızca erkekler.
+        </p>
+        <form method="POST" action="{{ route('admin.content.stories.store') }}" enctype="multipart/form-data"
+              style="display:grid;gap:1rem;max-width:36rem;">
+            @csrf
+            <div>
+                <label for="admin-story-media" style="display:block;margin-bottom:.35rem;font-weight:600;">Fotoğraf veya video</label>
+                <input type="file" id="admin-story-media" name="media" accept="image/*,video/*" required>
+                @error('media')
+                    <small class="form-error" style="display:block;margin-top:.35rem;color:#b42318;">{{ $message }}</small>
+                @enderror
+            </div>
+            <fieldset style="border:0;padding:0;margin:0;">
+                <legend style="font-weight:600;margin-bottom:.5rem;">Hedef kitle</legend>
+                <div style="display:flex;flex-wrap:wrap;gap:.75rem 1.25rem;">
+                    <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;">
+                        <input type="radio" name="audience" value="all" {{ old('audience', 'all') === 'all' ? 'checked' : '' }}>
+                        Tüm üyeler
+                    </label>
+                    <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;">
+                        <input type="radio" name="audience" value="female" {{ old('audience') === 'female' ? 'checked' : '' }}>
+                        Yalnızca kadınlar
+                    </label>
+                    <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;">
+                        <input type="radio" name="audience" value="male" {{ old('audience') === 'male' ? 'checked' : '' }}>
+                        Yalnızca erkekler
+                    </label>
+                </div>
+                @error('audience')
+                    <small class="form-error" style="display:block;margin-top:.35rem;color:#b42318;">{{ $message }}</small>
+                @enderror
+            </fieldset>
+            <div>
+                <button type="submit" class="btn btn-primary">Hikâyeyi paylaş</button>
+            </div>
+        </form>
+    </div>
+@endif
 
 @if($tab === 'posts')
     <div class="admin-gallery-grid">
@@ -89,6 +132,12 @@
                     <strong>{{ $story->user?->username ?? '—' }}</strong>
                     <span>{{ $story->created_at?->format('d.m.Y H:i') }}</span>
                 </div>
+                <p class="admin-ops-meta" style="padding:0 .75rem .5rem;">
+                    Hedef: {{ \App\Models\Story::audienceLabel($story->audience ?? null) }}
+                    @if($story->expires_at)
+                        · Bitiş: {{ $story->expires_at->format('d.m.Y H:i') }}
+                    @endif
+                </p>
                 <form method="POST" action="{{ route('admin.content.stories.destroy', $story) }}"
                       onsubmit="return confirm('Bu hikâye silinsin mi?');">
                     @csrf

@@ -99,7 +99,7 @@ class UserProfilePageController extends Controller
             ->limit(36)
             ->get();
 
-        $targetStoryGroup = $this->storyGroups->loadUserStoryGroup($user);
+        $targetStoryGroup = $this->storyGroups->loadUserStoryGroup($user, $viewer);
 
         $likedPostIds = Like::where('user_id', $viewer->id)
             ->whereIn('post_id', $posts->pluck('id'))

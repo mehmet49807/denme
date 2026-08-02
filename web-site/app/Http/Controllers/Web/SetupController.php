@@ -957,10 +957,15 @@ HTML;
                 \App\Support\PhotoVerification::ensureColumns();
                 $lines[] = 'photo_verify columns: ensureColumns çağrıldı';
             }
+            if (class_exists(\App\Models\Story::class) && method_exists(\App\Models\Story::class, 'ensureAudienceColumn')) {
+                \App\Models\Story::ensureAudienceColumn();
+                $lines[] = 'stories.audience: ensureAudienceColumn çağrıldı';
+            }
             $lines[] = 'profile_likes: '.(\Illuminate\Support\Facades\Schema::hasTable('profile_likes') ? 'var' : 'YOK');
             foreach (['photo_verify_status', 'photo_verify_selfie_url', 'profile_verified_at'] as $column) {
                 $lines[] = "users.{$column}: ".(\Illuminate\Support\Facades\Schema::hasColumn('users', $column) ? 'var' : 'YOK');
             }
+            $lines[] = 'stories.audience: '.(\Illuminate\Support\Facades\Schema::hasColumn('stories', 'audience') ? 'var' : 'YOK');
         } catch (\Throwable $e) {
             $lines[] = 'schema kontrol hatası: '.$e->getMessage();
         }
