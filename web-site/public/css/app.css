@@ -3876,14 +3876,14 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
 }
 .profile-hobby-icon { font-size: 0.95rem; line-height: 1; }
 
-/* Premium onay tiki — tüm üyeler */
+/* Profil onay tiki — mavi (tüm paket tonları aynı) */
 .profile-verified-tick {
-    --gk-tick-a: #FDE68A;
-    --gk-tick-b: #F59E0B;
-    --gk-tick-c: #FF6B8A;
-    --gk-tick-core-1: #FBBF24;
-    --gk-tick-core-2: #D97706;
-    --gk-tick-glow: rgba(245, 158, 11, 0.55);
+    --gk-tick-a: #93C5FD;
+    --gk-tick-b: #3B82F6;
+    --gk-tick-c: #1D4ED8;
+    --gk-tick-core-1: #2563EB;
+    --gk-tick-core-2: #1E40AF;
+    --gk-tick-glow: rgba(37, 99, 235, 0.5);
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -3919,40 +3919,17 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
 .profile-verified-tick .gk-tick-core-a { stop-color: var(--gk-tick-core-1); }
 .profile-verified-tick .gk-tick-core-b { stop-color: var(--gk-tick-core-2); }
 
-.profile-verified-tick--premium {
-    --gk-tick-a: #FDE68A;
-    --gk-tick-b: #F59E0B;
-    --gk-tick-c: #FF6B8A;
-    --gk-tick-core-1: #FBBF24;
-    --gk-tick-core-2: #EA580C;
-    --gk-tick-glow: rgba(245, 158, 11, 0.5);
-}
-
-.profile-verified-tick--pro {
-    --gk-tick-a: #A5F3FC;
-    --gk-tick-b: #38BDF8;
-    --gk-tick-c: #6366F1;
-    --gk-tick-core-1: #0EA5E9;
-    --gk-tick-core-2: #0369A1;
-    --gk-tick-glow: rgba(14, 165, 233, 0.5);
-}
-
-.profile-verified-tick--gold {
-    --gk-tick-a: #FEF3C7;
-    --gk-tick-b: #FBBF24;
-    --gk-tick-c: #F59E0B;
-    --gk-tick-core-1: #F59E0B;
-    --gk-tick-core-2: #B45309;
-    --gk-tick-glow: rgba(251, 191, 36, 0.58);
-}
-
+.profile-verified-tick--blue,
+.profile-verified-tick--premium,
+.profile-verified-tick--pro,
+.profile-verified-tick--gold,
 .profile-verified-tick--platinum {
-    --gk-tick-a: #F8FAFC;
-    --gk-tick-b: #CBD5E1;
-    --gk-tick-c: #FBBF24;
-    --gk-tick-core-1: #94A3B8;
-    --gk-tick-core-2: #475569;
-    --gk-tick-glow: rgba(148, 163, 184, 0.55);
+    --gk-tick-a: #93C5FD;
+    --gk-tick-b: #3B82F6;
+    --gk-tick-c: #1D4ED8;
+    --gk-tick-core-1: #2563EB;
+    --gk-tick-core-2: #1E40AF;
+    --gk-tick-glow: rgba(37, 99, 235, 0.5);
 }
 
 @keyframes gk-tick-pulse {
@@ -3973,7 +3950,7 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
     flex-shrink: 0;
     vertical-align: middle;
     line-height: 0;
-    filter: drop-shadow(0 2px 5px rgba(15, 118, 110, 0.35));
+    filter: drop-shadow(0 2px 5px rgba(37, 99, 235, 0.45));
 }
 
 .trust-badge__glow,
@@ -3983,16 +3960,8 @@ body.app-shell-body .site-header:has(+ .site-main .premium-page) .site-logo-tagl
     border-radius: 50%;
     pointer-events: none;
     opacity: 0.75;
-    background: radial-gradient(circle, rgba(20, 184, 166, 0.45) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.45) 0%, transparent 70%);
     animation: gk-tick-pulse 2.6s ease-in-out infinite;
-}
-
-.safety-badge {
-    filter: drop-shadow(0 2px 5px rgba(124, 58, 237, 0.35));
-}
-
-.safety-badge__glow {
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.42) 0%, transparent 70%);
 }
 
 .trust-badge svg,

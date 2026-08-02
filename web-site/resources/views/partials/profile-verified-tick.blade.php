@@ -1,12 +1,10 @@
 @if($user->showsPremiumVerifiedTick())
 @php
     $size = $size ?? 'md';
-    $pkg = method_exists($user, 'activePackageType') ? $user->activePackageType() : null;
-    $tone = in_array($pkg, ['pro', 'gold', 'platinum'], true) ? $pkg : 'premium';
-    $tickUid = 'gkvt-'.($user->id ?? 'x').'-'.$size.'-'.substr(md5((string) ($user->id ?? uniqid('', true)).$tone.$size), 0, 6);
+    $tickUid = 'gkvt-'.($user->id ?? 'x').'-'.$size.'-'.substr(md5((string) ($user->id ?? uniqid('', true)).'blue'.$size), 0, 6);
 @endphp
 <span
-    class="profile-verified-tick profile-verified-tick--{{ $size }} profile-verified-tick--{{ $tone }}"
+    class="profile-verified-tick profile-verified-tick--{{ $size }} profile-verified-tick--blue"
     title="{{ __('app.premium.verified') }}"
     aria-label="{{ __('app.premium.verified') }}"
 >
