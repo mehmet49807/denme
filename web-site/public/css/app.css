@@ -4067,112 +4067,131 @@ a.member-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(
 
 .user-profile-actions {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.65rem;
+}
+.user-profile-actions__primary {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0.35rem;
+    min-width: 0;
+}
+.user-profile-actions__primary > a,
+.user-profile-actions__primary > form {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    display: flex;
+}
+.user-profile-actions__primary .profile-action-btn {
+    width: 100%;
+    justify-content: center;
 }
 .profile-action-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 0.85rem;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 2.35rem;
+    padding: 0.45rem 0.7rem;
     font-family: inherit;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    border-radius: 999px;
-    border: 1.5px solid var(--border);
-    background: rgba(251, 191, 36, 0.35);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(15, 23, 42, 0.04);
     color: var(--text);
     cursor: pointer;
     text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
 }
-.profile-action-btn--message { background: var(--gradient-sunset); color: #fff; border-color: transparent; }
-.profile-action-btn--message:hover { color: #fff; opacity: 0.92; }
-
-/* Kilitli mesaj → Premium CTA (renkli sunset) */
+.profile-action-btn--message {
+    background: var(--gradient-sunset);
+    color: #fff;
+    border-color: transparent;
+}
+.profile-action-btn--message:hover { color: #fff; filter: saturate(1.05); }
 .profile-action-btn--premium-msg {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    justify-content: flex-start;
-    gap: 0.75rem;
-    padding: 0.8rem 1rem;
-    border-radius: 18px;
-    border: 1px solid transparent;
-    background:
-        linear-gradient(135deg, #7C3AED 0%, #DB2777 38%, #F97316 72%, #FBBF24 100%);
+    background: linear-gradient(135deg, #db2777, #f97316);
     color: #fff;
-    box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.22) inset,
-        0 10px 28px rgba(219, 39, 119, 0.28),
-        0 4px 12px rgba(124, 58, 237, 0.18);
-    transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    border-color: transparent;
 }
-.profile-action-btn--premium-msg::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at 12% 30%, rgba(255, 255, 255, 0.28), transparent 42%),
-        radial-gradient(circle at 88% 80%, rgba(251, 191, 36, 0.35), transparent 40%);
-    pointer-events: none;
-}
-.profile-action-btn--premium-msg:hover {
-    color: #fff;
-    transform: translateY(-2px);
-    filter: saturate(1.08);
-    box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.28) inset,
-        0 14px 34px rgba(219, 39, 119, 0.34),
-        0 6px 16px rgba(124, 58, 237, 0.22);
-}
-.profile-action-btn--premium-msg:active {
-    transform: translateY(0);
-    filter: none;
-}
+.profile-action-btn--premium-msg:hover { color: #fff; filter: saturate(1.05); }
 .profile-action-icon--premium-msg {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    place-items: center;
-    width: 2.35rem;
-    height: 2.35rem;
-    border-radius: 13px;
-    flex-shrink: 0;
-    color: #7C3AED;
-    background: linear-gradient(160deg, #fff 0%, #FEF3C7 100%);
-    box-shadow:
-        0 0 0 2px rgba(255, 255, 255, 0.35),
-        0 6px 14px rgba(15, 23, 42, 0.18);
+    display: flex;
+    width: 16px;
+    height: 16px;
 }
 .profile-action-icon--premium-msg svg {
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 100%;
+    height: 100%;
     display: block;
 }
-.profile-action-btn--premium-msg .profile-action-copy {
+.profile-more {
     position: relative;
-    z-index: 1;
+    flex: 0 0 auto;
+    margin: 0;
+}
+.profile-more > summary {
+    list-style: none;
+}
+.profile-more > summary::-webkit-details-marker { display: none; }
+.profile-action-btn--more {
+    width: 2.35rem;
+    min-width: 2.35rem;
+    padding: 0.45rem;
+    background: rgba(15, 23, 42, 0.04);
+}
+.profile-more__menu {
+    position: absolute;
+    top: calc(100% + 0.3rem);
+    right: 0;
+    z-index: 40;
+    min-width: 10.5rem;
+    padding: 0.35rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface, #fff);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.12rem;
-    min-width: 0;
+    gap: 0.2rem;
+}
+.profile-more__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin: 0;
+    padding: 0.55rem 0.65rem;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 650;
     text-align: left;
+    cursor: pointer;
 }
-.profile-action-btn--premium-msg .profile-action-label {
-    font-size: 0.92rem;
-    font-weight: 800;
-    letter-spacing: -0.015em;
-    line-height: 1.25;
-    color: #fff;
-    text-shadow: 0 1px 2px rgba(76, 29, 149, 0.25);
+.profile-more__item:hover {
+    background: rgba(15, 23, 42, 0.06);
 }
-.profile-action-btn--premium-msg .profile-action-sub {
-    font-size: 0.74rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.92);
-    letter-spacing: 0.01em;
+.profile-more__item--danger { color: #dc2626; }
+.profile-more__item--danger:hover { background: rgba(220, 38, 38, 0.08); }
+.profile-block-form { margin: 0; }
+@media (max-width: 420px) {
+    .user-profile-actions__primary .profile-action-label {
+        display: none;
+    }
+    .user-profile-actions__primary .profile-action-btn {
+        padding: 0.5rem;
+    }
 }
 
 .profile-action-btn--unblock {
@@ -8203,7 +8222,6 @@ body.ig-story-open .app-sidebar {
     }
     .landing-hero-actions { flex-direction: column; }
     .landing-hero-actions .btn { width: 100%; }
-    .user-profile-actions { flex-direction: column; }
 }
 
 /* Çevrimiçi rozet */
@@ -9596,19 +9614,19 @@ html[data-theme="dark"] .btn-primary:disabled {
 /* Profil takip */
 .profile-follow-form { display: inline-flex; margin: 0; }
 .profile-action-btn--follow {
-    background: linear-gradient(135deg, rgba(29, 155, 240, 0.12), rgba(37, 99, 235, 0.16));
-    border-color: rgba(29, 155, 240, 0.35);
+    background: rgba(29, 155, 240, 0.1);
+    border-color: rgba(29, 155, 240, 0.28);
     color: #1d4ed8;
 }
 .profile-action-btn--follow.is-following {
-    background: linear-gradient(135deg, #1d9bf0, #2563eb);
+    background: #1d9bf0;
     border-color: transparent;
     color: #fff;
 }
 .profile-action-btn--follow .profile-action-icon--follow .theme-icon,
 .profile-action-btn--follow .profile-action-icon--follow svg {
-    width: 1.15rem;
-    height: 1.15rem;
+    width: 1rem;
+    height: 1rem;
     display: block;
 }
 .users-browse-follow-form { display: inline-flex; margin: 0; }
@@ -9647,8 +9665,8 @@ html[data-theme="dark"] .btn-primary:disabled {
 /* Profil beğeni / eşleşme */
 .profile-like-form { display: inline-flex; margin: 0; }
 .profile-action-btn--like {
-    background: linear-gradient(135deg, rgba(236, 72, 153, 0.14), rgba(251, 191, 36, 0.18));
-    border-color: rgba(236, 72, 153, 0.28);
+    background: rgba(236, 72, 153, 0.1);
+    border-color: rgba(236, 72, 153, 0.25);
     color: #9d174d;
 }
 .profile-action-btn--like.is-liked {

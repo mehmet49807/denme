@@ -81,122 +81,143 @@
                 </div>
             @else
             <div class="user-profile-actions">
-                @if($viewer->canSendMessages())
-                <a href="{{ route('messages.show', $user->username) }}" class="profile-action-btn profile-action-btn--message">
-                    <span class="profile-action-icon profile-action-icon--messages" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 6.5A3.5 3.5 0 018.5 3h7A3.5 3.5 0 0119 6.5v7A3.5 3.5 0 0115.5 17H10l-4.5 3.5V17H8.5A3.5 3.5 0 015 13.5v-7z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
-                        </svg>
-                    </span>
-                    <span class="profile-action-label">{{ __('app.profile.send_message') }}</span>
-                </a>
-                @elseif($viewer->gender === 'male')
-                <a
-                    href="{{ route('premium') }}"
-                    class="profile-action-btn profile-action-btn--premium-msg"
-                    title="{{ __('app.profile.message_locked_title') }}"
-                    aria-label="{{ __('app.profile.message_locked_title') }}"
-                >
-                    <span class="profile-action-icon profile-action-icon--premium-msg" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 7.2A3.2 3.2 0 018.2 4h7.6A3.2 3.2 0 0119 7.2v5.1A3.2 3.2 0 0115.8 15.5H11l-3.8 2.9v-2.9H8.2A3.2 3.2 0 015 12.3V7.2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-                            <path d="M16.2 3.2l1.05 1.9 2.1.3-1.5 1.5.35 2.1-1.95-1.05-1.95 1.05.35-2.1-1.5-1.5 2.1-.3 1.05-1.9z" fill="currentColor"/>
-                        </svg>
-                    </span>
-                    <span class="profile-action-copy">
+                <div class="user-profile-actions__primary">
+                    @if($viewer->canSendMessages())
+                    <a href="{{ route('messages.show', $user->username) }}" class="profile-action-btn profile-action-btn--message" title="{{ __('app.profile.send_message') }}">
+                        <span class="profile-action-icon profile-action-icon--messages" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 6.5A3.5 3.5 0 018.5 3h7A3.5 3.5 0 0119 6.5v7A3.5 3.5 0 0115.5 17H10l-4.5 3.5V17H8.5A3.5 3.5 0 015 13.5v-7z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                        <span class="profile-action-label">{{ __('app.profile.send_message') }}</span>
+                    </a>
+                    @elseif($viewer->gender === 'male')
+                    <a
+                        href="{{ route('premium') }}"
+                        class="profile-action-btn profile-action-btn--premium-msg"
+                        title="{{ __('app.profile.message_locked_title') }}"
+                        aria-label="{{ __('app.profile.message_locked_title') }}"
+                    >
+                        <span class="profile-action-icon profile-action-icon--premium-msg" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 6.5A3.5 3.5 0 018.5 3h7A3.5 3.5 0 0119 6.5v7A3.5 3.5 0 0115.5 17H10l-4.5 3.5V17H8.5A3.5 3.5 0 015 13.5v-7z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+                                <path d="M16.4 4.2l.7 1.3 1.4.2-1 1 .2 1.4-1.3-.7-1.3.7.2-1.4-1-1 1.4-.2.7-1.3z" fill="currentColor"/>
+                            </svg>
+                        </span>
                         <span class="profile-action-label">{{ __('app.profile.message_locked_cta') }}</span>
-                        <span class="profile-action-sub">{{ __('app.profile.message_locked_sub') }}</span>
-                    </span>
-                </a>
-                @endif
+                    </a>
+                    @endif
 
-                <form
-                    method="POST"
-                    action="{{ route('users.follow', $user->username) }}"
-                    class="profile-follow-form"
-                    data-profile-follow
-                    data-following="{{ !empty($viewerFollowing) ? '1' : '0' }}"
-                >
-                    @csrf
-                    <button
-                        type="submit"
-                        class="profile-action-btn profile-action-btn--follow {{ !empty($viewerFollowing) ? 'is-following' : '' }}"
-                        data-follow-btn
-                        aria-pressed="{{ !empty($viewerFollowing) ? 'true' : 'false' }}"
+                    <form
+                        method="POST"
+                        action="{{ route('users.follow', $user->username) }}"
+                        class="profile-follow-form"
+                        data-profile-follow
+                        data-following="{{ !empty($viewerFollowing) ? '1' : '0' }}"
                     >
-                        <span class="profile-action-icon profile-action-icon--follow" aria-hidden="true">
-                            @if(!empty($viewerFollowing))
-                                @include('partials.theme-icon', ['icon' => 'user-check'])
-                            @else
-                                @include('partials.theme-icon', ['icon' => 'user-plus'])
-                            @endif
-                        </span>
-                        <span class="profile-action-label" data-follow-label>
-                            {{ !empty($viewerFollowing) ? __('app.profile.following') : __('app.profile.follow') }}
-                        </span>
-                    </button>
-                </form>
+                        @csrf
+                        <button
+                            type="submit"
+                            class="profile-action-btn profile-action-btn--follow {{ !empty($viewerFollowing) ? 'is-following' : '' }}"
+                            data-follow-btn
+                            aria-pressed="{{ !empty($viewerFollowing) ? 'true' : 'false' }}"
+                            title="{{ !empty($viewerFollowing) ? __('app.profile.following') : __('app.profile.follow') }}"
+                        >
+                            <span class="profile-action-icon profile-action-icon--follow" aria-hidden="true">
+                                @if(!empty($viewerFollowing))
+                                    @include('partials.theme-icon', ['icon' => 'user-check'])
+                                @else
+                                    @include('partials.theme-icon', ['icon' => 'user-plus'])
+                                @endif
+                            </span>
+                            <span class="profile-action-label" data-follow-label>
+                                {{ !empty($viewerFollowing) ? __('app.profile.following') : __('app.profile.follow') }}
+                            </span>
+                        </button>
+                    </form>
 
-                <form
-                    method="POST"
-                    action="{{ route('users.like', $user->username) }}"
-                    class="profile-like-form"
-                    data-profile-like
-                    data-liked="{{ !empty($viewerLiked) ? '1' : '0' }}"
-                    data-matched="{{ !empty($isMatched) ? '1' : '0' }}"
-                >
-                    @csrf
-                    <button
-                        type="submit"
-                        class="profile-action-btn profile-action-btn--like {{ !empty($viewerLiked) ? 'is-liked' : '' }} {{ !empty($isMatched) ? 'is-matched' : '' }}"
-                        data-like-btn
-                        aria-pressed="{{ !empty($viewerLiked) ? 'true' : 'false' }}"
+                    <form
+                        method="POST"
+                        action="{{ route('users.like', $user->username) }}"
+                        class="profile-like-form"
+                        data-profile-like
+                        data-liked="{{ !empty($viewerLiked) ? '1' : '0' }}"
+                        data-matched="{{ !empty($isMatched) ? '1' : '0' }}"
                     >
-                        <span class="profile-action-icon profile-action-icon--like" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 20.5s-7.2-4.7-9.2-8.8C1.2 8.2 3.4 5 6.8 5c1.8 0 3.2.9 4 2.1.8-1.2 2.2-2.1 4-2.1 3.4 0 5.6 3.2 4 6.7-2 4.1-9.2 8.8-9.2 8.8z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+                        @csrf
+                        <button
+                            type="submit"
+                            class="profile-action-btn profile-action-btn--like {{ !empty($viewerLiked) ? 'is-liked' : '' }} {{ !empty($isMatched) ? 'is-matched' : '' }}"
+                            data-like-btn
+                            aria-pressed="{{ !empty($viewerLiked) ? 'true' : 'false' }}"
+                            title="@if(!empty($isMatched)){{ __('app.profile.matched') }}@elseif(!empty($viewerLiked)){{ __('app.profile.liked') }}@else{{ __('app.profile.like') }}@endif"
+                        >
+                            <span class="profile-action-icon profile-action-icon--like" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 20.5s-7.2-4.7-9.2-8.8C1.2 8.2 3.4 5 6.8 5c1.8 0 3.2.9 4 2.1.8-1.2 2.2-2.1 4-2.1 3.4 0 5.6 3.2 4 6.7-2 4.1-9.2 8.8-9.2 8.8z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="profile-action-label" data-like-label>
+                                @if(!empty($isMatched))
+                                    {{ __('app.profile.matched') }}
+                                @elseif(!empty($viewerLiked))
+                                    {{ __('app.profile.liked') }}
+                                @else
+                                    {{ __('app.profile.like') }}
+                                @endif
+                            </span>
+                        </button>
+                    </form>
+                </div>
+
+                <details class="profile-more">
+                    <summary
+                        class="profile-action-btn profile-action-btn--more"
+                        title="{{ __('app.profile.more_actions') }}"
+                        aria-label="{{ __('app.profile.more_actions') }}"
+                    >
+                        <span class="profile-action-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
                             </svg>
                         </span>
-                        <span class="profile-action-label" data-like-label>
-                            @if(!empty($isMatched))
-                                {{ __('app.profile.matched') }}
-                            @elseif(!empty($viewerLiked))
-                                {{ __('app.profile.liked') }}
-                            @else
-                                {{ __('app.profile.like') }}
-                            @endif
-                        </span>
-                    </button>
-                </form>
-
-                <button type="button" class="profile-action-btn profile-action-btn--report" id="openReportDialog" aria-haspopup="dialog">
-                    <span class="profile-action-icon profile-action-icon--report" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 9v4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-                            <path d="M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M10.3 3.6L2.6 17a2 2 0 001.7 3h15.4a2 2 0 001.7-3L13.7 3.6a2 2 0 00-3.4 0z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
-                        </svg>
-                    </span>
-                    <span class="profile-action-label">{{ __('app.profile.report') }}</span>
-                </button>
-
-                <form
-                    method="POST"
-                    action="{{ route('users.block', $user->username) }}"
-                    class="profile-block-form"
-                    data-block-confirm="{{ __('app.messages.block_confirm', ['name' => $user->username]) }}"
-                >
-                    @csrf
-                    <button type="submit" class="profile-action-btn profile-action-btn--block" title="{{ __('app.messages.block_title', ['name' => $user->username]) }}">
-                        <span class="profile-action-icon profile-action-icon--block" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.75"/>
-                                <path d="M5.5 5.5l13 13" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-                            </svg>
-                        </span>
-                        <span class="profile-action-label">{{ __('app.messages.block') }}</span>
-                    </button>
-                </form>
+                    </summary>
+                    <div class="profile-more__menu" role="menu">
+                        <button type="button" class="profile-more__item" id="openReportDialog" role="menuitem">
+                            <span class="profile-action-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 9v4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                                    <path d="M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M10.3 3.6L2.6 17a2 2 0 001.7 3h15.4a2 2 0 001.7-3L13.7 3.6a2 2 0 00-3.4 0z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            {{ __('app.profile.report') }}
+                        </button>
+                        <form
+                            method="POST"
+                            action="{{ route('users.block', $user->username) }}"
+                            class="profile-block-form"
+                            data-block-confirm="{{ __('app.messages.block_confirm', ['name' => $user->username]) }}"
+                            role="none"
+                        >
+                            @csrf
+                            <button
+                                type="submit"
+                                class="profile-more__item profile-more__item--danger"
+                                role="menuitem"
+                                title="{{ __('app.messages.block_title', ['name' => $user->username]) }}"
+                            >
+                                <span class="profile-action-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.75"/>
+                                        <path d="M5.5 5.5l13 13" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                                {{ __('app.messages.block') }}
+                            </button>
+                        </form>
+                    </div>
+                </details>
             </div>
             @endif
         </div>
@@ -285,11 +306,19 @@
 
     const dialog = document.getElementById('reportDialog');
     const openBtn = document.getElementById('openReportDialog');
+    const more = document.querySelector('.profile-more');
     if (!dialog || !openBtn) return;
 
-    openBtn.addEventListener('click', function () { dialog.showModal(); });
+    openBtn.addEventListener('click', function () {
+        if (more) more.open = false;
+        dialog.showModal();
+    });
     document.querySelectorAll('[data-close-report]').forEach(function (el) {
         el.addEventListener('click', function () { dialog.close(); });
+    });
+    document.addEventListener('click', function (e) {
+        if (!more || !more.open) return;
+        if (!more.contains(e.target)) more.open = false;
     });
 
     @if($errors->has('reason'))
