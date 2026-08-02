@@ -78,3 +78,4 @@
     bindAll();
     window.__gk_bindProfileFollow = bindAll;
 })();
+
