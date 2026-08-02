@@ -83,7 +83,7 @@ for f in app.css; do
     cp "/tmp/prod-assets/css/$f" "$CSS_DIR/$f"
   fi
 done
-for f in badges.js live-sync.js page-auto-refresh.js rt-client.js feed.js stories.js locations.js profile-photo.js profile-posts.js flagged-select.js chat.js; do
+for f in badges.js relative-time.js live-sync.js page-auto-refresh.js rt-client.js feed.js stories.js locations.js profile-photo.js profile-posts.js flagged-select.js chat.js; do
   if [[ ! -f "$JS_DIR/$f" && -f "/tmp/prod-assets/js/$f" ]]; then
     cp "/tmp/prod-assets/js/$f" "$JS_DIR/$f"
   fi
@@ -132,6 +132,7 @@ bundle_css "$CSS_DIR/feed-page.min.css" \
 echo "== minify individual JS =="
 for f in \
   badges.js \
+  relative-time.js \
   live-sync.js \
   page-auto-refresh.js \
   rt-client.js \
@@ -154,6 +155,7 @@ done
 
 echo "== core JS (every authenticated page) =="
 bundle_js "$JS_DIR/core.min.js" \
+  "$JS_DIR/relative-time.js" \
   "$JS_DIR/badges.js" \
   "$JS_DIR/live-sync.js" \
   "$JS_DIR/page-auto-refresh.js"

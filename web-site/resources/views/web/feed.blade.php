@@ -47,7 +47,17 @@
                         <button type="button" class="story-add-badge story-add-badge--compose" data-open-compose="story" aria-label="{{ __('app.feed.add_story') }}">+</button>
                         @endif
                     </div>
-                    <span class="story-username">{{ __('app.feed.your_story') }}</span>
+                    <span class="story-caption story-caption--own">
+                        <span class="story-username">{{ __('app.feed.your_story') }}</span>
+                        @if(!empty($ownStoryGroup['created_at']))
+                            <time
+                                class="story-shared-time"
+                                data-relative-time
+                                datetime="{{ $ownStoryGroup['created_at'] }}"
+                                title="{{ \Illuminate\Support\Carbon::parse($ownStoryGroup['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('d.m.Y H:i') }}"
+                            >{{ \Illuminate\Support\Carbon::parse($ownStoryGroup['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('H:i') }}</time>
+                        @endif
+                    </span>
                 </div>
                 @elseif($viewer->canPostStories())
                 <button type="button" class="story-item story-item--add" data-open-compose="story" aria-label="{{ __('app.feed.add_story') }}">
@@ -118,6 +128,14 @@
                                 >{{ $sticker['label'] ?? 'Premium' }}</span>
                             @endif
                         </span>
+                        @if(!empty($group['created_at']))
+                            <time
+                                class="story-shared-time"
+                                data-relative-time
+                                datetime="{{ $group['created_at'] }}"
+                                title="{{ \Illuminate\Support\Carbon::parse($group['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('d.m.Y H:i') }}"
+                            >{{ \Illuminate\Support\Carbon::parse($group['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('H:i') }}</time>
+                        @endif
                     </span>
                 </button>
                 @endforeach

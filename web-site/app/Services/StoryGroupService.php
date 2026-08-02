@@ -224,6 +224,12 @@ class StoryGroupService
             || (method_exists($user, 'isBoosted') && $user->isBoosted())
         );
 
+        $latestCreatedAt = $storyItems
+            ->map(fn ($story) => $story->created_at)
+            ->filter()
+            ->sortDesc()
+            ->first();
+
         return [
             'user_id' => $user->id,
             'username' => $isOfficial ? 'Gönül Köprüsü' : $user->username,
@@ -241,12 +247,20 @@ class StoryGroupService
             'show_premium_sticker' => $showPremium,
             'premium_sticker' => $premiumSticker,
             'is_featured' => $isFeatured,
-            'items' => $storyItems->map(fn ($story) => [
-                'id' => $story->id,
-                'media_url' => $story->media_url,
-                'media_type' => $story->is_video ? 'video' : 'image',
-                'audience' => $story->audience ?? null,
-            ])->values()->all(),
+            'created_at' => $latestCreatedAt ? $latestCreatedAt->toIso8601String() : null,
+            'items' => $storyItems->map(function ($story) {
+                $createdAt = $story->created_at;
+
+                return [
+                    'id' => $story->id,
+                    'media_url' => $story->media_url,
+                    'media_type' => $story->is_video ? 'video' : 'image',
+                    'audience' => $story->audience ?? null,
+                    'created_at' => $createdAt
+                        ? $createdAt->toIso8601String()
+                        : null,
+                ];
+            })->values()->all(),
         ];
     }
 }

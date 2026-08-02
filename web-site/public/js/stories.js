@@ -193,6 +193,30 @@
             .replace(/'/g, '&#39;');
     }
 
+    function updateStoryTime(item) {
+        if (!timeEl) return;
+        const iso = item && item.created_at ? item.created_at : null;
+        if (iso && window.gkRelativeTime && typeof window.gkRelativeTime.bind === 'function') {
+            window.gkRelativeTime.bind(timeEl, iso);
+            return;
+        }
+        if (iso) {
+            timeEl.setAttribute('datetime', iso);
+            timeEl.setAttribute('data-relative-time', iso);
+            const date = new Date(iso);
+            if (!Number.isNaN(date.getTime())) {
+                const pad = function (n) { return String(n).padStart(2, '0'); };
+                timeEl.textContent = pad(date.getHours()) + ':' + pad(date.getMinutes());
+                timeEl.setAttribute('title', pad(date.getDate()) + '.' + pad(date.getMonth() + 1) + '.' + date.getFullYear() + ' ' + timeEl.textContent);
+                return;
+            }
+        }
+        timeEl.removeAttribute('datetime');
+        timeEl.removeAttribute('data-relative-time');
+        timeEl.textContent = 'Az önce';
+        timeEl.removeAttribute('title');
+    }
+
     function renderUserLine(group) {
         if (!userLineEl) return;
 
@@ -242,7 +266,7 @@
 
         userLinkEl.href = group.profile_url || '#';
         userNameEl.textContent = group.username || '';
-        timeEl.textContent = 'Şimdi';
+        updateStoryTime(item);
         renderUserLine(group);
 
         if (group.profile_photo_url) {

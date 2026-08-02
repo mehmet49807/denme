@@ -15,7 +15,7 @@
                 <span class="ig-story-user-meta">
                     <strong id="igStoryUserName"></strong>
                     <span class="ig-story-user-line" id="igStoryUserLine" hidden></span>
-                    <small id="igStoryTime">{{ __('app.common.now') }}</small>
+                    <time class="ig-story-time" id="igStoryTime" data-relative-time datetime=""></time>
                 </span>
             </a>
             <div class="ig-story-header-actions">

@@ -316,6 +316,32 @@
     box-shadow: 0 0 0 2px #fff, 0 0 0 4px #7c3aed;
 }
 
+.story-shared-time,
+.ig-story-time {
+    display: block;
+    font-size: 0.56rem;
+    font-weight: 700;
+    color: var(--text-muted, #5c5470);
+    line-height: 1.15;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.ig-story-time {
+    font-size: 0.68rem;
+    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: left;
+    font-weight: 600;
+}
+
+.post-time {
+    letter-spacing: 0.01em;
+}
+
 /* Önerilen üyeler — kart + yatay kaydırma */
 .rec-strip {
     --rec-ink: #1f1520;
