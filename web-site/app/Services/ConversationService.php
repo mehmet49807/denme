@@ -142,7 +142,12 @@ class ConversationService
             ->keyBy('id');
 
         $partnerIds = array_keys($latestByPartner);
-        $partners = User::whereIn('id', $partnerIds)->get()->keyBy('id');
+        $partners = User::whereIn('id', $partnerIds)
+            ->with(['premiumSubscriptions' => function ($q) {
+                $q->active()->latest('expires_at');
+            }])
+            ->get()
+            ->keyBy('id');
 
         $unreadCounts = Message::query()
             ->where('receiver_id', $viewerId)

@@ -4864,9 +4864,63 @@ body.app-shell-body .conversation-row { border-bottom-color: var(--border); }
 }
 .conversation-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .conversation-body { flex: 1; min-width: 0; }
-.conversation-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.2rem; }
-.conversation-name { font-weight: 700; font-size: 0.95rem; }
-.conversation-time { font-size: 0.72rem; color: var(--text-light); flex-shrink: 0; }
+.conversation-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.18rem; }
+.conversation-name-wrap {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.28rem 0.35rem;
+    min-width: 0;
+    max-width: 100%;
+}
+.conversation-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 11rem;
+}
+.conversation-name-wrap .profile-member-badges,
+.conversation-name-wrap .profile-member-badges--compact {
+    margin: 0;
+    display: inline-flex;
+}
+.conversation-name-wrap .member-badge {
+    padding: 0.16rem 0.42rem;
+    font-size: 0.62rem;
+    gap: 0.22rem;
+}
+.conversation-name-wrap .member-badge-icon {
+    width: 0.78rem;
+    height: 0.78rem;
+}
+.conversation-time { font-size: 0.72rem; color: var(--text-light); flex-shrink: 0; margin-top: 0.15rem; }
+.conversation-meta-line {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-width: 0;
+    margin: 0 0 0.18rem;
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+.conversation-flag {
+    width: 14px;
+    height: 10px;
+    object-fit: cover;
+    border-radius: 2px;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+.conversation-location {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 .conversation-preview { font-size: 0.84rem; color: var(--text-muted); margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .conversation-sender { font-weight: 600; color: var(--text); }
 .conversation-badge {

@@ -1,9 +1,15 @@
 @if($conversations->isNotEmpty())
+@php $countryMeta = app(\App\Services\CountryMetaService::class); @endphp
 <ul class="conversation-list" data-inbox-swipe-list>
     @foreach($conversations as $conversation)
     @php
         $user = $conversation['user'];
         $isActive = isset($activeUsername) && $activeUsername === $user->username;
+        $country = trim((string) ($user->country ?: 'Türkiye'));
+        $city = trim((string) ($user->city ?: ''));
+        $iso = $countryMeta->isoForCountry($country !== '' ? $country : 'Türkiye');
+        $flagUrl = $countryMeta->flagUrl($iso !== '' ? $iso : 'tr');
+        $locationLabel = collect([$country, $city])->filter()->implode(' · ');
     @endphp
     <li class="conversation-row" data-username="{{ $user->username }}" data-swipe-row>
         <div class="conversation-swipe-rail" aria-hidden="true">
@@ -50,12 +56,20 @@
                 </div>
                 <div class="conversation-body">
                     <div class="conversation-top">
-                        <span class="conversation-name">{{ $user->username }}</span>
+                        <span class="conversation-name-wrap">
+                            <span class="conversation-name">{{ $user->username }}</span>
+                            @include('partials.profile-verified-tick', ['user' => $user, 'size' => 'sm'])
+                            @include('partials.profile-member-badges', ['user' => $user, 'compact' => true])
+                        </span>
                         @if($conversation['last_message_at'])
                             <time class="conversation-time" datetime="{{ $conversation['last_message_at']->toIso8601String() }}">
                                 {{ $conversation['last_message_at']->format('d.m.Y H:i') }}
                             </time>
                         @endif
+                    </div>
+                    <div class="conversation-meta-line">
+                        <img class="conversation-flag" src="{{ $flagUrl }}" alt="" width="16" height="12" loading="lazy" decoding="async">
+                        <span class="conversation-location">{{ $locationLabel }}</span>
                     </div>
                     <p class="conversation-preview">
                         @if($conversation['last_sender_name'])
