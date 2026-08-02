@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Follow;
 use App\Models\ProfileLike;
 use App\Models\User;
 use App\Services\GenderFilterService;
@@ -99,13 +100,24 @@ class LocationUsersPageController extends Controller
             ->paginate(24)
             ->withQueryString();
 
+        $pageUserIds = $users->getCollection()->pluck('id');
         $likedUserIds = [];
+        $followingUserIds = [];
         if (class_exists(ProfileLike::class)) {
             ProfileLike::ensureTable();
             $likedUserIds = ProfileLike::query()
                 ->where('liker_id', $viewer->id)
-                ->whereIn('liked_id', $users->getCollection()->pluck('id'))
+                ->whereIn('liked_id', $pageUserIds)
                 ->pluck('liked_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+        }
+        if (class_exists(Follow::class)) {
+            Follow::ensureTable();
+            $followingUserIds = Follow::query()
+                ->where('follower_id', $viewer->id)
+                ->whereIn('following_id', $pageUserIds)
+                ->pluck('following_id')
                 ->map(fn ($id) => (int) $id)
                 ->all();
         }
@@ -118,6 +130,7 @@ class LocationUsersPageController extends Controller
             'district' => $district,
             'users' => $users,
             'likedUserIds' => $likedUserIds,
+            'followingUserIds' => $followingUserIds,
             'locationLabel' => $locationLabel,
             'showResults' => true,
         ]);

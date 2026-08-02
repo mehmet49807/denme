@@ -132,7 +132,32 @@ class NotificationService
             return $this->mapMatchNotification($notification);
         }
 
+        if ($notification->type === UserNotification::TYPE_FOLLOW_BACK) {
+            return $this->mapFollowBackNotification($notification);
+        }
+
         return $this->mapLikeNotification($notification);
+    }
+
+    private function mapFollowBackNotification(UserNotification $notification): array
+    {
+        $actorName = $notification->actor?->username ?? 'Bir üye';
+        $profileUrl = $notification->actor?->username
+            ? url('/users/'.$notification->actor->username)
+            : null;
+
+        return [
+            'id' => 'follow-back-'.$notification->id,
+            'type' => UserNotification::TYPE_FOLLOW_BACK,
+            'title' => 'Geri takip',
+            'message_text' => $actorName.' sizi geri takip etti.',
+            'created_at' => $notification->created_at,
+            'is_read' => $notification->read_at !== null,
+            'actor_id' => $notification->actor_id,
+            'actor_username' => $notification->actor?->username,
+            'profile_url' => $profileUrl,
+            'post_id' => null,
+        ];
     }
 
     private function mapMessageNotification(UserNotification $notification): array
@@ -454,6 +479,57 @@ class NotificationService
                     'actor_id' => (string) $liker->id,
                     'actor_username' => $canReveal ? (string) $liker->username : '',
                     'url' => '/eslesmeler?tab=incoming',
+                ]
+            );
+        } catch (\Throwable) {
+            //
+        }
+    }
+
+    /**
+     * Geri takip bildirimi: yalnızca premium (veya admin) alıcıya gider.
+     * $actor = geri takip eden, $receiver = orijinal takipçi (bildirim alan).
+     */
+    public function notifyFollowBack(User $actor, User $receiver): void
+    {
+        try {
+            if ($actor->id === $receiver->id) {
+                return;
+            }
+
+            $canReceive = $receiver->isAdmin()
+                || (method_exists($receiver, 'isPremium') && $receiver->isPremium());
+
+            if (! $canReceive) {
+                return;
+            }
+
+            $body = $actor->username.' sizi geri takip etti.';
+
+            if ($this->userNotificationsTableExists()) {
+                try {
+                    UserNotification::create([
+                        'user_id' => $receiver->id,
+                        'actor_id' => $actor->id,
+                        'type' => UserNotification::TYPE_FOLLOW_BACK,
+                        'body' => $body,
+                        'created_at' => now(),
+                    ]);
+                    $this->forgetSidebarBadges($receiver->id);
+                } catch (\Throwable) {
+                    //
+                }
+            }
+
+            $this->pushToUser(
+                $receiver,
+                'Geri takip',
+                $body,
+                [
+                    'type' => UserNotification::TYPE_FOLLOW_BACK,
+                    'actor_id' => (string) $actor->id,
+                    'actor_username' => (string) $actor->username,
+                    'url' => '/users/'.$actor->username,
                 ]
             );
         } catch (\Throwable) {

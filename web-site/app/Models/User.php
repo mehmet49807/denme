@@ -447,19 +447,36 @@ class User extends Authenticatable
     }
 
     /**
-     * Gönderi akışında paket + boost önceliği (Platinum / Gold öne çıkar).
+     * Gönderi akışında takip edilenler → boost → paket → tarih.
      *
      * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\Post>  $query
+     * @param  list<int>|null  $followedUserIds
      * @return \Illuminate\Database\Eloquent\Builder<\App\Models\Post>
      */
-    public static function applyContentRanking($query, string $postsTable = 'posts')
+    public static function applyContentRanking($query, string $postsTable = 'posts', ?array $followedUserIds = null)
     {
         $now = now()->toDateTimeString();
+        $followedUserIds = array_values(array_unique(array_filter(
+            array_map('intval', $followedUserIds ?? []),
+            fn (int $id) => $id > 0
+        )));
 
         $query = $query
             ->join('users', 'users.id', '=', $postsTable.'.user_id')
-            ->select($postsTable.'.*')
-            ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now]);
+            ->select($postsTable.'.*');
+
+        if ($followedUserIds !== []) {
+            $placeholders = implode(',', array_fill(0, count($followedUserIds), '?'));
+            $query->orderByRaw(
+                "CASE WHEN {$postsTable}.user_id IN ({$placeholders}) THEN 0 ELSE 1 END",
+                $followedUserIds
+            );
+        }
+
+        $query->orderByRaw(
+            'CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END',
+            [$now]
+        );
 
         try {
             return static::applyPackageRankingJoin($query, 'users.id')

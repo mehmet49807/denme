@@ -122,7 +122,11 @@
 
     @if($users->isNotEmpty())
     <div class="users-browse-grid">
-        @include('partials.users-browse-grid-items', ['users' => $users, 'likedUserIds' => $likedUserIds ?? []])
+        @include('partials.users-browse-grid-items', [
+            'users' => $users,
+            'likedUserIds' => $likedUserIds ?? [],
+            'followingUserIds' => $followingUserIds ?? [],
+        ])
     </div>
 
     <div class="users-browse-pagination">

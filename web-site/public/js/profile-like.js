@@ -79,5 +79,10 @@
         });
     }
 
-    document.querySelectorAll('[data-profile-like]').forEach(bindForm);
+    function bindAll(root) {
+        (root || document).querySelectorAll('[data-profile-like]').forEach(bindForm);
+    }
+
+    bindAll();
+    window.__gk_bindProfileLike = bindAll;
 })();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Follow;
 use App\Models\ProfileLike;
 use App\Models\User;
 use App\Services\GenderFilterService;
@@ -46,21 +47,35 @@ class SearchController extends Controller
         }
 
         $likedUserIds = [];
+        $followingUserIds = [];
         $viewer = $request->user();
-        if ($viewer && $users && class_exists(ProfileLike::class)) {
-            ProfileLike::ensureTable();
-            $likedUserIds = ProfileLike::query()
-                ->where('liker_id', $viewer->id)
-                ->whereIn('liked_id', $users->getCollection()->pluck('id'))
-                ->pluck('liked_id')
-                ->map(fn ($id) => (int) $id)
-                ->all();
+        if ($viewer && $users) {
+            $pageUserIds = $users->getCollection()->pluck('id');
+            if (class_exists(ProfileLike::class)) {
+                ProfileLike::ensureTable();
+                $likedUserIds = ProfileLike::query()
+                    ->where('liker_id', $viewer->id)
+                    ->whereIn('liked_id', $pageUserIds)
+                    ->pluck('liked_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+            }
+            if (class_exists(Follow::class)) {
+                Follow::ensureTable();
+                $followingUserIds = Follow::query()
+                    ->where('follower_id', $viewer->id)
+                    ->whereIn('following_id', $pageUserIds)
+                    ->pluck('following_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+            }
         }
 
         return view('web.search', [
             'q' => $q,
             'users' => $users,
             'likedUserIds' => $likedUserIds,
+            'followingUserIds' => $followingUserIds,
             'emptyMessage' => $emptyMessage,
             'suggestUrl' => route('search.suggest'),
         ]);

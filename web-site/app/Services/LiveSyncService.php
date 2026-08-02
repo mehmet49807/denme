@@ -71,13 +71,18 @@ class LiveSyncService
         }
 
         $visible = $this->genderFilter->visibleUsersQuery($viewer);
+        $followedIds = class_exists(\App\Models\Follow::class)
+            ? \App\Models\Follow::followingIdsFor((int) $viewer->id)->all()
+            : [];
 
         return User::applyContentRanking(
             Post::query()
                 ->with(['user.premiumSubscriptions' => fn ($q) => $q->active()->latest('expires_at')])
                 ->where('posts.is_active', true)
                 ->where('posts.created_at', '>', $since)
-                ->whereIn('posts.user_id', (clone $visible)->select('users.id'))
+                ->whereIn('posts.user_id', (clone $visible)->select('users.id')),
+            'posts',
+            $followedIds
         )
             ->limit(20)
             ->get()

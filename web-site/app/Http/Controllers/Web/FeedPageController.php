@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Follow;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\Referral;
@@ -27,13 +28,17 @@ class FeedPageController extends Controller
     {
         $viewer = $request->user();
         $visibleQuery = $this->genderFilter->visibleUsersQuery($viewer);
+        Follow::ensureTable();
+        $followedIds = Follow::followingIdsFor((int) $viewer->id)->all();
 
         $posts = User::applyContentRanking(
             Post::with(['user.premiumSubscriptions' => function ($q) {
                 $q->active()->latest('expires_at');
             }])
                 ->where('posts.is_active', true)
-                ->whereIn('posts.user_id', (clone $visibleQuery)->select('users.id'))
+                ->whereIn('posts.user_id', (clone $visibleQuery)->select('users.id')),
+            'posts',
+            $followedIds
         )->simplePaginate(12)->withQueryString();
 
         $likedPostIds = Like::where('user_id', $viewer->id)

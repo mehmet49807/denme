@@ -33,7 +33,11 @@
 @if($users && $users->total() > 0)
     <p class="search-page-count">{{ number_format($users->total()) }} üye</p>
     <div class="users-browse-grid search-page-grid">
-        @include('partials.users-browse-grid-items', ['users' => $users, 'likedUserIds' => $likedUserIds ?? []])
+        @include('partials.users-browse-grid-items', [
+            'users' => $users,
+            'likedUserIds' => $likedUserIds ?? [],
+            'followingUserIds' => $followingUserIds ?? [],
+        ])
     </div>
     @if($users->hasPages())
         <div class="users-browse-pagination">

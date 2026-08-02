@@ -9593,6 +9593,57 @@ html[data-theme="dark"] .btn-primary:disabled {
 }
 .feed-infinite-sentinel { height: 1px; }
 
+/* Profil takip */
+.profile-follow-form { display: inline-flex; margin: 0; }
+.profile-action-btn--follow {
+    background: linear-gradient(135deg, rgba(29, 155, 240, 0.12), rgba(37, 99, 235, 0.16));
+    border-color: rgba(29, 155, 240, 0.35);
+    color: #1d4ed8;
+}
+.profile-action-btn--follow.is-following {
+    background: linear-gradient(135deg, #1d9bf0, #2563eb);
+    border-color: transparent;
+    color: #fff;
+}
+.profile-action-btn--follow .profile-action-icon--follow .theme-icon,
+.profile-action-btn--follow .profile-action-icon--follow svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    display: block;
+}
+.users-browse-follow-form { display: inline-flex; margin: 0; }
+.users-browse-follow-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.42rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(29, 155, 240, 0.35);
+    background: rgba(29, 155, 240, 0.1);
+    color: #1d4ed8;
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 750;
+    cursor: pointer;
+}
+.users-browse-follow-btn.is-following {
+    background: linear-gradient(135deg, #1d9bf0, #2563eb);
+    border-color: transparent;
+    color: #fff;
+}
+.users-browse-follow-btn svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    display: block;
+}
+.notification-icon--follow,
+.notification-tag--follow {
+    color: #1d4ed8;
+}
+.notification-tag--follow {
+    background: rgba(29, 155, 240, 0.12);
+}
+
 /* Profil beğeni / eşleşme */
 .profile-like-form { display: inline-flex; margin: 0; }
 .profile-action-btn--like {
@@ -9905,10 +9956,23 @@ html[data-theme="dark"] .btn-primary:disabled {
 }
 .users-browse-card__actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto 1fr 1fr;
     gap: 0.35rem;
     width: 100%;
     margin-top: 0.65rem;
+    align-items: stretch;
+}
+.users-browse-follow-form { width: auto; }
+.users-browse-follow-btn {
+    min-height: 2rem;
+    padding: 0.3rem 0.55rem;
+    width: 100%;
+    justify-content: center;
+}
+.users-browse-follow-btn .profile-action-icon--follow .theme-icon,
+.users-browse-follow-btn .profile-action-icon--follow svg {
+    width: 0.95rem;
+    height: 0.95rem;
 }
 .users-browse-like-form { margin: 0; }
 .users-browse-like-btn {

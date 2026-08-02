@@ -24,6 +24,7 @@ use App\Http\Controllers\Web\PremiumPageController;
 use App\Http\Controllers\Web\ProfilePageController;
 use App\Http\Controllers\Web\StoryPageController;
 use App\Http\Controllers\Web\UserProfilePageController;
+use App\Http\Controllers\Web\FollowController;
 use App\Http\Controllers\Web\ProfileLikeController;
 use App\Http\Controllers\Web\AppDemoController;
 use App\Http\Controllers\Web\AppAuthController;
@@ -473,6 +474,7 @@ Route::middleware(['auth', 'locale'])->group(function () {
     Route::get('/users', [UserProfilePageController::class, 'index'])->name('users.index');
     Route::get('/users/{username}', [UserProfilePageController::class, 'show'])->name('users.show');
     Route::post('/users/{username}/like', [ProfileLikeController::class, 'toggle'])->middleware('throttle:60,1,profile-like')->name('users.like');
+    Route::post('/users/{username}/follow', [FollowController::class, 'toggle'])->middleware('throttle:60,1,profile-follow')->name('users.follow');
     Route::get('/eslesmeler', [ProfileLikeController::class, 'matches'])->name('matches.index');
     Route::post('/profile/photo-verify', [ProfilePageController::class, 'submitPhotoVerification'])->middleware('throttle:10,1,photo-verify')->name('profile.photo-verify');
     Route::post('/users/{username}/report', [UserProfilePageController::class, 'report'])->middleware('throttle:10,1,users-report')->name('users.report');

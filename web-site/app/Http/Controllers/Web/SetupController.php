@@ -953,6 +953,10 @@ HTML;
                 $ok = \App\Models\ProfileLike::ensureTable();
                 $lines[] = 'profile_likes ensureTable: '.($ok ? 'OK' : 'HATA');
             }
+            if (class_exists(\App\Models\Follow::class)) {
+                $ok = \App\Models\Follow::ensureTable();
+                $lines[] = 'follows ensureTable: '.($ok ? 'OK' : 'HATA');
+            }
             if (class_exists(\App\Support\PhotoVerification::class)) {
                 \App\Support\PhotoVerification::ensureColumns();
                 $lines[] = 'photo_verify columns: ensureColumns çağrıldı';
@@ -962,6 +966,7 @@ HTML;
                 $lines[] = 'stories.audience: ensureAudienceColumn çağrıldı';
             }
             $lines[] = 'profile_likes: '.(\Illuminate\Support\Facades\Schema::hasTable('profile_likes') ? 'var' : 'YOK');
+            $lines[] = 'follows: '.(\Illuminate\Support\Facades\Schema::hasTable('follows') ? 'var' : 'YOK');
             foreach (['photo_verify_status', 'photo_verify_selfie_url', 'profile_verified_at'] as $column) {
                 $lines[] = "users.{$column}: ".(\Illuminate\Support\Facades\Schema::hasColumn('users', $column) ? 'var' : 'YOK');
             }

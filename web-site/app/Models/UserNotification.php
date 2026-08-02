@@ -10,6 +10,7 @@ class UserNotification extends Model
     public const TYPE_POST_LIKE = 'post_like';
     public const TYPE_PROFILE_LIKE = 'profile_like';
     public const TYPE_MATCH = 'match';
+    public const TYPE_FOLLOW_BACK = 'follow_back';
     public const TYPE_NEW_MESSAGE = 'new_message';
     public const TYPE_REPORT_UPDATE = 'report_update';
     public const TYPE_MODERATION = 'moderation';

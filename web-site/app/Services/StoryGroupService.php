@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Follow;
 use App\Models\Story;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -94,14 +95,25 @@ class StoryGroupService
         $premiumWith = ['user.premiumSubscriptions' => function ($q) {
             $q->active()->latest('expires_at');
         }];
+        $followedIds = Follow::followingIdsFor((int) $viewer->id)->all();
 
         try {
-            // Önce paket / boost ile sırala — görüntüleme herkese açık, sıralama sadece öne çıkarma.
+            // Takip edilenler önde; diğerleri de görünür — sonra boost / paket.
             $query = Story::active()
                 ->with($premiumWith)
                 ->join('users', 'users.id', '=', 'stories.user_id')
                 ->where('stories.user_id', '!=', $viewer->id)
-                ->where($this->memberAudienceConstraint())
+                ->where($this->memberAudienceConstraint());
+
+            if ($followedIds !== []) {
+                $placeholders = implode(',', array_fill(0, count($followedIds), '?'));
+                $query->orderByRaw(
+                    "CASE WHEN stories.user_id IN ({$placeholders}) THEN 0 ELSE 1 END",
+                    $followedIds
+                );
+            }
+
+            $query
                 ->orderByRaw('CASE WHEN users.boost_until IS NOT NULL AND users.boost_until > ? THEN 0 ELSE 1 END', [$now])
                 ->orderByRaw(User::packageTypeOrderSql('users.id'), [$now])
                 ->orderByDesc('stories.created_at')

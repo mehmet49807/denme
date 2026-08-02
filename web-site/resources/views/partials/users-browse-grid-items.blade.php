@@ -1,5 +1,6 @@
 @php
     $likedUserIds = collect($likedUserIds ?? [])->map(fn ($id) => (int) $id)->all();
+    $followingUserIds = collect($followingUserIds ?? [])->map(fn ($id) => (int) $id)->all();
 @endphp
 @foreach($users as $user)
     @php
@@ -14,6 +15,7 @@
         $age = method_exists($user, 'age') ? $user->age() : null;
         $place = collect([$user->city, $user->district])->filter()->implode(', ');
         $isLiked = in_array((int) $user->id, $likedUserIds, true);
+        $isFollowing = in_array((int) $user->id, $followingUserIds, true);
         $isBoosted = method_exists($user, 'isBoosted') && $user->isBoosted();
     @endphp
     <article class="users-browse-card users-browse-card--{{ $pkgClass }} {{ $isBoosted ? 'users-browse-card--boost' : '' }}">
@@ -63,6 +65,32 @@
             </div>
         </a>
         <div class="users-browse-card__actions">
+            <form
+                method="POST"
+                action="{{ route('users.follow', $user->username) }}"
+                class="users-browse-follow-form"
+                data-profile-follow
+                data-following="{{ $isFollowing ? '1' : '0' }}"
+            >
+                @csrf
+                <button
+                    type="submit"
+                    class="users-browse-follow-btn {{ $isFollowing ? 'is-following' : '' }}"
+                    data-follow-btn
+                    aria-pressed="{{ $isFollowing ? 'true' : 'false' }}"
+                    title="{{ $isFollowing ? __('app.profile.following') : __('app.profile.follow') }}"
+                    aria-label="{{ $isFollowing ? __('app.profile.following') : __('app.profile.follow') }}"
+                >
+                    <span class="profile-action-icon profile-action-icon--follow" aria-hidden="true">
+                        @if($isFollowing)
+                            @include('partials.theme-icon', ['icon' => 'user-check'])
+                        @else
+                            @include('partials.theme-icon', ['icon' => 'user-plus'])
+                        @endif
+                    </span>
+                    <span data-follow-label>{{ $isFollowing ? __('app.profile.following') : __('app.profile.follow') }}</span>
+                </button>
+            </form>
             <form method="POST" action="{{ route('users.like', $user->username) }}" class="users-browse-like-form" data-profile-like data-liked="{{ $isLiked ? '1' : '0' }}">
                 @csrf
                 <button type="submit" class="users-browse-like-btn {{ $isLiked ? 'is-liked' : '' }}" data-like-btn aria-pressed="{{ $isLiked ? 'true' : 'false' }}">

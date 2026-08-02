@@ -112,6 +112,33 @@
 
                 <form
                     method="POST"
+                    action="{{ route('users.follow', $user->username) }}"
+                    class="profile-follow-form"
+                    data-profile-follow
+                    data-following="{{ !empty($viewerFollowing) ? '1' : '0' }}"
+                >
+                    @csrf
+                    <button
+                        type="submit"
+                        class="profile-action-btn profile-action-btn--follow {{ !empty($viewerFollowing) ? 'is-following' : '' }}"
+                        data-follow-btn
+                        aria-pressed="{{ !empty($viewerFollowing) ? 'true' : 'false' }}"
+                    >
+                        <span class="profile-action-icon profile-action-icon--follow" aria-hidden="true">
+                            @if(!empty($viewerFollowing))
+                                @include('partials.theme-icon', ['icon' => 'user-check'])
+                            @else
+                                @include('partials.theme-icon', ['icon' => 'user-plus'])
+                            @endif
+                        </span>
+                        <span class="profile-action-label" data-follow-label>
+                            {{ !empty($viewerFollowing) ? __('app.profile.following') : __('app.profile.follow') }}
+                        </span>
+                    </button>
+                </form>
+
+                <form
+                    method="POST"
                     action="{{ route('users.like', $user->username) }}"
                     class="profile-like-form"
                     data-profile-like

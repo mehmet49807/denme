@@ -158,6 +158,12 @@
         const root = document.querySelector('.users-browse-grid');
         if (!root || !html || isUsersSearchActive()) return;
         root.innerHTML = html;
+        if (typeof window.__gk_bindProfileFollow === 'function') {
+            window.__gk_bindProfileFollow(root);
+        }
+        if (typeof window.__gk_bindProfileLike === 'function') {
+            window.__gk_bindProfileLike(root);
+        }
     }
 
     function applyPremiumState(premium) {

@@ -83,7 +83,7 @@ for f in app.css; do
     cp "/tmp/prod-assets/css/$f" "$CSS_DIR/$f"
   fi
 done
-for f in badges.js relative-time.js live-sync.js page-auto-refresh.js rt-client.js feed.js stories.js locations.js profile-photo.js profile-posts.js flagged-select.js chat.js; do
+for f in badges.js relative-time.js live-sync.js page-auto-refresh.js rt-client.js feed.js stories.js locations.js profile-photo.js profile-posts.js profile-like.js profile-follow.js flagged-select.js chat.js; do
   if [[ ! -f "$JS_DIR/$f" && -f "/tmp/prod-assets/js/$f" ]]; then
     cp "/tmp/prod-assets/js/$f" "$JS_DIR/$f"
   fi
@@ -145,6 +145,7 @@ for f in \
   mobile-bottom-nav.js \
   profile-settings.js \
   profile-like.js \
+  profile-follow.js \
   flagged-select.js \
   chat.js \
   pwa-install.js \
@@ -167,6 +168,7 @@ bundle_js "$JS_DIR/app-shell.min.js" \
   "$JS_DIR/flagged-select.js" \
   "$JS_DIR/locations.js" \
   "$JS_DIR/profile-like.js" \
+  "$JS_DIR/profile-follow.js" \
   "$JS_DIR/mobile-bottom-nav.js"
 
 echo "== feed-page JS bundle =="

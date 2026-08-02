@@ -129,19 +129,31 @@ class LiveSyncController extends Controller
                 ))->values()->all(),
                 'total' => $users->count(),
             ];
+            $pageUserIds = $users->pluck('id');
             $likedUserIds = [];
+            $followingUserIds = [];
             if (class_exists(\App\Models\ProfileLike::class)) {
                 \App\Models\ProfileLike::ensureTable();
                 $likedUserIds = \App\Models\ProfileLike::query()
                     ->where('liker_id', $viewer->id)
-                    ->whereIn('liked_id', $users->pluck('id'))
+                    ->whereIn('liked_id', $pageUserIds)
                     ->pluck('liked_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+            }
+            if (class_exists(\App\Models\Follow::class)) {
+                \App\Models\Follow::ensureTable();
+                $followingUserIds = \App\Models\Follow::query()
+                    ->where('follower_id', $viewer->id)
+                    ->whereIn('following_id', $pageUserIds)
+                    ->pluck('following_id')
                     ->map(fn ($id) => (int) $id)
                     ->all();
             }
             $data['users_html'] = view('partials.users-browse-grid-items', [
                 'users' => $users,
                 'likedUserIds' => $likedUserIds,
+                'followingUserIds' => $followingUserIds,
             ])->render();
         }
 
