@@ -13,6 +13,7 @@
     const mediaEl = document.getElementById('igStoryMedia');
     const userLinkEl = document.getElementById('igStoryUserLink');
     const userNameEl = document.getElementById('igStoryUserName');
+    const userLineEl = document.getElementById('igStoryUserLine');
     const userAvatarEl = document.getElementById('igStoryUserAvatar');
     const timeEl = document.getElementById('igStoryTime');
     const replyEl = document.getElementById('igStoryReply');
@@ -172,14 +173,62 @@
         if (!replyEl) return;
         const group = groups[groupIndex];
         const own = !!group?.is_own;
-        replyEl.hidden = own;
+        const official = !!group?.is_official;
+        replyEl.hidden = own || official;
         if (replyStatus) {
             replyStatus.hidden = true;
             replyStatus.textContent = '';
         }
-        if (replyInput && !own) {
+        if (replyInput && !own && !official) {
             replyInput.value = '';
         }
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function renderUserLine(group) {
+        if (!userLineEl) return;
+
+        const parts = [];
+        if (group.flag_url) {
+            parts.push(
+                '<img class="ig-story-flag" src="' + escapeHtml(group.flag_url) + '" alt="" width="16" height="12" loading="lazy" decoding="async">'
+            );
+        }
+        if (group.city) {
+            parts.push('<span class="ig-story-city">' + escapeHtml(group.city) + '</span>');
+        } else if (group.country && !group.is_official) {
+            parts.push('<span class="ig-story-city">' + escapeHtml(group.country) + '</span>');
+        }
+
+        const sticker = group.premium_sticker;
+        if (group.show_premium_sticker && sticker) {
+            const type = escapeHtml(sticker.type || 'premium');
+            const label = escapeHtml(sticker.label || 'Premium');
+            const from = escapeHtml(sticker.from || '#7c3aed');
+            const to = escapeHtml(sticker.to || '#db2777');
+            parts.push(
+                '<span class="ig-story-premium-sticker member-badge--' + type + '" style="--member-badge-from:' + from + ';--member-badge-to:' + to + ';">' +
+                    label +
+                '</span>'
+            );
+        }
+
+        if (!parts.length) {
+            userLineEl.hidden = true;
+            userLineEl.innerHTML = '';
+            return;
+        }
+
+        userLineEl.hidden = false;
+        userLineEl.innerHTML = parts.join('<span class="ig-story-sep" aria-hidden="true">·</span>');
     }
 
     function renderStory() {
@@ -191,15 +240,19 @@
         buildProgressBars(group.items.length);
         resetFills();
 
-        userLinkEl.href = group.profile_url;
-        userNameEl.textContent = group.username;
+        userLinkEl.href = group.profile_url || '#';
+        userNameEl.textContent = group.username || '';
         timeEl.textContent = 'Şimdi';
+        renderUserLine(group);
 
         if (group.profile_photo_url) {
             userAvatarEl.innerHTML = '<img src="' + group.profile_photo_url + '" alt="">';
         } else {
-            userAvatarEl.textContent = group.username.charAt(0).toUpperCase();
+            userAvatarEl.textContent = (group.username || '?').charAt(0).toUpperCase();
         }
+
+        viewer.classList.toggle('ig-story-viewer--official', !!group.is_official);
+        viewer.classList.toggle('ig-story-viewer--premium', !!group.show_premium_sticker);
 
         mediaEl.innerHTML = '';
         if (item.media_type === 'video') {

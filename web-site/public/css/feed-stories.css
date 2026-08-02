@@ -138,14 +138,182 @@
     background: rgba(15, 23, 42, 0.08);
 }
 
-/* Gold / Platinum hikaye öne çıkarma */
-.story-ring--featured {
+/* Gold / Platinum hikaye öne çıkarma (üye) */
+.story-ring--featured:not(.story-ring--official) {
     box-shadow: 0 0 0 2px #fff, 0 0 0 4px #f59e0b, 0 4px 14px rgba(245, 158, 11, 0.35);
 }
 
-.story-item--featured .story-username {
+.story-item--featured:not(.story-item--official) .story-username {
     font-weight: 800;
     color: #b45309;
+}
+
+/* Yönetici / resmi hikâye — üye halkalarından ayrı özel renk */
+.story-ring--official.story-ring--unseen {
+    background: linear-gradient(135deg, #7c3aed 0%, #db2777 42%, #0f766e 100%);
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(124, 58, 237, 0.85), 0 6px 16px rgba(219, 39, 119, 0.35);
+}
+
+.story-ring--official.story-ring--seen {
+    background: linear-gradient(135deg, #a78bfa 0%, #f9a8d4 50%, #5eead4 100%);
+    box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(124, 58, 237, 0.35);
+}
+
+.story-item--official {
+    min-width: 84px;
+    max-width: 92px;
+}
+
+.story-item--official .story-username {
+    font-weight: 800;
+    color: #6d28d9;
+}
+
+/* Şerit altı: kullanıcı adı · bayrak · şehir · premium */
+.story-item {
+    min-width: 78px;
+    max-width: 92px;
+}
+
+.story-caption {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.12rem;
+    width: 100%;
+    max-width: 92px;
+}
+
+.story-caption .story-username {
+    max-width: 100%;
+}
+
+.story-meta-line {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.18rem;
+    max-width: 100%;
+    min-height: 0.9rem;
+    overflow: hidden;
+}
+
+.story-flag {
+    width: 12px;
+    height: 9px;
+    object-fit: cover;
+    border-radius: 2px;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+.story-city {
+    font-size: 0.58rem;
+    font-weight: 600;
+    color: var(--text-muted, #5c5470);
+    max-width: 3.6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.1;
+}
+
+.story-premium-sticker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+    background: linear-gradient(135deg, var(--member-badge-from, #7c3aed) 0%, var(--member-badge-to, #db2777) 100%);
+}
+
+.story-premium-sticker--ring {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    z-index: 4;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+}
+
+.story-premium-sticker--ring .story-premium-sticker__icon,
+.story-premium-sticker--ring .theme-icon,
+.story-premium-sticker--ring svg {
+    width: 10px;
+    height: 10px;
+    display: block;
+}
+
+.story-premium-sticker--label {
+    font-size: 0.52rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    padding: 0.12rem 0.28rem;
+    border-radius: 999px;
+    max-width: 3.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.story-ring {
+    position: relative;
+}
+
+/* Tam ekran viewer üst satır */
+.ig-story-user-line {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.28rem;
+    margin-top: 0.1rem;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.ig-story-user-line[hidden] {
+    display: none !important;
+}
+
+.ig-story-flag {
+    width: 14px;
+    height: 10px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.ig-story-city {
+    font-weight: 600;
+    max-width: 8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ig-story-sep {
+    opacity: 0.55;
+}
+
+.ig-story-premium-sticker {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.12rem 0.4rem;
+    border-radius: 999px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #fff;
+    background: linear-gradient(135deg, var(--member-badge-from, #7c3aed) 0%, var(--member-badge-to, #db2777) 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.ig-story-viewer--official .ig-story-user-avatar {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #7c3aed;
 }
 
 /* Önerilen üyeler — kart + yatay kaydırma */

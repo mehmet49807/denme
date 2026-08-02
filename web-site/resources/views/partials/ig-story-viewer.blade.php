@@ -14,6 +14,7 @@
                 <span class="ig-story-user-avatar" id="igStoryUserAvatar"></span>
                 <span class="ig-story-user-meta">
                     <strong id="igStoryUserName"></strong>
+                    <span class="ig-story-user-line" id="igStoryUserLine" hidden></span>
                     <small id="igStoryTime">{{ __('app.common.now') }}</small>
                 </span>
             </a>

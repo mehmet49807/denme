@@ -66,9 +66,20 @@
                 @endif
 
                 @foreach($storyGroups as $index => $group)
-                @php $storyIndex = ($ownStoryGroup ? 1 : 0) + $index; @endphp
-                <button type="button" class="story-item {{ !empty($group['is_featured']) ? 'story-item--featured' : '' }}" data-story-index="{{ $storyIndex }}" data-user-id="{{ $group['user_id'] }}" aria-label="{{ __('app.feed.story_of', ['name' => $group['username']]) }}">
-                    <span class="story-ring story-ring--unseen {{ !empty($group['is_featured']) ? 'story-ring--featured' : '' }}">
+                @php
+                    $storyIndex = ($ownStoryGroup ? 1 : 0) + $index;
+                    $isOfficial = !empty($group['is_official']);
+                    $isFeatured = !empty($group['is_featured']);
+                    $sticker = $group['premium_sticker'] ?? null;
+                @endphp
+                <button
+                    type="button"
+                    class="story-item{{ $isOfficial ? ' story-item--official' : '' }}{{ $isFeatured ? ' story-item--featured' : '' }}{{ !empty($group['show_premium_sticker']) ? ' story-item--premium' : '' }}"
+                    data-story-index="{{ $storyIndex }}"
+                    data-user-id="{{ $group['user_id'] }}"
+                    aria-label="{{ __('app.feed.story_of', ['name' => $group['username']]) }}"
+                >
+                    <span class="story-ring story-ring--unseen{{ $isOfficial ? ' story-ring--official' : '' }}{{ $isFeatured ? ' story-ring--featured' : '' }}">
                         <span class="story-avatar">
                             @if($group['profile_photo_url'])
                                 <img src="{{ $group['profile_photo_url'] }}" alt="" width="62" height="62" loading="lazy" decoding="async">
@@ -77,8 +88,37 @@
                             @endif
                             @include('partials.online-status-badge', ['online' => !empty($group['is_online']), 'size' => 'sm'])
                         </span>
+                        @if(!empty($group['show_premium_sticker']) && is_array($sticker))
+                            <span
+                                class="story-premium-sticker story-premium-sticker--ring member-badge--{{ $sticker['type'] ?? 'premium' }}"
+                                style="--member-badge-from: {{ $sticker['from'] ?? '#7c3aed' }}; --member-badge-to: {{ $sticker['to'] ?? '#db2777' }};"
+                                title="{{ $sticker['label'] ?? 'Premium' }}"
+                            >
+                                <span class="story-premium-sticker__icon" aria-hidden="true">
+                                    @include('partials.theme-icon', ['icon' => $sticker['icon'] ?? 'crown'])
+                                </span>
+                            </span>
+                        @endif
                     </span>
-                    <span class="story-username">{{ $group['username'] }}</span>
+                    <span class="story-caption">
+                        <span class="story-username">{{ $group['username'] }}</span>
+                        <span class="story-meta-line">
+                            @if(!empty($group['flag_url']))
+                                <img class="story-flag" src="{{ $group['flag_url'] }}" alt="" width="14" height="10" loading="lazy" decoding="async">
+                            @endif
+                            @if(!empty($group['city']))
+                                <span class="story-city">{{ $group['city'] }}</span>
+                            @elseif(!empty($group['country']) && !$isOfficial)
+                                <span class="story-city">{{ $group['country'] }}</span>
+                            @endif
+                            @if(!empty($group['show_premium_sticker']) && is_array($sticker))
+                                <span
+                                    class="story-premium-sticker story-premium-sticker--label member-badge--{{ $sticker['type'] ?? 'premium' }}"
+                                    style="--member-badge-from: {{ $sticker['from'] ?? '#7c3aed' }}; --member-badge-to: {{ $sticker['to'] ?? '#db2777' }};"
+                                >{{ $sticker['label'] ?? 'Premium' }}</span>
+                            @endif
+                        </span>
+                    </span>
                 </button>
                 @endforeach
             </div>

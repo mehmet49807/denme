@@ -17,6 +17,7 @@ class StoryGroupService
     public function __construct(
         private GenderFilterService $genderFilter,
         private StoryService $stories,
+        private CountryMetaService $countries,
     ) {}
 
     public function loadUserStoryGroup(User $user, ?User $viewer = null): ?array
@@ -198,6 +199,31 @@ class StoryGroupService
         $storyItems = collect($stories)->values();
         $isOfficial = $storyItems->contains(fn ($story) => method_exists($story, 'isOfficial') && $story->isOfficial());
 
+        $country = trim((string) ($user->country ?: 'Türkiye'));
+        $city = trim((string) ($user->city ?: ''));
+        $iso = $this->countries->isoForCountry($country !== '' ? $country : 'Türkiye');
+        $flagUrl = $this->countries->flagUrl($iso !== '' ? $iso : 'tr');
+
+        $showPremium = ! $isOfficial
+            && method_exists($user, 'showsPremiumMemberBadge')
+            && $user->showsPremiumMemberBadge();
+        $badge = $showPremium && method_exists($user, 'packageBadge') ? $user->packageBadge() : null;
+        $premiumSticker = null;
+        if ($showPremium) {
+            $premiumSticker = [
+                'label' => is_array($badge) ? (string) ($badge['badge_label'] ?? 'Premium') : 'Premium',
+                'type' => is_array($badge) ? (string) ($badge['type'] ?? 'premium') : 'premium',
+                'icon' => is_array($badge) ? (string) ($badge['badge_icon'] ?? 'crown') : 'crown',
+                'from' => is_array($badge) ? (string) ($badge['gradient_from'] ?? '#7c3aed') : '#7c3aed',
+                'to' => is_array($badge) ? (string) ($badge['gradient_to'] ?? '#db2777') : '#db2777',
+            ];
+        }
+
+        $isFeatured = ! $isOfficial && (
+            (method_exists($user, 'packageRank') && $user->packageRank() >= 2)
+            || (method_exists($user, 'isBoosted') && $user->isBoosted())
+        );
+
         return [
             'user_id' => $user->id,
             'username' => $isOfficial ? 'Gönül Köprüsü' : $user->username,
@@ -208,10 +234,13 @@ class StoryGroupService
             'is_online' => method_exists($user, 'isOnline') ? $user->isOnline() : false,
             'is_own' => false,
             'is_official' => $isOfficial,
+            'country' => $isOfficial ? 'Türkiye' : $country,
+            'city' => $isOfficial ? '' : $city,
+            'flag_url' => $flagUrl,
             'package_type' => method_exists($user, 'activePackageType') ? $user->activePackageType() : null,
-            'is_featured' => $isOfficial
-                || (method_exists($user, 'packageRank') && $user->packageRank() >= 2)
-                || (method_exists($user, 'isBoosted') && $user->isBoosted()),
+            'show_premium_sticker' => $showPremium,
+            'premium_sticker' => $premiumSticker,
+            'is_featured' => $isFeatured,
             'items' => $storyItems->map(fn ($story) => [
                 'id' => $story->id,
                 'media_url' => $story->media_url,
