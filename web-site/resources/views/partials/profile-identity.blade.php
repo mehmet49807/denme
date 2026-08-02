@@ -2,9 +2,11 @@
     $age = $user->age();
     $status = $user->resolvedRelationshipStatus();
     $showPosts = isset($postsCount);
+    $hideNameRow = ! empty($hideNameRow);
 @endphp
 
-<div class="profile-identity">
+<div class="profile-identity {{ $hideNameRow ? 'profile-identity--no-name' : '' }}">
+    @unless($hideNameRow)
     <div class="profile-identity-row">
         <h1 class="profile-username profile-identity-name">
             <span class="profile-username-text">{{ $user->username }}</span>
@@ -19,6 +21,7 @@
             @include('partials.profile-online-label', ['user' => $user])
         </h1>
     </div>
+    @endunless
 
     <p class="profile-location-line profile-identity-location">
         @isset($locationAsLinks)

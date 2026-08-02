@@ -1,4 +1,6 @@
-@if($user->showsTrustBadge())
+{{-- Premium mavi tik zaten varsa ikinci (küçük/çift) rozeti gösterme --}}
+@if($user->showsPremiumVerifiedTick())
+@elseif($user->showsTrustBadge())
 @php $size = $size ?? 'md'; @endphp
 <span class="trust-badge trust-badge--{{ $size }} trust-badge--social" title="Doğrulanmış üye" aria-label="Doğrulanmış üye">
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -14,7 +16,7 @@
         />
     </svg>
 </span>
-@elseif($user->showsSafetyBadge() && ! $user->showsPremiumVerifiedTick())
+@elseif($user->showsSafetyBadge())
 @php $size = $size ?? 'md'; @endphp
 <span class="safety-badge safety-badge--{{ $size }} safety-badge--social" title="Güvenli üye" aria-label="Güvenli üye">
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

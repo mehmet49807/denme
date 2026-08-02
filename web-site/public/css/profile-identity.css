@@ -5,6 +5,44 @@
     gap: 0.28rem;
 }
 
+.profile-identity--no-name {
+    gap: 0.22rem;
+}
+
+.profile-header-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    width: 100%;
+    margin: 0 0 0.35rem;
+}
+
+.profile-header-topbar__name {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+}
+
+.profile-header-follow {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.profile-header-follow__btn {
+    min-height: 2rem;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.78rem;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.profile-header-follow__btn .profile-action-icon--follow .theme-icon,
+.profile-header-follow__btn .profile-action-icon--follow svg {
+    width: 0.95rem;
+    height: 0.95rem;
+}
+
 .profile-identity-row {
     display: flex;
     align-items: center;
@@ -289,7 +327,14 @@
     }
 
     .profile-identity .profile-username,
-    .profile-identity-name {
-        font-size: 1.2rem;
+    .profile-identity-name,
+    .profile-header-topbar__name {
+        font-size: 1.15rem;
+    }
+
+    .profile-header-follow__btn {
+        min-height: 1.9rem;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.74rem;
     }
 }
