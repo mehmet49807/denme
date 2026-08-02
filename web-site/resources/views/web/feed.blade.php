@@ -50,12 +50,13 @@
                     <span class="story-caption story-caption--own">
                         <span class="story-username">{{ __('app.feed.your_story') }}</span>
                         @if(!empty($ownStoryGroup['created_at']))
-                            <time
-                                class="story-shared-time"
-                                data-relative-time
-                                datetime="{{ $ownStoryGroup['created_at'] }}"
-                                title="{{ \Illuminate\Support\Carbon::parse($ownStoryGroup['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('d.m.Y H:i') }}"
-                            >{{ \Illuminate\Support\Carbon::parse($ownStoryGroup['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('H:i') }}</time>
+                            @include('partials.shared-time', [
+                                'datetime' => $ownStoryGroup['created_at'],
+                                'label' => \Illuminate\Support\Carbon::parse($ownStoryGroup['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('H:i'),
+                                'title' => \Illuminate\Support\Carbon::parse($ownStoryGroup['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('d.m.Y H:i'),
+                                'class' => 'story-shared-time',
+                                'wrap' => 'shared-time--story',
+                            ])
                         @endif
                     </span>
                 </div>
@@ -129,12 +130,13 @@
                             @endif
                         </span>
                         @if(!empty($group['created_at']))
-                            <time
-                                class="story-shared-time"
-                                data-relative-time
-                                datetime="{{ $group['created_at'] }}"
-                                title="{{ \Illuminate\Support\Carbon::parse($group['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('d.m.Y H:i') }}"
-                            >{{ \Illuminate\Support\Carbon::parse($group['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('H:i') }}</time>
+                            @include('partials.shared-time', [
+                                'datetime' => $group['created_at'],
+                                'label' => \Illuminate\Support\Carbon::parse($group['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('H:i'),
+                                'title' => \Illuminate\Support\Carbon::parse($group['created_at'])->timezone(config('app.timezone', 'Europe/Istanbul'))->format('d.m.Y H:i'),
+                                'class' => 'story-shared-time',
+                                'wrap' => 'shared-time--story',
+                            ])
                         @endif
                     </span>
                 </button>

@@ -316,24 +316,49 @@
     box-shadow: 0 0 0 2px #fff, 0 0 0 4px #7c3aed;
 }
 
-.story-shared-time,
-.ig-story-time {
-    display: block;
+.shared-time--story {
+    display: inline-flex;
+    justify-content: center;
+    max-width: 100%;
     font-size: 0.56rem;
     font-weight: 700;
     color: var(--text-muted, #5c5470);
-    line-height: 1.15;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
+}
+
+.shared-time--story .shared-time__icon .theme-icon,
+.shared-time--story .shared-time__icon svg {
+    width: 0.7rem;
+    height: 0.7rem;
+}
+
+.shared-time--story .story-shared-time,
+.shared-time--story .shared-time__value {
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    text-align: left;
+}
+
+.shared-time--viewer {
+    margin-top: 0.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.68rem;
+}
+
+.shared-time--viewer .shared-time__icon {
+    opacity: 0.95;
+}
+
+.shared-time--viewer .shared-time__icon .theme-icon,
+.shared-time--viewer .shared-time__icon svg {
+    width: 0.78rem;
+    height: 0.78rem;
 }
 
 .ig-story-time {
     font-size: 0.68rem;
-    opacity: 0.9;
-    color: rgba(255, 255, 255, 0.9);
+    opacity: 0.95;
+    color: inherit;
     text-align: left;
     font-weight: 600;
 }

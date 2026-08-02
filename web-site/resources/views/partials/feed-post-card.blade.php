@@ -30,12 +30,14 @@
                 </a>
                 @include('partials.profile-online-label', ['user' => $post->user, 'compact' => true])
                 @include('partials.profile-member-badges', ['user' => $post->user, 'compact' => true])
-                <time
-                    class="post-time"
-                    data-relative-time
-                    datetime="{{ $post->created_at->toIso8601String() }}"
-                    title="{{ $post->created_at->timezone(config('app.timezone', 'Europe/Istanbul'))->format('d.m.Y H:i') }}"
-                >{{ $post->created_at->locale(app()->getLocale())->diffForHumans(short: true) }} · {{ $post->created_at->timezone(config('app.timezone', 'Europe/Istanbul'))->format('H:i') }}</time>
+                @include('partials.shared-time', [
+                    'datetime' => $post->created_at->toIso8601String(),
+                    'label' => $post->created_at->locale(app()->getLocale())->diffForHumans(short: true)
+                        .' · '.$post->created_at->timezone(config('app.timezone', 'Europe/Istanbul'))->format('H:i'),
+                    'title' => $post->created_at->timezone(config('app.timezone', 'Europe/Istanbul'))->format('d.m.Y H:i'),
+                    'class' => 'post-time',
+                    'wrap' => 'shared-time--post',
+                ])
             </div>
             @include('partials.location-link', [
                 'country' => $post->user->country ?? 'Türkiye',

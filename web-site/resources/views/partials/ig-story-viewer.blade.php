@@ -15,7 +15,12 @@
                 <span class="ig-story-user-meta">
                     <strong id="igStoryUserName"></strong>
                     <span class="ig-story-user-line" id="igStoryUserLine" hidden></span>
-                    <time class="ig-story-time" id="igStoryTime" data-relative-time datetime=""></time>
+                    <span class="shared-time shared-time--viewer">
+                        <span class="shared-time__icon" aria-hidden="true">
+                            @include('partials.theme-icon', ['icon' => 'clock'])
+                        </span>
+                        <time class="ig-story-time shared-time__value" id="igStoryTime" data-relative-time datetime=""></time>
+                    </span>
                 </span>
             </a>
             <div class="ig-story-header-actions">
