@@ -18,6 +18,8 @@ class Follow extends Model
         'created_at',
     ];
 
+    // deploy-force: 2026-08-02-b
+
     protected function casts(): array
     {
         return [
