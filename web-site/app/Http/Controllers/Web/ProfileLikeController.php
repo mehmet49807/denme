@@ -106,7 +106,7 @@ class ProfileLikeController extends Controller
 
         $viewer = $request->user();
         $tab = $request->query('tab') === 'incoming' ? 'incoming' : 'matches';
-        // Erkeklerde aktif Premium; kadın/admin serbest. Trial açmaz.
+        // Platinum (kadın/admin serbest). Pro/Gold ve deneme açmaz.
         $canRevealMatches = $viewer->canAccessIncomingLikes();
 
         $likedIds = ProfileLike::query()

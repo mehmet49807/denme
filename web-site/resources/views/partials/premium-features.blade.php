@@ -7,6 +7,7 @@
         ['icon' => 'bolt', 'title' => __('app.premium.perk_top_featured'), 'desc' => 'Platinum'],
         ['icon' => 'sparkles', 'title' => __('app.premium.perk_story_boost'), 'desc' => 'Platinum'],
         ['icon' => 'eye', 'title' => __('app.premium.perk_who_viewed'), 'desc' => 'Platinum'],
+        ['icon' => 'heart', 'title' => __('app.premium.perk_who_liked'), 'desc' => 'Platinum'],
     ];
 @endphp
 

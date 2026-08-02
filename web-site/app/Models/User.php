@@ -239,14 +239,10 @@ class User extends Authenticatable
         return $this->hasPackageAtLeast('platinum');
     }
 
-    /** Premium: Kim beğendi kimliğini görme (erkeklerde aktif paket) */
+    /** Platinum: Eşleşmeler / Kim Beğendi kimliğini görme */
     public function canAccessIncomingLikes(): bool
     {
-        if ($this->isAdmin() || $this->gender === 'female') {
-            return true;
-        }
-
-        return $this->gender === 'male' && $this->isPremium();
+        return $this->hasPackageAtLeast('platinum');
     }
 
     /**

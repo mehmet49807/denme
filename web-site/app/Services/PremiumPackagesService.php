@@ -76,6 +76,7 @@ class PremiumPackagesService
                     'perk_top_featured',
                     'perk_story_boost',
                     'perk_who_viewed',
+                    'perk_who_liked',
                     'perk_gallery',
                     'perk_badge',
                 ],

@@ -6,6 +6,7 @@ use App\Jobs\SendFcmPushJob;
 use App\Models\AdminBroadcast;
 use App\Models\Like;
 use App\Models\Message;
+use App\Models\ProfileLike;
 use App\Models\Report;
 use App\Models\User;
 use App\Models\UserBroadcastRead;
@@ -223,10 +224,10 @@ class NotificationService
         return [
             'id' => 'profile-like-'.$notification->id,
             'type' => UserNotification::TYPE_PROFILE_LIKE,
-            'title' => 'Profiliniz beğenildi',
+            'title' => 'Sizi beğendiler',
             'message_text' => $canReveal
                 ? $actorName.' sizi beğendi. Karşılık verirseniz eşleşirsiniz.'
-                : 'Bir üye sizi beğendi. Kim olduğunu görmek için Premium gerekli.',
+                : 'Bir üye sizi beğendi. Kim olduğunu görmek için Platinum gerekli.',
             'created_at' => $notification->created_at,
             'is_read' => $notification->read_at !== null,
             'actor_id' => $canReveal ? $notification->actor_id : null,
@@ -241,27 +242,36 @@ class NotificationService
 
     private function mapMatchNotification(UserNotification $notification): array
     {
-        $actorName = $notification->actor?->username ?? 'Bir üye';
-        $profileUrl = $notification->actor?->username
+        $receiver = $notification->user;
+        $canReveal = $receiver && method_exists($receiver, 'canAccessIncomingLikes')
+            ? $receiver->canAccessIncomingLikes()
+            : true;
+        $actorName = $canReveal
+            ? ($notification->actor?->username ?? 'Bir üye')
+            : 'Bir üye';
+        $profileUrl = ($canReveal && $notification->actor?->username)
             ? url('/users/'.$notification->actor->username)
-            : null;
-        $messagesUrl = $notification->actor?->username
+            : route('matches.index');
+        $messagesUrl = ($canReveal && $notification->actor?->username)
             ? route('messages.show', $notification->actor->username)
-            : route('messages.index');
+            : route('matches.index');
 
         return [
             'id' => 'match-'.$notification->id,
             'type' => UserNotification::TYPE_MATCH,
             'title' => 'Karşılıklı beğeni!',
-            'message_text' => $actorName.' ile eşleştiniz.',
+            'message_text' => $canReveal
+                ? $actorName.' ile eşleştiniz.'
+                : 'Yeni bir eşleşmeniz var. Kim olduğunu görmek için Platinum gerekli.',
             'created_at' => $notification->created_at,
             'is_read' => $notification->read_at !== null,
-            'actor_id' => $notification->actor_id,
-            'actor_username' => $notification->actor?->username,
+            'actor_id' => $canReveal ? $notification->actor_id : null,
+            'actor_username' => $canReveal ? $notification->actor?->username : null,
             'profile_url' => $profileUrl,
-            'messages_url' => $messagesUrl,
+            'messages_url' => $canReveal ? $messagesUrl : null,
             'matches_url' => route('matches.index'),
             'post_id' => null,
+            'reveal_actor' => $canReveal,
         ];
     }
 
@@ -448,8 +458,8 @@ class NotificationService
                 ? $liked->canAccessIncomingLikes()
                 : true;
             $body = $canReveal
-                ? $liker->username.' profilinizi beğendi.'
-                : 'Bir üye profilinizi beğendi. Kim olduğunu görmek için Premium.';
+                ? $liker->username.' sizi beğendi.'
+                : 'Bir üye sizi beğendi. Kim olduğunu görmek için Platinum gerekli.';
 
             if ($this->userNotificationsTableExists()) {
                 try {
@@ -468,11 +478,11 @@ class NotificationService
 
             $pushBody = $canReveal
                 ? $liker->username.' sizi beğendi. Karşılık verirseniz eşleşirsiniz.'
-                : 'Bir üye sizi beğendi. Kim olduğunu görmek için Premium gerekli.';
+                : 'Bir üye sizi beğendi. Kim olduğunu görmek için Platinum gerekli.';
 
             $this->pushToUser(
                 $liked,
-                'Profiliniz beğenildi',
+                'Sizi beğendiler',
                 $pushBody,
                 [
                     'type' => UserNotification::TYPE_PROFILE_LIKE,
@@ -541,13 +551,20 @@ class NotificationService
     {
         try {
             foreach ([[$a, $b], [$b, $a]] as [$receiver, $actor]) {
+                $canReveal = method_exists($receiver, 'canAccessIncomingLikes')
+                    ? $receiver->canAccessIncomingLikes()
+                    : true;
+                $body = $canReveal
+                    ? $actor->username.' ile karşılıklı beğeni!'
+                    : 'Yeni bir eşleşmeniz var. Kim olduğunu görmek için Platinum gerekli.';
+
                 if ($this->userNotificationsTableExists()) {
                     try {
                         UserNotification::create([
                             'user_id' => $receiver->id,
                             'actor_id' => $actor->id,
                             'type' => UserNotification::TYPE_MATCH,
-                            'body' => $actor->username.' ile karşılıklı beğeni!',
+                            'body' => $body,
                             'created_at' => now(),
                         ]);
                         $this->forgetSidebarBadges($receiver->id);
@@ -556,18 +573,21 @@ class NotificationService
                     }
                 }
 
-                $messagePath = method_exists($receiver, 'canSendMessages') && $receiver->canSendMessages()
-                    ? '/messages/'.$actor->username
-                    : '/eslesmeler';
+                $messagePath = '/eslesmeler';
+                if ($canReveal && method_exists($receiver, 'canSendMessages') && $receiver->canSendMessages()) {
+                    $messagePath = '/messages/'.$actor->username;
+                }
 
                 $this->pushToUser(
                     $receiver,
                     'Karşılıklı beğeni!',
-                    $actor->username.' ile eşleştiniz. Hemen mesajlaşın.',
+                    $canReveal
+                        ? $actor->username.' ile eşleştiniz. Hemen mesajlaşın.'
+                        : 'Yeni bir eşleşmeniz var. Kim olduğunu görmek için Platinum gerekli.',
                     [
                         'type' => UserNotification::TYPE_MATCH,
                         'actor_id' => (string) $actor->id,
-                        'actor_username' => (string) $actor->username,
+                        'actor_username' => $canReveal ? (string) $actor->username : '',
                         'url' => $messagePath,
                     ]
                 );
@@ -584,7 +604,7 @@ class NotificationService
             $post = $like->post;
             $liker = $like->user;
 
-            if (!$post || !$liker || $post->user_id === $liker->id) {
+            if (! $post || ! $liker || $post->user_id === $liker->id) {
                 return;
             }
 
@@ -617,9 +637,59 @@ class NotificationService
                         'post_id' => (string) $post->id,
                     ]
                 );
+
+                // Gönderi beğenisi → Kim Beğendi / Eşleşme akışına da düşsün.
+                $this->recordLikeInterestFromPost($liker, $receiver);
             }
         } catch (\Throwable) {
             // Beğeni kaydı başarılı kalsın; bildirim oluşmazsa akış devam etsin.
+        }
+    }
+
+    /**
+     * Gönderi beğenisinde profil beğenisi / eşleşme kaydı ve bildirimi.
+     * Zaten profil beğenisi varsa yeniden bildirim göndermez.
+     */
+    private function recordLikeInterestFromPost(User $liker, User $liked): void
+    {
+        try {
+            if ($liker->id === $liked->id || $liked->is_banned || $liker->is_banned) {
+                return;
+            }
+
+            if (! class_exists(ProfileLike::class)) {
+                return;
+            }
+
+            ProfileLike::ensureTable();
+
+            $alreadyLiked = ProfileLike::query()
+                ->where('liker_id', $liker->id)
+                ->where('liked_id', $liked->id)
+                ->exists();
+
+            if ($alreadyLiked) {
+                return;
+            }
+
+            ProfileLike::query()->create([
+                'liker_id' => $liker->id,
+                'liked_id' => $liked->id,
+                'created_at' => now(),
+            ]);
+
+            $matched = ProfileLike::query()
+                ->where('liker_id', $liked->id)
+                ->where('liked_id', $liker->id)
+                ->exists();
+
+            if ($matched) {
+                $this->notifyMatch($liker, $liked);
+            } else {
+                $this->notifyProfileLiked($liker, $liked);
+            }
+        } catch (\Throwable) {
+            //
         }
     }
 

@@ -19,7 +19,7 @@
             <h1>{{ $tab === 'incoming' ? 'Kim Beğendi' : 'Eşleşmelerim' }}</h1>
             <p class="users-browse-hero-lead">
                 @if($pageLocked)
-                    Eşleşmeler ve kim beğendi alanı yalnızca Premium üyelere açıktır.
+                    Eşleşmeler ve kim beğendi alanı yalnızca Platinum üyelere açıktır.
                 @elseif($tab === 'incoming')
                     Sizi beğenen üyeler burada. Karşılık verirseniz eşleşirsiniz.
                 @else
@@ -49,7 +49,7 @@
                     <a
                         href="{{ route('matches.index') }}"
                         class="matches-tab matches-tab--locked {{ $tab === 'matches' ? 'is-active' : '' }}"
-                        aria-label="Eşleşmeler — Premium gerekli"
+                        aria-label="Eşleşmeler — Platinum gerekli"
                         data-gk-event="matches_tab_lock"
                     >
                         <span class="matches-tab__blur" aria-hidden="true">
@@ -61,13 +61,13 @@
                                 <rect x="5" y="11" width="14" height="10" rx="2"/>
                                 <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
                             </svg>
-                            Premium
+                            Platinum
                         </span>
                     </a>
                     <a
                         href="{{ route('matches.index', ['tab' => 'incoming']) }}"
                         class="matches-tab matches-tab--locked {{ $tab === 'incoming' ? 'is-active' : '' }}"
-                        aria-label="Kim Beğendi — Premium gerekli"
+                        aria-label="Kim Beğendi — Platinum gerekli"
                         data-gk-event="incoming_likes_tab_lock"
                     >
                         <span class="matches-tab__blur" aria-hidden="true">
@@ -81,7 +81,7 @@
                                 <rect x="5" y="11" width="14" height="10" rx="2"/>
                                 <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
                             </svg>
-                            Premium
+                            Platinum
                         </span>
                     </a>
                 @endif
@@ -102,14 +102,14 @@
             <p>
                 @if($incomingCount > 0)
                     <strong>{{ $incomingCount }}</strong> kişi sizi beğendi.
-                    Kim olduklarını görmek, eşleşmek ve mesajlaşmak için Premium gerekli.
+                    Kim olduklarını görmek için Platinum gerekli.
                 @else
                     Eşleşmeleriniz ve sizi beğenenler bu alanda.
-                    Kimlikleri görmek yalnızca Premium üyelere açıktır.
+                    Kimlikleri görmek yalnızca Platinum üyelere açıktır.
                 @endif
             </p>
             <div class="matches-full-lock__actions">
-                <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary" data-gk-event="trial_cta_click" data-gk-event-label="matches_full_lock">Premium’a geç</a>
+                <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary" data-gk-event="trial_cta_click" data-gk-event-label="matches_full_lock">Platinum’a geç</a>
                 <a href="{{ route('users.index') }}" class="btn btn-outline">Üyeleri keşfet</a>
             </div>
             <div class="matches-full-lock__ghost" aria-hidden="true">
