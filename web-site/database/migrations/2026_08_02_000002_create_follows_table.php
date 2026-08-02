@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // follows: follower_id → following_id
         if (Schema::hasTable('follows')) {
             return;
         }

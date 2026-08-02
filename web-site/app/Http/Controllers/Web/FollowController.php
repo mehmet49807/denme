@@ -19,6 +19,7 @@ class FollowController extends Controller
         private NotificationService $notifications,
     ) {}
 
+    /** Takip / takibi bırak — tüm üyeler kullanabilir. */
     public function toggle(Request $request, string $username): JsonResponse|RedirectResponse
     {
         Follow::ensureTable();

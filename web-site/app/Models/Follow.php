@@ -11,6 +11,7 @@ class Follow extends Model
 {
     public $timestamps = false;
 
+    /** @var list<string> */
     protected $fillable = [
         'follower_id',
         'following_id',

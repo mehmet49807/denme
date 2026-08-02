@@ -1,3 +1,4 @@
+/* profile follow toggle — browse + profil */
 (function () {
     function csrfToken() {
         var meta = document.querySelector('meta[name="csrf-token"]');

@@ -95,7 +95,9 @@ class StoryGroupService
         $premiumWith = ['user.premiumSubscriptions' => function ($q) {
             $q->active()->latest('expires_at');
         }];
-        $followedIds = Follow::followingIdsFor((int) $viewer->id)->all();
+        $followedIds = class_exists(Follow::class)
+            ? Follow::followingIdsFor((int) $viewer->id)->all()
+            : [];
 
         try {
             // Takip edilenler önde; diğerleri de görünür — sonra boost / paket.

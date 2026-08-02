@@ -28,8 +28,11 @@ class FeedPageController extends Controller
     {
         $viewer = $request->user();
         $visibleQuery = $this->genderFilter->visibleUsersQuery($viewer);
-        Follow::ensureTable();
-        $followedIds = Follow::followingIdsFor((int) $viewer->id)->all();
+        $followedIds = [];
+        if (class_exists(Follow::class)) {
+            Follow::ensureTable();
+            $followedIds = Follow::followingIdsFor((int) $viewer->id)->all();
+        }
 
         $posts = User::applyContentRanking(
             Post::with(['user.premiumSubscriptions' => function ($q) {
