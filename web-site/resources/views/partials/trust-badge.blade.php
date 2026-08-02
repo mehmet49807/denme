@@ -1,70 +1,32 @@
 @if($user->showsTrustBadge())
-@php
-    $size = $size ?? 'md';
-    $tickUid = 'gktrust-'.($user->id ?? 'x').'-'.$size;
-@endphp
-<span class="trust-badge trust-badge--{{ $size }} trust-badge--verified" title="Doğrulanmış üye" aria-label="Doğrulanmış üye">
-    <span class="trust-badge__glow" aria-hidden="true"></span>
-    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-            <linearGradient id="{{ $tickUid }}-ring" x1="4" y1="2" x2="24" y2="26" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#93C5FD"/>
-                <stop offset="48%" stop-color="#3B82F6"/>
-                <stop offset="100%" stop-color="#1D4ED8"/>
-            </linearGradient>
-            <linearGradient id="{{ $tickUid }}-core" x1="6" y1="5" x2="22" y2="24" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#2563EB"/>
-                <stop offset="100%" stop-color="#1E40AF"/>
-            </linearGradient>
-            <linearGradient id="{{ $tickUid }}-shine" x1="7" y1="5" x2="18" y2="16" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#fff" stop-opacity="0.85"/>
-                <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
-            </linearGradient>
-        </defs>
-        <circle cx="14" cy="14" r="12.2" fill="url(#{{ $tickUid }}-ring)"/>
-        <circle cx="14" cy="14" r="9.4" fill="url(#{{ $tickUid }}-core)"/>
-        <circle cx="14" cy="14" r="9.4" fill="url(#{{ $tickUid }}-shine)"/>
+@php $size = $size ?? 'md'; @endphp
+<span class="trust-badge trust-badge--{{ $size }} trust-badge--social" title="Doğrulanmış üye" aria-label="Doğrulanmış üye">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path
-            d="M8.6 14.35l3.05 3.05 7.2-7.45"
-            stroke="#fff"
-            stroke-width="2.35"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            class="trust-badge__badge"
+            fill="currentColor"
+            d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34z"
+        />
+        <path
+            class="trust-badge__check"
+            fill="#fff"
+            d="M10.54 16.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"
         />
     </svg>
 </span>
 @elseif($user->showsSafetyBadge() && ! $user->showsPremiumVerifiedTick())
-@php
-    $size = $size ?? 'md';
-    $tickUid = 'gksafe-'.($user->id ?? 'x').'-'.$size;
-@endphp
-<span class="safety-badge safety-badge--{{ $size }} safety-badge--verified" title="Güvenli üye" aria-label="Güvenli üye">
-    <span class="safety-badge__glow" aria-hidden="true"></span>
-    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-            <linearGradient id="{{ $tickUid }}-ring" x1="4" y1="2" x2="24" y2="26" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#93C5FD"/>
-                <stop offset="48%" stop-color="#3B82F6"/>
-                <stop offset="100%" stop-color="#1D4ED8"/>
-            </linearGradient>
-            <linearGradient id="{{ $tickUid }}-core" x1="6" y1="5" x2="22" y2="24" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#2563EB"/>
-                <stop offset="100%" stop-color="#1E40AF"/>
-            </linearGradient>
-            <linearGradient id="{{ $tickUid }}-shine" x1="7" y1="5" x2="18" y2="16" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#fff" stop-opacity="0.85"/>
-                <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
-            </linearGradient>
-        </defs>
-        <circle cx="14" cy="14" r="12.2" fill="url(#{{ $tickUid }}-ring)"/>
-        <circle cx="14" cy="14" r="9.4" fill="url(#{{ $tickUid }}-core)"/>
-        <circle cx="14" cy="14" r="9.4" fill="url(#{{ $tickUid }}-shine)"/>
+@php $size = $size ?? 'md'; @endphp
+<span class="safety-badge safety-badge--{{ $size }} safety-badge--social" title="Güvenli üye" aria-label="Güvenli üye">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path
-            d="M8.6 14.35l3.05 3.05 7.2-7.45"
-            stroke="#fff"
-            stroke-width="2.35"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            class="safety-badge__badge"
+            fill="currentColor"
+            d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91c-1.31.67-2.2 1.91-2.2 3.34s.89 2.67 2.2 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34z"
+        />
+        <path
+            class="safety-badge__check"
+            fill="#fff"
+            d="M10.54 16.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.36-6.2 6.77z"
         />
     </svg>
 </span>
