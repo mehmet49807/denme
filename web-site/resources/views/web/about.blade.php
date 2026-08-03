@@ -170,7 +170,7 @@
     <strong>Marka:</strong> Gönül Köprüsü<br>
     <strong>Web Sitesi:</strong> gonulkoprusu.com<br>
     <strong>E-posta:</strong> <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a><br>
-    <strong>VERBİS Kayıt Durumu:</strong> İlgili mevzuat kapsamında değerştirilmekte olup, gerektiğinde VERBİS kaydı yapılacaktır.
+    <strong>VERBİS Kayıt Durumu:</strong> İlgili mevzuat kapsamında değerlendirilmekte olup, gerektiğinde VERBİS kaydı yapılacaktır.
 </p>
 <p class="content-disclaimer">
     <em>Resmi şirket bilgileri (ticari ünvan, vergi, MERSIS, adres) admin panelinden eklenecektir. Şu anda tüm resmi talepler {{ $contactEmail }} adresinden karşılanmaktadır.</em>
