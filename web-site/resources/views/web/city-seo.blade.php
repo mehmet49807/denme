@@ -22,9 +22,11 @@
     @endif
 
     <div class="city-seo-stats">
-        <p><strong>{{ number_format($memberCount) }}</strong> kayıtlı üye</p>
         @if($memberCount > 0)
+            <p><strong>{{ number_format($memberCount) }}</strong> kayıtlı üye</p>
             <p class="city-seo-stats-detail">{{ number_format($femaleCount) }} kadın · {{ number_format($maleCount) }} erkek profil</p>
+        @else
+            <p><strong>İlk üye ol —</strong> şehrinin öncüleri arasına katıl.</p>
         @endif
     </div>
 
@@ -35,7 +37,7 @@
         Kadın üyelerde mesajlaşma ücretsizdir.
     </p>
 
-    <h2>{{ $placeTitle }}’da neden Gönül Köprüsü?</h2>
+    <h2>{{ \App\Support\TurkishSuffix::locative($placeTitle) }} neden Gönül Köprüsü?</h2>
     <ul>
         @foreach(($seoWhy ?? []) as $reason)
             <li>{{ $reason }}</li>
@@ -60,7 +62,7 @@
                 class="btn btn-outline"
                 data-gk-event="city_cta_click"
                 data-gk-event-label="discover_register_{{ $slug }}"
-            >{{ $placeTitle }}’da keşfe başla</a>
+            >{{ \App\Support\TurkishSuffix::locative($placeTitle) }} keşfe başla</a>
             <a href="{{ route('login', ['redirect' => $discoverUrl ?? '']) }}" class="btn btn-ghost">Giriş Yap</a>
         @endauth
         <a href="{{ $instagramUrl }}" class="btn btn-ghost" target="_blank" rel="noopener" data-gk-event="instagram_cta" data-gk-event-label="city_{{ $slug }}">Instagram</a>
