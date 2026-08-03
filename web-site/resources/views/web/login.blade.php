@@ -24,12 +24,12 @@
         @csrf
         <div class="form-group auth-field">
             <label for="login">Kullanıcı Adı veya E-posta</label>
-            <input type="text" id="login" name="login" value="{{ old('login') }}" placeholder="ornek@email.com" autocomplete="username" required>
+            <input type="text" id="login" name="login" value="{{ old('login') }}" placeholder="ornek@email.com" autocomplete="username" required oninvalid="this.setCustomValidity('Lütfen bu alanı doldurun.')" oninput="this.setCustomValidity('')">
             @error('login') <small class="form-error">{{ $message }}</small> @enderror
         </div>
         <div class="form-group auth-field">
             <label for="password">Şifre</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+            <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required oninvalid="this.setCustomValidity('Lütfen şifrenizi girin.')" oninput="this.setCustomValidity('')">
         </div>
         <button type="submit" class="btn btn-primary btn-full auth-submit">
             Giriş Yap

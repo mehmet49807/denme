@@ -105,6 +105,17 @@
     Instagram: <a href="{{ \App\Support\InstagramUrl::withUtm('about', 'contact', 'instagram') }}" target="_blank" rel="noopener">@gonulkoprusucom</a>
 </p>
 
+<h2 id="firma">Kurumsal Bilgiler</h2>
+<p>
+    <strong>Marka:</strong> Gönül Köprüsü<br>
+    <strong>Web Sitesi:</strong> gonulkoprusu.com<br>
+    <strong>E-posta:</strong> destek@gonulkoprusu.com<br>
+    <strong>VERBİS Kayıt Durumu:</strong> İlgili mevzuat kapsamında değerlendirilmekte olup, gerektiğinde VERBİS kaydı yapılacaktır.
+</p>
+<p class="content-disclaimer">
+    <em>Not: Resmi şirket adı (ticari ünvan), vergi dairesi/VKN, MERSİS numarası ve fiziksel adres bilgileri sistem ayarlarından eklenecektir. Bu bilgilerin eksikliği giderilene kadar, yukarıdaki iletişim e-postası üzerinden tüm resmi talepler karşılanır.</em>
+</p>
+
 <p>
     Konu sayfaları:
     @if(Route::has('seo.marriage')) <a href="{{ route('seo.marriage') }}">Evlilik sitesi</a> · @endif

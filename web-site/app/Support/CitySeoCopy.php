@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Support\TurkishSuffix;
+
 /**
  * Şehir SEO sayfaları için özgün kısa metin + yerel SSS.
  */
@@ -15,6 +17,8 @@ final class CitySeoCopy
         $members = number_format(max(0, $memberCount));
         $female = number_format(max(0, $femaleCount));
         $male = number_format(max(0, $maleCount));
+        $loc = TurkishSuffix::locative($city);
+        $abl = TurkishSuffix::ablative($city);
 
         $hooks = [
             'istanbul' => "Türkiye'nin en kalabalık tanışma havuzu — {$city}'da ciddi ilişki arayan yetişkinler Gönül Köprüsü'nde buluşuyor. İstanbul evlilik sitesi arayanlar için güvenli sohbet ve şehir içi keşif.",
@@ -33,7 +37,7 @@ final class CitySeoCopy
             'trabzon' => "{$city} ve Doğu Karadeniz'de güvenli tanışma. Ciddi niyet, moderasyon ve ücretsiz üyelik.",
             'malatya' => "{$city}'da evlilik ve ciddi ilişki arayışı için sakin, güvenli bir tanışma ortamı.",
             'erzurum' => "{$city} tanışma — Doğu Anadolu'da online sohbet, ciddi ilişki ve ücretsiz kayıt.",
-            'van' => "{$city}'de güvenli tanışma sitesi deneyimi: profil, konum ve saygılı mesajlaşma.",
+            'van' => "{$city}'da güvenli tanışma sitesi deneyimi: profil, konum ve saygılı mesajlaşma.",
             'denizli' => "{$city} ve Ege içlerinde evlilik odaklı tanışma. Ücretsiz üye ol, şehrindeki profilleri keşfet.",
             'sanliurfa' => "{$city}'da ailevi değerlere saygılı, ciddi niyetli tanışma. Güvenli sohbet ve moderasyon.",
             'kahramanmaras' => "{$city} tanışma sitesi Gönül Köprüsü ile ücretsiz kayıt, ciddi ilişki ve güvenli mesajlaşma.",
@@ -77,10 +81,12 @@ final class CitySeoCopy
             $lead .= $extra[$slug];
         }
 
-        if ($memberCount > 0) {
-            $lead .= " Şu an {$city}'da yaklaşık {$members} kayıtlı üye"
+        if ($memberCount >= 50) {
+            $lead .= " Şu an {$loc} yaklaşık {$members} kayıtlı üye"
                 .($femaleCount + $maleCount > 0 ? " ({$female} kadın · {$male} erkek)" : '')
                 .' görünür durumda.';
+        } elseif ($memberCount > 0) {
+            $lead .= " {$loc} üyelerimiz var; sen de katıl, şehrinin ilk üyeleri arasında yer al.";
         }
 
         $why = [
@@ -97,10 +103,10 @@ final class CitySeoCopy
         $faqs = [
             [
                 'question' => "{$city} tanışma sitesi ücretsiz mi?",
-                'answer' => "Evet. Gönül Köprüsü'ne {$city}'dan ücretsiz üye olabilirsin. Kadın üyelerde mesajlaşma ve kimler baktı ücretsizdir; erkek üyeler deneme süresi ve premium paketlerle ek özelliklere erişir.",
+                'answer' => "Evet. Gönül Köprüsü'ne {$abl} ücretsiz üye olabilirsin. Kadın üyelerde mesajlaşma ve kimler baktı ücretsizdir; erkek üyeler deneme süresi ve premium paketlerle ek özelliklere erişir.",
             ],
             [
-                'question' => "{$city}'da ciddi ilişki / evlilik için uygun mu?",
+                'question' => "{$loc} ciddi ilişki / evlilik için uygun mu?",
                 'answer' => "Platform ciddi ilişki ve evlilik niyetiyle tasarlandı. {$city} ve Türkiye genelinde yetişkin üyeler profil, ilgi alanı ve konum bilgileriyle keşfedilir; spam ve uygunsuz içerik moderasyonla sınırlanır.",
             ],
             [
@@ -138,6 +144,8 @@ final class CitySeoCopy
         $members = number_format(max(0, $memberCount));
         $place = $district.', '.$city;
         $districtSlug = SeoDistricts::slug($district);
+        $loc = TurkishSuffix::locative($district);
+        $abl = TurkishSuffix::ablative($district);
 
         $hooks = [
             'kadikoy' => "Kadıköy tanışma — Moda, Caferağa ve çevresinde ciddi ilişki arayanlar için güvenli, ücretsiz ilçe keşfi. İstanbul’un Anadolu yakasında evlilik odaklı sohbet.",
@@ -160,8 +168,10 @@ final class CitySeoCopy
             ."{$city} evlilik sitesi arayanlar için ilçe bazlı keşif Gönül Köprüsü'nde."
         );
 
-        if ($memberCount > 0) {
+        if ($memberCount >= 50) {
             $lead .= " {$place} bölgesinde yaklaşık {$members} kayıtlı üye görünür.";
+        } elseif ($memberCount > 0) {
+            $lead .= " {$place} bölgesinde üyelerimiz var; sen de katıl.";
         }
 
         $why = [

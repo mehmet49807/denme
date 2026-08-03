@@ -75,7 +75,22 @@
     </div>
 @endif
 
-<p class="city-seo-cta-wrap">
+<div class="blog-posts-list">
+        <article class="blog-card">
+            <h2>Hesabımı nasıl silebilirim?</h2>
+            <p>Hesabınızı silmek için profil ayarlarından "Hesabı Sil" seçeneğini kullanabilir veya destek@gonulkoprusu.com adresine istek gönderebilirsiniz. Hesap silindiğinde, yasal saklama süreleri dolan verileriniz kalıcı olarak silinir.</p>
+        </article>
+        <article class="blog-card">
+            <h2>Platforma katılmak için yaş sınırı var mı?</h2>
+            <p>Evet, Gönül Köprüsü'ne üye olabilmek için en az 18 yaşında olmanız gerekmektedir. Reşit olmayan kullanıcıların hesapları tespit edildiğinde derhal kapatılır.</p>
+        </article>
+        <article class="blog-card">
+            <h2>Premium üyelik iptali ve iade nasıl yapılır?</h2>
+            <p>Premium üyeliğinizi istediğiniz zaman iptal edebilirsiniz. 6502 sayılı Tüketicinin Korunması Kanunu kapsamında, dijital içerik teslimi yapılmışsa cayma hakkı kullanılamaz. İade talepleri için destek@gonulkoprusu.com adresine başvurabilirsiniz.</p>
+        </article>
+    </div>
+
+    <p class="city-seo-cta-wrap">
     <a href="{{ url('/blog') }}" class="btn btn-outline">Blog</a>
     <a href="{{ route('register') }}" class="btn btn-primary">Ücretsiz Kayıt Ol</a>
 </p>

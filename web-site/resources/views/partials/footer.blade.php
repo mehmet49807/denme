@@ -72,7 +72,7 @@
                     </li>
                     @php
                         try {
-                            $footerCities = array_slice(\App\Support\FeaturedCities::links(app(\App\Services\LocationDataService::class)), 0, 8);
+                            $footerCities = array_slice(\App\Support\FeaturedCities::links(app(\App\Services\LocationDataService::class)), 0, 24);
                         } catch (\Throwable) {
                             $footerCities = [
                                 ['slug' => 'istanbul', 'name' => 'İstanbul'],

@@ -82,7 +82,7 @@
                 <li>
                     <a href="{{ url('/blog/'.($post['slug'] ?? '')) }}">{{ $post['title'] ?? 'Blog yazısı' }}</a>
                     @if(!empty($post['description']))
-                        <span>{{ \Illuminate\Support\Str::limit($post['description'], 110) }}</span>
+                        <span>{{ \Illuminate\Support\Str::limit(rtrim($post['description'], ' .'), 110) }}</span>
                     @endif
                 </li>
             @endforeach

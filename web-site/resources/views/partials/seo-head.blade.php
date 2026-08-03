@@ -68,7 +68,7 @@
 <meta name="twitter:image" content="{{ $ogImage }}">
 <meta name="twitter:image:alt" content="{{ \Illuminate\Support\Str::limit($description, 120) }}">
 @if($twitterHandle !== '')
-<meta name="twitter:site" content="@{{ $twitterHandle }}">
+<meta name="twitter:site" content="{{ '@' . $twitterHandle }}">
 @endif
 <link rel="alternate" hreflang="tr" href="{{ $canonical }}">
 <link rel="alternate" hreflang="x-default" href="{{ $canonical }}">

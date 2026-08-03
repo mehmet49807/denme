@@ -64,24 +64,24 @@
 
             <div class="form-group auth-field">
                 <label for="username"><span class="auth-field-icon auth-field-icon--user" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'user'])</span><span>Kullanıcı Adı</span></label>
-                <input type="text" id="username" name="username" value="{{ old('username') }}" placeholder="kullanici_adi" autocomplete="username" required>
+                <input type="text" id="username" name="username" value="{{ old('username') }}" placeholder="kullanici_adi" autocomplete="username" required oninvalid="this.setCustomValidity('Lütfen bir kullanıcı adı girin.')" oninput="this.setCustomValidity('')">
                 @error('username') <small class="form-error">{{ $message }}</small> @enderror
             </div>
 
             <div class="form-group auth-field">
                 <label for="email"><span class="auth-field-icon auth-field-icon--mail" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'mail'])</span><span>{{ __('app.auth.register.email_private') }}</span></label>
-                <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="ornek@email.com" autocomplete="email" required>
+                <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="ornek@email.com" autocomplete="email" required oninvalid="this.setCustomValidity('Lütfen e-posta adresinizi girin.')" oninput="this.setCustomValidity('')">
                 @error('email') <small class="form-error">{{ $message }}</small> @enderror
             </div>
 
             <div class="form-row auth-form-row">
                 <div class="form-group auth-field">
                     <label for="password"><span class="auth-field-icon auth-field-icon--lock" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'lock'])</span><span>Şifre</span></label>
-                    <input type="password" id="password" name="password" placeholder="En az 8 karakter" autocomplete="new-password" required>
+                    <input type="password" id="password" name="password" placeholder="En az 8 karakter" autocomplete="new-password" required oninvalid="this.setCustomValidity('Lütfen şifrenizi girin (en az 8 karakter).')" oninput="this.setCustomValidity('')">
                 </div>
                 <div class="form-group auth-field">
                     <label for="password_confirmation"><span class="auth-field-icon auth-field-icon--lock" aria-hidden="true">@include('partials.theme-icon', ['icon' => 'lock'])</span><span>Şifre Tekrar</span></label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Tekrar girin" autocomplete="new-password" required>
+                    <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Tekrar girin" autocomplete="new-password" required oninvalid="this.setCustomValidity('Lütfen şifrenizi tekrar girin.')" oninput="this.setCustomValidity('')">
                 </div>
             </div>
 
