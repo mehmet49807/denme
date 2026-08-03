@@ -105,6 +105,20 @@
     Instagram: <a href="{{ \App\Support\InstagramUrl::withUtm('about', 'contact', 'instagram') }}" target="_blank" rel="noopener">@gonulkoprusucom</a>
 </p>
 
+@php
+    $companySettings = app(\App\Services\SiteSettingsService::class);
+    $cName = $companySettings->get('company_name', '');
+    $cTaxOffice = $companySettings->get('company_tax_office', '');
+    $cTaxNumber = $companySettings->get('company_tax_number', '');
+    $cMersis = $companySettings->get('company_mersis', '');
+    $cRegistry = $companySettings->get('company_trade_registry', '');
+    $cAddress = $companySettings->get('company_address', '');
+    $cPhone = $companySettings->get('company_phone', '');
+    $cEmail = $companySettings->get('company_email', '');
+    $cRep = $companySettings->get('company_representative', '');
+    $hasCompany = !empty($cName);
+@endphp
+
 <h2 id="firma">Kurumsal Bilgiler</h2>
 <p>
     <strong>Marka:</strong> Gönül Köprüsü<br>
