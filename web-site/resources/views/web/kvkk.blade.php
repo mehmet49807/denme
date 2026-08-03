@@ -13,6 +13,12 @@
     $kvkkCompanyName = $kvkkSettings->get('company_name', '');
     $kvkkContact = $kvkkSettings->get('company_kvkk_contact', '');
     $kvkkEmail = !empty($kvkkContact) ? $kvkkContact : 'destek@gonulkoprusu.com';
+    // Eğer değer "email - İsim" formatındaysa, mailto için sadece e-postayı ayıkla
+    if (preg_match('/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $kvkkEmail, $m)) {
+        $kvkkMailto = $m[1];
+    } else {
+        $kvkkMailto = $kvkkEmail;
+    }
 @endphp
 <p>Gönül Köprüsü platformu kapsamında, kişisel verileriniz 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında işlenmektedir.</p>
 @if(!empty($kvkkCompanyName))
@@ -23,7 +29,7 @@
     @endif
 </div>
 @endif
-<p>Başvurularınızı <a href="mailto:{{ $kvkkEmail }}">{{ $kvkkEmail }}</a> adresine iletebilirsiniz.</p>
+<p>Başvurularınızı <a href="mailto:{{ $kvkkMailto }}">{{ $kvkkEmail }}</a> adresine iletebilirsiniz.</p>
 
 <h2>2. İşlenen Kişisel Veri Kategorileri</h2>
 <ul>
