@@ -106,7 +106,7 @@
 </p>
 
 @php
-    $companySettings = app(App\Services\SiteSettingsService::class);
+    $companySettings = app(\App\Services\SiteSettingsService::class);
     $cName = $companySettings->get('company_name', '');
     $cTaxOffice = $companySettings->get('company_tax_office', '');
     $cTaxNumber = $companySettings->get('company_tax_number', '');

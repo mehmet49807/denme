@@ -9,7 +9,7 @@
 @section('page-content')
 <h2>1. Veri Sorumlusu</h2>
 @php
-    $privSettings = app(App\Services\SiteSettingsService::class);
+    $privSettings = app(\App\Services\SiteSettingsService::class);
     $privCompanyName = $privSettings->get('company_name', '');
     $privContact = $privSettings->get('company_kvkk_contact', '');
     $privEmail = !empty($privContact) ? $privContact : 'destek@gonulkoprusu.com';

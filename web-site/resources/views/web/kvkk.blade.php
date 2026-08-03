@@ -9,7 +9,7 @@
 @section('page-content')
 <h2>1. Veri Sorumlusu</h2>
 @php
-    $kvkkSettings = app(App\Services\SiteSettingsService::class);
+    $kvkkSettings = app(\App\Services\SiteSettingsService::class);
     $kvkkCompanyName = $kvkkSettings->get('company_name', '');
     $kvkkContact = $kvkkSettings->get('company_kvkk_contact', '');
     $kvkkEmail = !empty($kvkkContact) ? $kvkkContact : 'destek@gonulkoprusu.com';
