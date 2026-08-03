@@ -8,7 +8,22 @@
 
 @section('page-content')
 <h2>1. Veri Sorumlusu</h2>
-<p>Gönül Köprüsü platformu kapsamında, kişisel verileriniz 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında işlenmektedir. Başvurularınızı <a href="mailto:destek@gonulkoprusu.com">destek@gonulkoprusu.com</a> adresine iletebilirsiniz.</p>
+@php
+    $kvkkSettings = app(App\Services\SiteSettingsService::class);
+    $kvkkCompanyName = $kvkkSettings->get('company_name', '');
+    $kvkkContact = $kvkkSettings->get('company_kvkk_contact', '');
+    $kvkkEmail = !empty($kvkkContact) ? $kvkkContact : 'destek@gonulkoprusu.com';
+@endphp
+<p>Gönül Köprüsü platformu kapsamında, kişisel verileriniz 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında işlenmektedir.</p>
+@if(!empty($kvkkCompanyName))
+<div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:.5rem;padding:1rem;margin:1rem 0;">
+    <p style="margin:0;"><strong>Veri Sorumlusu:</strong> {{ $kvkkCompanyName }}</p>
+    @if(!empty($kvkkSettings->get('company_address')))
+    <p style="margin:.25rem 0 0;"><strong>Adres:</strong> {{ $kvkkSettings->get('company_address') }}</p>
+    @endif
+</div>
+@endif
+<p>Başvurularınızı <a href="mailto:{{ $kvkkEmail }}">{{ $kvkkEmail }}</a> adresine iletebilirsiniz.</p>
 
 <h2>2. İşlenen Kişisel Veri Kategorileri</h2>
 <ul>

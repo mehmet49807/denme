@@ -59,6 +59,7 @@
             'icon' => 'settings',
             'theme' => 'emerald',
             'items' => [
+                ['route' => 'admin.company', 'label' => 'Şirket Bilgileri', 'icon' => 'building', 'theme' => 'cyan'],
                 ['route' => 'admin.audit', 'label' => 'Denetim Kayıtları', 'icon' => 'search', 'theme' => 'indigo'],
                 ['route' => 'admin.system-health', 'label' => 'Sistem Sağlığı', 'icon' => 'chart', 'theme' => 'emerald'],
                 ['route' => 'admin.updates', 'label' => 'Güncelleme', 'icon' => 'refresh', 'theme' => 'amber'],

@@ -8,7 +8,24 @@
 
 @section('page-content')
 <h2>1. Veri Sorumlusu</h2>
+@php
+    $privSettings = app(App\Services\SiteSettingsService::class);
+    $privCompanyName = $privSettings->get('company_name', '');
+    $privContact = $privSettings->get('company_kvkk_contact', '');
+    $privEmail = !empty($privContact) ? $privContact : 'destek@gonulkoprusu.com';
+@endphp
 <p>Bu Gizlilik Sözleşmesi, Gönül Köprüsü platformu kapsamında kişisel verilerinizin işlenmesine ilişkin olarak bilgilendirme amaçlıdır. Veri sorumlusu sıfatıyla, kişisel verileriniz KVKK (6698 sayılı Kişisel Verilerin Korunması Kanunu) kapsamında işlenmektedir.</p>
+@if(!empty($privCompanyName))
+<div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:.5rem;padding:1rem;margin:1rem 0;">
+    <p style="margin:0;"><strong>Veri Sorumlusu:</strong> {{ $privCompanyName }}</p>
+    @if(!empty($privSettings->get('company_address')))
+    <p style="margin:.25rem 0 0;"><strong>Adres:</strong> {{ $privSettings->get('company_address') }}</p>
+    @endif
+    @if(!empty($privSettings->get('company_tax_number')))
+    <p style="margin:.25rem 0 0;"><strong>VKN:</strong> {{ $privSettings->get('company_tax_number') }}</p>
+    @endif
+</div>
+@endif
 <p><strong>İletişim:</strong> destek@gonulkoprusu.com</p>
 
 <h2>2. İşlenen Kişisel Veriler</h2>

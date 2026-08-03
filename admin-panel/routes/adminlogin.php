@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\AdminOpsController;
 use App\Http\Controllers\Admin\AdminPanelController;
 use App\Http\Controllers\Admin\AdminSeoController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\AdminCompanyController;
 use App\Http\Middleware\RedirectIfAdminAuthenticated;
 use App\Http\Middleware\RequireSuperAdmin;
 use Illuminate\Support\Facades\Route;
@@ -61,6 +62,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/system-health', [AdminOpsController::class, 'systemHealth'])->name('admin.system-health');
     Route::post('/system-health/fcm', [AdminOpsController::class, 'uploadFcmCredentials'])->middleware(RequireSuperAdmin::class)->name('admin.system-health.fcm');
     Route::get('/updates', [AdminUpdateController::class, 'index'])->name('admin.updates');
+
+    // Şirket Bilgileri
+    Route::get('/company', [AdminCompanyController::class, 'index'])->name('admin.company');
+    Route::post('/company', [AdminCompanyController::class, 'update'])->name('admin.company.update');
     Route::post('/updates/run', [AdminUpdateController::class, 'run'])->middleware(RequireSuperAdmin::class)->name('admin.updates.run');
     Route::post('/updates/refresh', [AdminUpdateController::class, 'refresh'])->middleware(RequireSuperAdmin::class)->name('admin.updates.refresh');
     Route::get('/staff', [AdminOpsController::class, 'staffRoles'])->middleware(RequireSuperAdmin::class)->name('admin.staff');

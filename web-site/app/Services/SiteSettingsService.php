@@ -50,6 +50,16 @@ class SiteSettingsService
             'content_policy_money_request' => '1',
             'content_policy_fraud' => '1',
             'content_policy_custom_patterns' => '',
+            'company_name' => '',
+            'company_tax_office' => '',
+            'company_tax_number' => '',
+            'company_mersis' => '',
+            'company_trade_registry' => '',
+            'company_address' => '',
+            'company_phone' => '',
+            'company_email' => '',
+            'company_representative' => '',
+            'company_kvkk_contact' => '',
         ];
     }
 

@@ -105,16 +105,63 @@
     Instagram: <a href="{{ \App\Support\InstagramUrl::withUtm('about', 'contact', 'instagram') }}" target="_blank" rel="noopener">@gonulkoprusucom</a>
 </p>
 
+@php
+    $companySettings = app(App\Services\SiteSettingsService::class);
+    $cName = $companySettings->get('company_name', '');
+    $cTaxOffice = $companySettings->get('company_tax_office', '');
+    $cTaxNumber = $companySettings->get('company_tax_number', '');
+    $cMersis = $companySettings->get('company_mersis', '');
+    $cRegistry = $companySettings->get('company_trade_registry', '');
+    $cAddress = $companySettings->get('company_address', '');
+    $cPhone = $companySettings->get('company_phone', '');
+    $cEmail = $companySettings->get('company_email', '');
+    $cRep = $companySettings->get('company_representative', '');
+    $hasCompany = !empty($cName);
+@endphp
+
 <h2 id="firma">Kurumsal Bilgiler</h2>
+@if($hasCompany)
+<div class="content-company-info" style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:.5rem;padding:1.5rem;margin:1rem 0;">
+    @if(!empty($cName))
+    <p style="margin:0 0 .5rem;"><strong>{{ $cName }}</strong></p>
+    @endif
+    @if(!empty($cAddress))
+    <p style="margin:0 0 .25rem;"><strong>Adres:</strong> {{ $cAddress }}</p>
+    @endif
+    @if(!empty($cTaxOffice) || !empty($cTaxNumber))
+    <p style="margin:0 0 .25rem;">
+        @if(!empty($cTaxOffice))<strong>Vergi Dairesi:</strong> {{ $cTaxOffice }}@if(!empty($cTaxNumber)) · @endif@endif
+        @if(!empty($cTaxNumber))<strong>VKN:</strong> {{ $cTaxNumber }}@endif
+    </p>
+    @endif
+    @if(!empty($cMersis))
+    <p style="margin:0 0 .25rem;"><strong>MERSIS:</strong> {{ $cMersis }}</p>
+    @endif
+    @if(!empty($cRegistry))
+    <p style="margin:0 0 .25rem;"><strong>Ticaret Sicil No:</strong> {{ $cRegistry }}</p>
+    @endif
+    @if(!empty($cRep))
+    <p style="margin:0 0 .25rem;"><strong>Yetkili:</strong> {{ $cRep }}</p>
+    @endif
+    @if(!empty($cPhone) || !empty($cEmail))
+    <p style="margin:0 0 .25rem;">
+        @if(!empty($cPhone))<strong>Tel:</strong> {{ $cPhone }}@if(!empty($cEmail)) · @endif@endif
+        @if(!empty($cEmail))<strong>E-posta:</strong> <a href="mailto:{{ $cEmail }}">{{ $cEmail }}</a>@endif
+    </p>
+    @endif
+    <p style="margin:.5rem 0 0;font-size:.85rem;color:#666;"><strong>VERBİS Kayıt Durumu:</strong> İlgili mevzuat kapsamında değerlendirilmekte olup, gerektiğinde VERBİS kaydı yapılacaktır.</p>
+</div>
+@else
 <p>
     <strong>Marka:</strong> Gönül Köprüsü<br>
     <strong>Web Sitesi:</strong> gonulkoprusu.com<br>
-    <strong>E-posta:</strong> destek@gonulkoprusu.com<br>
+    <strong>E-posta:</strong> <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a><br>
     <strong>VERBİS Kayıt Durumu:</strong> İlgili mevzuat kapsamında değerlendirilmekte olup, gerektiğinde VERBİS kaydı yapılacaktır.
 </p>
 <p class="content-disclaimer">
-    <em>Not: Resmi şirket adı (ticari ünvan), vergi dairesi/VKN, MERSİS numarası ve fiziksel adres bilgileri sistem ayarlarından eklenecektir. Bu bilgilerin eksikliği giderilene kadar, yukarıdaki iletişim e-postası üzerinden tüm resmi talepler karşılanır.</em>
+    <em>Resmi şirket bilgileri (ticari ünvan, vergi, MERSIS, adres) admin panelinden eklenecektir. Şu anda tüm resmi talepler {{ $contactEmail }} adresinden karşılanmaktadır.</em>
 </p>
+@endif
 
 <p>
     Konu sayfaları:
