@@ -13,6 +13,11 @@
     $privCompanyName = $privSettings->get('company_name', '');
     $privContact = $privSettings->get('company_kvkk_contact', '');
     $privEmail = !empty($privContact) ? $privContact : 'destek@gonulkoprusu.com';
+    if (preg_match('/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $privEmail, $m)) {
+        $privMailto = $m[1];
+    } else {
+        $privMailto = $privEmail;
+    }
 @endphp
 <p>Bu Gizlilik Sözleşmesi, Gönül Köprüsü platformu kapsamında kişisel verilerinizin işlenmesine ilişkin olarak bilgilendirme amaçlıdır. Veri sorumlusu sıfatıyla, kişisel verileriniz KVKK (6698 sayılı Kişisel Verilerin Korunması Kanunu) kapsamında işlenmektedir.</p>
 @if(!empty($privCompanyName))
@@ -26,7 +31,7 @@
     @endif
 </div>
 @endif
-<p><strong>İletişim:</strong> destek@gonulkoprusu.com</p>
+<p><strong>İletişim:</strong> <a href="mailto:{{ $privMailto }}">{{ $privEmail }}</a></p>
 
 <h2>2. İşlenen Kişisel Veriler</h2>
 <ul>
@@ -66,7 +71,7 @@
     <li>Silinmesini veya yok edilmesini talep etme</li>
     <li>Aktarıldığı üçüncü kişileri öğrenme</li>
 </ul>
-<p>Bu haklarınızı kullanmak için <a href="mailto:destek@gonulkoprusu.com">destek@gonulkoprusu.com</a> adresine başvurabilirsiniz.</p>
+<p>Bu haklarınızı kullanmak için <a href="mailto:{{ $privMailto }}">{{ $privEmail }}</a> adresine başvurabilirsiniz.</p>
 
 <h2>7. Çerez Politikası</h2>
 <p>Platformumuz şu çerez türlerini kullanır:</p>
