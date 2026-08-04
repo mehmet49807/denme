@@ -310,7 +310,7 @@ Route::post('/setup/seo-blog-faq-sync', function () {
 
 
 // ========== OG Image Update ==========
-Route::post('/setup/update-og-image', function () {
+Route::get('/setup/update-og-image', function () {
     if (! \App\Support\SetupKey::matches(request('key'), 'gk-deploy-sync-2026')) {
         abort(403);
     }
