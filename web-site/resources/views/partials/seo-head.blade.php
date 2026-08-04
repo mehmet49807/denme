@@ -17,6 +17,10 @@
     $keywords = (string) ($seo['keywords'] ?? $settings->get('default_keywords', ''));
     $canonical = (string) ($seo['canonical'] ?? url()->current());
     $ogImage = (string) ($seo['ogImage'] ?? $settings->get('og_image_url', $siteUrl.'/images/og-default.jpg'));
+// Use dedicated OG share image when no per-page override is set
+if (empty($seo['ogImage']) && is_file(public_path('images/og-share.jpg'))) {
+    $ogImage = $siteUrl.'/images/og-share.jpg';
+}
     $ogType = (string) ($seo['ogType'] ?? 'website');
     $robotsDirective = strtolower(trim((string) ($seo['robots'] ?? '')));
     $noindex = (bool) ($seo['noindex'] ?? false)
