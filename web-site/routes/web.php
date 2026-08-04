@@ -308,6 +308,24 @@ Route::post('/setup/seo-blog-faq-sync', function () {
     \App\Http\Middleware\VerifyCsrfToken::class,
 ])->middleware('throttle:10,1,seo-blog-faq-sync');
 
+
+// ========== OG Image Update ==========
+Route::post('/setup/update-og-image', function () {
+    if (! \App\Support\SetupKey::matches(request('key'), 'gk-deploy-sync-2026')) {
+        abort(403);
+    }
+    $settings = app(\App\Services\SiteSettingsService::class);
+    $imageUrl = rtrim((string) config('app.url', 'https://gonulkoprusu.com'), '/').'/images/og-share.jpg';
+    $settings->setMany(['og_image_url' => $imageUrl]);
+    return response()->json([
+        'ok' => true,
+        'message' => 'OG image updated to og-share.jpg',
+        'og_image_url' => $imageUrl,
+    ]);
+})->withoutMiddleware([
+    \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+    \App\Http\Middleware\VerifyCsrfToken::class,
+])->middleware('setup:gk-deploy-sync-2026');
 // ========== Arama ==========
 Route::get('/ara', [SearchController::class, 'index'])->name('search');
 Route::get('/ara/oneriler', [SearchController::class, 'suggest'])->middleware('throttle:60,1,search-suggest')->name('search.suggest');
