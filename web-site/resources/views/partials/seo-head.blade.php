@@ -31,7 +31,7 @@ if (empty($seo['ogImage'])) {
     $bingVerification = trim((string) $settings->get('bing_site_verification', ''));
     $currentUrl = url()->current();
     if ($ogImage === '' || str_contains($ogImage, 'og-default.jpg')) {
-        $ogImage = $siteUrl.'/images/logo-320.png';
+        $ogImage = $siteUrl.'/images/og-share.jpg';
     }
 @endphp
 <meta name="description" content="{{ $description }}">

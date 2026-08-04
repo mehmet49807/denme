@@ -24,7 +24,7 @@ class HomeController extends Controller
         SeoHelper::setPage('home');
         SeoHelper::set('pageType', 'home');
         SeoHelper::set('canonical', 'https://gonulkoprusu.com/');
-        SeoHelper::set('ogImage', 'https://gonulkoprusu.com/images/logo-320.png');
+        SeoHelper::set('ogImage', 'https://gonulkoprusu.com/images/og-share.jpg');
 
         $siteUrl = 'https://gonulkoprusu.com';
         $description = (string) SeoHelper::get('description');

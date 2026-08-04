@@ -55,7 +55,7 @@ class LegalPageController extends Controller
                     '@type' => 'Organization',
                     'name' => 'Gönül Köprüsü',
                     'url' => $siteUrl,
-                    'logo' => $siteUrl.'/images/logo-320.png',
+                    'logo' => $siteUrl.'/images/og-share.jpg',
                     'email' => 'destek@gonulkoprusu.com',
                     'sameAs' => [
                         'https://www.instagram.com/gonulkoprusucom',
@@ -249,7 +249,7 @@ class LegalPageController extends Controller
                 'mainEntityOfPage' => $url,
                 'datePublished' => (string) ($post['published_at'] ?? $post['updated_at'] ?? now()->toDateString()),
                 'dateModified' => (string) ($post['updated_at'] ?? now()->toDateString()),
-                'image' => $siteUrl.'/images/logo-320.png',
+                'image' => $siteUrl.'/images/og-share.jpg',
                 'author' => ['@type' => 'Organization', 'name' => 'Gönül Köprüsü'],
                 'publisher' => [
                     '@type' => 'Organization',
@@ -257,7 +257,7 @@ class LegalPageController extends Controller
                     'url' => $siteUrl,
                     'logo' => [
                         '@type' => 'ImageObject',
-                        'url' => $siteUrl.'/images/logo-320.png',
+                        'url' => $siteUrl.'/images/og-share.jpg',
                     ],
                 ],
             ],
