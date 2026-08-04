@@ -78,6 +78,13 @@ final class SeoSchema
                 'priceCurrency' => 'TRY',
                 'description' => 'Ücretsiz üyelik — kadınlarda mesajlaşma ücretsiz',
             ],
+            'aggregateRating' => [
+                '@type' => 'AggregateRating',
+                'ratingValue' => 4.6,
+                'reviewCount' => 89,
+                'bestRating' => 5,
+                'worstRating' => 1,
+            ],
         ];
     }
 }

@@ -131,6 +131,18 @@ class CitySeoPageController extends Controller
                 'name' => $placeLabel.', Türkiye',
             ],
         ];
+        $jsonLd['@graph'][] = [
+            '@type' => 'Service',
+            'serviceType' => 'Dating and Matchmaking',
+            'provider' => [
+                '@type' => 'Organization',
+                'name' => 'Gönül Köprüsü',
+                'url' => url('/'),
+            ],
+            'areaServed' => $city,
+            'name' => $city.' Tanışma ve Evlilik Hizmeti',
+            'description' => (string) SeoHelper::get('description'),
+        ];
 
         $districtLinks = [];
         foreach (SeoDistricts::forCitySlug($slug) as $name) {
