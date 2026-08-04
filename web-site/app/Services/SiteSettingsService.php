@@ -20,7 +20,7 @@ class SiteSettingsService
             'site_url' => rtrim(config('app.url', 'https://www.gonulkoprusu.com'), '/'),
             'default_description' => 'Gönül Köprüsü — Türkiye\'nin güvenli tanışma, sohbet ve evlilik sitesi. Ücretsiz üye ol, şehrine göre keşfet, ciddi ilişki kur.',
             'default_keywords' => 'gönül köprüsü, tanışma sitesi, ücretsiz tanışma sitesi, evlilik sitesi, online sohbet, sohbet sitesi, flört sitesi, ciddi ilişki, güvenli tanışma, online tanışma, eş bulma',
-            'og_image_url' => rtrim(config('app.url', 'https://gonulkoprusu.com'), '/').'/images/logo-320.png',
+            'og_image_url' => rtrim(config('app.url', 'https://gonulkoprusu.com'), '/').'/images/og-share.jpg',
             'twitter_handle' => '@gonulkoprusu',
             'support_email' => 'destek@gonulkoprusu.com',
             'support_phone' => '',
