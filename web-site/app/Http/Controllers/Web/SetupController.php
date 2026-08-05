@@ -128,6 +128,17 @@ class SetupController extends Controller
                 $lines[] = 'nullable columns migration HATA: '.$e->getMessage();
             }
 
+            try {
+                Artisan::call('migrate', [
+                    '--force' => true,
+                    '--path' => 'database/migrations/2026_08_05_000002_make_phone_bio_nullable.php',
+                ]);
+                $output = trim(Artisan::output());
+                $lines[] = 'phone/bio nullable migration: '.($output !== '' ? $output : 'OK');
+            } catch (\Throwable $e) {
+                $lines[] = 'phone/bio nullable migration HATA: '.$e->getMessage();
+            }
+
             if (function_exists('opcache_reset')) {
                 @opcache_reset();
                 $lines[] = 'opcache reset';
