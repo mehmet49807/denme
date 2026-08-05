@@ -10304,7 +10304,7 @@ html[data-theme="dark"] .btn-primary:disabled {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-top: 0.5rem;
+    margin-top: -0.65rem;
     padding: 0.18rem 0.65rem;
     border-radius: 999px;
     font-size: 0.65rem;
@@ -10314,6 +10314,8 @@ html[data-theme="dark"] .btn-primary:disabled {
     color: #fff;
     white-space: nowrap;
     box-shadow: 0 4px 10px rgba(28, 20, 24, 0.12);
+    position: relative;
+    z-index: 2;
 }
 .profile-pkg-badge--pro {
     background: linear-gradient(135deg, #0ea5e9, #0284c7);
@@ -10361,5 +10363,5 @@ html[data-theme="dark"] .btn-primary:disabled {
     flex-direction: column;
     align-items: center;
     flex-shrink: 0;
-    gap: 0.35rem;
+    gap: 0;
 }

@@ -77,7 +77,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     @if(!empty($appDemoMode))
     <meta name="robots" content="noindex,nofollow">
-    <link rel="stylesheet" href="{{ asset('css/app-demo.css') }}?v=app-demo-2">
+    <link rel="stylesheet" href="{{ asset('css/app-demo.css') }}?v=app-demo-3">
     @endif
     @include('partials.async-fonts')
     @include('partials.critical-ui-css')

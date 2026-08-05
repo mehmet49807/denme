@@ -239,5 +239,5 @@ body.app-demo-mode {
     flex-direction: column;
     align-items: center;
     flex-shrink: 0;
-    gap: 0.35rem;
+    gap: 0;
 }
