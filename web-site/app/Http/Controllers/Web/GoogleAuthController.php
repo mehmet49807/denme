@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -174,6 +175,7 @@ class GoogleAuthController extends Controller
         $payload = [
             'google_id' => $googleId,
             'email' => $email,
+            'password' => Hash::make(Str::random(60)),
             'first_name' => $firstName,
             'last_name' => $lastName,
             'profile_photo_url' => $photo,
@@ -256,6 +258,7 @@ class GoogleAuthController extends Controller
             'first_name' => ($payload['first_name'] ?? '') !== '' ? $payload['first_name'] : $username,
             'last_name' => $payload['last_name'] ?? '',
             'email' => $email,
+            'password' => Hash::make(Str::random(60)),
             'google_id' => $payload['google_id'] ?? null,
             'gender' => $intent['gender'],
             'country' => 'Türkiye',

@@ -109,6 +109,11 @@ class AuthPageController extends Controller
         $validated = array_merge($validated, $this->validateHobbiesInput($request));
         $validated = array_merge($validated, $this->resolveOptionalBirthDate($request));
 
+        // Ensure required DB columns always have values (MySQL strict mode)
+        $validated['country'] = $validated['country'] ?? 'Türkiye';
+        $validated['city'] = $validated['city'] ?? '';
+        $validated['district'] = $validated['district'] ?? '';
+
         $validated['password'] = Hash::make($validated['password']);
         unset(
             $validated['privacy_accepted'],
