@@ -534,3 +534,21 @@ Route::any('/adminlogin/{path}', fn (string $path) => redirect('https://admin.go
 if (is_file(app_path('Http/Controllers/Admin/AdminAuthController.php')) && ! \App\Support\AdminApp::isSubdomainRequest()) {
     Route::prefix('adminlogin')->group(base_path('routes/adminlogin.php'));
 }
+
+// TEMP DIAG
+Route::get('/diag-trial-check', function () {
+    $user = App\Models\User::where('username', 'rida')->first();
+    if (!$user) { return 'User not found'; }
+    $data = [
+        'username' => $user->username,
+        'gender' => $user->gender,
+        'trial_ends_at' => $user->trial_ends_at ? $user->trial_ends_at->toDateTimeString() : 'NULL',
+        'isOnTrial' => $user->isOnTrial(),
+        'isPremium' => $user->isPremium(),
+        'activePackageType' => $user->activePackageType(),
+        'showsPremiumMemberBadge' => $user->showsPremiumMemberBadge(),
+        'showsTrialBadge' => $user->showsTrialBadge(),
+        'now' => now()->toDateTimeString(),
+    ];
+    return response()->json($data);
+});
