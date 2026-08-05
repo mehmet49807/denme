@@ -32,7 +32,7 @@
                 <div class="story-item-host story-item-host--own">
                     <div class="story-item-ring-wrap">
                         <button type="button" class="story-item story-item--own" data-story-index="0" data-user-id="{{ $viewer->id }}" aria-label="{{ __('app.profile.view_story') }}">
-                            <span class="story-ring story-ring--unseen story-ring--own @php($ownPkg = method_exists($viewer, 'activePackageType') ? $viewer->activePackageType() : null){{ in_array($ownPkg, ['pro','gold','platinum']) ? ' story-ring--premium-'.$ownPkg : '' }}">
+                            <span class="story-ring story-ring--unseen story-ring--own{{ in_array($viewer->activePackageType() ?? null, ['pro','gold','platinum']) ? ' story-ring--premium-'.($viewer->activePackageType() ?? '') : '' }}">
                                 <span class="story-avatar">
                                     @if($viewer->profile_photo_url)
                                         <img src="{{ $viewer->profile_photo_url }}" alt="" width="62" height="62" loading="lazy" decoding="async">

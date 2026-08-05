@@ -13,7 +13,10 @@
 
 <div class="profile-page feed-container">
     <header class="profile-header">
-        <div class="profile-photo-wrap {{ $targetStoryGroup ? 'profile-photo-wrap--has-story' : '' }} @php($pkgType = method_exists($user, 'activePackageType') ? $user->activePackageType() : null){{ in_array($pkgType, ['pro','gold','platinum']) ? ' profile-photo-wrap--premium-'.$pkgType : '' }}">
+        @php
+            $pkgType = $user->activePackageType();
+        @endphp
+        <div class="profile-photo-wrap {{ $targetStoryGroup ? 'profile-photo-wrap--has-story' : '' }}{{ in_array($pkgType, ['pro','gold','platinum']) ? ' profile-photo-wrap--premium-'.$pkgType : '' }}">
             @if($targetStoryGroup)
             <button
                 type="button"
