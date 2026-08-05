@@ -5983,6 +5983,52 @@ body.app-shell-body .site-main:has(.dm-shell) {
     text-decoration: none;
 }
 
+/* Fix: equal 3-column layout so no button gets squeezed/cut off on any screen size */
+.users-browse-card__actions {
+    display: flex;
+    gap: 0.3rem;
+    width: 100%;
+    margin-top: 0.65rem;
+    align-items: stretch;
+}
+.users-browse-follow-form,
+.users-browse-like-form {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+}
+.users-browse-follow-btn,
+.users-browse-like-btn {
+    width: 100%;
+    min-width: 0;
+}
+.users-browse-follow-btn span[data-follow-label],
+.users-browse-like-btn span[data-like-label] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.users-browse-card .users-browse-cta {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.users-browse-card__actions .users-browse-follow-btn,
+.users-browse-card__actions .users-browse-like-btn,
+.users-browse-card__actions .users-browse-cta {
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+    font-size: 0.68rem;
+    gap: 0.2rem;
+}
+@media (max-width: 380px) {
+    .users-browse-card__actions .users-browse-follow-btn .profile-action-icon--follow {
+        display: none;
+    }
+}
+
 .users-browse-pagination { margin-top: 1.25rem; }
 
 .users-browse-empty {
@@ -9978,8 +10024,7 @@ html[data-theme="dark"] .btn-primary:disabled {
     flex-direction: column;
 }
 .users-browse-card__actions {
-    display: grid;
-    grid-template-columns: auto 1fr 1fr;
+    display: flex;
     gap: 0.35rem;
     width: 100%;
     margin-top: 0.65rem;
@@ -10131,4 +10176,48 @@ html[data-theme="dark"] .btn-primary:disabled {
     flex-wrap: wrap;
     gap: 0.4rem;
     margin-top: 0.45rem;
+}
+
+/* === Premium Profil Çerçevesi — profil fotoğrafı ve story halkası === */
+/* Profil fotoğrafı wrap — premium çerçeve */
+.profile-photo-wrap--premium-pro {
+    padding: 3px;
+    border-radius: 50%;
+    background: conic-gradient(from 210deg, #38bdf8, #0284c7, #0ea5e9, #38bdf8);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14);
+}
+.profile-photo-wrap--premium-gold {
+    padding: 3px;
+    border-radius: 50%;
+    background: conic-gradient(from 210deg, #fde68a, #f59e0b, #d97706, #fbbf24, #fde68a);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.16);
+}
+.profile-photo-wrap--premium-platinum {
+    padding: 3px;
+    border-radius: 50%;
+    background: conic-gradient(from 200deg, #f8fafc, #94a3b8, #fbbf24, #cbd5e1, #f8fafc);
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.22), 0 0 0 5px rgba(251, 191, 36, 0.12);
+}
+/* Premium wrap'te iç fotoğraf yuvarlak kalsın */
+.profile-photo-wrap--premium-pro .profile-photo,
+.profile-photo-wrap--premium-gold .profile-photo,
+.profile-photo-wrap--premium-platinum .profile-photo {
+    border: 2px solid #fff;
+}
+
+/* Story ring — premium çerçeve */
+.story-ring--premium-pro {
+    padding: 3px;
+    background: conic-gradient(from 210deg, #38bdf8, #0284c7, #0ea5e9, #38bdf8) !important;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14);
+}
+.story-ring--premium-gold {
+    padding: 3px;
+    background: conic-gradient(from 210deg, #fde68a, #f59e0b, #d97706, #fbbf24, #fde68a) !important;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.16);
+}
+.story-ring--premium-platinum {
+    padding: 3px;
+    background: conic-gradient(from 200deg, #f8fafc, #94a3b8, #fbbf24, #cbd5e1, #f8fafc) !important;
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.22), 0 0 0 5px rgba(251, 191, 36, 0.12);
 }

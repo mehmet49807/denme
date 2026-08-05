@@ -253,6 +253,7 @@ return [
         'perk_who_viewed' => 'Kimler baktı',
         'perk_who_liked' => 'Kim Beğendi ve Eşleşmeler',
         'perk_gallery' => 'Profil galerisi',
+        'perk_profile_frame' => 'Premium Profil Çerçevesi',
         'perk_profile' => 'Öne çıkan profil',
         'perk_unlimited' => 'Sınırsız keşif',
         'perk_unlimited_messages' => 'Sınırsız Mesajlaşma',

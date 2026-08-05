@@ -15,7 +15,7 @@
 
 <div class="profile-page feed-container">
     <header class="profile-header">
-        <div class="profile-photo-wrap @if($ownStoryGroup) profile-photo-wrap--has-story @endif">
+        <div class="profile-photo-wrap @if($ownStoryGroup) profile-photo-wrap--has-story @endif @php($pkgType = method_exists($user, 'activePackageType') ? $user->activePackageType() : null) @if(in_array($pkgType, ['pro','gold','platinum'])) profile-photo-wrap--premium-{{ $pkgType }} @endif">
             @if($ownStoryGroup)
             <button
                 type="button"
@@ -25,7 +25,7 @@
                 data-user-id="{{ $user->id }}"
                 aria-label="Hikayeni görüntüle"
             >
-                <span class="story-ring story-ring--unseen story-ring--profile story-ring--own">
+                <span class="story-ring story-ring--unseen story-ring--profile story-ring--own{{ in_array($pkgType ?? null, ['pro','gold','platinum']) ? ' story-ring--premium-'.($pkgType ?? '') : '' }}">
                     <span class="story-avatar">
                         @if($user->profile_photo_url)
                             <img src="{{ $user->profile_photo_url }}" alt="Profil" width="96" height="96" loading="eager" decoding="async">

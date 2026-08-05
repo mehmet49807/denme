@@ -13,7 +13,7 @@
 
 <div class="profile-page feed-container">
     <header class="profile-header">
-        <div class="profile-photo-wrap {{ $targetStoryGroup ? 'profile-photo-wrap--has-story' : '' }}">
+        <div class="profile-photo-wrap {{ $targetStoryGroup ? 'profile-photo-wrap--has-story' : '' }} @php($pkgType = method_exists($user, 'activePackageType') ? $user->activePackageType() : null){{ in_array($pkgType, ['pro','gold','platinum']) ? ' profile-photo-wrap--premium-'.$pkgType : '' }}">
             @if($targetStoryGroup)
             <button
                 type="button"
@@ -22,7 +22,7 @@
                 data-user-id="{{ $user->id }}"
                 aria-label="{{ $user->username }} hikayesi"
             >
-                <span class="story-ring story-ring--unseen story-ring--profile">
+                <span class="story-ring story-ring--unseen story-ring--profile{{ in_array($pkgType ?? null, ['pro','gold','platinum']) ? ' story-ring--premium-'.($pkgType ?? '') : '' }}">
                     <span class="story-avatar">
                         @if($user->profile_photo_url)
                             <img src="{{ $user->profile_photo_url }}" alt="{{ $user->username }}" width="73" height="73" loading="eager" decoding="async">
@@ -254,7 +254,7 @@
                 data-user-id="{{ $user->id }}"
                 aria-label="{{ $user->username }} hikayeleri"
             >
-                <span class="story-ring story-ring--unseen story-ring--profile">
+                <span class="story-ring story-ring--unseen story-ring--profile{{ in_array($pkgType ?? null, ['pro','gold','platinum']) ? ' story-ring--premium-'.($pkgType ?? '') : '' }}">
                     <span class="story-avatar">
                         @if($user->profile_photo_url)
                             <img src="{{ $user->profile_photo_url }}" alt="{{ $user->username }}" width="62" height="62" loading="lazy" decoding="async">

@@ -590,3 +590,20 @@
 
 /* geriye dönük eski sınıf */
 .feed-recommended { display: none; }
+
+/* Premium Profil Çerçevesi — story halkası */
+.story-ring--premium-pro {
+    padding: 3px;
+    background: conic-gradient(from 210deg, #38bdf8, #0284c7, #0ea5e9, #38bdf8) !important;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14);
+}
+.story-ring--premium-gold {
+    padding: 3px;
+    background: conic-gradient(from 210deg, #fde68a, #f59e0b, #d97706, #fbbf24, #fde68a) !important;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.16);
+}
+.story-ring--premium-platinum {
+    padding: 3px;
+    background: conic-gradient(from 200deg, #f8fafc, #94a3b8, #fbbf24, #cbd5e1, #f8fafc) !important;
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.22), 0 0 0 5px rgba(251, 191, 36, 0.12);
+}

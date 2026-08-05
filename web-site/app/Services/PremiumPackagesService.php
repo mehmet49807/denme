@@ -37,6 +37,7 @@ class PremiumPackagesService
                     'perk_unlimited_messages',
                     'perk_gallery',
                     'perk_badge',
+                    'perk_profile_frame',
                 ],
             ],
             'gold' => [
@@ -57,6 +58,7 @@ class PremiumPackagesService
                     'perk_stories',
                     'perk_gallery',
                     'perk_badge',
+                    'perk_profile_frame',
                 ],
             ],
             'platinum' => [
@@ -79,6 +81,7 @@ class PremiumPackagesService
                     'perk_who_liked',
                     'perk_gallery',
                     'perk_badge',
+                    'perk_profile_frame',
                 ],
             ],
         ];
