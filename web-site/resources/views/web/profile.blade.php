@@ -69,6 +69,7 @@
                 'postsCount' => $posts->count(),
                 'tickSize' => 'md',
             ])
+            @include('partials.profile-member-badges', ['user' => $user])
             @include('partials.hobbies-display', ['user' => $user])
             @if($ownStoryGroup)
                 <p class="profile-story-hint">Profil fotoğrafına dokunarak hikayeni görüntüleyebilirsin.</p>
