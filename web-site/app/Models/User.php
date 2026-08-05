@@ -132,6 +132,11 @@ class User extends Authenticatable
     public function activePackageType(): ?string
     {
         try {
+            // Trial users get Platinum package for 3 days
+            if ($this->gender === 'male' && ! $this->isAdmin() && $this->isOnTrial() && ! $this->isPremium()) {
+                return 'platinum';
+            }
+
             if ($this->gender !== 'male' || $this->isAdmin() || ! $this->isPremium()) {
                 return null;
             }
@@ -571,6 +576,11 @@ class User extends Authenticatable
     public function showsPremiumMemberBadge(): bool
     {
         try {
+            // Trial users show premium badge (Platinum) during trial
+            if ($this->gender === 'male' && $this->isOnTrial() && ! $this->isPremium()) {
+                return true;
+            }
+
             if ($this->gender !== 'male' || ! $this->isPremium()) {
                 return false;
             }
@@ -613,9 +623,8 @@ class User extends Authenticatable
 
     public function showsTrialBadge(): bool
     {
-        return $this->gender === 'male'
-            && $this->isOnTrial()
-            && ! $this->isPremium();
+        // Trial users now show Platinum badge instead of trial badge
+        return false;
     }
 
     public function isBoosted(): bool

@@ -169,7 +169,12 @@ class PremiumPackagesService
 
     public function badgeForUser(?User $user): ?array
     {
-        if (! $user || $user->gender !== 'male' || ! $user->isPremium()) {
+        if (! $user || $user->gender !== 'male') {
+            return null;
+        }
+
+        // Trial users get Platinum badge for 3 days
+        if (! $user->isPremium() && ! $user->isOnTrial()) {
             return null;
         }
 
