@@ -117,6 +117,17 @@ class SetupController extends Controller
                 $lines[] = 'report notification migration HATA: '.$e->getMessage();
             }
 
+            try {
+                Artisan::call('migrate', [
+                    '--force' => true,
+                    '--path' => 'database/migrations/2026_08_05_000001_make_user_columns_nullable.php',
+                ]);
+                $output = trim(Artisan::output());
+                $lines[] = 'nullable columns migration: '.($output !== '' ? $output : 'OK');
+            } catch (\Throwable $e) {
+                $lines[] = 'nullable columns migration HATA: '.$e->getMessage();
+            }
+
             if (function_exists('opcache_reset')) {
                 @opcache_reset();
                 $lines[] = 'opcache reset';
