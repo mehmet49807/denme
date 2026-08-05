@@ -552,3 +552,19 @@ Route::get('/diag-trial-check', function () {
     ];
     return response()->json($data);
 });
+
+// TEMP DIAG 2
+Route::get('/diag-male-users', function () {
+    $users = App\Models\User::where('gender', 'male')->limit(10)->get(['id','username','gender','trial_ends_at']);
+    $result = [];
+    foreach ($users as $u) {
+        $result[] = [
+            'username' => $u->username,
+            'isOnTrial' => $u->isOnTrial(),
+            'isPremium' => $u->isPremium(),
+            'activePackageType' => $u->activePackageType(),
+            'trial_ends_at' => $u->trial_ends_at ? $u->trial_ends_at->toDateTimeString() : 'NULL',
+        ];
+    }
+    return response()->json($result);
+});
