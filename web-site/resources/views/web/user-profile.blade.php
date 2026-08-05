@@ -16,44 +16,46 @@
         @php
             $pkgType = $user->activePackageType();
         @endphp
-        <div class="profile-photo-wrap {{ $targetStoryGroup ? 'profile-photo-wrap--has-story' : '' }}{{ in_array($pkgType, ['pro','gold','platinum']) ? ' profile-photo-wrap--premium-'.$pkgType : '' }}">
-            @if($targetStoryGroup)
-            <button
-                type="button"
-                class="profile-photo profile-photo--story story-item"
-                data-story-index="0"
-                data-user-id="{{ $user->id }}"
-                aria-label="{{ $user->username }} hikayesi"
-            >
-                <span class="story-ring story-ring--unseen story-ring--profile{{ in_array($pkgType ?? null, ['pro','gold','platinum']) ? ' story-ring--premium-'.($pkgType ?? '') : '' }}">
-                    <span class="story-avatar">
-                        @if($user->profile_photo_url)
-                            <img src="{{ $user->profile_photo_url }}" alt="{{ $user->username }}" width="73" height="73" loading="eager" decoding="async">
-                        @else
-                            {{ strtoupper(substr($user->username, 0, 1)) }}
-                        @endif
+        <div class="profile-photo-col">
+            <div class="profile-photo-wrap {{ $targetStoryGroup ? 'profile-photo-wrap--has-story' : '' }}{{ in_array($pkgType, ['pro','gold','platinum']) ? ' profile-photo-wrap--premium-'.$pkgType : '' }}">
+                @if($targetStoryGroup)
+                <button
+                    type="button"
+                    class="profile-photo profile-photo--story story-item"
+                    data-story-index="0"
+                    data-user-id="{{ $user->id }}"
+                    aria-label="{{ $user->username }} hikayesi"
+                >
+                    <span class="story-ring story-ring--unseen story-ring--profile{{ in_array($pkgType ?? null, ['pro','gold','platinum']) ? ' story-ring--premium-'.($pkgType ?? '') : '' }}">
+                        <span class="story-avatar">
+                            @if($user->profile_photo_url)
+                                <img src="{{ $user->profile_photo_url }}" alt="{{ $user->username }}" width="73" height="73" loading="eager" decoding="async">
+                            @else
+                                {{ strtoupper(substr($user->username, 0, 1)) }}
+                            @endif
+                        </span>
                     </span>
-                </span>
-            </button>
-            @else
-            <div class="profile-photo">
-                @if($user->profile_photo_url)
-                    <img src="{{ $user->profile_photo_url }}" alt="{{ $user->username }}" width="77" height="77" loading="eager" decoding="async">
+                </button>
                 @else
-                    <span class="profile-photo-initial">{{ strtoupper(substr($user->username, 0, 1)) }}</span>
+                <div class="profile-photo">
+                    @if($user->profile_photo_url)
+                        <img src="{{ $user->profile_photo_url }}" alt="{{ $user->username }}" width="77" height="77" loading="eager" decoding="async">
+                    @else
+                        <span class="profile-photo-initial">{{ strtoupper(substr($user->username, 0, 1)) }}</span>
+                    @endif
+                    @include('partials.online-status-badge', ['user' => $user, 'size' => 'lg'])
+                </div>
                 @endif
-                @include('partials.online-status-badge', ['user' => $user, 'size' => 'lg'])
             </div>
+            @if(in_array($pkgType, ['pro','gold','platinum']))
+            @php
+                $_pkg = app(App\Services\PremiumPackagesService::class)->package($pkgType);
+            @endphp
+            <span class="profile-pkg-badge profile-pkg-badge--{{ $pkgType }}">
+                {{ $_pkg['badge_label'] ?? ucfirst($pkgType) }}
+            </span>
             @endif
         </div>
-        @if(in_array($pkgType, ['pro','gold','platinum']))
-        @php
-            $_pkg = app(App\Services\PremiumPackagesService::class)->package($pkgType);
-        @endphp
-        <span class="profile-pkg-badge profile-pkg-badge--{{ $pkgType }}">
-            {{ $_pkg['badge_label'] ?? ucfirst($pkgType) }}
-        </span>
-        @endif
         <div class="profile-header-meta">
             @php $profileAge = $user->age(); @endphp
             <div class="profile-header-topbar">

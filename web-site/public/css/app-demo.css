@@ -232,3 +232,12 @@ body.app-demo-mode {
         -webkit-backdrop-filter: blur(20px);
     }
 }
+
+/* ─── Profile photo column — badge below photo ─── */
+.profile-photo-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 0.35rem;
+}

@@ -18,51 +18,53 @@
         @php
             $pkgType = $user->activePackageType();
         @endphp
-        <div class="profile-photo-wrap @if($ownStoryGroup) profile-photo-wrap--has-story @endif @if(in_array($pkgType, ['pro','gold','platinum'])) profile-photo-wrap--premium-{{ $pkgType }} @endif">
-            @if($ownStoryGroup)
-            <button
-                type="button"
-                class="profile-photo profile-photo--story story-item story-item--own"
-                id="profilePhotoPreview"
-                data-story-index="0"
-                data-user-id="{{ $user->id }}"
-                aria-label="Hikayeni görüntüle"
-            >
-                <span class="story-ring story-ring--unseen story-ring--profile story-ring--own{{ in_array($pkgType ?? null, ['pro','gold','platinum']) ? ' story-ring--premium-'.($pkgType ?? '') : '' }}">
-                    <span class="story-avatar">
-                        @if($user->profile_photo_url)
-                            <img src="{{ $user->profile_photo_url }}" alt="Profil" width="96" height="96" loading="eager" decoding="async">
-                        @else
-                            {{ strtoupper(substr($user->username, 0, 1)) }}
-                        @endif
+        <div class="profile-photo-col">
+            <div class="profile-photo-wrap @if($ownStoryGroup) profile-photo-wrap--has-story @endif @if(in_array($pkgType, ['pro','gold','platinum'])) profile-photo-wrap--premium-{{ $pkgType }} @endif">
+                @if($ownStoryGroup)
+                <button
+                    type="button"
+                    class="profile-photo profile-photo--story story-item story-item--own"
+                    id="profilePhotoPreview"
+                    data-story-index="0"
+                    data-user-id="{{ $user->id }}"
+                    aria-label="Hikayeni görüntüle"
+                >
+                    <span class="story-ring story-ring--unseen story-ring--profile story-ring--own{{ in_array($pkgType ?? null, ['pro','gold','platinum']) ? ' story-ring--premium-'.($pkgType ?? '') : '' }}">
+                        <span class="story-avatar">
+                            @if($user->profile_photo_url)
+                                <img src="{{ $user->profile_photo_url }}" alt="Profil" width="96" height="96" loading="eager" decoding="async">
+                            @else
+                                {{ strtoupper(substr($user->username, 0, 1)) }}
+                            @endif
+                        </span>
                     </span>
-                </span>
-            </button>
-            @else
-            <div class="profile-photo" id="profilePhotoPreview">
-                @if($user->profile_photo_url)
-                    <img src="{{ $user->profile_photo_url }}" alt="Profil" width="96" height="96" loading="eager" decoding="async">
+                </button>
                 @else
-                    <span class="profile-photo-initial">{{ strtoupper(substr($user->username, 0, 1)) }}</span>
+                <div class="profile-photo" id="profilePhotoPreview">
+                    @if($user->profile_photo_url)
+                        <img src="{{ $user->profile_photo_url }}" alt="Profil" width="96" height="96" loading="eager" decoding="async">
+                    @else
+                        <span class="profile-photo-initial">{{ strtoupper(substr($user->username, 0, 1)) }}</span>
+                    @endif
+                </div>
                 @endif
+                <form method="POST" action="{{ route('profile.photo') }}" enctype="multipart/form-data" class="profile-photo-form">
+                    @csrf
+                    <label class="profile-photo-change" title="Profil fotoğrafı değiştir">
+                        <input type="file" name="photo" accept="image/jpeg,image/png,image/gif,image/webp">
+                        @include('partials.icon-camera')
+                    </label>
+                </form>
             </div>
+            @if(in_array($pkgType, ['pro','gold','platinum']))
+            @php
+                $_pkg = app(App\Services\PremiumPackagesService::class)->package($pkgType);
+            @endphp
+            <span class="profile-pkg-badge profile-pkg-badge--{{ $pkgType }}">
+                {{ $_pkg['badge_label'] ?? ucfirst($pkgType) }}
+            </span>
             @endif
-            <form method="POST" action="{{ route('profile.photo') }}" enctype="multipart/form-data" class="profile-photo-form">
-                @csrf
-                <label class="profile-photo-change" title="Profil fotoğrafı değiştir">
-                    <input type="file" name="photo" accept="image/jpeg,image/png,image/gif,image/webp">
-                    @include('partials.icon-camera')
-                </label>
-            </form>
         </div>
-        @if(in_array($pkgType, ['pro','gold','platinum']))
-        @php
-            $_pkg = app(App\Services\PremiumPackagesService::class)->package($pkgType);
-        @endphp
-        <span class="profile-pkg-badge profile-pkg-badge--{{ $pkgType }}">
-            {{ $_pkg['badge_label'] ?? ucfirst($pkgType) }}
-        </span>
-        @endif
         <div class="profile-header-meta">
             @include('partials.profile-identity', [
                 'user' => $user,

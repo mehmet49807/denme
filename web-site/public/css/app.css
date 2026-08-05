@@ -10354,3 +10354,12 @@ html[data-theme="dark"] .btn-primary:disabled {
     background: linear-gradient(135deg, #e2e8f0, #94a3b8 55%, #fbbf24);
     color: #0f172a;
 }
+
+/* ─── Profile photo column — badge below photo ─── */
+.profile-photo-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 0.35rem;
+}
