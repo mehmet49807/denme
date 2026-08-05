@@ -10326,3 +10326,31 @@ html[data-theme="dark"] .btn-primary:disabled {
     background: linear-gradient(135deg, #e2e8f0, #94a3b8 55%, #fbbf24);
     color: #0f172a;
 }
+
+/* ─── Premium paket adı rozeti — feed story strip ─── */
+.story-pkg-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.15rem;
+    padding: 0.08rem 0.4rem;
+    border-radius: 999px;
+    font-size: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #fff;
+    white-space: nowrap;
+    line-height: 1.3;
+}
+.story-pkg-badge--pro {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+}
+.story-pkg-badge--gold {
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    color: #422006;
+}
+.story-pkg-badge--platinum {
+    background: linear-gradient(135deg, #e2e8f0, #94a3b8 55%, #fbbf24);
+    color: #0f172a;
+}

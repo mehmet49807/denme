@@ -48,6 +48,11 @@
                         @endif
                     </div>
                     <span class="story-username">{{ __('app.feed.your_story') }}</span>
+                    @php $_viewerPkg = $viewer->activePackageType(); @endphp
+                    @if(in_array($_viewerPkg, ['pro','gold','platinum']))
+                    @php $_vpkg = app(App\Services\PremiumPackagesService::class)->package($_viewerPkg); @endphp
+                    <span class="story-pkg-badge story-pkg-badge--{{ $_viewerPkg }}">{{ $_vpkg['badge_label'] ?? ucfirst($_viewerPkg) }}</span>
+                    @endif
                 </div>
                 @elseif($viewer->canPostStories())
                 <button type="button" class="story-item story-item--add" data-open-compose="story" aria-label="{{ __('app.feed.add_story') }}">
@@ -102,6 +107,10 @@
                     </span>
                     <span class="story-caption">
                         <span class="story-username">{{ $group['username'] }}</span>
+                        @if(in_array($group['package_type'] ?? null, ['pro','gold','platinum']))
+                        @php $_gpkg = app(App\Services\PremiumPackagesService::class)->package($group['package_type']); @endphp
+                        <span class="story-pkg-badge story-pkg-badge--{{ $group['package_type'] }}">{{ $_gpkg['badge_label'] ?? ucfirst($group['package_type']) }}</span>
+                        @endif
                         @if(!empty($group['city']) || (!empty($group['country']) && !$isOfficial) || (!empty($group['show_premium_sticker']) && is_array($sticker)))
                         <span class="story-meta-line">
                             @if(!empty($group['city']))
