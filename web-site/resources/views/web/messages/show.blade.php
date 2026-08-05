@@ -20,7 +20,8 @@
             <header class="chat-header">
                 <a href="{{ route('messages.index') }}" class="chat-back dm-back-mobile" aria-label="{{ __('app.messages.back') }}">←</a>
                 <a href="{{ route('users.show', $partner->username) }}" class="chat-partner">
-                    <div class="chat-partner-avatar">
+                    @php $_partnerPkg = method_exists($partner, 'activePackageType') ? $partner->activePackageType() : null; @endphp
+                    <div class="chat-partner-avatar{{ in_array($_partnerPkg, ['pro','gold','platinum']) ? ' is-premium-'.$_partnerPkg : '' }}">
                         @if($partner->profile_photo_url)
                             <img src="{{ $partner->profile_photo_url }}" alt="" width="40" height="40" loading="lazy" decoding="async">
                         @else

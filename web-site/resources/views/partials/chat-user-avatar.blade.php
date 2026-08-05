@@ -1,7 +1,9 @@
 @php
     $user = $user ?? null;
     $size = (int) ($size ?? 28);
-    $class = trim('chat-user-avatar ' . ($class ?? ''));
+    $_pkg = $user && method_exists($user, 'activePackageType') ? $user->activePackageType() : null;
+    $_pkgClass = in_array($_pkg, ['pro','gold','platinum'], true) ? ' is-premium-'.$_pkg : '';
+    $class = trim('chat-user-avatar'.$_pkgClass.' '.($class ?? ''));
     $href = $href ?? null;
     $showOnline = $showOnline ?? false;
     $initial = strtoupper(substr($user->username ?? '?', 0, 1));

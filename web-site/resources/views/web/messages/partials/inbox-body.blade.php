@@ -46,7 +46,8 @@
         </div>
         <div class="conversation-swipe-front">
             <a href="{{ route('messages.show', $user->username) }}" class="conversation-item {{ $conversation['unread_count'] > 0 ? 'conversation-item--unread' : '' }} {{ $isActive ? 'conversation-item--active' : '' }}">
-                <div class="conversation-avatar">
+                @php $_convPkg = method_exists($user, 'activePackageType') ? $user->activePackageType() : null; @endphp
+                <div class="conversation-avatar{{ in_array($_convPkg, ['pro','gold','platinum']) ? ' is-premium-'.$_convPkg : '' }}">
                     @if($user->profile_photo_url)
                         <img src="{{ $user->profile_photo_url }}" alt="{{ $user->username }}" width="56" height="56" loading="lazy" decoding="async">
                     @else

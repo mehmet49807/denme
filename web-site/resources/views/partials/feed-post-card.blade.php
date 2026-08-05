@@ -10,7 +10,8 @@
     <div class="post-card-accent" aria-hidden="true"></div>
 
     <header class="post-header">
-        <a href="{{ route('users.show', $post->user->username) }}" class="post-header-avatar" aria-hidden="true" tabindex="-1">
+        @php $postUserPkg = method_exists($post->user, 'activePackageType') ? $post->user->activePackageType() : null; @endphp
+        <a href="{{ route('users.show', $post->user->username) }}" class="post-header-avatar{{ in_array($postUserPkg, ['pro','gold','platinum']) ? ' is-premium-'.$postUserPkg : '' }}" aria-hidden="true" tabindex="-1">
             @if($post->user->profile_photo_url)
                 <img src="{{ $post->user->profile_photo_url }}" alt="" width="40" height="40" loading="lazy" decoding="async">
             @else

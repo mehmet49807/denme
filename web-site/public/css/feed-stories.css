@@ -607,3 +607,28 @@
     background: conic-gradient(from 200deg, #f8fafc, #94a3b8, #fbbf24, #cbd5e1, #f8fafc) !important;
     box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.22), 0 0 0 5px rgba(251, 191, 36, 0.12);
 }
+
+/* Premium çerçeve — küçük avatarlar (post kartları) */
+.post-header-avatar.is-premium-pro {
+    padding: 2px;
+    border-radius: 50%;
+    background: conic-gradient(from 210deg, #38bdf8, #0284c7, #0ea5e9, #38bdf8);
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.14);
+}
+.post-header-avatar.is-premium-gold {
+    padding: 2px;
+    border-radius: 50%;
+    background: conic-gradient(from 210deg, #fde68a, #f59e0b, #d97706, #fbbf24, #fde68a);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.16);
+}
+.post-header-avatar.is-premium-platinum {
+    padding: 2px;
+    border-radius: 50%;
+    background: conic-gradient(from 200deg, #f8fafc, #94a3b8, #fbbf24, #cbd5e1, #f8fafc);
+    box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.22), 0 0 0 3px rgba(251, 191, 36, 0.12);
+}
+.post-header-avatar.is-premium-pro img,
+.post-header-avatar.is-premium-gold img,
+.post-header-avatar.is-premium-platinum img {
+    border-radius: 50%;
+}

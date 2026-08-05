@@ -46,6 +46,28 @@
             </div>
             @endif
         </div>
+        @if(in_array($pkgType, ['pro','gold','platinum']))
+        @php
+            $_pkg = app(App\Services\PremiumPackagesService::class)->package($pkgType);
+        @endphp
+        <div class="profile-premium-info">
+            <span class="profile-premium-badge profile-premium-badge--{{ $pkgType }}">
+                @include('partials.theme-icon', ['icon' => $_pkg['badge_icon'] ?? 'star'])
+                {{ $_pkg['badge_label'] ?? ucfirst($pkgType) }}
+            </span>
+            <div class="profile-premium-features">
+                @foreach(($_pkg['feature_keys'] ?? []) as $_fk)
+                    <span class="profile-premium-feature profile-premium-feature--{{ $pkgType }}">
+                        @if($_fk === 'perk_badge')
+                            {{ $_pkg['rozet_label'] ?? $_pkg['badge_label'] ?? 'Rozet' }}
+                        @else
+                            {{ __('app.premium.'.$_fk) }}
+                        @endif
+                    </span>
+                @endforeach
+            </div>
+        </div>
+        @endif
         <div class="profile-header-meta">
             @php $profileAge = $user->age(); @endphp
             <div class="profile-header-topbar">

@@ -126,9 +126,10 @@
     @elseif($tab === 'incoming')
         <div class="users-browse-grid matches-grid">
             @forelse(($incomingUsers ?? collect()) as $user)
+                @php $_matchPkg = method_exists($user, 'activePackageType') ? $user->activePackageType() : null; @endphp
                 <article class="users-browse-card matches-card">
                     <a href="{{ route('users.show', $user->username) }}" class="users-browse-card__link">
-                        <span class="users-browse-card__photo">
+                        <span class="users-browse-card__photo{{ in_array($_matchPkg, ['pro','gold','platinum']) ? ' is-premium-'.$_matchPkg : '' }}">
                             @if($user->profile_photo_url)
                                 <img src="{{ $user->profile_photo_url }}" alt="" loading="lazy" width="160" height="160">
                             @else
@@ -170,9 +171,10 @@
         </div>
         <div class="users-browse-grid matches-grid">
             @forelse(($matchedUsers ?? collect()) as $user)
+                @php $_matchPkg = method_exists($user, 'activePackageType') ? $user->activePackageType() : null; @endphp
                 <article class="users-browse-card matches-card">
                     <a href="{{ route('users.show', $user->username) }}" class="users-browse-card__link">
-                        <span class="users-browse-card__photo">
+                        <span class="users-browse-card__photo{{ in_array($_matchPkg, ['pro','gold','platinum']) ? ' is-premium-'.$_matchPkg : '' }}">
                             @if($user->profile_photo_url)
                                 <img src="{{ $user->profile_photo_url }}" alt="" loading="lazy" width="160" height="160">
                             @else

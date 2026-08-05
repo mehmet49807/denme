@@ -72,7 +72,8 @@
                         @endphp
                         <li class="pv-list__item{{ $visible ? '' : ' is-collapsed' }}" @unless($visible) hidden @endunless>
                             <a href="{{ route('users.show', $viewer->username) }}" class="pv-card">
-                                <span class="pv-card__avatar" aria-hidden="true">
+                                @php $_pvPkg = method_exists($viewer, 'activePackageType') ? $viewer->activePackageType() : null; @endphp
+                                <span class="pv-card__avatar{{ in_array($_pvPkg, ['pro','gold','platinum']) ? ' is-premium-'.$_pvPkg : '' }}" aria-hidden="true">
                                     @if($viewer->profile_photo_url)
                                         <img src="{{ $viewer->profile_photo_url }}" alt="" width="52" height="52" loading="lazy" decoding="async">
                                     @else
