@@ -25,7 +25,7 @@ class User extends Authenticatable
         'bio', 'relationship_status', 'relationship_expectation', 'birth_date', 'gallery_photos',
         'is_verified', 'visibility', 'quiet_hours_enabled', 'quiet_hours_start', 'quiet_hours_end',
         'read_receipts_enabled', 'theme_preference', 'boost_until', 'last_boost_at',
-        'trial_ends_at', 'locale',
+        'trial_ends_at', 'locale', 'two_factor_code', 'two_factor_expires_at',
         'referral_code', 'referred_by_user_id', 'utm_source', 'utm_medium', 'utm_campaign',
         'registration_source', 'last_lifecycle_email_at',
         // role / is_banned / banned_* / fake_score are NOT fillable — use forceFill in admin/system code.
@@ -43,6 +43,7 @@ class User extends Authenticatable
             'last_active_at' => 'datetime',
             'last_lifecycle_email_at' => 'datetime',
             'trial_ends_at' => 'datetime',
+            'two_factor_expires_at' => 'datetime',
             'birth_date' => 'date',
             'boost_until' => 'datetime',
             'last_boost_at' => 'datetime',
@@ -83,6 +84,27 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function needsTwoFactor(): bool
+    {
+        return $this->isStaff()
+            && env('ENABLE_ADMIN_2FA', true);
+    }
+
+    public function hasValidTwoFactorCode(): bool
+    {
+        return $this->two_factor_code !== null
+            && $this->two_factor_expires_at !== null
+            && $this->two_factor_expires_at->isFuture();
+    }
+
+    public function clearTwoFactor(): void
+    {
+        $this->forceFill([
+            'two_factor_code' => null,
+            'two_factor_expires_at' => null,
+        ])->save();
     }
 
     public function isStaff(): bool

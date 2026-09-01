@@ -456,6 +456,10 @@ Route::get('/reset-password/{token}', [AuthPageController::class, 'resetPassword
 Route::post('/reset-password', [AuthPageController::class, 'resetPassword'])->middleware('throttle:6,1,password-reset')->name('password.update');
 Route::post('/logout', [AuthPageController::class, 'logout'])->name('logout');
 
+Route::get('/two-factor', [AuthPageController::class, 'showTwoFactorForm'])->name('2fa.verify');
+Route::post('/two-factor', [AuthPageController::class, 'verifyTwoFactor'])->middleware('throttle:5,1')->name('2fa.check');
+Route::post('/two-factor/resend', [AuthPageController::class, 'resendTwoFactor'])->middleware('throttle:3,1')->name('2fa.resend');
+
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
 Route::post('/auth/google/prepare', [GoogleAuthController::class, 'prepare'])->middleware('throttle:20,1,google-prepare')->name('auth.google.prepare');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');

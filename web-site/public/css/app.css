@@ -10368,3 +10368,17 @@ html[data-theme="dark"] .btn-primary:disabled {
     gap: 0;
     position: relative;
 }
+
+/* ===== Auth Alert ===== */
+.auth-alert {
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+.auth-alert--success {
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #065f46;
+}

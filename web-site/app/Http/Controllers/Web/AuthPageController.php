@@ -210,6 +210,25 @@ class AuthPageController extends Controller
                 return back()->withErrors(['login' => 'Hesabınız askıya alınmıştır.']);
             }
 
+            // 2FA for admin/staff users
+            if ($user->needsTwoFactor()) {
+                $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+                $user->forceFill([
+                    'two_factor_code' => $code,
+                    'two_factor_expires_at' => now()->addMinutes(10),
+                ])->save();
+
+                session(['2fa:user_id' => $user->id]);
+
+                try {
+                    app(\App\Services\UserMailService::class)->sendTwoFactorCode($user, $code);
+                } catch (\Throwable) {
+                    // If email fails, still allow 2FA page to show
+                }
+
+                return redirect()->route('2fa.verify');
+            }
+
             Auth::login($user, $request->boolean('remember'));
             \App\Support\FcmWebPrompt::arm();
 
@@ -225,6 +244,82 @@ class AuthPageController extends Controller
         }
 
         return back()->withErrors(['login' => 'Giriş bilgileri hatalı.']);
+    }
+
+    public function showTwoFactorForm(): View|RedirectResponse
+    {
+        if (! session('2fa:user_id')) {
+            return redirect()->route('login');
+        }
+
+        return view('web.two-factor');
+    }
+
+    public function verifyTwoFactor(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'code' => 'required|string|size:6',
+        ]);
+
+        $userId = session('2fa:user_id');
+        if (! $userId) {
+            return redirect()->route('login');
+        }
+
+        $user = User::find($userId);
+        if (! $user) {
+            session()->forget('2fa:user_id');
+            return redirect()->route('login');
+        }
+
+        if (! $user->hasValidTwoFactorCode()) {
+            $user->clearTwoFactor();
+            session()->forget('2fa:user_id');
+            return redirect()->route('login')->withErrors(['code' => 'Doğrulama kodunun süresi dolmuş. Tekrar giriş yapın.']);
+        }
+
+        if ($request->code !== $user->two_factor_code) {
+            return back()->withErrors(['code' => 'Doğrulama kodu hatalı.']);
+        }
+
+        $user->clearTwoFactor();
+        session()->forget('2fa:user_id');
+        Auth::login($user, true);
+        \App\Support\FcmWebPrompt::arm();
+
+        if ($user->isAdmin() && \Illuminate\Support\Facades\Route::has('admin.dashboard')) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->intended(route('feed'));
+    }
+
+    public function resendTwoFactor(Request $request): RedirectResponse
+    {
+        $userId = session('2fa:user_id');
+        if (! $userId) {
+            return redirect()->route('login');
+        }
+
+        $user = User::find($userId);
+        if (! $user) {
+            session()->forget('2fa:user_id');
+            return redirect()->route('login');
+        }
+
+        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $user->forceFill([
+            'two_factor_code' => $code,
+            'two_factor_expires_at' => now()->addMinutes(10),
+        ])->save();
+
+        try {
+            app(\App\Services\UserMailService::class)->sendTwoFactorCode($user, $code);
+        } catch (\Throwable) {
+            //
+        }
+
+        return back()->with('status', 'Yeni doğrulama kodu gönderildi.');
     }
 
     public function forgotPasswordForm(): View

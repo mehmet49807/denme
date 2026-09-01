@@ -272,6 +272,25 @@ HTML,
 HTML,
         ],
 
+        'two_factor_code' => [
+            'label' => 'İki Adımlı Doğrulama',
+            'description' => 'Yönetici girişinde 2FA kodu olarak gönderilir.',
+            'subject' => 'Doğrulama kodunuz — Gönül Köprüsü',
+            'body' => <<<'HTML'
+<p style="margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#7C3AED;">İki Adımlı Doğrulama</p>
+<p style="margin:0 0 18px;font-size:22px;font-weight:800;line-height:1.35;color:#1A1523;letter-spacing:-0.02em;">Merhaba {first_name},</p>
+<p style="margin:0 0 16px;">Hesabınıza giriş yapmak için iki adımlı doğrulama kodunuz aşağıdadır. Bu kod <strong>10 dakika</strong> geçerlidir.</p>
+<table role="presentation" cellspacing="0" cellpadding="0" align="center" style="margin:28px auto 24px;">
+    <tr>
+        <td align="center" style="border-radius:16px;background:#FAF5FF;border:2px solid rgba(124,58,237,0.18);padding:22px 40px;">
+            <p style="margin:0;font-size:34px;font-weight:800;letter-spacing:0.3em;color:#7C3AED;">{two_factor_code}</p>
+        </td>
+    </tr>
+</table>
+<p style="margin:0;font-size:14px;line-height:1.65;color:#6B6478;">Bu kodu siz istemediyseniz bu e-postayı görmezden gelebilirsiniz.<br><strong style="color:#1A1523;">Gönül Köprüsü Ekibi</strong></p>
+HTML,
+        ],
+
         'custom' => [
             'label' => 'Özel Mesaj',
             'description' => 'Konu ve içeriği kendiniz yazın.',

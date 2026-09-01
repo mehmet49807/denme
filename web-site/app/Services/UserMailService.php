@@ -80,6 +80,14 @@ class UserMailService
         return $this->send($user, $rendered['subject'], $body, 'password_reset');
     }
 
+    public function sendTwoFactorCode(User $user, string $code): bool
+    {
+        $rendered = $this->render('two_factor_code', $user);
+        $body = str_replace('{two_factor_code}', $code, $rendered['body']);
+
+        return $this->send($user, $rendered['subject'], $body, 'two_factor_code');
+    }
+
     public function send(User $user, string $subject, string $body, ?string $templateKey = null, ?int $adminId = null): bool
     {
         if (!$user->email) {
@@ -217,6 +225,7 @@ class UserMailService
                 : $base.'/register?utm_source=email&utm_medium=lifecycle&utm_campaign=invite',
             '{referral_url}' => $base.'/davet',
             '{instagram_url}' => \App\Support\InstagramUrl::withUtm('email', 'lifecycle', 'instagram'),
+            '{two_factor_code}' => '',
         ];
 
         return str_replace(array_keys($map), array_values($map), $text);
