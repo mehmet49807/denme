@@ -161,6 +161,11 @@
         "local": "patch-web-admin-fix-autoloader.php",
         "remote": "patch-web-admin-fix-autoloader.php",
         "file": true
+      },
+      {
+        "local": "patch-web-admin-sync-app.php",
+        "remote": "patch-web-admin-sync-app.php",
+        "file": true
       }
     ],
     "post_deploy": [
