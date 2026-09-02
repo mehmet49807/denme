@@ -41,6 +41,19 @@
         return '<p class="chat-bubble-text' + (emojiOnly ? ' chat-bubble-text--emoji' : '') + '">' + escapeHtml(text) + '</p>';
     }
 
+    function buildAttachmentHtml(message) {
+        if (!message || !message.attachment_url) return '';
+
+        const url = escapeHtml(message.attachment_url);
+        if (message.attachment_type === 'audio') {
+            return '<audio class="chat-attachment-audio" controls preload="metadata" aria-label="Sesli mesaj"><source src="' + url + '"></audio>';
+        }
+
+        return '<a class="chat-attachment-image" href="' + url + '" target="_blank" rel="noopener noreferrer">' +
+            '<img src="' + url + '" alt="Görsel mesajı" loading="lazy" decoding="async">' +
+            '</a>';
+    }
+
     function buildDeleteButtonHtml(messageId) {
         if (!messageId || !chatConfig.deleteMessageUrl) return '';
         return '<button type="button" class="chat-msg-delete" data-delete-message="' + escapeHtml(String(messageId)) + '" aria-label="' + escapeHtml(t('delete', 'Sil')) + '" title="' + escapeHtml(t('delete', 'Sil')) + '">' +
@@ -105,6 +118,7 @@
         wrap.innerHTML =
             '<div class="chat-msg-body">' +
             '<div class="chat-bubble chat-bubble--sent' + (emojiOnly ? ' chat-bubble--emoji' : '') + '">' +
+            buildAttachmentHtml(opts) +
             buildBubbleBody(text, emojiOnly) +
             '<time class="chat-bubble-time" datetime="' + escapeHtml(opts.datetime || '') + '">' +
             escapeHtml(opts.timeLabel || t('now', 'Now')) +
@@ -141,6 +155,7 @@
             }) +
             '<div class="chat-msg-body">' +
             '<div class="chat-bubble chat-bubble--received' + (emojiOnly ? ' chat-bubble--emoji' : '') + '">' +
+            buildAttachmentHtml(msg) +
             buildBubbleBody(msg.message_text, emojiOnly) +
             '<time class="chat-bubble-time" datetime="' + escapeHtml(msg.created_at || '') + '">' +
             escapeHtml(msg.created_at_display || t('now', 'Now')) +
@@ -182,6 +197,16 @@
             timeEl.setAttribute('datetime', message.created_at || '');
         }
 
+        if (message.attachment_url && !wrap.querySelector('.chat-attachment-image, .chat-attachment-audio')) {
+            const bubble = wrap.querySelector('.chat-bubble');
+            const textEl = bubble && bubble.querySelector('.chat-bubble-text');
+            if (textEl) {
+                textEl.insertAdjacentHTML('beforebegin', buildAttachmentHtml(message));
+            } else if (bubble) {
+                bubble.insertAdjacentHTML('afterbegin', buildAttachmentHtml(message));
+            }
+        }
+
         if (message.id && chatConfig.deleteMessageUrl && !wrap.querySelector('[data-delete-message]')) {
             const body = wrap.querySelector('.chat-msg-body');
             if (body) {
@@ -217,7 +242,9 @@
     }
 
     async function sendMessage(text, options) {
-        if (!form || !csrf || !text) {
+        const attachmentInput = form && form.querySelector('[name="attachment"]');
+        const hasAttachment = !!(attachmentInput && attachmentInput.files && attachmentInput.files.length);
+        if (!form || !csrf || (!text && !hasAttachment)) {
             return { ok: false, message: t('failed', 'Could not send message.') };
         }
 
@@ -368,6 +395,8 @@
                         datetime: msg.created_at || '',
                         timeLabel: msg.created_at_display || t('now', 'Now'),
                         emojiOnly: msg.is_emoji_only,
+                        attachment_url: msg.attachment_url || '',
+                        attachment_type: msg.attachment_type || '',
                     });
                     return;
                 }
@@ -532,14 +561,16 @@
     if (form && csrf && input) {
         form.addEventListener('submit', function (e) {
             const text = input.value.trim();
-            if (!text) return;
+            const attachmentInput = form.querySelector('[name="attachment"]');
+            const hasAttachment = !!(attachmentInput && attachmentInput.files && attachmentInput.files.length);
+            if (!text && !hasAttachment) return;
 
             e.preventDefault();
 
             const submitBtn = form.querySelector('.chat-send');
             if (submitBtn) submitBtn.disabled = true;
 
-            const wrap = appendSentBubble(text, { pending: true });
+            const wrap = appendSentBubble(text || '📎 Ek', { pending: true });
             const savedText = text;
             input.value = '';
             setSelfTyping(false);

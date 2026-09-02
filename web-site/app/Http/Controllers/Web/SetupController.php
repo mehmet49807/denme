@@ -928,9 +928,20 @@ HTML;
                 '--path' => 'database/migrations/2024_06_15_000001_add_message_hidden_columns.php',
             ]);
             $output = trim(Artisan::output());
-            $lines[] = 'migration: '.($output !== '' ? $output : 'OK');
+            $lines[] = 'hidden columns migration: '.($output !== '' ? $output : 'OK');
         } catch (\Throwable $e) {
-            $lines[] = 'migration HATA: '.$e->getMessage();
+            $lines[] = 'hidden columns migration HATA: '.$e->getMessage();
+        }
+
+        try {
+            Artisan::call('migrate', [
+                '--force' => true,
+                '--path' => 'database/migrations/2026_09_02_000001_add_message_attachment_columns.php',
+            ]);
+            $output = trim(Artisan::output());
+            $lines[] = 'attachment migration: '.($output !== '' ? $output : 'OK');
+        } catch (\Throwable $e) {
+            $lines[] = 'attachment migration HATA: '.$e->getMessage();
         }
 
         try {
