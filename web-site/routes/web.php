@@ -336,7 +336,7 @@ Route::get('/firebase-messaging-sw.js', [FcmWebController::class, 'serviceWorker
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/setup/sitemap-ping', function () {
-    if (request('key') !== 'gk-cpanel-setup-2026') {
+    if (! SetupKey::matches(request('key'), 'gk-cpanel-setup-2026')) {
         abort(403);
     }
 
