@@ -166,6 +166,11 @@
         "local": "patch-web-admin-sync-app.php",
         "remote": "patch-web-admin-sync-app.php",
         "file": true
+      },
+      {
+        "local": "patch-web-admin-sync-all.php",
+        "remote": "patch-web-admin-sync-all.php",
+        "file": true
       }
     ],
     "post_deploy": [
