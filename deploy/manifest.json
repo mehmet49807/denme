@@ -146,6 +146,11 @@
         "local": "patch-web-admin-restore-core.php",
         "remote": "patch-web-admin-restore-core.php",
         "file": true
+      },
+      {
+        "local": "patch-web-admin-link-vendor.php",
+        "remote": "patch-web-admin-link-vendor.php",
+        "file": true
       }
     ],
     "post_deploy": [
