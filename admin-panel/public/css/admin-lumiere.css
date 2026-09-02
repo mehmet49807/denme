@@ -204,7 +204,7 @@ body.admin-body.admin-theme-lumiere {
 }
 
 .admin-theme-lumiere .admin-nav-group__summary {
-    color: var(--lum-text-soft);
+    color: var(--lum-text-muted);
 }
 
 .admin-theme-lumiere .admin-nav-group__summary:hover {
