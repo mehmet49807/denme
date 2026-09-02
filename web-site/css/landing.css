@@ -787,6 +787,45 @@ body.app-shell-body .site-header .site-nav { display: none; }
 }
 
 @media (max-width: 768px) {
+    .page-landing .site-nav-toggle {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 12px;
+        cursor: pointer;
+    }
+    .page-landing .site-nav-toggle span {
+        display: block;
+        width: 18px;
+        height: 2px;
+        background: currentColor;
+        border-radius: 2px;
+    }
+    .page-landing .site-nav {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 1rem;
+        left: 1rem;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.25rem;
+        padding: 0.75rem;
+        background: rgba(26, 15, 46, 0.97);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 18px;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+    }
+    .page-landing .site-nav.is-open { display: flex; }
+    .page-landing .site-nav a { width: 100%; }
     .site-logo-tagline { display: block; }
     .site-logo-mark {
         width: 42px;
