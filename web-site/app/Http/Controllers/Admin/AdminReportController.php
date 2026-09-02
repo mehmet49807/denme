@@ -13,11 +13,12 @@ class AdminReportController extends Controller
     {
         $query = Report::with(['reporter', 'reported']);
 
-        if ($status = $request->get('status')) {
+        $status = (string) $request->get('status', '');
+        if (in_array($status, ['pending', 'investigating', 'resolved', 'dismissed'], true)) {
             $query->where('status', $status);
         }
 
-        $reports = $query->latest()->paginate(20);
+        $reports = $query->latest()->paginate(20)->withQueryString();
 
         return view('admin.reports.index', compact('reports'));
     }
