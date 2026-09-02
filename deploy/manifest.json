@@ -156,6 +156,11 @@
         "local": "patch-web-admin-fix-vendor.php",
         "remote": "patch-web-admin-fix-vendor.php",
         "file": true
+      },
+      {
+        "local": "patch-web-admin-fix-autoloader.php",
+        "remote": "patch-web-admin-fix-autoloader.php",
+        "file": true
       }
     ],
     "post_deploy": [

@@ -1,0 +1,41 @@
+<?php
+if (($_GET['key'] ?? '') !== 'gk-cpanel-setup-2026') {
+    http_response_code(403);
+    exit('forbidden');
+}
+
+header('Content-Type: text/plain; charset=utf-8');
+header('Cache-Control: no-store');
+
+$adminRoot = '/home/gonulkop/admin.gonulkoprusu.com';
+if (! is_dir($adminRoot)) {
+    $adminRoot = dirname(__DIR__).'/admin.gonulkoprusu.com';
+}
+
+file_put_contents($adminRoot.'/index.php', base64_decode('PD9waHAKCnVzZSBJbGx1bWluYXRlXEh0dHBcUmVxdWVzdDsKCmRlZmluZSgnTEFSQVZFTF9TVEFSVCcsIG1pY3JvdGltZSh0cnVlKSk7CgovLyBDYWNoZSBidXN0IG9uIGRlcGxveQokY2FjaGVCdXN0TWFya2VyID0gX19ESVJfXy4nL3N0b3JhZ2UvZnJhbWV3b3JrL2NhY2hlLy5kZXBsb3lfY2FjaGVfYnVzdF92MTQnOwppZiAoISBpc19maWxlKCRjYWNoZUJ1c3RNYXJrZXIpKSB7CiAgICBmb3JlYWNoIChbJ3JvdXRlcy12Ny5waHAnLCAnY29uZmlnLnBocCcsICdldmVudHMucGhwJ10gYXMgJG5hbWUpIHsKICAgICAgICAkZmlsZSA9IF9fRElSX18uJy9ib290c3RyYXAvY2FjaGUvJy4kbmFtZTsKICAgICAgICBpZiAoaXNfZmlsZSgkZmlsZSkpIHsKICAgICAgICAgICAgQHVubGluaygkZmlsZSk7CiAgICAgICAgfQogICAgfQogICAgZm9yZWFjaCAoZ2xvYihfX0RJUl9fLicvc3RvcmFnZS9mcmFtZXdvcmsvdmlld3MvKi5waHAnKSA/OiBbXSBhcyAkdmlld0ZpbGUpIHsKICAgICAgICBpZiAoaXNfZmlsZSgkdmlld0ZpbGUpKSB7CiAgICAgICAgICAgIEB1bmxpbmsoJHZpZXdGaWxlKTsKICAgICAgICB9CiAgICB9CiAgICBAbWtkaXIoZGlybmFtZSgkY2FjaGVCdXN0TWFya2VyKSwgMDc1NSwgdHJ1ZSk7CiAgICBAZmlsZV9wdXRfY29udGVudHMoJGNhY2hlQnVzdE1hcmtlciwgZGF0ZSgnYycpKTsKfQoKaWYgKGZ1bmN0aW9uX2V4aXN0cygnb3BjYWNoZV9pbnZhbGlkYXRlJykpIHsKICAgIGZvcmVhY2ggKFsKICAgICAgICBfX0RJUl9fLicvcm91dGVzL3dlYi5waHAnLAogICAgICAgIF9fRElSX18uJy9yb3V0ZXMvYWRtaW5sb2dpbi5waHAnLAogICAgICAgIF9fRElSX18uJy9yb3V0ZXMvYWRtaW5fc3ViZG9tYWluLnBocCcsCiAgICAgICAgX19ESVJfXy4nL3JvdXRlcy9hcGkucGhwJywKICAgICAgICBfX0RJUl9fLicvYm9vdHN0cmFwL2FwcC5waHAnLAogICAgXSBhcyAkaW52YWxpZGF0ZSkgewogICAgICAgIGlmIChpc19maWxlKCRpbnZhbGlkYXRlKSkgewogICAgICAgICAgICBAb3BjYWNoZV9pbnZhbGlkYXRlKCRpbnZhbGlkYXRlLCB0cnVlKTsKICAgICAgICB9CiAgICB9Cn0KCmlmIChmaWxlX2V4aXN0cygkbWFpbnRlbmFuY2UgPSBfX0RJUl9fLicvc3RvcmFnZS9mcmFtZXdvcmsvbWFpbnRlbmFuY2UucGhwJykpIHsKICAgIHJlcXVpcmUgJG1haW50ZW5hbmNlOwp9CgovLyBMb2FkIHZlbmRvciAtIHRyeSBsb2NhbCBmaXJzdCwgdGhlbiB3ZWItc2l0ZQokdmVuZG9yQXV0b2xvYWQgPSBfX0RJUl9fLicvdmVuZG9yL2F1dG9sb2FkLnBocCc7CiR1c2luZ1NoYXJlZFZlbmRvciA9IGZhbHNlOwppZiAoISBpc19maWxlKCR2ZW5kb3JBdXRvbG9hZCkpIHsKICAgICR3ZWJDYW5kaWRhdGVzID0gWwogICAgICAgICcvaG9tZS9nb251bGtvcC9wdWJsaWNfaHRtbC92ZW5kb3IvYXV0b2xvYWQucGhwJywKICAgICAgICBkaXJuYW1lKF9fRElSX18pLicvcHVibGljX2h0bWwvdmVuZG9yL2F1dG9sb2FkLnBocCcsCiAgICBdOwogICAgZm9yZWFjaCAoJHdlYkNhbmRpZGF0ZXMgYXMgJGNhbmRpZGF0ZSkgewogICAgICAgIGlmIChpc19maWxlKCRjYW5kaWRhdGUpKSB7CiAgICAgICAgICAgICR2ZW5kb3JBdXRvbG9hZCA9ICRjYW5kaWRhdGU7CiAgICAgICAgICAgICR1c2luZ1NoYXJlZFZlbmRvciA9IHRydWU7CiAgICAgICAgICAgIGJyZWFrOwogICAgICAgIH0KICAgIH0KfQoKaWYgKCEgaXNfZmlsZSgkdmVuZG9yQXV0b2xvYWQpKSB7CiAgICBodHRwX3Jlc3BvbnNlX2NvZGUoNTAwKTsKICAgIGhlYWRlcignQ29udGVudC1UeXBlOiB0ZXh0L3BsYWluOyBjaGFyc2V0PXV0Zi04Jyk7CiAgICBlY2hvICJMYXJhdmVsIHZlbmRvciBidWx1bmFtYWRpLlxuIjsKICAgIGV4aXQoMSk7Cn0KCi8qKiBAdmFyIFxDb21wb3NlclxBdXRvbG9hZFxDbGFzc0xvYWRlciAkbG9hZGVyICovCiRsb2FkZXIgPSByZXF1aXJlICR2ZW5kb3JBdXRvbG9hZDsKCi8vIENSSVRJQ0FMOiBXaGVuIHNoYXJpbmcgdmVuZG9yIGZyb20gd2ViLXNpdGUsIHJlbWFwIEFwcFwgbmFtZXNwYWNlCi8vIHRvIHRoaXMgYWRtaW4gcGFuZWwncyBhcHAvIGRpcmVjdG9yeSBpbnN0ZWFkIG9mIHRoZSB3ZWItc2l0ZSdzCmlmICgkdXNpbmdTaGFyZWRWZW5kb3IpIHsKICAgICRsb2FkZXItPnNldFBzcjQoJ0FwcFxcJywgX19ESVJfXy4nL2FwcC8nKTsKfQoKLy8gQWxzbyBjcmVhdGUgbWlzc2luZyByb3V0ZSBmaWxlcyBpZiB0aGV5IGRvbid0IGV4aXN0CiRzdHViUm91dGVzID0gWwogICAgJ3JvdXRlcy9jb25zb2xlLnBocCcgPT4gIjw/cGhwXG51c2UgSWxsdW1pbmF0ZVxcRm91bmRhdGlvblxcSW5zcGlyaW5nO1xudXNlIElsbHVtaW5hdGVcXFN1cHBvcnRcXEZhY2FkZXNcXEFydGlzYW47XG4iLAogICAgJ3JvdXRlcy9jaGFubmVscy5waHAnID0+ICI8P3BocFxuXG51c2UgSWxsdW1pbmF0ZVxcU3VwcG9ydFxcRmFjYWRlc1xcQnJvYWRjYXN0O1xuIiwKXTsKZm9yZWFjaCAoJHN0dWJSb3V0ZXMgYXMgJHJlbCA9PiAkY29udGVudCkgewogICAgJHBhdGggPSBfX0RJUl9fLicvJy4kcmVsOwogICAgaWYgKCEgaXNfZmlsZSgkcGF0aCkpIHsKICAgICAgICBAZmlsZV9wdXRfY29udGVudHMoJHBhdGgsICRjb250ZW50KTsKICAgIH0KfQoKKHJlcXVpcmVfb25jZSBfX0RJUl9fLicvYm9vdHN0cmFwL2FwcC5waHAnKQogICAgLT5oYW5kbGVSZXF1ZXN0KFJlcXVlc3Q6OmNhcHR1cmUoKSk7Cg=='));
+echo "index.php updated: ".filesize($adminRoot.'/index.php')." bytes\n";
+
+// Also create missing route stubs
+$stubs = [
+    'routes/console.php' => "<?php\nuse Illuminate\\Foundation\\Inspiring;\nuse Illuminate\\Support\\Facades\\Artisan;\n",
+    'routes/channels.php' => "<?php\n\nuse Illuminate\\Support\\Facades\\Broadcast;\n",
+];
+foreach ($stubs as $rel => $content) {
+    $path = $adminRoot.'/'.$rel;
+    if (! is_file($path)) {
+        file_put_contents($path, $content);
+        echo "created $rel\n";
+    } else {
+        echo "exists $rel\n";
+    }
+}
+
+// Clear cache
+@shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan route:clear 2>/dev/null');
+@shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan view:clear 2>/dev/null');
+@shell_exec('cd '.escapeshellarg($adminRoot).' && php artisan config:clear 2>/dev/null');
+if (function_exists('opcache_reset')) {
+    @opcache_reset();
+}
+
+echo "DONE\n";
