@@ -141,6 +141,11 @@
         "local": "scripts/deploy/assets/laravel-vendor-extract.php",
         "remote": "laravel-vendor-extract.php",
         "file": true
+      },
+      {
+        "local": "patch-web-admin-restore-core.php",
+        "remote": "patch-web-admin-restore-core.php",
+        "file": true
       }
     ],
     "post_deploy": [
