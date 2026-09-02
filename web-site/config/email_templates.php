@@ -85,6 +85,27 @@ HTML,
 HTML,
         ],
 
+        'email_verification' => [
+            'label' => 'E-posta Doğrulama',
+            'description' => 'Yeni üyeliklerde e-posta adresini doğrulamak için gönderilir.',
+            'subject' => 'E-posta adresinizi doğrulayın — Gönül Köprüsü',
+            'body' => <<<'HTML'
+<p style="margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#7C3AED;">E-posta Doğrulama</p>
+<p style="margin:0 0 18px;font-size:22px;font-weight:800;line-height:1.35;color:#1A1523;letter-spacing:-0.02em;">Merhaba {first_name},</p>
+<p style="margin:0 0 16px;">Gönül Köprüsü hesabınızı korumak ve bildirimleri alabilmek için e-posta adresinizi doğrulayın.</p>
+
+<table role="presentation" cellspacing="0" cellpadding="0" align="center" style="margin:28px auto 24px;">
+    <tr>
+        <td align="center" style="border-radius:999px;background:linear-gradient(135deg,#7C3AED 0%,#DB2777 100%);box-shadow:0 10px 28px rgba(124,58,237,0.35);">
+            <a href="{verification_url}" style="display:inline-block;padding:15px 36px;color:#FFFFFF;font-size:15px;font-weight:700;text-decoration:none;">E-postamı Doğrula →</a>
+        </td>
+    </tr>
+</table>
+
+<p style="margin:0;font-size:13px;line-height:1.6;color:#8E8799;">Bağlantı çalışmazsa şu adresi tarayıcınıza yapıştırın:<br><a href="{verification_url}" style="color:#7C3AED;word-break:break-all;">{verification_url}</a></p>
+HTML,
+        ],
+
         'profile_complete' => [
             'label' => 'Profilini Tamamla',
             'description' => 'Profil fotoğrafı veya bilgileri eksik kullanıcılara.',

@@ -455,6 +455,9 @@ Route::post('/forgot-password', [AuthPageController::class, 'sendPasswordResetLi
 Route::get('/reset-password/{token}', [AuthPageController::class, 'resetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [AuthPageController::class, 'resetPassword'])->middleware('throttle:6,1,password-reset')->name('password.update');
 Route::post('/logout', [AuthPageController::class, 'logout'])->name('logout');
+Route::get('/email/verify/{id}/{hash}', [AuthPageController::class, 'verifyEmail'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
 
 Route::get('/two-factor', [AuthPageController::class, 'showTwoFactorForm'])->name('2fa.verify');
 Route::post('/two-factor', [AuthPageController::class, 'verifyTwoFactor'])->middleware('throttle:5,1')->name('2fa.check');
@@ -515,6 +518,9 @@ Route::middleware(['auth', 'locale'])->group(function () {
     Route::post('/device-token', [DeviceTokenController::class, 'store'])->middleware('throttle:30,1,device-token')->name('device-token.store');
     Route::delete('/device-token', [DeviceTokenController::class, 'destroy'])->middleware('throttle:30,1,device-token-del')->name('device-token.destroy');
     Route::post('/device-token/prompt-seen', [DeviceTokenController::class, 'ackPrompt'])->middleware('throttle:30,1,device-token-prompt')->name('device-token.prompt-seen');
+    Route::post('/email/verification-notification', [AuthPageController::class, 'resendEmailVerification'])
+        ->middleware('throttle:3,1,email-verification')
+        ->name('verification.send');
     Route::get('/messages', [MessagePageController::class, 'index'])->name('messages.index');
     Route::get('/messages/inbox/poll', [MessagePageController::class, 'inboxPoll'])->middleware('throttle:120,1,messages-inbox-poll')->name('messages.inbox.poll');
     Route::get('/messages/{username}', [MessagePageController::class, 'show'])->name('messages.show');
