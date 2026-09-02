@@ -46,6 +46,14 @@
                     <option value="0" {{ request('verified') === '0' ? 'selected' : '' }}>Onaysız</option>
                 </select>
             </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">E-posta Doğrulama</label>
+                <select name="email_verified" class="form-select">
+                    <option value="">Hepsi</option>
+                    <option value="1" {{ request('email_verified') === '1' ? 'selected' : '' }}>Doğrulanmış</option>
+                    <option value="0" {{ request('email_verified') === '0' ? 'selected' : '' }}>Doğrulanmamış</option>
+                </select>
+            </div>
             <div style="display: flex; gap: 8px;">
                 <button type="submit" class="btn btn-primary" style="flex: 1;">Filtrele</button>
                 <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Temizle</a>
@@ -66,6 +74,7 @@
                     <th>Kullanıcı Adı</th>
                     <th>Ad Soyad</th>
                     <th>E-posta</th>
+                    <th>E-posta Doğrulama</th>
                     <th>Cinsiyet</th>
                     <th>Rol</th>
                     <th>Onay (Mavi Tik)</th>
@@ -85,6 +94,13 @@
                         </td>
                         <td>{{ trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: '-' }}</td>
                         <td>{{ $user->email ?? '-' }}</td>
+                        <td>
+                            @if($user->email_verified_at)
+                                <span class="badge badge-success">Doğrulandı</span>
+                            @else
+                                <span class="badge badge-secondary">Bekliyor</span>
+                            @endif
+                        </td>
                         <td>
                             @if($user->gender === 'male')
                                 <span class="badge badge-info">Erkek</span>
@@ -138,7 +154,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="12" style="text-align: center; padding: 24px;">
+                        <td colspan="13" style="text-align: center; padding: 24px;">
                             Aradığınız kriterlere uygun kullanıcı bulunamadı.
                         </td>
                     </tr>

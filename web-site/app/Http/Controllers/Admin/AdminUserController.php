@@ -16,20 +16,27 @@ class AdminUserController extends Controller
     {
         $query = User::query();
 
-        if ($search = $request->get('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('username', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%");
+        $search = trim((string) $request->get('search', ''));
+        if (mb_strlen($search) > 100) {
+            $search = mb_substr($search, 0, 100);
+        }
+        if ($search !== '') {
+            $like = '%'.addcslashes($search, '%_\\').'%';
+            $query->where(function ($q) use ($like) {
+                $q->where('username', 'like', $like)
+                  ->orWhere('email', 'like', $like)
+                  ->orWhere('first_name', 'like', $like)
+                  ->orWhere('last_name', 'like', $like);
             });
         }
 
-        if ($gender = $request->get('gender')) {
+        $gender = (string) $request->get('gender', '');
+        if (in_array($gender, ['male', 'female'], true)) {
             $query->where('gender', $gender);
         }
 
-        if ($role = $request->get('role')) {
+        $role = (string) $request->get('role', '');
+        if (in_array($role, ['user', 'moderator', 'support', 'admin'], true)) {
             $query->where('role', $role);
         }
 
@@ -45,7 +52,13 @@ class AdminUserController extends Controller
             $query->where('is_verified', false);
         }
 
-        $users = $query->latest()->paginate(30);
+        if ($request->get('email_verified') === '1') {
+            $query->whereNotNull('email_verified_at');
+        } elseif ($request->get('email_verified') === '0') {
+            $query->whereNull('email_verified_at');
+        }
+
+        $users = $query->latest()->paginate(30)->withQueryString();
 
         return view('admin.users.index', compact('users'));
     }
