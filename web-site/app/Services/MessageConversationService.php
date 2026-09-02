@@ -13,6 +13,7 @@ class MessageConversationService
     public function isValidPartner(User $viewer, User $partner): bool
     {
         return $partner->role === 'user'
+            && ! $partner->is_banned
             && $partner->id !== $viewer->id
             && $partner->gender !== $viewer->gender;
     }
@@ -31,14 +32,11 @@ class MessageConversationService
 
     public function canOpenChat(User $viewer, User $partner): bool
     {
-        if (!$this->isValidPartner($viewer, $partner)) {
+        if (! $this->isValidPartner($viewer, $partner)) {
             return false;
         }
 
-        if ($this->hasHistory($viewer, $partner)) {
-            return true;
-        }
-
+        // Conversation history must not bypass current block, ban, or visibility rules.
         return User::where('id', $partner->id)
             ->where(function ($q) use ($viewer) {
                 $this->genderFilter->applyDiscoveryFilters($q, $viewer);
@@ -48,15 +46,8 @@ class MessageConversationService
 
     public function canSendTo(User $viewer, User $partner): bool
     {
-        if (!$viewer->canSendMessages() || !$this->canOpenChat($viewer, $partner)) {
-            return false;
-        }
-
-        return User::where('id', $partner->id)
-            ->where(function ($q) use ($viewer) {
-                $this->genderFilter->applyDiscoveryFilters($q, $viewer);
-            })
-            ->exists();
+        return $viewer->canSendMessages()
+            && $this->canOpenChat($viewer, $partner);
     }
 
     public function messagesBetween(User $viewer, User $partner): Collection
