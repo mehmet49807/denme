@@ -33,15 +33,15 @@ class AdminUserController extends Controller
             $query->where('role', $role);
         }
 
-        if ($request->get('banned') === 'yes') {
+        if ($request->get('banned') === '1') {
             $query->where('is_banned', true);
-        } elseif ($request->get('banned') === 'no') {
+        } elseif ($request->get('banned') === '0') {
             $query->where('is_banned', false);
         }
 
-        if ($request->get('verified') === 'yes') {
+        if ($request->get('verified') === '1') {
             $query->where('is_verified', true);
-        } elseif ($request->get('verified') === 'no') {
+        } elseif ($request->get('verified') === '0') {
             $query->where('is_verified', false);
         }
 

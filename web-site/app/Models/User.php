@@ -28,7 +28,7 @@ class User extends Authenticatable
         'trial_ends_at', 'locale', 'two_factor_code', 'two_factor_expires_at',
         'referral_code', 'referred_by_user_id', 'utm_source', 'utm_medium', 'utm_campaign',
         'registration_source', 'last_lifecycle_email_at',
-        // role / is_banned / banned_* / fake_score are NOT fillable — use forceFill in admin/system code.
+        // role / is_banned / banned_* are NOT fillable — use forceFill in admin/system code.
     ];
 
     protected $hidden = [
@@ -57,7 +57,6 @@ class User extends Authenticatable
             'password' => 'hashed',
             'hobbies' => 'array',
             'gallery_photos' => 'array',
-            'fake_score' => 'integer',
         ];
     }
 

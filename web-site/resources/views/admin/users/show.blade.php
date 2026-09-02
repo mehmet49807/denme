@@ -20,10 +20,12 @@
                     <span class="badge badge-success">AKTİF ÜYE</span>
                 @endif
                 @if($user->is_verified)
-                    <span class="badge badge-info">✓ ONAYLI</span>
+                    <span class="badge" style="background: #1D9BF0; color: white; font-weight: 600;">✔️ MAVİ ONAY TİK</span>
+                @else
+                    <span class="badge badge-secondary">ONAYSIZ</span>
                 @endif
                 @if($user->isPremium())
-                    <span class="badge badge-warning">💎 PREMIUM</span>
+                    <span class="badge badge-warning">💎 {{ ucfirst($user->packageBadge() ?? 'Premium') }}</span>
                 @endif
             </div>
         </div>
@@ -31,25 +33,31 @@
         <div style="flex: 1; min-width: 280px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
                 <div>
-                    <h2 style="font-size: 1.5rem; color: var(--text-heading); font-weight: 700;">{{ $user->first_name ?? '' }} {{ $user->last_name ?? '' }}</h2>
-                    <p style="color: var(--text-body); font-size: 0.95rem;">@{{ $user->username }}</p>
+                    <h2 style="font-size: 1.5rem; font-weight: 700;">{{ trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) }}</h2>
+                    <p style="color: #6b7280; font-size: 0.95rem;">@{{ $user->username }}</p>
                 </div>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     @if(!$user->is_verified)
-                    <form action="{{ route('admin.users.verify-photo', $user) }}" method="POST">
+                    <form action="{{ route('admin.users.approve', $user->id) }}" method="POST">
                         @csrf
-                        <button type="submit" class="btn btn-success btn-sm">✅ Fotoğraf Onayla</button>
+                        <button type="submit" class="btn btn-success btn-sm">
+                            ✅ Mavi Onay Tik Ver
+                        </button>
                     </form>
+                    @else
+                    <span class="badge" style="background: #1D9BF0; color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600;">
+                        ✔️ Onaylı Kullanıcı
+                    </span>
                     @endif
                     @if($user->is_banned)
-                    <form action="{{ route('admin.users.unban', $user) }}" method="POST">
+                    <form action="{{ route('admin.users.unban', $user->id) }}" method="POST">
                         @csrf
                         <button type="submit" class="btn btn-success btn-sm">🔓 Banı Kaldır</button>
                     </form>
                     @else
-                    <form action="{{ route('admin.users.ban', $user) }}" method="POST">
+                    <form action="{{ route('admin.users.ban', $user->id) }}" method="POST" style="display: flex; gap: 6px; align-items: center;">
                         @csrf
-                        <input type="text" name="reason" placeholder="Ban sebebi (opsiyonel)" style="padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; max-width: 200px;">
+                        <input type="text" name="reason" placeholder="Ban sebebi..." style="padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; max-width: 180px;">
                         <button type="submit" class="btn btn-danger btn-sm">🚫 Banla</button>
                     </form>
                     @endif
@@ -71,7 +79,7 @@
                 </div>
                 <div>
                     <strong style="display: block; font-size: 0.8rem; color: #9ca3af; text-transform: uppercase;">Şehir</strong>
-                    <span>{{ $user->city ?? '-' }} / {{ $user->district ?? '' }}</span>
+                    <span>{{ $user->city ?? '-' }}{{ $user->district ? ' / ' . $user->district : '' }}</span>
                 </div>
                 <div>
                     <strong style="display: block; font-size: 0.8rem; color: #9ca3af; text-transform: uppercase;">Doğum Tarihi</strong>
@@ -80,6 +88,10 @@
                 <div>
                     <strong style="display: block; font-size: 0.8rem; color: #9ca3af; text-transform: uppercase;">Rol</strong>
                     <span>{{ ucfirst($user->role ?? 'user') }}</span>
+                </div>
+                <div>
+                    <strong style="display: block; font-size: 0.8rem; color: #9ca3af; text-transform: uppercase;">Kayıt Tarihi</strong>
+                    <span>{{ $user->created_at ? $user->created_at->format('d.m.Y H:i') : '-' }}</span>
                 </div>
             </div>
 
@@ -96,13 +108,19 @@
                 @if($user->photo_verify_selfie_url)
                 <div style="margin-top: 8px;">
                     <img src="{{ $user->photo_verify_selfie_url }}" style="max-width: 200px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                    <div style="margin-top: 8px;">
+                        <form action="{{ route('admin.users.verify-photo', $user->id) }}" method="POST" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="btn btn-success btn-sm">✅ Selfie Onayla & Mavi Tik Ver</button>
+                        </form>
+                    </div>
                 </div>
                 @endif
             </div>
             @endif
 
             <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
-                <form action="{{ route('admin.users.update', $user) }}" method="POST">
+                <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
                     @csrf
                     @method('PATCH')
                     <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
@@ -129,13 +147,7 @@
     <div class="table-responsive">
         <table class="admin-table">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Şikayet Eden</th>
-                    <th>Sebep</th>
-                    <th>Durum</th>
-                    <th>Tarih</th>
-                </tr>
+                <tr><th>ID</th><th>Şikayet Eden</th><th>Sebep</th><th>Durum</th><th>Tarih</th></tr>
             </thead>
             <tbody>
                 @foreach($reportsAgainst as $report)
@@ -171,13 +183,7 @@
     <div class="table-responsive">
         <table class="admin-table">
             <thead>
-                <tr>
-                    <th>Paket</th>
-                    <th>Fiyat</th>
-                    <th>Başlangıç</th>
-                    <th>Bitiş</th>
-                    <th>Aktif</th>
-                </tr>
+                <tr><th>Paket</th><th>Fiyat</th><th>Başlangıç</th><th>Bitiş</th><th>Durum</th></tr>
             </thead>
             <tbody>
                 @foreach($user->premiumSubscriptions as $sub)
@@ -197,22 +203,6 @@
                 @endforeach
             </tbody>
         </table>
-    </div>
-</div>
-@endif
-
-@if($user->posts->count() > 0)
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Gönderiler</h3>
-    </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 12px; padding: 16px;">
-        @foreach($user->posts as $post)
-        <div style="width: 120px; text-align: center;">
-            <img src="{{ $post->image_url }}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb;">
-            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">❤️ {{ $post->likes_count ?? 0 }}</div>
-        </div>
-        @endforeach
     </div>
 </div>
 @endif
