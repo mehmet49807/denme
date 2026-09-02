@@ -23,7 +23,7 @@
                     <tr>
                         <td>
                             <a href="{{ route('admin.users.show', $userItem->id) }}" style="color: var(--primary); font-weight: 600; text-decoration: none;">
-                                {{ $userItem->username ?? $userItem->name ?? 'Kullanıcı #' . $userItem->id }}
+                                {{ $userItem->username ?? trim(($userItem->first_name ?? "") . " " . ($userItem->last_name ?? "")) ?? 'Kullanıcı #' . $userItem->id }}
                             </a>
                         </td>
                         <td><span class="badge badge-info">{{ number_format($userItem->sent_messages_count ?? $userItem->sent_count ?? 0) }}</span></td>

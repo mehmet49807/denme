@@ -32,7 +32,7 @@
                                 {{ $story->user->username ?? 'Kullanıcı #' . ($story->user_id ?? '') }}
                             </a>
                         </td>
-                        <td><span class="badge badge-info">{{ ucfirst($story->type ?? 'Görsel') }}</span></td>
+                        <td><span class="badge badge-info">{{ ucfirst($story->media_type ?? 'Görsel') }}</span></td>
                         <td><span class="badge badge-secondary">{{ ucfirst($story->audience ?? 'Herkes') }}</span></td>
                         <td>{{ isset($story->expires_at) ? \Carbon\Carbon::parse($story->expires_at)->format('d.m.Y H:i') : '-' }}</td>
                         <td>

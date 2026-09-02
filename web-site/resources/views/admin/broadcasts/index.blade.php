@@ -26,7 +26,7 @@
 
         <div class="form-group">
             <label class="form-label">Duyuru Mesajı</label>
-            <textarea name="message" class="form-control" rows="4" placeholder="Kullanıcılara iletilecek bildirim/mesaj metnini yazın..." required></textarea>
+            <textarea name="message_text" class="form-control" rows="4" placeholder="Kullanıcılara iletilecek bildirim/mesaj metnini yazın..." required></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">📢 Duyuruyu Gönder</button>
@@ -53,7 +53,7 @@
                 @forelse($broadcasts as $broadcast)
                     <tr>
                         <td style="font-weight: 600; color: var(--text-heading);">{{ $broadcast->title }}</td>
-                        <td>{{ Str::limit($broadcast->message, 50) }}</td>
+                        <td>{{ Str::limit(Str::limit($broadcast->message_text ?? $broadcast->message ?? "-", 50), 50) }}</td>
                         <td>
                             @if(($broadcast->target_gender ?? 'all') === 'all')
                                 <span class="badge badge-info">Tümü</span>

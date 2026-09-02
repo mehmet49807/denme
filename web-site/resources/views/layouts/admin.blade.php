@@ -664,9 +664,9 @@
             <div class="topbar-right">
                 <div class="admin-user-info">
                     <div class="admin-avatar">
-                        {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
+                        {{ strtoupper(substr(auth()->user()->fullName() ?? 'A', 0, 1)) }}
                     </div>
-                    <span class="admin-name">{{ auth()->user()->name ?? 'Yönetici' }}</span>
+                    <span class="admin-name">{{ auth()->user()->fullName() ?? 'Yönetici' }}</span>
                 </div>
 
                 <form action="{{ route('admin.logout') }}" method="POST" style="margin: 0;">

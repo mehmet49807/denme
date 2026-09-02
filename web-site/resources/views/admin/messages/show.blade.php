@@ -38,7 +38,7 @@
                             </a>
                         </td>
                         <td style="color: var(--text-heading); font-size: 0.9rem;">
-                            {{ $msg->body ?? $msg->message ?? '-' }}
+                            {{ $msg->message_text ?? '-' }}
                         </td>
                         <td>{{ isset($msg->created_at) ? \Carbon\Carbon::parse($msg->created_at)->format('d.m.Y H:i') : '-' }}</td>
                         <td>

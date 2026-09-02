@@ -13,9 +13,10 @@ class AdminContentController extends Controller
     {
         $query = Post::with('user');
 
-        if ($request->get('active') === 'yes') {
+        $status = $request->get('status');
+        if ($status === 'active') {
             $query->where('is_active', true);
-        } elseif ($request->get('active') === 'no') {
+        } elseif ($status === 'inactive') {
             $query->where('is_active', false);
         }
 
