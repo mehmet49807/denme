@@ -274,9 +274,19 @@ class AuthPageController extends Controller
                 session(['2fa:user_id' => $user->id]);
 
                 try {
-                    app(\App\Services\UserMailService::class)->sendTwoFactorCode($user, $code);
-                } catch (\Throwable) {
-                    // If email fails, still allow 2FA page to show
+                    $sent = app(\App\Services\UserMailService::class)->sendTwoFactorCode($user, $code);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('2FA email dispatch failed during login.', [
+                        'user_id' => $user->id,
+                        'exception' => $e::class,
+                    ]);
+                    $sent = false;
+                }
+
+                if (! $sent) {
+                    $user->clearTwoFactor();
+                    session()->forget('2fa:user_id');
+                    return back()->withErrors(['login' => 'Doğrulama kodu gönderilemedi. E-posta ayarlarını kontrol edip tekrar deneyin.']);
                 }
 
                 return redirect()->route('2fa.verify');
@@ -331,7 +341,7 @@ class AuthPageController extends Controller
             return redirect()->route('login')->withErrors(['code' => 'Doğrulama kodunun süresi dolmuş. Tekrar giriş yapın.']);
         }
 
-        if ($request->code !== $user->two_factor_code) {
+        if (! hash_equals((string) $user->two_factor_code, (string) $request->code)) {
             return back()->withErrors(['code' => 'Doğrulama kodu hatalı.']);
         }
 
@@ -367,9 +377,19 @@ class AuthPageController extends Controller
         ])->save();
 
         try {
-            app(\App\Services\UserMailService::class)->sendTwoFactorCode($user, $code);
-        } catch (\Throwable) {
-            //
+            $sent = app(\App\Services\UserMailService::class)->sendTwoFactorCode($user, $code);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('2FA email dispatch failed during resend.', [
+                'user_id' => $user->id,
+                'exception' => $e::class,
+            ]);
+            $sent = false;
+        }
+
+        if (! $sent) {
+            $user->clearTwoFactor();
+            session()->forget('2fa:user_id');
+            return redirect()->route('login')->withErrors(['login' => 'Yeni doğrulama kodu gönderilemedi. E-posta ayarlarını kontrol edip tekrar deneyin.']);
         }
 
         return back()->with('status', 'Yeni doğrulama kodu gönderildi.');
