@@ -16,6 +16,17 @@
     @endif
     <div class="chat-msg-body">
         <div class="chat-bubble {{ $isSent ? 'chat-bubble--sent' : 'chat-bubble--received' }} {{ $isEmojiOnly ? 'chat-bubble--emoji' : '' }}">
+            @if($message->attachment_url)
+                @if($message->attachment_type === 'audio')
+                    <audio class="chat-attachment-audio" controls preload="metadata" aria-label="Sesli mesaj">
+                        <source src="{{ $message->attachment_url }}">
+                    </audio>
+                @else
+                    <a class="chat-attachment-image" href="{{ $message->attachment_url }}" target="_blank" rel="noopener noreferrer">
+                        <img src="{{ $message->attachment_url }}" alt="Görsel mesajı" loading="lazy" decoding="async">
+                    </a>
+                @endif
+            @endif
             <p class="chat-bubble-text {{ $isEmojiOnly ? 'chat-bubble-text--emoji' : '' }}">{{ $message->message_text }}</p>
             @if($sentAt)
             <time class="chat-bubble-time" datetime="{{ $sentAt->toIso8601String() }}">

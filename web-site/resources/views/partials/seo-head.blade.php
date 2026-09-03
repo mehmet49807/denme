@@ -52,6 +52,7 @@ if (empty($seo['ogImage'])) {
 @endif
 <link rel="canonical" href="{{ $canonical }}">
 <meta name="format-detection" content="telephone=no">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">

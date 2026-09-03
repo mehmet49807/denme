@@ -56,6 +56,14 @@ class UserMailService
         return $this->send($user, $rendered['subject'], $rendered['body'], $template);
     }
 
+    public function sendEmailVerification(User $user, string $verificationUrl): bool
+    {
+        $rendered = $this->render('email_verification', $user);
+        $body = str_replace('{verification_url}', $verificationUrl, $rendered['body']);
+
+        return $this->send($user, $rendered['subject'], $body, 'email_verification');
+    }
+
     public function sendLifecycle(User $user, string $templateKey): bool
     {
         if (! isset($this->templates()[$templateKey])) {

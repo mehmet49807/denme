@@ -4,8 +4,7 @@ namespace App\Support;
 
 /**
  * Setup / deploy hook authentication.
- * Accepts SETUP_CACHE_KEY from .env and optional legacy route fallbacks
- * so existing deploy hooks keep working while dangerous endpoints are removed.
+ * Production accepts only a non-weak SETUP_CACHE_KEY from the environment.
  */
 class SetupKey
 {
@@ -27,19 +26,26 @@ class SetupKey
 
     public static function matches(?string $provided, ?string $legacyFallback = null): bool
     {
+        $expected = self::configured();
         $provided = trim((string) $provided);
-        if ($provided === '') {
+
+        if ($expected === '' || $provided === '') {
             return false;
         }
 
-        $env = self::configured();
-        if ($env !== '' && hash_equals($env, $provided)) {
+        if (app()->environment('production') && self::isWeak($expected)) {
+            return false;
+        }
+
+        if (hash_equals($expected, $provided)) {
             return true;
         }
 
-        $legacy = trim((string) $legacyFallback);
-        if ($legacy !== '' && hash_equals($legacy, $provided)) {
-            return true;
+        // Legacy route arguments are retained for signature compatibility only;
+        // never accept publicly known fallbacks in production.
+        if (! app()->environment('production')) {
+            $legacy = trim((string) $legacyFallback);
+            return $legacy !== '' && hash_equals($legacy, $provided);
         }
 
         return false;

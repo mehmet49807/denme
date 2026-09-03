@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -169,12 +170,64 @@ class AuthPageController extends Controller
         ]);
 
         try {
+            $this->userMail->sendEmailVerification($user, $this->emailVerificationUrl($user));
             $this->userMail->sendWelcome($user);
         } catch (\Throwable) {
             // Kayıt akışını e-posta hatası durdurmasın.
         }
 
         return redirect()->to(app(UserAttributionService::class)->postSignupRedirectUrl());
+    }
+
+    public function verifyEmail(Request $request, int $id, string $hash): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+        $expectedHash = sha1((string) $user->email);
+
+        if (! hash_equals($expectedHash, $hash)) {
+            abort(403);
+        }
+
+        if (! $user->email_verified_at) {
+            $user->forceFill(['email_verified_at' => now()])->save();
+        }
+
+        if ($request->user()) {
+            return redirect()->route('feed')->with('success', 'E-posta adresiniz doğrulandı.');
+        }
+
+        return redirect()->route('login')->with('status', 'E-posta adresiniz doğrulandı. Giriş yapabilirsiniz.');
+    }
+
+    public function resendEmailVerification(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        if ($user->email_verified_at) {
+            return back()->with('status', 'E-posta adresiniz zaten doğrulanmış.');
+        }
+
+        try {
+            $sent = $this->userMail->sendEmailVerification($user, $this->emailVerificationUrl($user));
+        } catch (\Throwable) {
+            $sent = false;
+        }
+
+        return back()->with($sent ? 'status' : 'error', $sent
+            ? 'Doğrulama bağlantısı e-posta adresinize gönderildi.'
+            : 'Doğrulama e-postası gönderilemedi. Lütfen daha sonra tekrar deneyin.');
+    }
+
+    private function emailVerificationUrl(User $user): string
+    {
+        return URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addHours(24),
+            ['id' => $user->id, 'hash' => sha1((string) $user->email)]
+        );
     }
 
     public function loginForm(): View|RedirectResponse

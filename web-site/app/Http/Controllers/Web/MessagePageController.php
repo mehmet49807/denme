@@ -158,6 +158,9 @@ class MessagePageController extends Controller
             'attachment_type' => $attachmentType,
         ]);
 
+        // Persist the message first; notification failures must never roll back delivery.
+        $this->notifications->notifyNewMessage($message);
+
         if ($request->expectsJson()) {
             return response()->json([
                 'ok' => true,
@@ -377,6 +380,8 @@ class MessagePageController extends Controller
             'id' => $message->id,
             'sender_id' => $message->sender_id,
             'message_text' => $message->message_text,
+            'attachment_url' => $message->attachment_url,
+            'attachment_type' => $message->attachment_type,
             'created_at' => $createdAt?->toIso8601String(),
             'created_at_display' => $createdAt?->format('d.m.Y H:i'),
             'is_emoji_only' => ChatMessageHelper::isEmojiOnly((string) $message->message_text),

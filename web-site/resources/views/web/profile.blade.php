@@ -80,6 +80,20 @@
     </header>
     @error('photo') <small class="form-error profile-photo-error">{{ $message }}</small> @enderror
     @if(session('success')) <p class="profile-success">{{ session('success') }}</p> @endif
+    @if(session('status')) <p class="profile-success">{{ session('status') }}</p> @endif
+    @if(session('error')) <p class="form-error">{{ session('error') }}</p> @endif
+    @if(! $user->email_verified_at)
+        <section class="profile-email-verification" role="status" aria-labelledby="profile-email-verification-title">
+            <div>
+                <strong id="profile-email-verification-title">E-posta adresinizi doğrulayın</strong>
+                <p>Hesabınızı korumak ve önemli bildirimleri alabilmek için doğrulama bağlantısı isteyin.</p>
+            </div>
+            <form method="POST" action="{{ route('verification.send') }}">
+                @csrf
+                <button type="submit">Bağlantıyı gönder</button>
+            </form>
+        </section>
+    @endif
     @error('boost') <small class="form-error">{{ $message }}</small> @enderror
 
     @include('partials.profile-boost', ['user' => $user])
