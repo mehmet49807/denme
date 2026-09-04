@@ -42,25 +42,8 @@ class AdminAuthController extends Controller
                 return back()->withErrors(['login' => 'Yönetici yetkisi gereklidir.'])->withInput();
             }
 
-            // 2FA for admin/staff users
-            if ($user->needsTwoFactor()) {
-                $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-                $user->forceFill([
-                    'two_factor_code' => $code,
-                    'two_factor_expires_at' => now()->addMinutes(10),
-                ])->save();
-
-                session(['2fa:user_id' => $user->id]);
-
-                try {
-                    app(\App\Services\UserMailService::class)->sendTwoFactorCode($user, $code);
-                } catch (\Throwable) {
-                    //
-                }
-
-                return redirect()->route('2fa.verify');
-            }
-
+            // Admin girişinde 2FA adımı devre dışı bırakıldı; doğrudan oturum açılır.
+            $user->clearTwoFactor();
             Auth::login($user, $request->boolean('remember'));
 
             return redirect()->route('admin.dashboard');
