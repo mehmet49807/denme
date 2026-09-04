@@ -263,35 +263,8 @@ class AuthPageController extends Controller
                 return back()->withErrors(['login' => 'Hesabınız askıya alınmıştır.']);
             }
 
-            // 2FA for admin/staff users
-            if ($user->needsTwoFactor()) {
-                $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-                $user->forceFill([
-                    'two_factor_code' => $code,
-                    'two_factor_expires_at' => now()->addMinutes(10),
-                ])->save();
-
-                session(['2fa:user_id' => $user->id]);
-
-                try {
-                    $sent = app(\App\Services\UserMailService::class)->sendTwoFactorCode($user, $code);
-                } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::error('2FA email dispatch failed during login.', [
-                        'user_id' => $user->id,
-                        'exception' => $e::class,
-                    ]);
-                    $sent = false;
-                }
-
-                if (! $sent) {
-                    $user->clearTwoFactor();
-                    session()->forget('2fa:user_id');
-                    return back()->withErrors(['login' => 'Doğrulama kodu gönderilemedi. E-posta ayarlarını kontrol edip tekrar deneyin.']);
-                }
-
-                return redirect()->route('2fa.verify');
-            }
-
+            // 2FA giriş adımı devre dışı bırakıldı; personel ve kullanıcılar doğrudan oturum açar.
+            $user->clearTwoFactor();
             Auth::login($user, $request->boolean('remember'));
             \App\Support\FcmWebPrompt::arm();
 

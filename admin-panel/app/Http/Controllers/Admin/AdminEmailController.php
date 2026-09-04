@@ -134,19 +134,24 @@ class AdminEmailController extends Controller
     {
         $admin = $request->user();
 
-        try {
-            $this->mailService->sendBulk(
-                collect([$admin]),
-                'Gönül Köprüsü — Test E-postası',
-                '<p>Bu bir test e-postasıdır. E-posta gönderim sistemi çalışıyor.</p>',
-                'custom',
-                $admin->id,
-            );
+                try {
+            $result = $this->mailService->sendBulk(
+                collect([$admin]),
+                'Gönül Köprüsü — Test E-postası',
+                '<p>Bu bir test e-postasıdır. E-posta gönderim sistemi çalışıyor.</p>',
+                'custom',
+                $admin->id,
+            );
+
+            if (($result['sent'] ?? 0) < 1) {
+                return redirect()->route('admin.emails')->with('error', 'Test e-postası gönderilemedi. SMTP ayarlarını ve e-posta loglarını kontrol edin.');
+            }
+
+            return redirect()->route('admin.emails')->with('success', 'Test e-postası '.$admin->email.' adresine gönderildi.');
+        } catch (\Throwable $e) {
+            return redirect()->route('admin.emails')->with('error', 'Test e-postası gönderilemedi. SMTP ayarlarını ve e-posta loglarını kontrol edin.');
+        }
 
-            return redirect()->route('admin.emails')->with('success', 'Test e-postası '.$admin->email.' adresine gönderildi.');
-        } catch (\Throwable $e) {
-            return redirect()->route('admin.emails')->with('error', 'Test e-postası gönderilemedi: '.$e->getMessage());
-        }
     }
 }
 
