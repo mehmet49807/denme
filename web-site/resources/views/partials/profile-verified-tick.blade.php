@@ -2,8 +2,8 @@
 @php $size = $size ?? 'md'; @endphp
 <span
     class="profile-verified-tick profile-verified-tick--{{ $size }} profile-verified-tick--social"
-    title="{{ __('app.premium.verified') }}"
-    aria-label="{{ __('app.premium.verified') }}"
+    title="Doğrulanmış Profil"
+    aria-label="Doğrulanmış Profil"
 >
     {{-- Facebook / Twitter tarzı mavi onay tiki --}}
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
