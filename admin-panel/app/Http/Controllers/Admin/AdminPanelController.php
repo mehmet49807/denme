@@ -1,1 +1,3 @@
-PLACEHOLDER
+<?php
+
+// temporary marker - will replace
