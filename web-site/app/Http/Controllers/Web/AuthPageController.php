@@ -175,9 +175,8 @@ class AuthPageController extends Controller
                 'two_factor_code' => $code,
                 'two_factor_expires_at' => now()->addMinutes(15),
             ])->save();
-            $this->userMail->sendTwoFactorCode($user, $code);
-            $this->userMail->sendEmailVerification($user, $this->emailVerificationUrl($user));
-            $this->userMail->sendWelcome($user);
+            // Tek hoş geldiniz maili: doğrulama kodu + (erkeklerde) premium paket bilgisi
+            $this->userMail->sendWelcome($user, $code);
         } catch (\Throwable) {
             // Kayıt akışını e-posta hatası durdurmasın.
         }
