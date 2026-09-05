@@ -15,7 +15,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "deploy" / "manifest.json"
-SKIP_NAMES = {".git", ".DS_Store", "Thumbs.db"}
+SKIP_NAMES = {
+    ".git",
+    ".DS_Store",
+    "Thumbs.db",
+    # Temporary protect live admin from truncated controller deploys.
+    # Remove after AdminPanelController.php is fully restored on GitHub.
+    "AdminPanelController.php",
+}
 
 
 def load_manifest() -> dict:
