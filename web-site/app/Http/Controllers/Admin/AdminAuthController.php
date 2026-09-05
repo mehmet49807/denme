@@ -42,11 +42,35 @@ class AdminAuthController extends Controller
                 return back()->withErrors(['login' => 'Yönetici yetkisi gereklidir.'])->withInput();
             }
 
-            // Admin girişinde 2FA adımı devre dışı bırakıldı; doğrudan oturum açılır.
-            $user->clearTwoFactor();
-            Auth::login($user, $request->boolean('remember'));
+            // Yönetici hesaplarında e-posta tabanlı 2FA kodu gönder.
+            $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            $user->forceFill([
+                'two_factor_code' => $code,
+                'two_factor_expires_at' => now()->addMinutes(10),
+            ])->save();
 
-            return redirect()->route('admin.dashboard');
+            session(['2fa:user_id' => $user->id]);
+
+            try {
+                $sent = app(\App\Services\UserMailService::class)->sendTwoFactorCode($user, $code);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Admin 2FA email dispatch failed.', [
+                    'user_id' => $user->id,
+                    'exception' => $e::class,
+                ]);
+                $sent = false;
+            }
+
+            if (! $sent) {
+                $user->clearTwoFactor();
+                session()->forget('2fa:user_id');
+
+                return back()->withErrors([
+                    'login' => 'Doğrulama kodu e-posta ile gönderilemedi. SMTP ayarlarını ve e-posta kayıtlarını kontrol edin.',
+                ])->withInput($request->except('password'));
+            }
+
+            return redirect()->route('2fa.verify');
         }
 
         return back()->withErrors(['login' => 'Giriş bilgileri hatalı.'])->withInput();
