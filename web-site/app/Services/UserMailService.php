@@ -6,9 +6,9 @@ use App\Mail\TemplatedMail;
 use App\Models\EmailLog;
 use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class UserMailService
 {
@@ -20,20 +20,15 @@ class UserMailService
     public function templateOptions(): array
     {
         return collect($this->templates())
-            ->map(fn (array $tpl, string $key) => [
+            ->map(fn (array $template, string $key) => [
                 'key' => $key,
-                'label' => $tpl['label'],
-                'description' => $tpl['description'] ?? '',
-                'subject' => $tpl['subject'] ?? '',
-                'body' => $tpl['body'] ?? '',
+                'label' => $template['label'] ?? $key,
+                'description' => $template['description'] ?? '',
             ])
             ->values()
             ->all();
     }
 
-    /**
-     * @return array{subject: string, body: string}
-     */
     public function render(string $templateKey, User $user, array $overrides = []): array
     {
         $templates = $this->templates();
@@ -48,12 +43,133 @@ class UserMailService
         ];
     }
 
-    public function sendWelcome(User $user): bool
+    public function sendWelcome(User $user, ?string $verificationCode = null): bool
     {
         $template = $user->gender === 'female' ? 'female_welcome' : 'welcome';
         $rendered = $this->render($template, $user);
+        $body = $rendered['body'];
 
-        return $this->send($user, $rendered['subject'], $rendered['body'], $template);
+        $codeBlock = $verificationCode
+            ? $this->verificationCodeHtml($verificationCode)
+            : '';
+
+        // Premium paket bilgisi yalnızca erkek üyelere
+        $premiumBlock = ($user->gender === 'male')
+            ? $this->premiumPackagesHtml()
+            : '';
+
+        if (str_contains($body, '{verification_code_block}')) {
+            $body = str_replace('{verification_code_block}', $codeBlock, $body);
+        } elseif ($codeBlock !== '') {
+            $body .= $codeBlock;
+        }
+
+        if (str_contains($body, '{premium_packages_block}')) {
+            $body = str_replace('{premium_packages_block}', $premiumBlock, $body);
+        } elseif ($premiumBlock !== '') {
+            $replaced = preg_replace('/(<\/p>)/', '$1'.$premiumBlock, $body, 1);
+            $body = is_string($replaced) ? $replaced : ($body.$premiumBlock);
+        }
+
+        if ($verificationCode) {
+            $body = str_replace('{two_factor_code}', $verificationCode, $body);
+        } else {
+            $body = str_replace('{two_factor_code}', '', $body);
+        }
+
+        return $this->send($user, $rendered['subject'], $body, $template);
+    }
+
+    private function verificationCodeHtml(string $code): string
+    {
+        $safe = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
+
+        return <<<HTML
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:28px 0 8px;background:linear-gradient(135deg,#F5F3FF 0%,#FDF2F8 100%);border:1px solid rgba(124,58,237,0.18);border-radius:16px;overflow:hidden;">
+    <tr>
+        <td style="padding:22px 20px;text-align:center;">
+            <p style="margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#7C3AED;">E-posta Doğrulama Kodu</p>
+            <p style="margin:0 0 14px;font-size:14px;line-height:1.5;color:#3D3550;">Doğrulanmış profil rozeti için aşağıdaki 6 haneli kodu profil sayfanda gir. Kod <strong>15 dakika</strong> geçerlidir.</p>
+            <p style="margin:0;display:inline-block;padding:14px 28px;border-radius:14px;background:#1A1523;color:#fff;font-size:28px;font-weight:800;letter-spacing:0.35em;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;">{$safe}</p>
+        </td>
+    </tr>
+</table>
+HTML;
+    }
+
+    private function premiumPackagesHtml(): string
+    {
+        $packages = [
+            ['name' => 'Pro', 'days' => 7, 'price' => '350', 'desc' => 'Mesajlaşma ve temel premium özellikler'],
+            ['name' => 'Gold', 'days' => 14, 'price' => '750', 'desc' => 'Öne çıkan profil + hikâye avantajları'],
+            ['name' => 'Platinum', 'days' => 30, 'price' => '1200', 'desc' => 'En yüksek görünürlük ve tüm ayrıcalıklar'],
+        ];
+
+        try {
+            if (class_exists(\App\Services\PremiumPackagesService::class)) {
+                $catalog = app(\App\Services\PremiumPackagesService::class)->catalog();
+                $mapped = [];
+                foreach (['pro', 'gold', 'platinum'] as $key) {
+                    if (! isset($catalog[$key])) {
+                        continue;
+                    }
+                    $pkg = $catalog[$key];
+                    $mapped[] = [
+                        'name' => (string) ($pkg['name'] ?? ucfirst($key)),
+                        'days' => (int) ($pkg['duration_days'] ?? 0),
+                        'price' => (string) (int) ($pkg['price_tl'] ?? 0),
+                        'desc' => match ($key) {
+                            'pro' => 'Mesajlaşma ve temel premium özellikler',
+                            'gold' => 'Öne çıkan profil + hikâye avantajları',
+                            default => 'En yüksek görünürlük ve tüm ayrıcalıklar',
+                        },
+                    ];
+                }
+                if ($mapped) {
+                    $packages = $mapped;
+                }
+            }
+        } catch (\Throwable) {
+            // Varsayılan paket listesi kullanılır
+        }
+
+        $rows = '';
+        foreach ($packages as $pkg) {
+            $name = htmlspecialchars($pkg['name'], ENT_QUOTES, 'UTF-8');
+            $days = (int) $pkg['days'];
+            $price = htmlspecialchars($pkg['price'], ENT_QUOTES, 'UTF-8');
+            $desc = htmlspecialchars($pkg['desc'], ENT_QUOTES, 'UTF-8');
+            $rows .= <<<HTML
+<tr>
+    <td style="padding:12px 14px;border-bottom:1px solid rgba(124,58,237,0.1);">
+        <strong style="color:#5B21B6;">{$name}</strong>
+        <span style="color:#6B7280;font-size:13px;"> · {$days} gün</span>
+        <div style="font-size:13px;color:#4B5563;margin-top:4px;">{$desc}</div>
+    </td>
+    <td style="padding:12px 14px;border-bottom:1px solid rgba(124,58,237,0.1);text-align:right;white-space:nowrap;font-weight:800;color:#1A1523;">{$price} TL</td>
+</tr>
+HTML;
+        }
+
+        $base = rtrim((string) config('app.url'), '/');
+        $premiumUrl = htmlspecialchars($base.'/premium', ENT_QUOTES, 'UTF-8');
+
+        return <<<HTML
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:22px 0;background:#FAF5FF;border:1px solid rgba(124,58,237,0.16);border-radius:16px;overflow:hidden;">
+    <tr>
+        <td style="padding:18px 18px 8px;">
+            <p style="margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#7C3AED;">Premium Paketler (Erkek üyeler)</p>
+            <p style="margin:0 0 12px;font-size:14px;line-height:1.5;color:#3D3550;">Mesaj göndermek ve premium özellikler için paketlerden birini seçebilirsin. Deneme süren varsa hemen keşfetmeye başla.</p>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:12px;overflow:hidden;">
+                {$rows}
+            </table>
+            <p style="margin:14px 0 0;text-align:center;">
+                <a href="{$premiumUrl}" style="display:inline-block;padding:12px 22px;border-radius:999px;background:linear-gradient(135deg,#7C3AED,#DB2777);color:#fff;text-decoration:none;font-weight:700;font-size:14px;">Premium paketleri incele</a>
+            </p>
+        </td>
+    </tr>
+</table>
+HTML;
     }
 
     public function sendEmailVerification(User $user, string $verificationUrl): bool
@@ -98,23 +214,20 @@ class UserMailService
 
     public function send(User $user, string $subject, string $body, ?string $templateKey = null, ?int $adminId = null): bool
     {
-        if (!$user->email) {
-            return false;
-        }
-
         try {
-            Mail::to($user->email, trim($user->first_name.' '.$user->last_name) ?: null)
-                ->send(new TemplatedMail($subject, $body, $user->first_name ?: null));
+            Mail::to($user->email)->send(new TemplatedMail($subject, $body));
 
             $this->logEmail($adminId, $user, $templateKey, $subject, 'sent');
 
             return true;
         } catch (\Throwable $e) {
-            Log::warning('Email send failed.', [
-                'user_id' => $user->id,
+            report($e);
+
+            \Illuminate\Support\Facades\Log::error('User mail send failed.', [
                 'email' => $user->email,
                 'template' => $templateKey,
-                'error' => $e->getMessage(),
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
             ]);
 
             $this->logEmail($adminId, $user, $templateKey, $subject, 'failed', $e->getMessage());
@@ -123,13 +236,8 @@ class UserMailService
         }
     }
 
-    /**
-     * @return array{sent: int, failed: int}
-     */
     public function sendBulk(Collection $users, string $subject, string $body, ?string $templateKey, int $adminId): array
     {
-        @set_time_limit(300);
-
         $sent = 0;
         $failed = 0;
 
@@ -146,17 +254,20 @@ class UserMailService
             }
         }
 
-        return ['sent' => $sent, 'failed' => $failed];
+        return compact('sent', 'failed');
     }
 
     public function resolveRecipients(string $target, ?string $email = null): Collection
     {
+        if ($target === 'single') {
+            return $this->resolveSingleRecipient($email);
+        }
+
         $query = User::query()->where('role', 'user')->where('is_banned', false);
 
         return match ($target) {
             'male' => $query->where('gender', 'male')->get(),
             'female' => $query->where('gender', 'female')->get(),
-            'single' => $this->resolveSingleRecipient($email),
             default => $query->get(),
         };
     }
@@ -166,16 +277,12 @@ class UserMailService
         return $this->resolveRecipients($target, $email)->count();
     }
 
-    /** @return array<string, string|bool> */
     public function mailDiagnostics(): array
     {
         return [
-            'mailer' => (string) config('mail.default'),
-            'host' => (string) config('mail.mailers.smtp.host'),
-            'port' => (string) config('mail.mailers.smtp.port'),
-            'encryption' => (string) config('mail.mailers.smtp.encryption'),
-            'from' => (string) config('mail.from.address'),
-            'logs_ready' => Schema::hasTable('email_logs'),
+            'mailer' => config('mail.default'),
+            'from' => config('mail.from'),
+            'templates' => count($this->templates()),
         ];
     }
 
