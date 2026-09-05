@@ -80,6 +80,10 @@ class ProfileLikeController extends Controller
 
             if ($matched) {
                 $this->notifications->notifyMatch($viewer, $target);
+                session()->flash('match_celebration', [
+                    'username' => $target->username,
+                    'message_url' => route('matches.index'),
+                ]);
             } else {
                 $this->notifications->notifyProfileLiked($viewer, $target);
             }
@@ -106,7 +110,6 @@ class ProfileLikeController extends Controller
 
         $viewer = $request->user();
         $tab = $request->query('tab') === 'incoming' ? 'incoming' : 'matches';
-        // Platinum (kadın/admin serbest). Pro/Gold ve deneme açmaz.
         $canRevealMatches = $viewer->canAccessIncomingLikes();
 
         $likedIds = ProfileLike::query()
@@ -141,7 +144,6 @@ class ProfileLikeController extends Controller
             })
             ->latest('last_active_at');
 
-        // Kilitliyken yalnızca sayı; kimlik / fotoğraf sızdırılmaz.
         $matchesCount = (clone $matchedQuery)->count();
         $incomingCount = (clone $incomingQuery)->count();
 
