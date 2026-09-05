@@ -89,7 +89,6 @@ class UserMailService
             $body = str_replace('{two_factor_code}', '', $body);
         }
 
-        // Kullanılmayan placeholder temizliği
         $body = str_replace(
             ['{verification_code_block}', '{trial_package_block}', '{premium_packages_block}'],
             ['', '', ''],
@@ -403,6 +402,7 @@ HTML;
         ?int $adminId,
         User $user,
         ?string $templateKey,
+        string $subject,
         string $status,
         ?string $error = null,
     ): void {
@@ -414,8 +414,8 @@ HTML;
             'admin_id' => $adminId,
             'user_id' => $user->exists ? $user->id : null,
             'recipient_email' => $user->email,
-            'template_key' => $templateKey ?? null,
-            'subject' => '',
+            'template_key' => $templateKey,
+            'subject' => $subject,
             'status' => $status,
             'error_message' => $error,
         ]);
