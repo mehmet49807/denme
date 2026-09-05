@@ -1,68 +1,72 @@
 <span class="sidebar-nav-icon" aria-hidden="true">
 @switch($icon)
     @case('feed')
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-            <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-            <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-            <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+        {{-- Home / Akış — filled house --}}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M4.5 10.8 12 4.5l7.5 6.3V19a1.5 1.5 0 0 1-1.5 1.5h-3.2v-5.2h-5.6v5.2H6A1.5 1.5 0 0 1 4.5 19v-8.2Z" fill="currentColor" opacity="0.92"/>
+            <path d="M9.5 20.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.35"/>
         </svg>
         @break
     @case('users')
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        {{-- Keşfet / Üyeler — compass spark --}}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8.25" stroke="currentColor" stroke-width="1.75"/>
+            <path d="m10.1 10.1 5.3-1.7-1.7 5.3-5.3 1.7 1.7-5.3Z" fill="currentColor"/>
+            <circle cx="12" cy="12" r="1.15" fill="#fff" opacity="0.9"/>
         </svg>
         @break
     @case('profile')
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/>
+        {{-- Profil — person in circle --}}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8.25" stroke="currentColor" stroke-width="1.75"/>
+            <circle cx="12" cy="10" r="2.6" fill="currentColor"/>
+            <path d="M7.4 17.2c1.2-2 2.7-3 4.6-3s3.4 1 4.6 3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
         </svg>
         @break
     @case('messages')
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+        {{-- Mesajlar — chat bubble --}}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M6.2 17.6 4.5 20.2c-.35.55.1 1.25.75 1.1l3.4-.75A8.7 8.7 0 0 0 12 21.2c4.7 0 8.5-3.5 8.5-7.85S16.7 5.5 12 5.5 3.5 9 3.5 13.35c0 1.55.5 3 1.4 4.2" fill="currentColor" opacity="0.92"/>
+            <circle cx="9" cy="13.2" r="0.95" fill="#fff"/>
+            <circle cx="12" cy="13.2" r="0.95" fill="#fff"/>
+            <circle cx="15" cy="13.2" r="0.95" fill="#fff"/>
         </svg>
         @break
     @case('notifications')
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        {{-- Bildirimler — bell --}}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3.6c-3.2 0-5.7 2.4-5.7 5.4v2.1c0 .9-.35 1.75-.95 2.4l-.7.75c-.55.6-.15 1.6.7 1.6h13.3c.85 0 1.25-1 .7-1.6l-.7-.75a3.5 3.5 0 0 1-.95-2.4V9c0-3-2.5-5.4-5.7-5.4Z" fill="currentColor" opacity="0.92"/>
+            <path d="M10.2 19.2a1.9 1.9 0 0 0 3.6 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
         </svg>
         @break
     @case('premium')
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 19h20"/>
-            <path d="M4 19V9l4 3 4-6 4 6 4-3v10"/>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M5 17.5 7.2 8.8c.2-.75 1.25-.9 1.7-.25L12 12.2l3.1-3.65c.45-.65 1.5-.5 1.7.25L19 17.5H5Z" fill="currentColor" opacity="0.9"/>
+            <path d="M4.5 19.2h15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
         </svg>
         @break
     @case('gift')
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="8" width="18" height="13" rx="2"/>
-            <path d="M12 8v13"/>
-            <path d="M3 12h18"/>
-            <path d="M12 8c-2-2.5-4-3-6-1s0 4 2 4h4"/>
-            <path d="M12 8c2-2.5 4-3 6-1s0 4-2 4h-4"/>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <rect x="4" y="9" width="16" height="11" rx="2" fill="currentColor" opacity="0.9"/>
+            <path d="M12 9v11M4 13h16" stroke="#fff" stroke-width="1.5" opacity="0.85"/>
+            <path d="M12 9c-1.8-2.4-3.8-2.8-5.2-1.3S5.5 11 8 11h4M12 9c1.8-2.4 3.8-2.8 5.2-1.3S18.5 11 16 11h-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
         @break
     @case('heart')
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 20.4s-7.2-4.4-7.2-9.3A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 7.2 3.9c0 4.9-7.2 9.3-7.2 9.3Z" fill="currentColor" opacity="0.92"/>
         </svg>
         @break
     @case('admin')
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3.2 19.2 6v5.2c0 4.6-3 8.4-7.2 9.8-4.2-1.4-7.2-5.2-7.2-9.8V6L12 3.2Z" fill="currentColor" opacity="0.9"/>
+            <path d="m9.2 12.1 1.9 1.9 3.8-3.9" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         @break
     @case('logout')
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M10 4.5H7A2.5 2.5 0 0 0 4.5 7v10A2.5 2.5 0 0 0 7 19.5h3" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+            <path d="M13 12h7.5M17.5 8.5 21 12l-3.5 3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         @break
 @endswitch
