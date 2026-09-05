@@ -44,41 +44,6 @@
                         </div>
                     </div>
                 </a>
-                <div class="chat-header-actions">
-                    <button
-                        type="button"
-                        class="chat-clear-btn"
-                        id="chatClearBtn"
-                        title="{{ __('app.messages.clear_chat') }}"
-                        aria-label="{{ __('app.messages.clear_chat') }}"
-                    >
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M6 7h12M9 7V5h6v2M10 11v6M14 11v6M8 7l1 12h6l1-12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span class="chat-clear-btn-label">{{ __('app.messages.delete') }}</span>
-                    </button>
-                    <details class="chat-safety-menu">
-                        <summary class="chat-safety-toggle chat-block-btn" title="{{ __('app.messages.block') }}" aria-label="{{ __('app.messages.block') }}">
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.75"/>
-                                <path d="M5.5 5.5l13 13" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-                            </svg>
-                            <span class="chat-block-btn-label">{{ __('app.messages.block') }}</span>
-                        </summary>
-                        <div class="chat-safety-panel">
-                            <form method="POST" action="{{ route('messages.block', $partner->username) }}" data-block-confirm="{{ __('app.messages.block_confirm', ['name' => $partner->username]) }}" class="chat-safety-form" id="chatBlockForm">
-                                @csrf
-                                <button type="submit" class="chat-safety-action chat-safety-action--danger">{{ __('app.messages.block') }}</button>
-                            </form>
-                            <form method="POST" action="{{ route('users.report', $partner->username) }}" class="chat-safety-form" id="chatReportForm">
-                                @csrf
-                                <input type="hidden" name="reason" value="Sohbet içinden hızlı şikayet">
-                                <button type="submit" class="chat-safety-action">Şikayet et</button>
-                            </form>
-                            <a href="{{ route('complaints') }}" class="chat-safety-action">Güvenlik politikası</a>
-                        </div>
-                    </details>
-                </div>
             </header>
 
             @if(session('success'))
@@ -114,6 +79,7 @@
                 $isFirstMessage = $messages->isEmpty();
                 $quickMessages = \App\Support\QuickMessages::forThread($isFirstMessage);
             @endphp
+            @include('partials.chat-safety-tip', ['isFirstMessage' => $isFirstMessage])
             <div class="chat-greetings chat-quick-replies" id="chatGreetings" aria-label="{{ __('app.messages.quick_replies') }}">
                 <p class="chat-greetings-label">{{ __('app.messages.quick_replies') }}</p>
                 <div class="chat-greetings-list">
@@ -134,17 +100,9 @@
                         <span class="chat-emoji-toggle-icon" aria-hidden="true">😊</span>
                     </button>
                     <label for="message_text" class="sr-only">{{ __('app.messages.label') }}</label>
-                    <textarea
-                        id="message_text"
-                        name="message_text"
-                        class="chat-input {{ $errors->has('message_text') ? 'chat-input--error' : '' }}"
-                        rows="1"
-                        maxlength="2000"
-                        placeholder="{{ __('app.messages.placeholder') }}"
-                    >{{ old('message_text') }}</textarea>
+                    <textarea id="message_text" name="message_text" class="chat-input {{ $errors->has('message_text') ? 'chat-input--error' : '' }}" rows="1" maxlength="2000" placeholder="{{ __('app.messages.placeholder') }}">{{ old('message_text') }}</textarea>
                     <button type="submit" class="chat-send" aria-label="{{ __('app.messages.send') }}">
                         <span class="chat-send-label">{{ __('app.messages.send') }}</span>
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12L20 4l-3 16-5-6-8-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
                     </button>
                 </div>
                 @error('message_text') <small class="form-error chat-error">{{ $message }}</small> @enderror
@@ -169,14 +127,10 @@
                 <div class="premium-feed-banner premium-feed-banner--compact chat-premium-banner">
                     @if($viewer->isOnTrial())
                         <p>{{ __('app.messages.premium_hint_trial', ['hours' => $viewer->trialHoursRemaining()]) }}</p>
-                        <a href="{{ route('premium') }}#premium-packages" class="btn btn-outline btn-sm" data-gk-event="trial_cta_click" data-gk-event-label="dm_trial">Paketleri gör</a>
+                        <a href="{{ route('premium') }}#premium-packages" class="btn btn-outline btn-sm">Paketleri gör</a>
                     @else
                         <p>{{ __('app.messages.premium_hint') }}</p>
-                        <ul class="chat-premium-points">
-                            <li>Pro: mesajlaşma</li>
-                            <li>Gold / Platinum: hikâye + öne çıkma</li>
-                        </ul>
-                        <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm" data-gk-event="trial_cta_click" data-gk-event-label="dm_locked">{{ __('app.common.review') }}</a>
+                        <a href="{{ route('premium') }}#premium-packages" class="btn btn-primary btn-sm">{{ __('app.common.review') }}</a>
                     @endif
                 </div>
             </div>
@@ -190,79 +144,17 @@ window.__gk_i18n = {!! json_encode([
     'you' => __('app.messages.you'),
     'now' => __('app.common.now'),
     'failed' => __('app.messages.failed'),
-    'emojiFailed' => __('app.messages.emoji_failed'),
-    'connectionError' => __('app.messages.connection_error'),
     'typing' => __('app.messages.typing', ['name' => $partner->username]),
-    'delete' => __('app.messages.delete'),
-    'deleteConfirm' => __('app.messages.delete_confirm'),
-    'deleteFailed' => __('app.messages.delete_failed'),
-    'clearChat' => __('app.messages.clear_chat'),
-    'clearConfirm' => __('app.messages.clear_confirm'),
-    'clearFailed' => __('app.messages.clear_failed'),
     'empty' => __('app.messages.empty'),
 ], JSON_UNESCAPED_UNICODE) !!};
 window.__gk_chat = {!! json_encode([
     'typingPingUrl' => route('messages.typing.ping', $partner->username),
     'typingStatusUrl' => route('messages.typing.status', $partner->username),
     'messagesPollUrl' => route('messages.poll', $partner->username),
-    'deleteMessageUrl' => url('/messages/'.$partner->username),
-    'clearChatUrl' => route('messages.clear', $partner->username),
     'viewerId' => $viewer->id,
     'partnerName' => $partner->username,
     'lastMessageId' => (int) ($messages->last()?->id ?? 0),
-    'viewerPhotoUrl' => $viewer->profile_photo_url,
-    'partnerPhotoUrl' => $partner->profile_photo_url,
-    'viewerInitial' => strtoupper(substr($viewer->username, 0, 1)),
-    'partnerInitial' => strtoupper(substr($partner->username, 0, 1)),
-    'viewerProfileUrl' => route('profile'),
-    'partnerProfileUrl' => route('users.show', $partner->username),
 ], JSON_UNESCAPED_UNICODE) !!};
-(function () {
-    var blockForm = document.getElementById('chatBlockForm');
-    if (blockForm) {
-        blockForm.addEventListener('submit', function (e) {
-            var msg = blockForm.getAttribute('data-block-confirm') || '';
-            if (!window.confirm(msg)) {
-                e.preventDefault();
-                return;
-            }
-            var btn = blockForm.querySelector('button[type="submit"]');
-            if (btn) btn.disabled = true;
-        });
-    }
-
-    var clearBtn = document.getElementById('chatClearBtn');
-    var chatConfig = window.__gk_chat || {};
-    var i18n = window.__gk_i18n || {};
-    var csrf = document.querySelector('meta[name="csrf-token"]')?.content;
-
-    if (clearBtn && chatConfig.clearChatUrl && csrf) {
-        clearBtn.addEventListener('click', function () {
-            var confirmMsg = i18n.clearConfirm || 'Bu sohbetteki tüm mesajları silmek istediğinize emin misiniz?';
-            if (!window.confirm(confirmMsg)) return;
-
-            clearBtn.disabled = true;
-            fetch(chatConfig.clearChatUrl, {
-                method: 'DELETE',
-                credentials: 'same-origin',
-                headers: {
-                    'X-CSRF-TOKEN': csrf,
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-            }).then(function (res) {
-                if (!res.ok) throw new Error('clear failed');
-                return res.json();
-            }).then(function (data) {
-                if (!data || data.ok !== true) throw new Error('clear failed');
-                window.location.reload();
-            }).catch(function () {
-                clearBtn.disabled = false;
-                window.alert(i18n.clearFailed || 'Sohbet temizlenemedi.');
-            });
-        });
-    }
-})();
 </script>
 @include('partials.asset', ['path' => 'js/chat.min.js', 'defer' => true])
 @endsection
