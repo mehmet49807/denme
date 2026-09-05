@@ -51,7 +51,29 @@ class PhotoVerification
         return is_string($status) && $status !== '' ? $status : null;
     }
 
+    /**
+     * Doğrulanmış profil rozeti:
+     * 1) E-posta kodu ile doğrulanmış olmalı
+     * 2) Admin profil onayı (is_verified / profile_verified_at / photo_verify approved)
+     */
     public static function isVerified(User $user): bool
+    {
+        if (! $user->email_verified_at) {
+            return false;
+        }
+
+        if ($user->is_verified) {
+            return true;
+        }
+
+        if (Schema::hasColumn('users', 'profile_verified_at') && $user->profile_verified_at) {
+            return true;
+        }
+
+        return self::status($user) === self::STATUS_APPROVED;
+    }
+
+    public static function hasAdminApproval(User $user): bool
     {
         if ($user->is_verified) {
             return true;
@@ -62,5 +84,10 @@ class PhotoVerification
         }
 
         return self::status($user) === self::STATUS_APPROVED;
+    }
+
+    public static function hasEmailVerified(User $user): bool
+    {
+        return (bool) $user->email_verified_at;
     }
 }
