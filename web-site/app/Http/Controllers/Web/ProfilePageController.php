@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Services\ProfileCompletenessService;
+
 use App\Support\PhotoVerification;
 
 use App\Http\Controllers\Controller;
@@ -63,7 +65,6 @@ class ProfilePageController extends Controller
                 ->whereHas('viewer', $viewerScope)
                 ->count();
 
-            // Sayfa yükünü sabit tut: kapalı panel + sınırlı liste.
             $profileViews = ProfileView::query()
                 ->with('viewer:id,username,profile_photo_url,city,district,country,gender,is_verified,last_active_at,role,birth_date')
                 ->where('viewed_id', $user->id)
@@ -73,7 +74,15 @@ class ProfilePageController extends Controller
                 ->get();
         }
 
-        return view('web.profile', compact('user', 'posts', 'ownStoryGroup', 'likedPostIds', 'profileViews', 'profileViewsCount'));
+        $completeness = app(ProfileCompletenessService::class)->forUser($user);
+        $notificationPrefs = [
+            'email_matches' => (bool) ($user->notify_email_matches ?? true),
+            'email_likes' => (bool) ($user->notify_email_likes ?? true),
+            'email_messages' => (bool) ($user->notify_email_messages ?? true),
+            'email_marketing' => (bool) ($user->notify_email_marketing ?? false),
+        ];
+
+        return view('web.profile', compact('user', 'posts', 'ownStoryGroup', 'likedPostIds', 'profileViews', 'profileViewsCount', 'completeness', 'notificationPrefs'));
     }
 
     public function update(Request $request): RedirectResponse
@@ -329,6 +338,7 @@ class ProfilePageController extends Controller
 
         return ['birth_date' => $date->toDateString()];
     }
+
     public function submitPhotoVerification(Request $request): RedirectResponse
     {
         PhotoVerification::ensureColumns();
@@ -377,5 +387,43 @@ class ProfilePageController extends Controller
             ->with('settings_panel', 'verify');
     }
 
+    public function updateNotificationPrefs(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $this->ensureNotificationPrefColumns();
 
+        $user->forceFill([
+            'notify_email_matches' => $request->boolean('email_matches'),
+            'notify_email_likes' => $request->boolean('email_likes'),
+            'notify_email_messages' => $request->boolean('email_messages'),
+            'notify_email_marketing' => $request->boolean('email_marketing'),
+        ])->save();
+
+        return back()->with('success', 'Bildirim tercihlerin kaydedildi.');
+    }
+
+    private function ensureNotificationPrefColumns(): void
+    {
+        if (! \Illuminate\Support\Facades\Schema::hasTable('users')) {
+            return;
+        }
+        $cols = [
+            'notify_email_matches' => fn ($t) => $t->boolean('notify_email_matches')->default(true)->nullable(),
+            'notify_email_likes' => fn ($t) => $t->boolean('notify_email_likes')->default(true)->nullable(),
+            'notify_email_messages' => fn ($t) => $t->boolean('notify_email_messages')->default(true)->nullable(),
+            'notify_email_marketing' => fn ($t) => $t->boolean('notify_email_marketing')->default(false)->nullable(),
+        ];
+        foreach ($cols as $name => $definition) {
+            if (\Illuminate\Support\Facades\Schema::hasColumn('users', $name)) {
+                continue;
+            }
+            try {
+                \Illuminate\Support\Facades\Schema::table('users', function ($table) use ($definition) {
+                    $definition($table);
+                });
+            } catch (\Throwable) {
+                //
+            }
+        }
+    }
 }
