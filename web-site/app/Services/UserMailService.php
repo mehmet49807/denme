@@ -49,26 +49,38 @@ class UserMailService
         $rendered = $this->render($template, $user);
         $body = $rendered['body'];
 
+        // 1) Doğrulama kodu alanı (herkes)
         $codeBlock = $verificationCode
             ? $this->verificationCodeHtml($verificationCode)
             : '';
 
-        // Premium paket bilgisi yalnızca erkek üyelere
-        $premiumBlock = ($user->gender === 'male')
-            ? $this->premiumPackagesHtml()
-            : '';
+        // 2) Deneme paketi + premium paketler (yalnızca erkek)
+        $premiumBlock = '';
+        $trialBlock = '';
+        if ($user->gender === 'male') {
+            if (method_exists($user, 'isOnTrial') && $user->isOnTrial()) {
+                $trialBlock = $this->trialPackageHtml($user);
+            }
+            $premiumBlock = $this->premiumPackagesHtml($user);
+        }
+
+        $extraBlocks = $codeBlock.$trialBlock.$premiumBlock;
 
         if (str_contains($body, '{verification_code_block}')) {
             $body = str_replace('{verification_code_block}', $codeBlock, $body);
-        } elseif ($codeBlock !== '') {
-            $body .= $codeBlock;
+            $extraBlocks = $trialBlock.$premiumBlock;
         }
-
+        if (str_contains($body, '{trial_package_block}')) {
+            $body = str_replace('{trial_package_block}', $trialBlock, $body);
+            $extraBlocks = str_replace($trialBlock, '', $extraBlocks);
+        }
         if (str_contains($body, '{premium_packages_block}')) {
             $body = str_replace('{premium_packages_block}', $premiumBlock, $body);
-        } elseif ($premiumBlock !== '') {
-            $replaced = preg_replace('/(<\/p>)/', '$1'.$premiumBlock, $body, 1);
-            $body = is_string($replaced) ? $replaced : ($body.$premiumBlock);
+            $extraBlocks = str_replace($premiumBlock, '', $extraBlocks);
+        }
+
+        if ($extraBlocks !== '') {
+            $body .= $extraBlocks;
         }
 
         if ($verificationCode) {
@@ -76,6 +88,13 @@ class UserMailService
         } else {
             $body = str_replace('{two_factor_code}', '', $body);
         }
+
+        // Kullanılmayan placeholder temizliği
+        $body = str_replace(
+            ['{verification_code_block}', '{trial_package_block}', '{premium_packages_block}'],
+            ['', '', ''],
+            $body
+        );
 
         return $this->send($user, $rendered['subject'], $body, $template);
     }
@@ -97,7 +116,41 @@ class UserMailService
 HTML;
     }
 
-    private function premiumPackagesHtml(): string
+    private function trialPackageHtml(User $user): string
+    {
+        $days = method_exists($user, 'trialDaysRemaining') ? (int) $user->trialDaysRemaining() : 0;
+        $hours = method_exists($user, 'trialHoursRemaining') ? (int) $user->trialHoursRemaining() : 0;
+        $endsAt = $user->trial_ends_at
+            ? $user->trial_ends_at->timezone(config('app.timezone', 'Europe/Istanbul'))->format('d.m.Y H:i')
+            : '';
+
+        $remaining = $days > 0
+            ? ($days.' gün')
+            : ($hours > 0 ? ($hours.' saat') : 'kısa süre');
+
+        $endsLine = $endsAt !== ''
+            ? '<p style="margin:8px 0 0;font-size:13px;color:#065F46;">Bitiş: <strong>'.htmlspecialchars($endsAt, ENT_QUOTES, 'UTF-8').'</strong></p>'
+            : '';
+
+        $remainingSafe = htmlspecialchars($remaining, ENT_QUOTES, 'UTF-8');
+
+        return <<<HTML
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:22px 0 8px;background:linear-gradient(135deg,#ECFDF5 0%,#F0FDF4 100%);border:1px solid rgba(16,185,129,0.28);border-radius:16px;overflow:hidden;">
+    <tr>
+        <td style="padding:18px 20px;">
+            <p style="margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#059669;">Deneme Paketin Aktif</p>
+            <p style="margin:0;font-size:15px;line-height:1.55;color:#064E3B;">
+                Premium özellikler seni bekliyor — deneme süren <strong>{$remainingSafe}</strong> daha devam ediyor.
+                Bu süre boyunca mesajlaşma ve premium ayrıcalıklardan yararlanabilirsin.
+            </p>
+            {$endsLine}
+        </td>
+    </tr>
+</table>
+HTML;
+    }
+
+    private function premiumPackagesHtml(?User $user = null): string
     {
         $packages = [
             ['name' => 'Pro', 'days' => 7, 'price' => '350', 'desc' => 'Mesajlaşma ve temel premium özellikler'],
@@ -158,8 +211,8 @@ HTML;
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:22px 0;background:#FAF5FF;border:1px solid rgba(124,58,237,0.16);border-radius:16px;overflow:hidden;">
     <tr>
         <td style="padding:18px 18px 8px;">
-            <p style="margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#7C3AED;">Premium Paketler (Erkek üyeler)</p>
-            <p style="margin:0 0 12px;font-size:14px;line-height:1.5;color:#3D3550;">Mesaj göndermek ve premium özellikler için paketlerden birini seçebilirsin. Deneme süren varsa hemen keşfetmeye başla.</p>
+            <p style="margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#7C3AED;">Premium Paketler</p>
+            <p style="margin:0 0 12px;font-size:14px;line-height:1.5;color:#3D3550;">Deneme süren bittikten sonra mesaj ve premium özellikler için aşağıdaki paketlerden birini seçebilirsin.</p>
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#fff;border-radius:12px;overflow:hidden;">
                 {$rows}
             </table>
@@ -350,7 +403,6 @@ HTML;
         ?int $adminId,
         User $user,
         ?string $templateKey,
-        string $subject,
         string $status,
         ?string $error = null,
     ): void {
@@ -362,8 +414,8 @@ HTML;
             'admin_id' => $adminId,
             'user_id' => $user->exists ? $user->id : null,
             'recipient_email' => $user->email,
-            'template_key' => $templateKey,
-            'subject' => $subject,
+            'template_key' => $templateKey ?? null,
+            'subject' => '',
             'status' => $status,
             'error_message' => $error,
         ]);
