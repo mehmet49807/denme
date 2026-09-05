@@ -22,6 +22,12 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',
         health: '/up',
+        then: function () {
+            $extra = __DIR__.'/../routes/email-verification-routes.php';
+            if (is_file($extra)) {
+                require $extra;
+            }
+        },
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
