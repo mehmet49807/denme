@@ -105,6 +105,7 @@
     @auth
     @if($appShell)
     @include('partials.asset', ['path' => 'css/app-shell.min.css'])
+    @include('partials.asset', ['path' => 'css/mobile-bottom-nav.min.css'])
     @endif
     @php
         $realtimeEnabled = false;
