@@ -50,19 +50,17 @@
                 @endif
                 <form method="POST" action="{{ route('profile.photo') }}" enctype="multipart/form-data" class="profile-photo-form">
                     @csrf
-                    <label class="profile-photo-change" title="Profil fotoğrafı değiştir">
-                        <input type="file" name="photo" accept="image/jpeg,image/png,image/gif,image/webp">
-                        @include('partials.icon-camera')
-                    </label>
+                    <label class="profile-photo-upload-btn" for="profilePhotoInput">Fotoğraf değiştir</label>
+                    <input type="file" id="profilePhotoInput" name="photo" accept="image/jpeg,image/png,image/webp,image/gif" class="profile-photo-input" onchange="this.form.submit()">
                 </form>
             </div>
-            @if(in_array($pkgType, ['pro','gold','platinum']))
-            @php
-                $_pkg = app(App\Services\PremiumPackagesService::class)->package($pkgType);
-            @endphp
+            @if($pkgType)
+            @php $_pkg = \App\Models\PremiumSubscription::PACKAGES[$pkgType] ?? null; @endphp
+            @if($_pkg)
             <span class="profile-pkg-badge profile-pkg-badge--{{ $pkgType }}">
                 {{ $_pkg['badge_label'] ?? ucfirst($pkgType) }}
             </span>
+            @endif
             @endif
         </div>
         <div class="profile-header-meta">
@@ -85,13 +83,27 @@
     @if(! $user->email_verified_at)
         <section class="profile-email-verification" role="status" aria-labelledby="profile-email-verification-title">
             <div>
-                <strong id="profile-email-verification-title">E-posta adresinizi doğrulayın</strong>
-                <p>Hesabınızı korumak ve önemli bildirimleri alabilmek için doğrulama bağlantısı isteyin.</p>
+                <strong id="profile-email-verification-title">E-posta doğrulama (doğrulanmış rozet için)</strong>
+                <p>Tüm sayfaları kullanabilirsiniz. Doğrulanmış profil rozeti için e-postanıza gelen 6 haneli kodu girin; ardından admin onayını bekleyin.</p>
             </div>
-            <form method="POST" action="{{ route('verification.send') }}">
+            <form method="POST" action="{{ route('verification.send') }}" style="margin-bottom:12px;">
                 @csrf
-                <button type="submit">Bağlantıyı gönder</button>
+                <button type="submit" class="btn btn-primary btn-sm">Doğrulama kodu gönder</button>
             </form>
+            <form method="POST" action="{{ route('verification.code') }}" class="profile-email-code-form">
+                @csrf
+                <label for="email_verify_code" class="sr-only">6 haneli kod</label>
+                <input type="text" id="email_verify_code" name="code" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code" placeholder="000000" required style="text-align:center;letter-spacing:0.35em;font-size:1.15rem;max-width:10rem;margin-right:0.5rem;">
+                <button type="submit" class="btn btn-primary btn-sm">Kodu doğrula</button>
+                @error('code') <small class="form-error" style="display:block;margin-top:6px;">{{ $message }}</small> @enderror
+            </form>
+        </section>
+    @elseif(! \App\Support\PhotoVerification::hasAdminApproval($user))
+        <section class="profile-email-verification profile-email-verification--pending" role="status">
+            <div>
+                <strong>E-posta doğrulandı</strong>
+                <p>Doğrulanmış profil rozeti için admin profil onayını bekliyorsunuz.</p>
+            </div>
         </section>
     @endif
     @error('boost') <small class="form-error">{{ $message }}</small> @enderror
