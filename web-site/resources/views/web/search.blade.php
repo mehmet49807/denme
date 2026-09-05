@@ -3,31 +3,57 @@
 @section('title', 'Üye Ara — Gönül Köprüsü')
 @section('page-eyebrow', 'Keşif')
 @section('page-title', 'Üye Ara')
-@section('page-lead', 'Kullanıcı adı, şehir veya ilçe ile arama yapın.')
+@section('page-lead', 'Yaş, şehir, hobi ve daha fazlasıyla üye keşfet.')
 
 @section('page-content')
-<form method="GET" action="{{ route('search') }}" class="search-page-form" role="search" data-search-form data-suggest-url="{{ $suggestUrl }}">
+@php
+    $filters = $filters ?? [];
+    $hobbyOptions = $hobbyOptions ?? [];
+    $relationshipOptions = $relationshipOptions ?? [];
+@endphp
+<form method="GET" action="{{ route('search') }}" class="search-page-form discovery-filter-form" role="search" data-search-form data-suggest-url="{{ $suggestUrl }}">
     <label for="search-q" class="sr-only">Arama</label>
     <div class="search-page-field">
-        <input
-            type="search"
-            id="search-q"
-            name="q"
-            value="{{ $q }}"
-            placeholder="Kullanıcı adı, şehir veya ilçe…"
-            minlength="2"
-            maxlength="80"
-            autocomplete="off"
-            class="search-page-input"
-            enterkeyhint="search"
-            data-search-input
-            aria-autocomplete="list"
-            aria-controls="search-suggest"
-            aria-expanded="false"
-        >
+        <input type="search" id="search-q" name="q" value="{{ $filters['q'] ?? $q ?? '' }}" placeholder="Kullanıcı adı, şehir veya ilçe…" maxlength="80" autocomplete="off" class="search-page-input" data-search-input aria-autocomplete="list" aria-controls="search-suggest" aria-expanded="false">
         <ul id="search-suggest" class="search-page-suggest" role="listbox" hidden data-search-suggest></ul>
+        <button type="submit" class="btn btn-primary">Ara</button>
     </div>
-    <button type="submit" class="btn btn-primary">Ara</button>
+    <div class="discovery-filters" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.75rem;margin-top:0.85rem;">
+        <label>Min yaş
+            <input type="number" name="age_min" min="18" max="80" value="{{ $filters['age_min'] ?? '' }}" class="search-page-input" placeholder="18">
+        </label>
+        <label>Max yaş
+            <input type="number" name="age_max" min="18" max="80" value="{{ $filters['age_max'] ?? '' }}" class="search-page-input" placeholder="50">
+        </label>
+        <label>Şehir
+            <input type="text" name="city" value="{{ $filters['city'] ?? '' }}" class="search-page-input" placeholder="İstanbul" maxlength="80">
+        </label>
+        <label>İlçe
+            <input type="text" name="district" value="{{ $filters['district'] ?? '' }}" class="search-page-input" placeholder="Kadıköy" maxlength="80">
+        </label>
+        <label>İlgi alanı
+            <select name="hobby" class="search-page-input">
+                <option value="">Tümü</option>
+                @foreach($hobbyOptions as $hobby)
+                    <option value="{{ $hobby['id'] }}" @selected(($filters['hobby'] ?? '') === $hobby['id'])>{{ $hobby['label'] }}</option>
+                @endforeach
+            </select>
+        </label>
+        <label>İlişki durumu
+            <select name="relationship_status" class="search-page-input">
+                <option value="">Tümü</option>
+                @foreach($relationshipOptions as $statusKey => $status)
+                    <option value="{{ $statusKey }}" @selected(($filters['relationship_status'] ?? '') === $statusKey)>{{ is_array($status) ? ($status['label'] ?? $statusKey) : $status }}</option>
+                @endforeach
+            </select>
+        </label>
+        <label style="display:flex;align-items:center;gap:0.4rem;margin-top:1.4rem;">
+            <input type="checkbox" name="online" value="1" @checked(!empty($filters['online']))> Çevrimiçi
+        </label>
+        <label style="display:flex;align-items:center;gap:0.4rem;margin-top:1.4rem;">
+            <input type="checkbox" name="with_photo" value="1" @checked(!empty($filters['with_photo']))> Fotoğraflı
+        </label>
+    </div>
 </form>
 
 @if($users && $users->total() > 0)
@@ -45,81 +71,12 @@
         </div>
     @endif
 @else
-    <p class="feed-empty">{{ $emptyMessage }}</p>
+    @include('partials.empty-state', [
+        'title' => 'Sonuç yok',
+        'text' => $emptyMessage,
+        'icon' => 'search',
+        'ctaUrl' => route('search'),
+        'ctaLabel' => 'Filtreleri temizle',
+    ])
 @endif
-
-<script>
-(function () {
-    var form = document.querySelector('[data-search-form]');
-    if (!form) return;
-    var input = form.querySelector('[data-search-input]');
-    var list = form.querySelector('[data-search-suggest]');
-    var url = form.getAttribute('data-suggest-url');
-    if (!input || !list || !url) return;
-
-    var timer = null;
-    var controller = null;
-
-    function hide() {
-        list.hidden = true;
-        list.innerHTML = '';
-        input.setAttribute('aria-expanded', 'false');
-    }
-
-    function show(items) {
-        if (!items || !items.length) {
-            hide();
-            return;
-        }
-        list.innerHTML = items.map(function (item, index) {
-            var photo = item.profile_photo_url
-                ? '<img src="' + String(item.profile_photo_url).replace(/"/g, '') + '" alt="" width="32" height="32" loading="lazy">'
-                : '<span class="search-page-suggest__initial">' + String(item.username || '?').charAt(0).toUpperCase() + '</span>';
-            var city = item.city ? '<span class="search-page-suggest__city">' + String(item.city) + '</span>' : '';
-            return '<li role="option" id="search-opt-' + index + '">' +
-                '<a href="' + String(item.url || '#').replace(/"/g, '') + '" class="search-page-suggest__link">' +
-                '<span class="search-page-suggest__avatar">' + photo + '</span>' +
-                '<span class="search-page-suggest__meta"><strong>' + String(item.username || '') + '</strong>' + city + '</span>' +
-                '</a></li>';
-        }).join('');
-        list.hidden = false;
-        input.setAttribute('aria-expanded', 'true');
-    }
-
-    function fetchSuggest(q) {
-        if (controller) controller.abort();
-        controller = new AbortController();
-        fetch(url + '?q=' + encodeURIComponent(q), {
-            credentials: 'same-origin',
-            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-            signal: controller.signal
-        }).then(function (res) { return res.ok ? res.json() : null; })
-          .then(function (json) {
-              if (!json || !json.success) return hide();
-              show(json.data || []);
-          }).catch(function (err) {
-              if (err && err.name === 'AbortError') return;
-              hide();
-          });
-    }
-
-    input.addEventListener('input', function () {
-        var q = String(input.value || '').trim();
-        clearTimeout(timer);
-        if (q.length < 2) {
-            hide();
-            return;
-        }
-        timer = setTimeout(function () { fetchSuggest(q); }, 220);
-    });
-
-    input.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') hide();
-    });
-
-    document.addEventListener('click', function (e) {
-        if (!form.contains(e.target)) hide();
-    });
-})();
-</script>
 @endsection
