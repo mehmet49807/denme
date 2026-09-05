@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Follow;
 use App\Models\ProfileLike;
 use App\Models\User;
+use App\Services\DiscoveryFilterService;
 use App\Services\GenderFilterService;
+use App\Support\HobbyCatalog;
+use App\Support\RelationshipStatus;
 use App\Support\SeoHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,32 +19,32 @@ class SearchController extends Controller
 {
     public function __construct(
         private GenderFilterService $genderFilter,
+        private DiscoveryFilterService $discoveryFilters,
     ) {}
 
     public function index(Request $request): View
     {
         SeoHelper::set('title', 'Üye Ara — Gönül Köprüsü');
-        SeoHelper::set('description', 'Kullanıcı adı, şehir veya ilçe ile Gönül Köprüsü üyelerini arayın.');
+        SeoHelper::set('description', 'Yaş, şehir, hobi ve daha fazlasıyla Gönül Köprüsü üyelerini keşfedin.');
         SeoHelper::set('robots', 'noindex,follow');
 
-        $q = trim((string) $request->query('q', ''));
-        if (mb_strlen($q) > 80) {
-            $q = mb_substr($q, 0, 80);
-        }
-
+        $filters = $this->discoveryFilters->parse($request);
         $users = null;
-        $emptyMessage = 'Aramaya başlamak için yukarıdaki alanı kullanın.';
+        $emptyMessage = 'Aramaya başlamak için filtreleri kullanın veya en az 2 karakter yazın.';
 
-        if ($q !== '') {
-            if (mb_strlen($q) < 2) {
+        $hasSearch = $filters['active'] || mb_strlen($filters['q']) >= 2;
+
+        if ($hasSearch) {
+            if ($filters['q'] !== '' && mb_strlen($filters['q']) < 2 && ! $filters['active']) {
                 $emptyMessage = 'Arama için en az 2 karakter girin.';
             } else {
-                $users = $this->searchQuery($request, $q)
+                $query = $this->baseQuery($request);
+                $users = $this->discoveryFilters->apply($query, $filters)
                     ->paginate(24)
                     ->withQueryString();
 
                 if ($users->total() === 0) {
-                    $emptyMessage = '“'.$q.'” için sonuç bulunamadı.';
+                    $emptyMessage = 'Bu filtrelere uygun üye bulunamadı. Filtreleri gevşetmeyi deneyin.';
                 }
             }
         }
@@ -72,12 +75,15 @@ class SearchController extends Controller
         }
 
         return view('web.search', [
-            'q' => $q,
+            'q' => $filters['q'],
+            'filters' => $filters,
             'users' => $users,
             'likedUserIds' => $likedUserIds,
             'followingUserIds' => $followingUserIds,
             'emptyMessage' => $emptyMessage,
             'suggestUrl' => route('search.suggest'),
+            'hobbyOptions' => HobbyCatalog::all(),
+            'relationshipOptions' => RelationshipStatus::all(),
         ]);
     }
 
@@ -93,7 +99,9 @@ class SearchController extends Controller
         }
 
         $viewer = $request->user();
-        $users = $this->searchQuery($request, $q)->limit(8)->get();
+        $filters = $this->discoveryFilters->parse($request);
+        $filters['q'] = $q;
+        $users = $this->discoveryFilters->apply($this->baseQuery($request), $filters)->limit(8)->get();
 
         $data = $users->map(function (User $user) use ($viewer) {
             return [
@@ -112,20 +120,13 @@ class SearchController extends Controller
     /**
      * @return \Illuminate\Database\Eloquent\Builder<\App\Models\User>
      */
-    private function searchQuery(Request $request, string $q)
+    private function baseQuery(Request $request)
     {
-        $like = '%'.addcslashes($q, '%_\\').'%';
         $viewer = $request->user();
 
         $query = User::query()
             ->where('role', 'user')
             ->where('is_banned', false)
-            ->where(function ($builder) use ($like) {
-                $builder->where('username', 'like', $like)
-                    ->orWhere('city', 'like', $like)
-                    ->orWhere('district', 'like', $like)
-                    ->orWhere('first_name', 'like', $like);
-            })
             ->with(['premiumSubscriptions' => fn ($q) => $q->active()->latest('expires_at')])
             ->withCount(['posts' => fn ($q) => $q->where('is_active', true)]);
 
