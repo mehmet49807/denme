@@ -21,14 +21,7 @@
         <div class="profile-photo-col">
             <div class="profile-photo-wrap @if($ownStoryGroup) profile-photo-wrap--has-story @endif @if(in_array($pkgType, ['pro','gold','platinum'])) profile-photo-wrap--premium-{{ $pkgType }} @endif">
                 @if($ownStoryGroup)
-                <button
-                    type="button"
-                    class="profile-photo profile-photo--story story-item story-item--own"
-                    id="profilePhotoPreview"
-                    data-story-index="0"
-                    data-user-id="{{ $user->id }}"
-                    aria-label="Hikayeni görüntüle"
-                >
+                <button type="button" class="profile-photo profile-photo--story story-item story-item--own" id="profilePhotoPreview" data-story-index="0" data-user-id="{{ $user->id }}" aria-label="Hikayeni görüntüle">
                     <span class="story-ring story-ring--unseen story-ring--profile story-ring--own{{ in_array($pkgType ?? null, ['pro','gold','platinum']) ? ' story-ring--premium-'.($pkgType ?? '') : '' }}">
                         <span class="story-avatar">
                             @if($user->profile_photo_url)
@@ -57,18 +50,12 @@
             @if($pkgType)
             @php $_pkg = \App\Models\PremiumSubscription::PACKAGES[$pkgType] ?? null; @endphp
             @if($_pkg)
-            <span class="profile-pkg-badge profile-pkg-badge--{{ $pkgType }}">
-                {{ $_pkg['badge_label'] ?? ucfirst($pkgType) }}
-            </span>
+            <span class="profile-pkg-badge profile-pkg-badge--{{ $pkgType }}">{{ $_pkg['badge_label'] ?? ucfirst($pkgType) }}</span>
             @endif
             @endif
         </div>
         <div class="profile-header-meta">
-            @include('partials.profile-identity', [
-                'user' => $user,
-                'postsCount' => $posts->count(),
-                'tickSize' => 'md',
-            ])
+            @include('partials.profile-identity', ['user' => $user, 'postsCount' => $posts->count(), 'tickSize' => 'md'])
             @include('partials.profile-member-badges', ['user' => $user])
             @include('partials.hobbies-display', ['user' => $user])
             @if($ownStoryGroup)
@@ -80,6 +67,10 @@
     @if(session('success')) <p class="profile-success">{{ session('success') }}</p> @endif
     @if(session('status')) <p class="profile-success">{{ session('status') }}</p> @endif
     @if(session('error')) <p class="form-error">{{ session('error') }}</p> @endif
+
+    @include('partials.profile-completeness', ['completeness' => $completeness ?? null])
+    @include('partials.notification-preferences', ['notificationPrefs' => $notificationPrefs ?? null])
+
     @if(! $user->email_verified_at)
         <section class="profile-email-verification" role="status" aria-labelledby="profile-email-verification-title">
             <div>
@@ -109,29 +100,18 @@
     @error('boost') <small class="form-error">{{ $message }}</small> @enderror
 
     @include('partials.profile-boost', ['user' => $user])
-    @include('partials.profile-views', [
-        'user' => $user,
-        'profileViews' => $profileViews ?? collect(),
-        'profileViewsCount' => $profileViewsCount ?? null,
-    ])
+    @include('partials.profile-views', ['user' => $user, 'profileViews' => $profileViews ?? collect(), 'profileViewsCount' => $profileViewsCount ?? null])
     @include('partials.profile-gallery', ['user' => $user, 'viewer' => $user])
-
     @include('partials.feed-toolbar', ['viewer' => $user])
     @error('image') <small class="form-error">{{ $message }}</small> @enderror
     @error('story') <small class="form-error">{{ $message }}</small> @enderror
 
-    @include('partials.profile-posts-grid', [
-        'profileUser' => $user,
-        'viewer' => $user,
-        'likedPostIds' => $likedPostIds ?? [],
-        'isOwnProfile' => true,
-    ])
+    @include('partials.profile-posts-grid', ['profileUser' => $user, 'viewer' => $user, 'likedPostIds' => $likedPostIds ?? [], 'isOwnProfile' => true])
 </div>
 
+@include('partials.match-celebration')
 @include('partials.feed-compose', ['viewer' => $user])
 @include('partials.post-caption-edit-dialog')
-
 @include('partials.ig-story-viewer')
-
 @include('partials.asset', ['path' => 'js/profile-page.min.js', 'defer' => true])
 @endsection
