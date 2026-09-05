@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Schema;
 
 final class GrowthOnboardingService
 {
-    /** İlk 24 saat aktivasyon penceresi */
-    public const WINDOW_HOURS = 24;
+    /** İlk 72 saat aktivasyon penceresi */
+    public const WINDOW_HOURS = 72;
 
     public function __construct(
         private ProfileCompletenessService $completeness,
@@ -31,7 +31,6 @@ final class GrowthOnboardingService
             return false;
         }
 
-        // Davet adımı bonus — checklist'i kilitlemez
         $checklist = collect($this->checklist($user))
             ->reject(fn (array $item) => ($item['key'] ?? '') === 'invite');
 
@@ -39,13 +38,14 @@ final class GrowthOnboardingService
     }
 
     /**
-     * @return list<array{key: string, label: string, done: bool, href: string}>
+     * @return list<array{key: string, label: string, done: bool, href: string, step?: int, hint?: string}>
      */
     public function checklist(User $user): array
     {
         $hasPhoto = filled($user->profile_photo_url);
         $likeCount = 0;
         $messageCount = 0;
+        $profileLikeCount = 0;
         $profile = $this->completeness->forUser($user);
 
         try {
@@ -61,36 +61,63 @@ final class GrowthOnboardingService
             $messageCount = 0;
         }
 
+        try {
+            if (class_exists(\App\Models\ProfileLike::class) && Schema::hasTable('profile_likes')) {
+                $profileLikeCount = (int) \App\Models\ProfileLike::query()->where('liker_id', $user->id)->count();
+            }
+        } catch (\Throwable) {
+            $profileLikeCount = 0;
+        }
+
         $items = [
             [
                 'key' => 'photo',
                 'label' => 'Profil fotoğrafı ekle',
                 'done' => $hasPhoto,
                 'href' => route('profile'),
+                'step' => 1,
+            ],
+            [
+                'key' => 'email',
+                'label' => 'E-posta adresini doğrula',
+                'done' => filled($user->email_verified_at),
+                'href' => route('profile'),
+                'step' => 1,
             ],
             [
                 'key' => 'profile_score',
                 'label' => 'Profilini %70 tamamla (şu an %'.$profile['percent'].')',
                 'done' => $profile['percent'] >= 70,
                 'href' => route('profile'),
+                'step' => 2,
             ],
             [
                 'key' => 'like',
                 'label' => '3 gönderiyi beğen',
                 'done' => $likeCount >= 3,
                 'href' => route('feed'),
+                'step' => 2,
+            ],
+            [
+                'key' => 'profile_like',
+                'label' => '2 profili beğen',
+                'done' => $profileLikeCount >= 2,
+                'href' => route('search'),
+                'step' => 3,
             ],
             [
                 'key' => 'message',
                 'label' => '1 kişiye ilk mesajını gönder',
                 'done' => $messageCount >= 1,
-                'href' => route('users.index'),
+                'href' => route('matches.index'),
+                'step' => 3,
             ],
             [
                 'key' => 'invite',
                 'label' => 'Arkadaşını davet et',
                 'done' => false,
                 'href' => route('referral'),
+                'step' => 3,
             ],
         ];
 
@@ -100,6 +127,7 @@ final class GrowthOnboardingService
                 'label' => 'Kimler baktı ve mesajlaşma sende ücretsiz',
                 'done' => true,
                 'href' => route('profile'),
+                'step' => 1,
             ]);
         }
 
@@ -115,6 +143,7 @@ final class GrowthOnboardingService
                 'label' => $trialLabel,
                 'done' => $user->isOnTrial() || $user->isPremium(),
                 'href' => route('premium'),
+                'step' => 1,
             ]);
         }
 
@@ -140,12 +169,15 @@ final class GrowthOnboardingService
         $done = collect($items)->where('done', true)->count();
         $total = count($items);
         $profile = $this->completeness->forUser($user);
+        $coreItems = collect($items)->reject(fn (array $item) => in_array($item['key'] ?? '', ['invite', 'women_perk', 'trial'], true));
+        $next = $coreItems->first(fn (array $item) => ! $item['done']);
 
         return [
             'done' => $done,
             'total' => $total,
             'percent' => $total > 0 ? (int) round(($done / $total) * 100) : 0,
             'items' => $items,
+            'next' => $next,
             'profile' => $profile,
             'trial_days' => $user->trialDaysRemaining(),
             'trial_hours' => method_exists($user, 'trialHoursRemaining') ? $user->trialHoursRemaining() : 0,
