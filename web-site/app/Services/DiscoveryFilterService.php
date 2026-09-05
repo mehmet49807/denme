@@ -20,6 +20,7 @@ final class DiscoveryFilterService
      *   with_photo: bool,
      *   relationship_status: string,
      *   relationship_expectation: string,
+     *   hobby: string,
      *   active: bool
      * }
      */
@@ -46,6 +47,11 @@ final class DiscoveryFilterService
         $expectation = trim((string) $request->query('relationship_expectation', ''));
         if (mb_strlen($expectation) > 80) {
             $expectation = mb_substr($expectation, 0, 80);
+        }
+
+        $hobby = trim((string) $request->query('hobby', ''));
+        if ($hobby !== '' && ! in_array($hobby, \App\Support\HobbyCatalog::ids(), true)) {
+            $hobby = '';
         }
 
         $q = trim((string) $request->query('q', ''));
@@ -79,6 +85,7 @@ final class DiscoveryFilterService
             'with_photo' => $request->boolean('with_photo'),
             'relationship_status' => $status,
             'relationship_expectation' => $expectation,
+            'hobby' => $hobby,
             'active' => $q !== ''
                 || $ageMin !== null
                 || $ageMax !== null
@@ -88,7 +95,8 @@ final class DiscoveryFilterService
                 || $request->boolean('online')
                 || $request->boolean('with_photo')
                 || $status !== ''
-                || $expectation !== '',
+                || $expectation !== ''
+                || $hobby !== '',
         ];
     }
 
@@ -157,6 +165,14 @@ final class DiscoveryFilterService
         if ($expectation !== '') {
             $like = '%'.addcslashes($expectation, '%_\\').'%';
             $query->where('relationship_expectation', 'like', $like);
+        }
+
+        $hobby = trim((string) ($filters['hobby'] ?? ''));
+        if ($hobby !== '') {
+            $query->where(function ($builder) use ($hobby) {
+                $builder->whereJsonContains('hobbies', $hobby)
+                    ->orWhere('hobbies', 'like', '%"'.$hobby.'"%');
+            });
         }
 
         return $query;
