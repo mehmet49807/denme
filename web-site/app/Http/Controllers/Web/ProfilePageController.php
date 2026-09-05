@@ -75,14 +75,8 @@ class ProfilePageController extends Controller
         }
 
         $completeness = app(ProfileCompletenessService::class)->forUser($user);
-        $notificationPrefs = [
-            'email_matches' => (bool) ($user->notify_email_matches ?? true),
-            'email_likes' => (bool) ($user->notify_email_likes ?? true),
-            'email_messages' => (bool) ($user->notify_email_messages ?? true),
-            'email_marketing' => (bool) ($user->notify_email_marketing ?? false),
-        ];
 
-        return view('web.profile', compact('user', 'posts', 'ownStoryGroup', 'likedPostIds', 'profileViews', 'profileViewsCount', 'completeness', 'notificationPrefs'));
+        return view('web.profile', compact('user', 'posts', 'ownStoryGroup', 'likedPostIds', 'profileViews', 'profileViewsCount', 'completeness'));
     }
 
     public function update(Request $request): RedirectResponse
@@ -399,7 +393,9 @@ class ProfilePageController extends Controller
             'notify_email_marketing' => $request->boolean('email_marketing'),
         ])->save();
 
-        return back()->with('success', 'Bildirim tercihlerin kaydedildi.');
+        return back()
+            ->with('success', 'Bildirim tercihlerin kaydedildi.')
+            ->with('settings_panel', $request->input('settings_panel', 'notification-prefs'));
     }
 
     private function ensureNotificationPrefColumns(): void
