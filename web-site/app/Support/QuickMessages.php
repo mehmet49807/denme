@@ -21,10 +21,11 @@ final class QuickMessages
             'Uygun olduğunda yazabilirsin.',
             'Tanıştığımıza memnun oldum.',
             'İyi akşamlar, sohbet etmek ister misin?',
+            'Bugün nasıl geçti?',
+            'Ortak bir hobi bulabiliriz belki.',
         ];
     }
 
-    /** İlk mesaj için daha kısa selam listesi */
     /** @return list<string> */
     public static function greetings(): array
     {
@@ -33,11 +34,12 @@ final class QuickMessages
             'Merhaba! Güzel bir gün diliyorum, tanışmak isterim.',
             'Selam, profilin dikkatimi çekti. Tanışabilir miyiz?',
             'Merhaba, nasılsın? Sohbet etmek isterim.',
+            'Merhaba, hobilerin güzelmiş. Tanışmak isterim.',
+            'Selam, aynı şehirdeysek bir gün kahve de içebiliriz ☕',
         ];
     }
 
     /**
-     * @deprecated GreetingTemplates uyumluluğu
      * @return list<string>
      */
     public static function forThread(bool $isFirstMessage): array
