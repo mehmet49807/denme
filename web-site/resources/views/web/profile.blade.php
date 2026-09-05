@@ -69,7 +69,6 @@
     @if(session('error')) <p class="form-error">{{ session('error') }}</p> @endif
 
     @include('partials.profile-completeness', ['completeness' => $completeness ?? null])
-    @include('partials.notification-preferences', ['notificationPrefs' => $notificationPrefs ?? null])
 
     @if(! $user->email_verified_at)
         <section class="profile-email-verification" role="status" aria-labelledby="profile-email-verification-title">
