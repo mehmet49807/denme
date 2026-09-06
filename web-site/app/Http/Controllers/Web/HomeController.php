@@ -46,7 +46,7 @@ class HomeController extends Controller
 
         $homeStories = SuccessStoriesContent::forHome(6);
 
-        $stats = Cache::remember('home.member_stats.v1', 120, function () {
+        $stats = Cache::remember('home.member_stats.v2', 120, function () {
             try {
                 $base = User::query()
                     ->where('role', 'user')
@@ -58,19 +58,32 @@ class HomeController extends Controller
                     ->where('last_active_at', '>=', now()->subMinutes(User::ONLINE_MINUTES))
                     ->count();
 
+                $verifiedCount = 0;
+                try {
+                    $verifiedCount = (clone $base)
+                        ->whereNotNull('email_verified_at')
+                        ->count();
+                } catch (\Throwable) {
+                    $verifiedCount = 0;
+                }
+
                 return [
                     'member_count' => $memberCount,
                     'online_count' => $onlineCount,
+                    'verified_count' => $verifiedCount,
                 ];
             } catch (\Throwable) {
                 return [
                     'member_count' => 0,
                     'online_count' => 0,
+                    'verified_count' => 0,
                 ];
             }
         });
 
-        $heroCities = array_slice(FeaturedCities::links($locations), 0, 8);
+        $allCityLinks = FeaturedCities::links($locations);
+        $heroCities = array_slice($allCityLinks, 0, 8);
+        $discoverCities = array_slice($allCityLinks, 0, 16);
 
         $faqGraph = SeoSchema::faqPage($homeFaqs);
         $graph = [
@@ -119,7 +132,9 @@ class HomeController extends Controller
             'homeStories' => $homeStories,
             'memberCount' => (int) ($stats['member_count'] ?? 0),
             'onlineCount' => (int) ($stats['online_count'] ?? 0),
+            'verifiedCount' => (int) ($stats['verified_count'] ?? 0),
             'heroCities' => $heroCities,
+            'discoverCities' => $discoverCities ?? $heroCities,
         ]);
     }
 }
