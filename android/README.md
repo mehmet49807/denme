@@ -1,34 +1,57 @@
-# Gönül Köprüsü — Android uygulama
+# Gönül Köprüsü — Android (TWA)
 
-Hedef: **birebir mobil web** tasarımı (Trusted Web Activity / TWA).
+Web sitesinin **birebir** mobil deneyimi. Tüm kurallar sunucuda kalır:
 
-## Şu anki adım: Demo (APK yok)
+- Kadınlarda premium yok / mesaj ücretsiz
+- Erkeklerde deneme + premium paketler
+- E-posta 2FA + admin onay → doğrulanmış rozet
+- Ödeme entegrasyonu yok (mevcut kural)
 
-Özel link:
+Package: `com.gonulkoprusu`  
+Start URL: `https://gonulkoprusu.com/feed`
+
+## Key dosyaları
+
+Sunucudaki `/key` klasörünü proje köküne kopyala:
 
 ```
-https://gonulkoprusu.com/uygulama-demo?key=gk-app-demo-2026
+android/key/keystore.properties
+android/key/release-keystore.jks
+android/app/google-services.json   # zaten app/ altında
 ```
 
-Admin: **Büyüme → Uygulama → Android demo**
-
-App giriş teması (web’den ayrı):
+`keystore.properties` örneği:
 
 ```
-https://gonulkoprusu.com/uygulama/giris
+storeFile=release-keystore.jks
+storePassword=...
+keyAlias=gonulkoprusu
+keyPassword=...
 ```
 
-Demo onayından sonra APK + AAB üretilecek.
+## Derleme
 
-## Son adım (henüz yapılmadı): APK + AAB
+Android Studio veya:
 
-1. Package adı kararlaştır (ör. `com.gonulkoprusu.app`)
-2. Keystore oluştur
-3. Bubblewrap ile TWA proje üret:
-   - start URL: `https://gonulkoprusu.com/feed` (veya `/login`)
-   - manifest: `https://gonulkoprusu.com/manifest.webmanifest`
-4. `/.well-known/assetlinks.json` yayınla (SHA-256)
-5. `bundleRelease` → AAB, isteğe bağlı APK
-6. Play Console internal testing → production
+```bash
+cd android
+# key/ altına jks + properties koy
+./gradlew :app:assembleRelease
+./gradlew :app:bundleRelease
+```
 
-Capacitor alternatifi yalnızca ekstra native özellik gerekirse (şu an TWA yeterli).
+Çıktı:
+
+- `app/build/outputs/apk/release/app-release.apk`
+- `app/build/outputs/bundle/release/app-release.aab`
+
+## Digital Asset Links
+
+Canlı site: `https://gonulkoprusu.com/.well-known/assetlinks.json`  
+SHA-256 (release keystore):  
+`00:73:3D:6B:57:DF:28:71:29:49:88:A1:92:C4:1E:02:26:5C:FE:47:E2:B1:D8:BE:55:41:E7:2D:D0:0B:0D:75`
+
+## Notlar
+
+- TWA için cihazda Chrome gerekir; yoksa `FallbackActivity` WebView açar (ileride bağlanabilir).
+- Push için FCM servisi iskeleti var; token API’si sonraki adım.
